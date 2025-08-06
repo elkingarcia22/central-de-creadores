@@ -1,0 +1,365 @@
+{
+  "mcp_system_config": {
+    "version": "1.0.0",
+    "created_at": "2024-01-15T00:00:00Z",
+    "last_updated": "2024-01-15T00:00:00Z",
+    "description": "Configuración de endpoints y capacidades de MCPs especializados"
+  },
+  "mcps": {
+    "maestro": {
+      "name": "mcp-maestro",
+      "version": "1.0.0",
+      "role": "orchestrator",
+      "description": "Orquestador principal que coordina todos los demás MCPs",
+      "capabilities": [
+        "orchestrate_task",
+        "recover_context",
+        "delegate_to_mcp",
+        "sync_project_state",
+        "get_system_status",
+        "save_important_decision",
+        "query_knowledge_base"
+      ],
+      "endpoints": {
+        "primary": "stdio",
+        "health_check": "/health",
+        "metrics": "/metrics"
+      },
+      "dependencies": [],
+      "startup_priority": 1
+    },
+    "design-system": {
+      "name": "mcp-design-system",
+      "version": "1.0.0",
+      "role": "ui_specialist",
+      "description": "Especialista en sistema de diseño, componentes UI y tokens",
+      "capabilities": [
+        "create_component",
+        "update_component",
+        "delete_component",
+        "manage_design_tokens",
+        "create_theme",
+        "update_theme",
+        "validate_ui_consistency",
+        "generate_component_variants",
+        "optimize_component_performance",
+        "export_design_system"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro"],
+      "startup_priority": 2,
+      "specializations": {
+        "components": [
+          "buttons",
+          "modals",
+          "forms",
+          "navigation",
+          "cards",
+          "tables",
+          "charts"
+        ],
+        "design_tokens": [
+          "colors",
+          "typography",
+          "spacing",
+          "shadows",
+          "borders",
+          "animations"
+        ],
+        "frameworks": [
+          "react",
+          "nextjs",
+          "tailwindcss",
+          "styled-components"
+        ]
+      }
+    },
+    "supabase": {
+      "name": "mcp-supabase",
+      "version": "1.0.0",
+      "role": "database_specialist",
+      "description": "Especialista en Supabase, base de datos y backend",
+      "capabilities": [
+        "create_table",
+        "alter_table",
+        "create_view",
+        "manage_rls_policies",
+        "create_function",
+        "create_trigger",
+        "manage_indexes",
+        "backup_schema",
+        "restore_schema",
+        "optimize_queries",
+        "monitor_performance",
+        "manage_auth_policies"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro"],
+      "startup_priority": 2,
+      "specializations": {
+        "database": [
+          "postgresql",
+          "migrations",
+          "indexes",
+          "constraints",
+          "triggers",
+          "functions"
+        ],
+        "auth": [
+          "rls_policies",
+          "user_management",
+          "role_management",
+          "jwt_tokens"
+        ],
+        "api": [
+          "rest_api",
+          "graphql",
+          "real_time",
+          "edge_functions"
+        ]
+      }
+    },
+    "code-structure": {
+      "name": "mcp-code-structure",
+      "version": "1.0.0",
+      "role": "code_specialist",
+      "description": "Especialista en estructura de código, refactoring y organización",
+      "capabilities": [
+        "analyze_code_structure",
+        "refactor_components",
+        "optimize_imports",
+        "reorganize_files",
+        "detect_code_smells",
+        "suggest_improvements",
+        "enforce_conventions",
+        "generate_documentation",
+        "create_boilerplate",
+        "manage_dependencies"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro"],
+      "startup_priority": 3,
+      "specializations": {
+        "languages": [
+          "typescript",
+          "javascript",
+          "react",
+          "nextjs"
+        ],
+        "tools": [
+          "eslint",
+          "prettier",
+          "tsconfig",
+          "webpack",
+          "vite"
+        ],
+        "patterns": [
+          "clean_architecture",
+          "design_patterns",
+          "solid_principles",
+          "dry_principles"
+        ]
+      }
+    },
+    "testing-qa": {
+      "name": "mcp-testing-qa",
+      "version": "1.0.0",
+      "role": "quality_specialist",
+      "description": "Especialista en testing, debugging y aseguramiento de calidad",
+      "capabilities": [
+        "create_unit_tests",
+        "create_integration_tests",
+        "create_e2e_tests",
+        "debug_issues",
+        "analyze_performance",
+        "validate_functionality",
+        "generate_test_reports",
+        "setup_test_environment",
+        "mock_external_services",
+        "stress_testing"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro", "code-structure"],
+      "startup_priority": 4,
+      "specializations": {
+        "testing_frameworks": [
+          "jest",
+          "vitest",
+          "playwright",
+          "cypress",
+          "testing-library"
+        ],
+        "test_types": [
+          "unit",
+          "integration",
+          "e2e",
+          "performance",
+          "accessibility",
+          "security"
+        ],
+        "debugging": [
+          "error_tracking",
+          "performance_profiling",
+          "memory_analysis",
+          "network_debugging"
+        ]
+      }
+    },
+    "deploy-devops": {
+      "name": "mcp-deploy-devops",
+      "version": "1.0.0",
+      "role": "deployment_specialist",
+      "description": "Especialista en deployment, CI/CD y operaciones",
+      "capabilities": [
+        "setup_ci_cd",
+        "configure_github_actions",
+        "deploy_to_vercel",
+        "deploy_to_netlify",
+        "setup_monitoring",
+        "configure_alerts",
+        "manage_environments",
+        "optimize_build_process",
+        "setup_staging",
+        "rollback_deployment"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro", "testing-qa"],
+      "startup_priority": 5,
+      "specializations": {
+        "platforms": [
+          "vercel",
+          "netlify",
+          "github_actions",
+          "docker",
+          "kubernetes"
+        ],
+        "environments": [
+          "development",
+          "staging",
+          "production",
+          "preview"
+        ],
+        "monitoring": [
+          "performance",
+          "errors",
+          "uptime",
+          "user_analytics"
+        ]
+      }
+    },
+    "documentation": {
+      "name": "mcp-documentation",
+      "version": "1.0.0",
+      "role": "documentation_specialist",
+      "description": "Especialista en documentación, guías y knowledge management",
+      "capabilities": [
+        "generate_api_docs",
+        "create_user_guides",
+        "update_readme",
+        "create_tutorials",
+        "generate_changelogs",
+        "create_architectural_docs",
+        "maintain_knowledge_base",
+        "create_onboarding_docs",
+        "generate_component_docs",
+        "create_troubleshooting_guides"
+      ],
+      "endpoints": {
+        "primary": "stdio"
+      },
+      "dependencies": ["maestro"],
+      "startup_priority": 6,
+      "specializations": {
+        "document_types": [
+          "api_documentation",
+          "user_guides",
+          "technical_specs",
+          "tutorials",
+          "troubleshooting",
+          "changelogs"
+        ],
+        "formats": [
+          "markdown",
+          "mdx",
+          "openapi",
+          "jsdoc",
+          "storybook"
+        ],
+        "tools": [
+          "docusaurus",
+          "gitbook",
+          "notion",
+          "confluence"
+        ]
+      }
+    }
+  },
+  "communication": {
+    "protocol": "stdio",
+    "message_format": "json",
+    "timeout_seconds": 30,
+    "retry_attempts": 3,
+    "batch_size": 10
+  },
+  "orchestration_rules": {
+    "parallel_execution": {
+      "max_concurrent_mcps": 3,
+      "safe_combinations": [
+        ["design-system", "documentation"],
+        ["testing-qa", "documentation"],
+        ["code-structure", "testing-qa"]
+      ],
+      "unsafe_combinations": [
+        ["supabase", "deploy-devops"],
+        ["code-structure", "deploy-devops"]
+      ]
+    },
+    "dependency_management": {
+      "startup_order": [
+        "maestro",
+        "design-system",
+        "supabase",
+        "code-structure",
+        "testing-qa",
+        "deploy-devops",
+        "documentation"
+      ],
+      "shutdown_order": [
+        "documentation",
+        "deploy-devops",
+        "testing-qa",
+        "code-structure",
+        "supabase",
+        "design-system",
+        "maestro"
+      ]
+    },
+    "escalation": {
+      "timeout_escalation": "maestro",
+      "error_escalation": "maestro",
+      "conflict_resolution": "maestro"
+    }
+  },
+  "context_management": {
+    "session_timeout_minutes": 60,
+    "max_session_history": 1000,
+    "context_compression_threshold": 10000,
+    "auto_save_interval_minutes": 5
+  },
+  "performance": {
+    "health_check_interval_seconds": 30,
+    "metrics_collection_interval_seconds": 60,
+    "log_retention_days": 30,
+    "max_memory_usage_mb": 512
+  }
+}

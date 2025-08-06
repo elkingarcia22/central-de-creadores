@@ -1,0 +1,52 @@
+{
+  "patterns": [
+    {
+      "id": "modal-component",
+      "name": "Componente Modal",
+      "description": "Patrón para crear componentes modales reutilizables",
+      "tags": [
+        "ui",
+        "modal",
+        "component"
+      ],
+      "mcps_involved": [
+        "design-system",
+        "code-structure"
+      ],
+      "success_rate": 95,
+      "usage_count": 0
+    },
+    {
+      "id": "database-table",
+      "name": "Crear Tabla de Base de Datos",
+      "description": "Patrón para crear tablas con RLS en Supabase",
+      "tags": [
+        "database",
+        "supabase",
+        "table",
+        "rls"
+      ],
+      "mcps_involved": [
+        "supabase"
+      ],
+      "success_rate": 90,
+      "usage_count": 0
+    },
+    {
+      "id": "api-endpoint",
+      "name": "Endpoint de API",
+      "description": "Patrón para crear endpoints de API seguros",
+      "tags": [
+        "api",
+        "backend",
+        "security"
+      ],
+      "mcps_involved": [
+        "supabase",
+        "testing-qa"
+      ],
+      "success_rate": 88,
+      "usage_count": 0
+    }
+  ]
+}

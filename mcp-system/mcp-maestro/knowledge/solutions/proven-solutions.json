@@ -1,0 +1,28 @@
+{
+  "solutions": [
+    {
+      "id": "auth-integration",
+      "problem": "Integración de autenticación con Supabase",
+      "solution": "Usar RLS policies con JWT tokens",
+      "tags": [
+        "auth",
+        "supabase",
+        "security"
+      ],
+      "success_rate": 92,
+      "last_used": null
+    },
+    {
+      "id": "component-optimization",
+      "problem": "Optimización de componentes React",
+      "solution": "Usar React.memo y useMemo para prevenir re-renders",
+      "tags": [
+        "react",
+        "performance",
+        "optimization"
+      ],
+      "success_rate": 85,
+      "last_used": null
+    }
+  ]
+}
