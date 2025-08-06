@@ -1,0 +1,1303 @@
+{
+  "tools": [
+    {
+      "name": "analyze_database_structure",
+      "description": "Analiza la estructura completa de una tabla en Supabase, incluyendo columnas, tipos de datos, y datos de ejemplo",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a analizar"
+          }
+        },
+        "required": ["table_name"]
+      }
+    },
+    {
+      "name": "verify_table_structure",
+      "description": "Verifica si la estructura actual de una tabla coincide con la estructura esperada",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a verificar"
+          },
+          "expected_columns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de columnas esperadas en la tabla"
+          }
+        },
+        "required": ["table_name", "expected_columns"]
+      }
+    },
+    {
+      "name": "check_foreign_keys",
+      "description": "Verifica las foreign keys de una tabla específica",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a verificar"
+          }
+        },
+        "required": ["table_name"]
+      }
+    },
+    {
+      "name": "diagnose_table_issues",
+      "description": "Diagnostica problemas comunes en tablas como columnas faltantes, tipos incorrectos, etc.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a diagnosticar"
+          }
+        },
+        "required": ["table_name"]
+      }
+    },
+    {
+      "name": "execute_sql_query",
+      "description": "Ejecuta una consulta SQL personalizada en Supabase",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql_query": {
+            "type": "string",
+            "description": "Consulta SQL a ejecutar"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de lo que hace la consulta"
+          }
+        },
+        "required": ["sql_query", "description"]
+      }
+    },
+    {
+      "name": "insert_test_data",
+      "description": "Inserta datos de prueba en una tabla específica",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla donde insertar datos"
+          },
+          "data": {
+            "type": "object",
+            "description": "Datos a insertar"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de los datos insertados"
+          }
+        },
+        "required": ["table_name", "data", "description"]
+      }
+    },
+    {
+      "name": "update_table_data",
+      "description": "Actualiza datos existentes en una tabla",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a actualizar"
+          },
+          "where_clause": {
+            "type": "object",
+            "description": "Condiciones WHERE para la actualización"
+          },
+          "update_data": {
+            "type": "object",
+            "description": "Datos a actualizar"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la actualización"
+          }
+        },
+        "required": ["table_name", "where_clause", "update_data", "description"]
+      }
+    },
+    {
+      "name": "backup_table_data",
+      "description": "Crea un backup de los datos de una tabla",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla a respaldar"
+          },
+          "backup_name": {
+            "type": "string",
+            "description": "Nombre del backup"
+          }
+        },
+        "required": ["table_name", "backup_name"]
+      }
+    },
+    {
+      "name": "create_or_update_view",
+      "description": "Crea o actualiza una vista en la base de datos",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "view_name": {
+            "type": "string",
+            "description": "Nombre de la vista"
+          },
+          "sql_definition": {
+            "type": "string",
+            "description": "Definición SQL de la vista"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la vista"
+          }
+        },
+        "required": ["view_name", "sql_definition", "description"]
+      }
+    },
+    {
+      "name": "create_or_update_trigger",
+      "description": "Crea o actualiza un trigger en la base de datos",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "trigger_name": {
+            "type": "string",
+            "description": "Nombre del trigger"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Tabla donde se aplicará el trigger"
+          },
+          "function_name": {
+            "type": "string",
+            "description": "Nombre de la función del trigger"
+          },
+          "trigger_definition": {
+            "type": "string",
+            "description": "Definición SQL completa del trigger"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del trigger"
+          }
+        },
+        "required": ["trigger_name", "table_name", "function_name", "trigger_definition", "description"]
+      }
+    },
+    {
+      "name": "verify_view_structure",
+      "description": "Verifica la estructura de una vista existente",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "view_name": {
+            "type": "string",
+            "description": "Nombre de la vista a verificar"
+          }
+        },
+        "required": ["view_name"]
+      }
+    },
+    {
+      "name": "test_trigger_function",
+      "description": "Prueba una función de trigger específica",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "function_name": {
+            "type": "string",
+            "description": "Nombre de la función a probar"
+          },
+          "test_data": {
+            "type": "object",
+            "description": "Datos de prueba para la función"
+          }
+        },
+        "required": ["function_name", "test_data"]
+      }
+    },
+    {
+      "name": "analyze_typescript_types",
+      "description": "Analiza los tipos TypeScript en un archivo específico",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Ruta del archivo TypeScript a analizar"
+          }
+        },
+        "required": ["file_path"]
+      }
+    },
+    {
+      "name": "check_component_structure",
+      "description": "Analiza la estructura de un componente React",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a analizar"
+          }
+        },
+        "required": ["component_path"]
+      }
+    },
+    {
+      "name": "verify_api_endpoints",
+      "description": "Verifica la estructura y funcionalidad de endpoints API",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "api_path": {
+            "type": "string",
+            "description": "Ruta del archivo API a verificar"
+          }
+        },
+        "required": ["api_path"]
+      }
+    },
+    {
+      "name": "analyze_imports_dependencies",
+      "description": "Analiza las importaciones y dependencias de un archivo",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Ruta del archivo a analizar"
+          }
+        },
+        "required": ["file_path"]
+      }
+    },
+    {
+      "name": "generate_component",
+      "description": "Genera un componente React con la estructura especificada",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_name": {
+            "type": "string",
+            "description": "Nombre del componente"
+          },
+          "component_type": {
+            "type": "string",
+            "enum": ["functional", "class", "modal", "form", "table"],
+            "description": "Tipo de componente a generar"
+          },
+          "props": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de props del componente"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del componente"
+          }
+        },
+        "required": ["component_name", "component_type", "props", "description"]
+      }
+    },
+    {
+      "name": "generate_api_endpoint",
+      "description": "Genera un endpoint API con la funcionalidad especificada",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "endpoint_name": {
+            "type": "string",
+            "description": "Nombre del endpoint"
+          },
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+            "description": "Método HTTP del endpoint"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Tabla de Supabase asociada"
+          },
+          "operations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Operaciones que realiza el endpoint"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del endpoint"
+          }
+        },
+        "required": ["endpoint_name", "method", "table_name", "operations", "description"]
+      }
+    },
+    {
+      "name": "generate_typescript_types",
+      "description": "Genera tipos TypeScript basados en la estructura de una tabla",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla para generar tipos"
+          },
+          "type_name": {
+            "type": "string",
+            "description": "Nombre del tipo TypeScript"
+          },
+          "include_relations": {
+            "type": "boolean",
+            "description": "Incluir tipos para relaciones"
+          }
+        },
+        "required": ["table_name", "type_name"]
+      }
+    },
+    {
+      "name": "generate_sql_migration",
+      "description": "Genera un script de migración SQL",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "migration_name": {
+            "type": "string",
+            "description": "Nombre de la migración"
+          },
+          "migration_type": {
+            "type": "string",
+            "enum": ["create_table", "alter_table", "create_view", "create_trigger", "insert_data"],
+            "description": "Tipo de migración"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla afectada"
+          },
+          "changes": {
+            "type": "object",
+            "description": "Cambios a realizar"
+          }
+        },
+        "required": ["migration_name", "migration_type", "table_name", "changes"]
+      }
+    },
+    {
+      "name": "run_tests",
+      "description": "Ejecuta tests del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "test_type": {
+            "type": "string",
+            "enum": ["unit", "integration", "e2e", "all"],
+            "description": "Tipo de tests a ejecutar"
+          },
+          "test_path": {
+            "type": "string",
+            "description": "Ruta específica de tests (opcional)"
+          }
+        },
+        "required": ["test_type"]
+      }
+    },
+    {
+      "name": "debug_sql_query",
+      "description": "Debuggea una consulta SQL específica",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sql_query": {
+            "type": "string",
+            "description": "Consulta SQL a debuggear"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Tabla principal de la consulta"
+          },
+          "expected_result": {
+            "type": "object",
+            "description": "Resultado esperado de la consulta"
+          }
+        },
+        "required": ["sql_query", "table_name"]
+      }
+    },
+    {
+      "name": "test_api_endpoint",
+      "description": "Prueba un endpoint API específico",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "endpoint_url": {
+            "type": "string",
+            "description": "URL del endpoint a probar"
+          },
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "DELETE"],
+            "description": "Método HTTP"
+          },
+          "test_data": {
+            "type": "object",
+            "description": "Datos de prueba para el endpoint"
+          }
+        },
+        "required": ["endpoint_url", "method"]
+      }
+    },
+    {
+      "name": "validate_data_integrity",
+      "description": "Valida la integridad de datos en una tabla",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Tabla a validar"
+          },
+          "validation_rules": {
+            "type": "object",
+            "description": "Reglas de validación a aplicar"
+          }
+        },
+        "required": ["table_name", "validation_rules"]
+      }
+    },
+    {
+      "name": "generate_documentation",
+      "description": "Genera documentación para un módulo específico",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "module_name": {
+            "type": "string",
+            "description": "Nombre del módulo"
+          },
+          "documentation_type": {
+            "type": "string",
+            "enum": ["api", "database", "component", "workflow"],
+            "description": "Tipo de documentación"
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenido de la documentación"
+          }
+        },
+        "required": ["module_name", "documentation_type", "content"]
+      }
+    },
+    {
+      "name": "update_knowledge_base",
+      "description": "Actualiza la base de conocimiento del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "change_type": {
+            "type": "string",
+            "enum": ["table_creation", "table_modification", "view_creation", "trigger_creation", "api_addition"],
+            "description": "Tipo de cambio realizado"
+          },
+          "entity_name": {
+            "type": "string",
+            "description": "Nombre de la entidad modificada"
+          },
+          "old_structure": {
+            "type": "object",
+            "description": "Estructura anterior (si aplica)"
+          },
+          "new_structure": {
+            "type": "object",
+            "description": "Nueva estructura"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del cambio"
+          }
+        },
+        "required": ["change_type", "entity_name", "new_structure", "description"]
+      }
+    },
+    {
+      "name": "create_migration_log",
+      "description": "Crea un log de migración para documentar cambios",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "migration_name": {
+            "type": "string",
+            "description": "Nombre de la migración"
+          },
+          "sql_commands": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Comandos SQL ejecutados"
+          },
+          "affected_tables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tablas afectadas"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la migración"
+          }
+        },
+        "required": ["migration_name", "sql_commands", "affected_tables", "description"]
+      }
+    },
+    {
+      "name": "analyze_changes",
+      "description": "Analiza cambios realizados en el proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "change_period": {
+            "type": "string",
+            "enum": ["today", "week", "month", "all"],
+            "description": "Período de cambios a analizar"
+          },
+          "change_type": {
+            "type": "string",
+            "enum": ["database", "frontend", "api", "all"],
+            "description": "Tipo de cambios a analizar"
+          }
+        },
+        "required": ["change_period", "change_type"]
+      }
+    },
+    {
+      "name": "setup_development_environment",
+      "description": "Configura el entorno de desarrollo",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "environment_type": {
+            "type": "string",
+            "enum": ["development", "production", "testing"],
+            "description": "Tipo de entorno a configurar"
+          }
+        },
+        "required": ["environment_type"]
+      }
+    },
+    {
+      "name": "configure_supabase",
+      "description": "Configura la conexión con Supabase",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "config_type": {
+            "type": "string",
+            "enum": ["client", "admin", "auth"],
+            "description": "Tipo de configuración"
+          },
+          "config_data": {
+            "type": "object",
+            "description": "Datos de configuración"
+          }
+        },
+        "required": ["config_type", "config_data"]
+      }
+    },
+    {
+      "name": "install_dependencies",
+      "description": "Instala dependencias del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "package_manager": {
+            "type": "string",
+            "enum": ["npm", "yarn", "pnpm"],
+            "description": "Gestor de paquetes a usar"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de dependencias a instalar"
+          }
+        },
+        "required": ["package_manager"]
+      }
+    },
+    {
+      "name": "run_build_process",
+      "description": "Ejecuta el proceso de build del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "build_type": {
+            "type": "string",
+            "enum": ["development", "production", "staging"],
+            "description": "Tipo de build"
+          },
+          "optimize": {
+            "type": "boolean",
+            "description": "Aplicar optimizaciones"
+          }
+        },
+        "required": ["build_type"]
+      }
+    },
+    {
+      "name": "analyze_user_request",
+      "description": "Analiza la solicitud del usuario y determina el enfoque necesario",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "user_request": {
+            "type": "string",
+            "description": "Solicitud del usuario"
+          },
+          "context": {
+            "type": "string",
+            "description": "Contexto adicional"
+          }
+        },
+        "required": ["user_request"]
+      }
+    },
+    {
+      "name": "check_documentation_coverage",
+      "description": "Verifica si un tema está documentado en la base de conocimiento",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "Tema a verificar"
+          },
+          "component": {
+            "type": "string",
+            "description": "Componente específico"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de tabla"
+          }
+        },
+        "required": ["topic"]
+      }
+    },
+    {
+      "name": "request_supabase_data",
+      "description": "Solicita datos específicos de Supabase cuando no están documentados",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "data_needed": {
+            "type": "string",
+            "description": "Tipo de datos necesarios"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Propósito de la solicitud"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Tabla de la cual obtener datos"
+          }
+        },
+        "required": ["data_needed", "purpose", "table_name"]
+      }
+    },
+    {
+      "name": "update_central_documentation",
+      "description": "Actualiza la documentación centralizada del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Sección a actualizar"
+          },
+          "new_content": {
+            "type": "string",
+            "description": "Nuevo contenido"
+          },
+          "change_type": {
+            "type": "string",
+            "description": "Tipo de cambio"
+          },
+          "table_name": {
+            "type": "string",
+            "description": "Tabla afectada"
+          }
+        },
+        "required": ["section", "new_content", "change_type"]
+      }
+    },
+    {
+      "name": "analyze_supabase_structure",
+      "description": "Analiza la estructura completa de Supabase",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "include_tables": {
+            "type": "boolean",
+            "description": "Incluir análisis de tablas"
+          },
+          "include_views": {
+            "type": "boolean",
+            "description": "Incluir análisis de vistas"
+          },
+          "include_triggers": {
+            "type": "boolean",
+            "description": "Incluir análisis de triggers"
+          }
+        },
+        "required": ["include_tables"]
+      }
+    },
+    {
+      "name": "document_table_structure",
+      "description": "Documenta la estructura de una tabla específica",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla"
+          },
+          "structure_data": {
+            "type": "object",
+            "description": "Datos de estructura de la tabla"
+          }
+        },
+        "required": ["table_name", "structure_data"]
+      }
+    },
+    {
+      "name": "document_rls_policies",
+      "description": "Documenta las políticas RLS de una tabla",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla"
+          },
+          "policies_data": {
+            "type": "array",
+            "description": "Datos de políticas RLS"
+          }
+        },
+        "required": ["table_name", "policies_data"]
+      }
+    },
+    {
+      "name": "document_automations",
+      "description": "Documenta automatizaciones del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "automation_type": {
+            "type": "string",
+            "description": "Tipo de automatización"
+          },
+          "automation_data": {
+            "type": "object",
+            "description": "Datos de la automatización"
+          }
+        },
+        "required": ["automation_type", "automation_data"]
+      }
+    },
+    {
+      "name": "prepare_local_to_cloud_migration",
+      "description": "Prepara la migración de entorno local a nube",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source_environment": {
+            "type": "string",
+            "description": "Entorno de origen"
+          },
+          "target_environment": {
+            "type": "string",
+            "description": "Entorno de destino"
+          },
+          "include_data": {
+            "type": "boolean",
+            "description": "Incluir datos en la migración"
+          },
+          "include_structure": {
+            "type": "boolean",
+            "description": "Incluir estructura en la migración"
+          }
+        },
+        "required": ["source_environment", "target_environment"]
+      }
+    },
+    {
+      "name": "execute_migration_scripts",
+      "description": "Ejecuta scripts de migración de forma segura",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "migration_type": {
+            "type": "string",
+            "description": "Tipo de migración"
+          },
+          "scripts": {
+            "type": "array",
+            "description": "Scripts a ejecutar"
+          },
+          "validation_queries": {
+            "type": "array",
+            "description": "Consultas de validación"
+          }
+        },
+        "required": ["migration_type", "scripts"]
+      }
+    },
+    {
+      "name": "validate_migration",
+      "description": "Valida que la migración se ejecutó correctamente",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "migration_type": {
+            "type": "string",
+            "description": "Tipo de migración"
+          },
+          "validation_results": {
+            "type": "array",
+            "description": "Resultados de validación"
+          },
+          "expected_results": {
+            "type": "array",
+            "description": "Resultados esperados"
+          }
+        },
+        "required": ["migration_type", "validation_results", "expected_results"]
+      }
+    },
+    {
+      "name": "search_project_knowledge",
+      "description": "Busca en la base de conocimiento del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search_term": {
+            "type": "string",
+            "description": "Término de búsqueda"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoría de búsqueda"
+          }
+        },
+        "required": ["search_term"]
+      }
+    },
+    {
+      "name": "create_knowledge_entry",
+      "description": "Crea una nueva entrada en la base de conocimiento",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "entry_type": {
+            "type": "string",
+            "description": "Tipo de entrada"
+          },
+          "title": {
+            "type": "string",
+            "description": "Título de la entrada"
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenido de la entrada"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags de la entrada"
+          },
+          "related_files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Archivos relacionados"
+          }
+        },
+        "required": ["entry_type", "title", "content", "tags"]
+      }
+    },
+    {
+      "name": "update_knowledge_base",
+      "description": "Actualiza la base de conocimiento del proyecto",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "update_type": {
+            "type": "string",
+            "description": "Tipo de actualización"
+          },
+          "section": {
+            "type": "string",
+            "description": "Sección a actualizar"
+          },
+          "new_content": {
+            "type": "string",
+            "description": "Nuevo contenido"
+          },
+          "old_content": {
+            "type": "string",
+            "description": "Contenido anterior"
+          }
+        },
+        "required": ["update_type", "section", "new_content"]
+      }
+    },
+    {
+      "name": "safe_backup_before_changes",
+      "description": "Crea un backup de seguridad antes de hacer cambios",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "description": "Nombre de la tabla"
+          },
+          "operation_type": {
+            "type": "string",
+            "description": "Tipo de operación"
+          }
+        },
+        "required": ["table_name", "operation_type"]
+      }
+    },
+    {
+      "name": "validate_changes_before_execution",
+      "description": "Valida cambios antes de ejecutarlos",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "changes_description": {
+            "type": "string",
+            "description": "Descripción de los cambios"
+          },
+          "sql_to_execute": {
+            "type": "string",
+            "description": "SQL a ejecutar"
+          },
+          "expected_impact": {
+            "type": "string",
+            "description": "Impacto esperado"
+          }
+        },
+        "required": ["changes_description", "sql_to_execute", "expected_impact"]
+      }
+    },
+    {
+      "name": "guide_user_through_process",
+      "description": "Guía al usuario paso a paso a través de un proceso",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "process_name": {
+            "type": "string",
+            "description": "Nombre del proceso"
+          },
+          "steps": {
+            "type": "array",
+            "description": "Pasos del proceso"
+          },
+          "current_step": {
+            "type": "integer",
+            "description": "Paso actual"
+          }
+        },
+        "required": ["process_name", "steps", "current_step"]
+      }
+    },
+    {
+      "name": "analyze_design_system",
+      "description": "Analiza el sistema de diseño actual y proporciona recomendaciones",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_name": {
+            "type": "string",
+            "description": "Nombre del componente a analizar (opcional)"
+          },
+          "file_path": {
+            "type": "string",
+            "description": "Ruta del archivo a analizar (opcional)"
+          }
+        }
+      }
+    },
+    {
+      "name": "validate_color_consistency",
+      "description": "Valida que los colores usados sean consistentes con el sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a validar"
+          },
+          "color_usage": {
+            "type": "object",
+            "description": "Información sobre el uso de colores en el componente"
+          }
+        },
+        "required": ["component_path", "color_usage"]
+      }
+    },
+    {
+      "name": "document_new_component",
+      "description": "Documenta un nuevo componente en el sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_name": {
+            "type": "string",
+            "description": "Nombre del componente"
+          },
+          "component_type": {
+            "type": "string",
+            "description": "Tipo de componente (button, input, card, etc.)"
+          },
+          "colors_used": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Colores utilizados en el componente"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Variantes disponibles del componente"
+          },
+          "accessibility_features": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Características de accesibilidad del componente"
+          }
+        },
+        "required": ["component_name", "component_type", "colors_used", "variants", "accessibility_features"]
+      }
+    },
+    {
+      "name": "update_color_palette",
+      "description": "Actualiza la paleta de colores del sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "palette_name": {
+            "type": "string",
+            "description": "Nombre de la paleta a actualizar"
+          },
+          "new_colors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Nuevos colores a agregar"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo de la actualización"
+          },
+          "accessibility_impact": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Impacto en la accesibilidad"
+          }
+        },
+        "required": ["palette_name", "new_colors", "reason", "accessibility_impact"]
+      }
+    },
+    {
+      "name": "check_design_compliance",
+      "description": "Verifica que un componente cumpla con las reglas del sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a verificar"
+          },
+          "compliance_rules": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Reglas de cumplimiento a verificar"
+          }
+        },
+        "required": ["component_path", "compliance_rules"]
+      }
+    },
+    {
+      "name": "generate_design_tokens",
+      "description": "Genera tokens de diseño para un componente o sistema",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "token_type": {
+            "type": "string",
+            "description": "Tipo de tokens a generar (color, spacing, typography)"
+          },
+          "component_name": {
+            "type": "string",
+            "description": "Nombre del componente"
+          },
+          "design_system_data": {
+            "type": "object",
+            "description": "Datos del sistema de diseño"
+          }
+        },
+        "required": ["token_type", "component_name", "design_system_data"]
+      }
+    },
+    {
+      "name": "validate_component_structure",
+      "description": "Valida la estructura de un componente según las mejores prácticas",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a validar"
+          },
+          "structure_analysis": {
+            "type": "object",
+            "description": "Análisis de la estructura del componente"
+          }
+        },
+        "required": ["component_path", "structure_analysis"]
+      }
+    },
+    {
+      "name": "update_design_documentation",
+      "description": "Actualiza la documentación del sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "documentation_type": {
+            "type": "string",
+            "description": "Tipo de documentación a actualizar"
+          },
+          "component_name": {
+            "type": "string",
+            "description": "Nombre del componente"
+          },
+          "new_content": {
+            "type": "string",
+            "description": "Nuevo contenido a agregar"
+          },
+          "changes_made": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Cambios realizados"
+          }
+        },
+        "required": ["documentation_type", "component_name", "new_content", "changes_made"]
+      }
+    },
+    {
+      "name": "analyze_accessibility",
+      "description": "Analiza la accesibilidad de un componente según estándares WCAG",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a analizar"
+          },
+          "accessibility_analysis": {
+            "type": "object",
+            "description": "Análisis de accesibilidad del componente"
+          }
+        },
+        "required": ["component_path", "accessibility_analysis"]
+      }
+    },
+    {
+      "name": "optimize_dark_light_modes",
+      "description": "Optimiza los modos claro y oscuro para mejor accesibilidad y UX",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a optimizar"
+          },
+          "optimization_analysis": {
+            "type": "object",
+            "description": "Análisis de optimización para modos claro/oscuro"
+          }
+        },
+        "required": ["component_path", "optimization_analysis"]
+      }
+    },
+    {
+      "name": "propose_design_improvements",
+      "description": "Propone mejoras específicas para el sistema de diseño",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "component_path": {
+            "type": "string",
+            "description": "Ruta del componente a mejorar"
+          },
+          "current_state": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Estado actual del componente"
+          },
+          "improvement_suggestions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Sugerencias de mejora"
+          }
+        },
+        "required": ["component_path", "current_state", "improvement_suggestions"]
+      }
+    }
+  ]
+} 

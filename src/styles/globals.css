@@ -1,0 +1,646 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === SISTEMA DE COLORES ROBUSTO === */
+:root {
+  /* === MODO CLARO === */
+  --background: 241 245 249; /* slate-100 - Fondo con buen contraste para cards blancas */
+  --foreground: 15 23 42;    /* slate-900 */
+  
+  --card: 255 255 255;       /* white */
+  --card-foreground: 15 23 42; /* slate-900 */
+  
+  --primary: 12 91 239;      /* #0C5BEF - Azul personalizado */
+  --primary-foreground: 255 255 255; /* white */
+  --primary-hover: 29 78 216;  /* blue-700 - Hover para botones primarios */
+  
+  --secondary: 226 232 240;  /* slate-200 - Diferenciado del fondo slate-100 */
+  --secondary-foreground: 15 23 42; /* slate-900 */
+  
+  --muted: 226 232 240;      /* slate-200 - Diferenciado del fondo slate-100 */
+  --muted-foreground: 100 116 139; /* slate-500 */
+  
+  --destructive: 220 38 38;  /* red-600 */
+  --destructive-foreground: 255 255 255; /* white */
+  --destructive-hover: 254 226 226;  /* red-50 - Rojo muy sutil para hover */
+  
+  --success: 22 163 74;      /* green-600 */
+  --success-foreground: 255 255 255; /* white */
+  
+  --warning: 234 179 8;      /* yellow-500 */
+  --warning-foreground: 15 23 42; /* slate-900 */
+  
+  --input: 255 255 255;      /* white */
+  --border: 226 232 240;     /* slate-200 - Bordes visibles con el fondo slate-100 */
+  --ring: 12 91 239;         /* #0C5BEF */
+  
+  --popover: 255 255 255;    /* white - Fondos de dropdowns */
+  --popover-foreground: 15 23 42; /* slate-900 */
+  --accent: 226 232 240;     /* slate-200 - Para hover states con contraste */
+  --accent-foreground: 15 23 42; /* slate-900 */
+  
+  /* === COLORES PARA TÍTULOS === */
+  --title: 55 65 81;         /* gray-700 - Gris oscuro para títulos */
+  --title-foreground: 255 255 255; /* white */
+}
+
+.dark {
+  /* === MODO OSCURO MEJORADO (Cursor/Figma Style) === */
+  --background: 9 9 11;          /* zinc-950 - Gris puro profundo */
+  --foreground: 250 250 250;     /* Blanco casi puro */
+  
+  --card: 20 20 23;              /* zinc-900 - Gris carbón */
+  --card-foreground: 248 250 252; /* slate-50 */
+  
+  /* === COLORES PRIMARIOS MÁS PASTEL === */
+  --primary: 120 160 255;        /* Azul mucho más pastel y suave */
+  --primary-foreground: 15 23 42; /* slate-900 */
+  --primary-hover: 96 165 250;   /* blue-400 - Hover más claro en modo oscuro */
+  
+  --secondary: 39 39 42;         /* zinc-800 - Gris medio */
+  --secondary-foreground: 212 212 216; /* zinc-300 */
+  
+  --muted: 63 63 70;             /* zinc-700 - Fondos más visibles */
+  --muted-foreground: 161 161 170; /* zinc-400 - Texto secundario */
+  
+  /* === COLORES DE ESTADO MÁS PASTEL === */
+  --destructive: 255 140 140;    /* Rojo mucho más pastel */
+  --destructive-foreground: 15 23 42; /* slate-900 */
+  --destructive-hover: 68 10 10;     /* zinc-900 con tinte rojo sutil para hover */
+  
+  --success: 120 220 150;        /* Verde mucho más pastel */
+  --success-foreground: 15 23 42; /* slate-900 */
+  
+  --warning: 255 210 100;        /* Amarillo mucho más pastel */
+  --warning-foreground: 15 23 42; /* slate-900 */
+  
+  /* === COLORES ADICIONALES PASTEL === */
+  --info: 96 165 250;            /* blue-400 - Azul información suave */
+  --info-foreground: 15 23 42;   /* slate-900 */
+  
+  --input: 39 39 42;             /* zinc-800 - Inputs grises */
+  --border: 63 63 70;            /* zinc-700 - Borde visible en modo oscuro */
+  --ring: 120 160 255;           /* Azul pastel suave - Foco */
+  
+  --popover: 20 20 23;           /* zinc-900 - Fondos de dropdowns en dark */
+  --popover-foreground: 248 250 252; /* slate-50 */
+  --accent: 63 63 70;            /* zinc-700 - Para hover states más visibles en dark */
+  --accent-foreground: 212 212 216; /* zinc-300 */
+  
+  /* === COLORES PARA TÍTULOS === */
+  --title: 156 163 175;          /* gray-400 - Gris claro para títulos en dark */
+  --title-foreground: 15 23 42;  /* slate-900 */
+}
+
+
+
+/* === ESTILOS BASE === */
+* {
+  border-color: rgb(203 213 225); /* slate-300 por defecto */
+}
+
+.dark * {
+  border-color: rgb(63 63 70); /* zinc-700 en modo oscuro mejorado */
+}
+
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+}
+
+/* === ANIMACIONES === */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === UTILIDADES === */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-title {
+    color: rgb(var(--title));
+  }
+}
+
+/* === ESTILOS PARA INPUTS === */
+@layer components {
+  /* Corregir estilos de autofill del navegador */
+  .input-autofill-fix {
+    transition: background-color 5000s ease-in-out 0s;
+  }
+  
+  .input-autofill-fix:-webkit-autofill,
+  .input-autofill-fix:-webkit-autofill:hover,
+  .input-autofill-fix:-webkit-autofill:focus,
+  .input-autofill-fix:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px rgb(255 255 255) inset !important;
+    -webkit-text-fill-color: rgb(15 23 42) !important;
+    background-color: rgb(255 255 255) !important;
+    color: rgb(15 23 42) !important;
+  }
+  
+  /* Para modo oscuro */
+  .dark .input-autofill-fix:-webkit-autofill,
+  .dark .input-autofill-fix:-webkit-autofill:hover,
+  .dark .input-autofill-fix:-webkit-autofill:focus,
+  .dark .input-autofill-fix:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px rgb(39 39 42) inset !important;
+    -webkit-text-fill-color: rgb(250 250 250) !important;
+    background-color: rgb(39 39 42) !important;
+    color: rgb(250 250 250) !important;
+  }
+  
+  /* Estilos adicionales para mantener consistencia en todos los estados */
+  .input-consistent {
+    background-color: rgb(var(--input)) !important;
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  .input-consistent:focus,
+  .input-consistent:active,
+  .input-consistent[value]:not([value=""]) {
+    background-color: rgb(var(--input)) !important;
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  .dark .input-consistent {
+    background-color: rgb(39 39 42) !important;
+    color: rgb(250 250 250) !important;
+  }
+  
+  .dark .input-consistent:focus,
+  .dark .input-consistent:active,
+  .dark .input-consistent[value]:not([value=""]) {
+    background-color: rgb(39 39 42) !important;
+    color: rgb(250 250 250) !important;
+  }
+  
+  /* Estilos más específicos para inputs con texto */
+  input[type="email"]:not(:placeholder-shown),
+  input[type="password"]:not(:placeholder-shown),
+  input[type="text"]:not(:placeholder-shown) {
+    background-color: rgb(var(--input)) !important;
+    color: rgb(var(--foreground)) !important;
+  }
+  
+  .dark input[type="email"]:not(:placeholder-shown),
+  .dark input[type="password"]:not(:placeholder-shown),
+  .dark input[type="text"]:not(:placeholder-shown) {
+    background-color: rgb(39 39 42) !important;
+    color: rgb(250 250 250) !important;
+  }
+
+  /* === ELIMINAR FLECHAS DE INPUTS NUMBER === */
+  .input-no-spinners {
+    -moz-appearance: textfield;
+  }
+  
+  .input-no-spinners::-webkit-outer-spin-button,
+  .input-no-spinners::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Eliminar flechas en Firefox */
+  .input-no-spinners[type="number"] {
+    -moz-appearance: textfield;
+  }
+  
+  /* Eliminar flechas en Edge */
+  .input-no-spinners::-ms-clear,
+  .input-no-spinners::-ms-reveal {
+    display: none;
+  }
+
+  /* === ESTILOS PARA FORMULARIOS COMPACTOS === */
+  .form-compact .space-y-4 > * + * {
+    margin-top: 0.75rem; /* 12px - menos espacio entre campos */
+  }
+  
+  .form-compact label {
+    margin-bottom: 0.125rem !important; /* 2px - muy poco espacio */
+  }
+  
+  .form-compact .helper-text {
+    margin-top: 0.125rem !important; /* 2px - muy poco espacio */
+  }
+  
+  /* Espaciado específico para grids en formularios compactos */
+  .form-compact .grid {
+    gap: 0.75rem; /* 12px - menos gap entre columnas */
+  }
+  
+  /* Forzar estilos en todos los estados posibles */
+  input.input-autofill-fix,
+  input.input-consistent {
+    background-color: rgb(255 255 255) !important;
+    color: rgb(15 23 42) !important;
+    border-color: rgb(226 232 240) !important;
+  }
+  
+  .dark input.input-autofill-fix,
+  .dark input.input-consistent {
+    background-color: rgb(39 39 42) !important;
+    color: rgb(250 250 250) !important;
+    border-color: rgb(63 63 70) !important;
+  }
+}
+
+/* === COMPONENTES DESTRUCTIVOS === */
+@layer components {
+  .btn-destructive {
+    @apply text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200 rounded-md;
+  }
+  
+  .btn-destructive-icon {
+    @apply text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200;
+  }
+}
+
+/* === ESTILOS DE SCROLL PERSONALIZADOS === */
+@layer utilities {
+  /* Scrollbar personalizado webkit */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--border));
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: all 0.2s ease;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--muted-foreground));
+    border: 1px solid transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:active {
+    background-color: rgb(var(--accent-foreground));
+  }
+  
+  /* Versión más elegante para dropdowns */
+  .scrollbar-dropdown {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  
+  .scrollbar-dropdown::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-dropdown::-webkit-scrollbar-track {
+    background: rgb(var(--accent) / 0.3);
+    border-radius: 3px;
+    margin: 4px 0;
+  }
+  
+  /* Scroll vertical */
+  .scrollbar-dropdown::-webkit-scrollbar-track:vertical {
+    background: rgb(var(--accent) / 0.3);
+    border-radius: 3px;
+    margin: 4px 0;
+  }
+  
+  /* Scroll horizontal */
+  .scrollbar-dropdown::-webkit-scrollbar-track:horizontal {
+    background: rgb(var(--accent) / 0.3);
+    border-radius: 3px;
+    margin: 0 4px;
+  }
+  
+  .scrollbar-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.8)
+    );
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Thumb vertical */
+  .scrollbar-dropdown::-webkit-scrollbar-thumb:vertical {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.8)
+    );
+    border-radius: 3px;
+  }
+  
+  /* Thumb horizontal */
+  .scrollbar-dropdown::-webkit-scrollbar-thumb:horizontal {
+    background: linear-gradient(
+      to right,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.8)
+    );
+    border-radius: 3px;
+  }
+  
+  .scrollbar-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.6)
+    );
+    transform: scaleX(1.2);
+  }
+  
+  /* Hover específico para scroll horizontal */
+  .scrollbar-dropdown::-webkit-scrollbar-thumb:horizontal:hover {
+    background: linear-gradient(
+      to right,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.6)
+    );
+    transform: scaleY(1.2);
+  }
+  
+  /* Hover específico para scroll vertical */
+  .scrollbar-dropdown::-webkit-scrollbar-thumb:vertical:hover {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.6)
+    );
+    transform: scaleX(1.2);
+  }
+  
+  .scrollbar-thumb-border {
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  
+  .scrollbar-track-transparent {
+    /* Para Firefox */
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  
+  /* Estilos específicos para modo oscuro */
+  .dark .scrollbar-thin {
+    scrollbar-color: rgb(var(--border)) transparent;
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--border));
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--muted-foreground));
+  }
+  
+  .dark .scrollbar-dropdown::-webkit-scrollbar-track {
+    background: rgb(var(--accent) / 0.2);
+  }
+  
+  /* Modo oscuro - track vertical */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-track:vertical {
+    background: rgb(var(--accent) / 0.2);
+    border-radius: 3px;
+    margin: 4px 0;
+  }
+  
+  /* Modo oscuro - track horizontal */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-track:horizontal {
+    background: rgb(var(--accent) / 0.2);
+    border-radius: 3px;
+    margin: 0 4px;
+  }
+  
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.6)
+    );
+  }
+  
+  /* Modo oscuro - thumb vertical */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb:vertical {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.6)
+    );
+  }
+  
+  /* Modo oscuro - thumb horizontal */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb:horizontal {
+    background: linear-gradient(
+      to right,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.6)
+    );
+  }
+  
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.4)
+    );
+  }
+  
+  /* Modo oscuro - hover horizontal */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb:horizontal:hover {
+    background: linear-gradient(
+      to right,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.4)
+    );
+    transform: scaleY(1.2);
+  }
+  
+  /* Modo oscuro - hover vertical */
+  .dark .scrollbar-dropdown::-webkit-scrollbar-thumb:vertical:hover {
+    background: linear-gradient(
+      to bottom,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.4)
+    );
+    transform: scaleX(1.2);
+  }
+  
+  /* Mejoras para dispositivos táctiles */
+  .scrollbar-dropdown,
+  .scrollbar-thin {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Clase específica para scroll horizontal */
+  .scrollbar-horizontal {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border)) transparent;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  
+  .scrollbar-horizontal::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-horizontal::-webkit-scrollbar-track {
+    background: rgb(var(--accent) / 0.3);
+    border-radius: 3px;
+    margin: 0 4px;
+  }
+  
+  .scrollbar-horizontal::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to right,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.8)
+    );
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+  
+  .scrollbar-horizontal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to right,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.6)
+    );
+    transform: scaleY(1.2);
+  }
+  
+  /* Modo oscuro para scroll horizontal */
+  .dark .scrollbar-horizontal::-webkit-scrollbar-track {
+    background: rgb(var(--accent) / 0.2);
+  }
+  
+  .dark .scrollbar-horizontal::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to right,
+      rgb(var(--border)),
+      rgb(var(--muted-foreground) / 0.6)
+    );
+  }
+  
+  .dark .scrollbar-horizontal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to right,
+      rgb(var(--muted-foreground)),
+      rgb(var(--accent-foreground) / 0.4)
+    );
+  }
+  
+  /* Scroll suave */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Para listas con muchos elementos */
+  .scroll-snap-y {
+    scroll-snap-type: y mandatory;
+  }
+  
+  .scroll-snap-start {
+    scroll-snap-align: start;
+  }
+}
+
+/* === MEJORAS DE DROPDOWN Y Z-INDEX === */
+@layer components {
+  .dropdown-content {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark .dropdown-content {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.25),
+      0 4px 6px -2px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* === SCROLL SUAVE === */
+html {
+  scroll-behavior: smooth;
+}
+
+/* === FOCUS MEJORADO === */
+@layer base {
+  * {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+}
+
+/* === ESTILOS ESPECÍFICOS PARA DROPDOWNS === */
+@layer components {
+  .dropdown-item {
+    @apply bg-popover hover:bg-accent focus:bg-accent transition-colors duration-150;
+  }
+  
+  .dropdown-selected {
+    @apply bg-primary/10 border-r-2 border-primary;
+  }
+  
+  .dropdown-container {
+    @apply bg-popover border border-border shadow-xl;
+  }
+  
+  .dropdown-header {
+    @apply bg-muted border-b border-border;
+  }
+  
+  /* Asegurar fondos visibles en modo claro */
+  .bg-input-solid {
+    background-color: rgb(255 255 255) !important; /* white en modo claro */
+  }
+  
+  .bg-popover-solid {
+    background-color: rgb(255 255 255) !important; /* white en modo claro */
+  }
+  
+  .bg-muted-solid {
+    background-color: rgb(248 250 252) !important; /* slate-50 en modo claro */
+  }
+  
+  .bg-accent-solid {
+    background-color: rgb(248 250 252) !important; /* slate-50 en modo claro */
+  }
+  
+  /* Fondos visibles en modo oscuro */
+  .dark .bg-input-solid {
+    background-color: rgb(39 39 42) !important; /* zinc-800 en modo oscuro */
+  }
+  
+  .dark .bg-popover-solid {
+    background-color: rgb(20 20 23) !important; /* zinc-900 en modo oscuro */
+  }
+  
+  .dark .bg-muted-solid {
+    background-color: rgb(63 63 70) !important; /* zinc-700 en modo oscuro */
+  }
+  
+  .dark .bg-accent-solid {
+    background-color: rgb(63 63 70) !important; /* zinc-700 en modo oscuro */
+  }
+}

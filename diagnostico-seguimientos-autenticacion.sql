@@ -1,0 +1,99 @@
+-- ====================================
+-- DIAGNÓSTICO: SEGUIMIENTOS CONVERTIDOS CON AUTENTICACIÓN
+-- ====================================
+
+-- 1. Verificar usuario actual y autenticación
+SELECT 
+    'Usuario actual:' as info,
+    auth.uid() as user_id,
+    auth.role() as user_role;
+
+-- 2. Verificar si hay seguimientos convertidos en la base de datos
+SELECT 
+    'Seguimientos convertidos en BD:' as info,
+    COUNT(*) as total_convertidos,
+    COUNT(CASE WHEN investigacion_id = '74ccfacb-6776-4546-a3e9-c07cefd1d6f1' THEN 1 END) as en_investigacion_especifica
+FROM seguimientos_investigacion 
+WHERE estado = 'convertido';
+
+-- 3. Verificar todos los seguimientos de la investigación específica
+SELECT 
+    'Todos los seguimientos de la investigación:' as info,
+    id,
+    estado,
+    fecha_seguimiento,
+    investigacion_id,
+    creado_el
+FROM seguimientos_investigacion 
+WHERE investigacion_id = '74ccfacb-6776-4546-a3e9-c07cefd1d6f1'
+ORDER BY fecha_seguimiento DESC;
+
+-- 4. Verificar políticas RLS actuales
+SELECT 
+    'Políticas RLS actuales:' as info,
+    policyname,
+    cmd,
+    qual,
+    with_check
+FROM pg_policies 
+WHERE tablename = 'seguimientos_investigacion'
+ORDER BY cmd, policyname;
+
+-- 5. Probar consulta con RLS (con usuario autenticado)
+SELECT 
+    'Consulta con RLS (usuario autenticado):' as info,
+    COUNT(*) as total_seguimientos,
+    COUNT(CASE WHEN estado = 'convertido' THEN 1 END) as convertidos,
+    COUNT(CASE WHEN estado != 'convertido' THEN 1 END) as no_convertidos
+FROM seguimientos_investigacion
+WHERE investigacion_id = '74ccfacb-6776-4546-a3e9-c07cefd1d6f1';
+
+-- 6. Verificar si RLS está habilitado
+SELECT 
+    'RLS habilitado:' as info,
+    schemaname,
+    tablename,
+    "rowsecurity"
+FROM pg_tables 
+WHERE tablename = 'seguimientos_investigacion';
+
+-- 7. Verificar estructura de la tabla
+SELECT 
+    'Estructura de la tabla:' as info,
+    column_name,
+    data_type,
+    is_nullable
+FROM information_schema.columns 
+WHERE table_name = 'seguimientos_investigacion' 
+AND table_schema = 'public'
+ORDER BY ordinal_position;
+
+-- 8. Verificar constraint CHECK para el campo estado
+SELECT 
+    'Constraint CHECK para estado:' as info,
+    conname,
+    pg_get_constraintdef(oid) as constraint_definition
+FROM pg_constraint 
+WHERE conrelid = 'seguimientos_investigacion'::regclass 
+AND contype = 'c';
+
+-- 9. Verificar valores únicos en el campo estado
+SELECT 
+    'Valores únicos en campo estado:' as info,
+    estado,
+    COUNT(*) as cantidad
+FROM seguimientos_investigacion 
+GROUP BY estado
+ORDER BY estado;
+
+-- 10. Verificar que el usuario actual puede ver seguimientos convertidos
+SELECT 
+    'Seguimientos convertidos visibles:' as info,
+    id,
+    estado,
+    fecha_seguimiento,
+    investigacion_id
+FROM seguimientos_investigacion 
+WHERE investigacion_id = '74ccfacb-6776-4546-a3e9-c07cefd1d6f1'
+AND estado = 'convertido'
+ORDER BY fecha_seguimiento DESC; 

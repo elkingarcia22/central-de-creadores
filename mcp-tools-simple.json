@@ -1,0 +1,102 @@
+{
+  "tools": [
+    {
+      "name": "test_connection",
+      "description": "Prueba la conexión con Supabase y verifica que el MCP esté funcionando correctamente",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "analyze_user_structure",
+      "description": "Analiza la estructura completa del sistema de usuarios, incluyendo profiles, roles_plataforma y user_roles",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "include_relationships": {
+            "type": "boolean",
+            "description": "Incluir análisis de relaciones entre tablas",
+            "default": true
+          },
+          "include_rls_policies": {
+            "type": "boolean",
+            "description": "Incluir análisis de políticas RLS",
+            "default": true
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "create_user_with_roles",
+      "description": "Crea un nuevo usuario con roles específicos en el sistema",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "Nombre completo del usuario"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email del usuario (debe ser único)"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Lista de roles a asignar al usuario"
+          },
+          "avatar_base64": {
+            "type": "string",
+            "description": "Avatar en formato base64 (opcional)"
+          }
+        },
+        "required": ["full_name", "email", "roles"]
+      }
+    },
+    {
+      "name": "optimize_user_queries",
+      "description": "Optimiza las consultas de usuarios y sugiere mejoras de performance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target_table": {
+            "type": "string",
+            "description": "Tabla específica a optimizar (profiles, user_roles, roles_plataforma)",
+            "default": "profiles"
+          },
+          "include_indexes": {
+            "type": "boolean",
+            "description": "Incluir sugerencias de índices",
+            "default": true
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "document_user_system",
+      "description": "Genera documentación completa del sistema de usuarios",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "include_examples": {
+            "type": "boolean",
+            "description": "Incluir ejemplos de uso",
+            "default": true
+          },
+          "include_diagrams": {
+            "type": "boolean",
+            "description": "Incluir diagramas de relaciones",
+            "default": true
+          }
+        },
+        "required": []
+      }
+    }
+  ]
+} 

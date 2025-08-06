@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "central-de-creadores": {
+      "command": "node",
+      "args": ["mcp-server-simple.js"],
+      "env": {
+        "SUPABASE_URL": "https://eloncaptettdvrvwypji.supabase.co",
+        "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsb25jYXB0ZXR0ZHZydnd5cGppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTYwMjQsImV4cCI6MjA2NTY5MjAyNH0.CFQ1kOCoNgNZ74yOF6qymrUUPV9V0B8JX2sfjc8LUv0",
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsb25jYXB0ZXR0ZHZydnd5cGppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDExNjAyNCwiZXhwIjoyMDY1NjkyMDI0fQ.b4-pu9KmNmn6jYYv1HgSKtoSRzjZDEEpdhtHcXxqWxw"
+      }
+    }
+  }
+} 
