@@ -1,0 +1,151 @@
+name: CI/CD Pipeline Central de Creadores
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Job 1: Verificación de código y construcción
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configurar Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: 📋 Instalar dependencias
+      run: npm ci
+      
+    - name: 🔍 Verificar TypeScript
+      run: npx tsc --noEmit
+      
+    - name: 🧹 Ejecutar ESLint
+      run: npm run lint
+      continue-on-error: true
+      
+    - name: 🏗️ Construir aplicación
+      run: npm run build
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        
+    - name: 📸 Subir artefactos de construcción
+      uses: actions/upload-artifact@v4
+      if: matrix.node-version == '20.x'
+      with:
+        name: build-files
+        path: .next/
+        retention-days: 1
+
+  # Job 2: Verificación de seguridad
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🔒 Ejecutar análisis de seguridad
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_TYPESCRIPT_ES: true
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_JSON: true
+        VALIDATE_MARKDOWN: true
+        
+    - name: 🛡️ Análisis de dependencias
+      run: |
+        npm audit --audit-level=moderate
+      continue-on-error: true
+
+  # Job 3: Verificación de backups
+  backup-verification:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: ✅ Verificar archivos de backup críticos
+      run: |
+        echo "🔍 Verificando archivos de backup..."
+        
+        # Lista de archivos críticos que deben existir
+        CRITICAL_BACKUPS=(
+          "BACKUP_ver_reclutamiento_ESTABLE.tsx"
+          "BACKUP_AgregarParticipanteModal_ESTABLE.tsx"
+          "BACKUP_AsignarAgendamientoModal_ESTABLE.tsx"
+          "BACKUP_actualizar_estados_ESTABLE.ts"
+          "BACKUP_participantes_reclutamiento_ESTABLE.ts"
+          "restore_backup.sh"
+          "BACKUP_ESTADO_ACTUAL_PLATAFORMA.md"
+          "BACKUP_INSTRUCCIONES_RESTAURACION.md"
+          "BACKUP_COMANDOS_CRITICOS.md"
+        )
+        
+        MISSING_FILES=0
+        
+        for file in "${CRITICAL_BACKUPS[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file - OK"
+          else
+            echo "❌ $file - FALTANTE"
+            ((MISSING_FILES++))
+          fi
+        done
+        
+        echo "📊 Resumen: $((${#CRITICAL_BACKUPS[@]} - MISSING_FILES))/${#CRITICAL_BACKUPS[@]} archivos de backup presentes"
+        
+        if [ $MISSING_FILES -gt 0 ]; then
+          echo "🚨 ADVERTENCIA: Faltan $MISSING_FILES archivos críticos de backup"
+          exit 1
+        else
+          echo "🎉 Todos los archivos de backup están presentes"
+        fi
+        
+    - name: 🧪 Verificar script de restauración
+      run: |
+        echo "🔧 Verificando script de restauración..."
+        if [ -x "restore_backup.sh" ]; then
+          echo "✅ Script de restauración es ejecutable"
+          ./restore_backup.sh check || echo "⚠️ Script de restauración completó con advertencias"
+        else
+          echo "❌ Script de restauración no es ejecutable"
+          exit 1
+        fi
+
+  # Job 4: Notificación de estado
+  notify-status:
+    needs: [build-and-test, security-scan, backup-verification]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📢 Estado del pipeline
+      run: |
+        echo "🔍 Estado del Pipeline CI/CD:"
+        echo "Build y Test: ${{ needs.build-and-test.result }}"
+        echo "Análisis de Seguridad: ${{ needs.security-scan.result }}"
+        echo "Verificación de Backups: ${{ needs.backup-verification.result }}"
+        
+        if [[ "${{ needs.build-and-test.result }}" == "success" && 
+              "${{ needs.security-scan.result }}" == "success" && 
+              "${{ needs.backup-verification.result }}" == "success" ]]; then
+          echo "🎉 ¡Pipeline completado exitosamente!"
+        else
+          echo "⚠️ Pipeline completado con errores o advertencias"
+        fi

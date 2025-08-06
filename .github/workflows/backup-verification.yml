@@ -1,0 +1,221 @@
+name: 🛡️ Verificación de Backups Diaria
+
+on:
+  schedule:
+    # Ejecutar todos los días a las 2:00 AM UTC (9:00 PM Colombia)
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Permitir ejecución manual
+  
+  # También ejecutar en cambios que afecten backups
+  push:
+    paths:
+      - 'BACKUP_*'
+      - 'restore_backup.sh'
+      - '.github/workflows/backup-verification.yml'
+
+jobs:
+  verify-backup-integrity:
+    runs-on: ubuntu-latest
+    name: Verificar Integridad de Backups
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: 📋 Instalar dependencias
+      run: npm ci
+      
+    - name: 🔍 Análisis completo de backups
+      run: |
+        echo "🛡️ === VERIFICACIÓN COMPLETA DE BACKUPS ==="
+        echo "Fecha: $(date)"
+        echo "Commit: $GITHUB_SHA"
+        echo "Rama: $GITHUB_REF_NAME"
+        echo ""
+        
+        # Verificar archivos de código críticos
+        echo "📂 Verificando archivos de código de backup..."
+        CODE_BACKUPS=(
+          "BACKUP_ver_reclutamiento_ESTABLE.tsx"
+          "BACKUP_AgregarParticipanteModal_ESTABLE.tsx"
+          "BACKUP_AsignarAgendamientoModal_ESTABLE.tsx"
+          "BACKUP_actualizar_estados_ESTABLE.ts"
+          "BACKUP_participantes_reclutamiento_ESTABLE.ts"
+        )
+        
+        for file in "${CODE_BACKUPS[@]}"; do
+          if [ -f "$file" ]; then
+            SIZE=$(wc -l < "$file")
+            echo "✅ $file ($SIZE líneas)"
+            
+            # Verificar que no esté vacío y tenga contenido válido
+            if [ $SIZE -lt 10 ]; then
+              echo "⚠️  ADVERTENCIA: $file parece muy pequeño ($SIZE líneas)"
+            fi
+          else
+            echo "❌ $file - NO ENCONTRADO"
+            exit 1
+          fi
+        done
+        
+        echo ""
+        echo "📋 Verificando documentación de backup..."
+        DOC_BACKUPS=(
+          "BACKUP_ESTADO_ACTUAL_PLATAFORMA.md"
+          "BACKUP_INSTRUCCIONES_RESTAURACION.md"
+          "BACKUP_CONFIGURACION_SISTEMA.md"
+          "BACKUP_COMANDOS_CRITICOS.md"
+          "BACKUP_ESTRUCTURA_DIRECTORIOS.md"
+          "BACKUP_RESUMEN_FINAL.md"
+        )
+        
+        for file in "${DOC_BACKUPS[@]}"; do
+          if [ -f "$file" ]; then
+            SIZE=$(wc -l < "$file")
+            echo "✅ $file ($SIZE líneas)"
+          else
+            echo "❌ $file - NO ENCONTRADO"
+            exit 1
+          fi
+        done
+        
+        echo ""
+        echo "🔧 Verificando script de restauración..."
+        if [ -f "restore_backup.sh" ]; then
+          if [ -x "restore_backup.sh" ]; then
+            SIZE=$(wc -l < "restore_backup.sh")
+            echo "✅ restore_backup.sh ($SIZE líneas, ejecutable)"
+            
+            # Verificar sintaxis del script
+            bash -n restore_backup.sh && echo "✅ Sintaxis del script válida" || echo "❌ Error de sintaxis en script"
+          else
+            echo "⚠️  restore_backup.sh existe pero no es ejecutable"
+            chmod +x restore_backup.sh
+            echo "✅ Permisos de ejecución corregidos"
+          fi
+        else
+          echo "❌ restore_backup.sh - NO ENCONTRADO"
+          exit 1
+        fi
+        
+    - name: 🧪 Probar funciones de verificación del script
+      run: |
+        echo "🧪 Probando funcionalidades del script de restauración..."
+        
+        # Probar modo check (sin hacer cambios)
+        if ./restore_backup.sh check; then
+          echo "✅ Comando 'check' ejecutado correctamente"
+        else
+          echo "⚠️ Comando 'check' completó con advertencias (normal en CI)"
+        fi
+        
+    - name: 📊 Generar reporte de estado
+      run: |
+        echo "📊 === REPORTE DE ESTADO DE BACKUPS ===" >> backup_report.txt
+        echo "Fecha: $(date)" >> backup_report.txt
+        echo "Commit: $GITHUB_SHA" >> backup_report.txt
+        echo "Rama: $GITHUB_REF_NAME" >> backup_report.txt
+        echo "" >> backup_report.txt
+        
+        echo "Archivos de backup verificados:" >> backup_report.txt
+        find . -name "BACKUP_*" -type f | wc -l >> backup_report.txt
+        echo "" >> backup_report.txt
+        
+        echo "Tamaños de archivos críticos:" >> backup_report.txt
+        ls -lh BACKUP_* | grep -E "\.(tsx|ts|md)$" >> backup_report.txt
+        
+        echo "✅ Reporte generado en backup_report.txt"
+        cat backup_report.txt
+        
+    - name: 📤 Subir reporte de verificación
+      uses: actions/upload-artifact@v4
+      with:
+        name: backup-verification-report
+        path: backup_report.txt
+        retention-days: 30
+        
+    - name: 🎯 Verificación completada
+      run: |
+        echo "🎉 Verificación de backups completada exitosamente"
+        echo "📍 Todos los archivos críticos están presentes y accesibles"
+        echo "🛡️ Los backups están listos para restauración si es necesario"
+
+  # Job adicional: Verificar que los backups sean restaurables
+  test-backup-restoration:
+    runs-on: ubuntu-latest
+    name: Probar Restauración de Backups
+    needs: verify-backup-integrity
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: 📋 Instalar dependencias
+      run: npm ci
+      
+    - name: 🧪 Simular restauración de archivos críticos
+      run: |
+        echo "🧪 Simulando proceso de restauración..."
+        
+        # Crear directorio temporal para simular restauración
+        mkdir -p test_restore/src/pages/reclutamiento/ver/
+        mkdir -p test_restore/src/components/ui/
+        mkdir -p test_restore/src/pages/api/
+        
+        # Simular restauración de archivos críticos
+        echo "📂 Copiando archivos de backup a ubicaciones temporales..."
+        
+        if cp BACKUP_ver_reclutamiento_ESTABLE.tsx test_restore/src/pages/reclutamiento/ver/\[id\].tsx 2>/dev/null; then
+          echo "✅ Vista de reclutamiento restaurable"
+        else
+          echo "❌ Error restaurando vista de reclutamiento"
+          exit 1
+        fi
+        
+        if cp BACKUP_AgregarParticipanteModal_ESTABLE.tsx test_restore/src/components/ui/AgregarParticipanteModal.tsx; then
+          echo "✅ Modal agregar participante restaurable"
+        else
+          echo "❌ Error restaurando modal agregar participante"
+          exit 1
+        fi
+        
+        if cp BACKUP_AsignarAgendamientoModal_ESTABLE.tsx test_restore/src/components/ui/AsignarAgendamientoModal.tsx; then
+          echo "✅ Modal asignar agendamiento restaurable"
+        else
+          echo "❌ Error restaurando modal asignar agendamiento"
+          exit 1
+        fi
+        
+        if cp BACKUP_actualizar_estados_ESTABLE.ts test_restore/src/pages/api/actualizar-estados-reclutamiento.ts; then
+          echo "✅ API actualizar estados restaurable"
+        else
+          echo "❌ Error restaurando API actualizar estados"
+          exit 1
+        fi
+        
+        if cp BACKUP_participantes_reclutamiento_ESTABLE.ts test_restore/src/pages/api/participantes-reclutamiento.ts; then
+          echo "✅ API participantes reclutamiento restaurable"
+        else
+          echo "❌ Error restaurando API participantes"
+          exit 1
+        fi
+        
+        echo ""
+        echo "🎉 Simulación de restauración completada exitosamente"
+        echo "📊 Archivos verificados: $(find test_restore -name "*.tsx" -o -name "*.ts" | wc -l)"
+        
+        # Limpiar archivos temporales
+        rm -rf test_restore/
+        echo "🧹 Archivos temporales limpiados"

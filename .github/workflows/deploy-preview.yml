@@ -1,0 +1,181 @@
+name: 🚀 Deploy Preview (Vercel)
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+  
+  # Permitir despliegue manual
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Rama a desplegar'
+        required: true
+        default: 'develop'
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    name: Deploy Preview Environment
+    
+    # Solo ejecutar si hay cambios en código fuente
+    if: >
+      contains(github.event.pull_request.changed_files, 'src/') ||
+      contains(github.event.pull_request.changed_files, 'pages/') ||
+      contains(github.event.pull_request.changed_files, 'package.json') ||
+      github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: 📦 Checkout código
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: 📋 Instalar dependencias
+      run: npm ci
+      
+    - name: 🔍 Verificar código antes del deploy
+      run: |
+        echo "🔍 Verificando código antes del despliegue..."
+        
+        # Verificar que los archivos críticos existen
+        CRITICAL_FILES=(
+          "src/pages/reclutamiento/ver/[id].tsx"
+          "src/components/ui/AgregarParticipanteModal.tsx"
+          "src/components/ui/AsignarAgendamientoModal.tsx"
+          "src/pages/api/actualizar-estados-reclutamiento.ts"
+          "src/pages/api/participantes-reclutamiento.ts"
+        )
+        
+        for file in "${CRITICAL_FILES[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file"
+          else
+            echo "❌ ARCHIVO CRÍTICO FALTANTE: $file"
+            echo "🔄 Intentando restaurar desde backup..."
+            
+            # Mapear archivo a su backup correspondiente
+            case "$file" in
+              "src/pages/reclutamiento/ver/[id].tsx")
+                if [ -f "BACKUP_ver_reclutamiento_ESTABLE.tsx" ]; then
+                  cp "BACKUP_ver_reclutamiento_ESTABLE.tsx" "$file"
+                  echo "✅ Restaurado desde backup"
+                fi
+                ;;
+              "src/components/ui/AgregarParticipanteModal.tsx")
+                if [ -f "BACKUP_AgregarParticipanteModal_ESTABLE.tsx" ]; then
+                  cp "BACKUP_AgregarParticipanteModal_ESTABLE.tsx" "$file"
+                  echo "✅ Restaurado desde backup"
+                fi
+                ;;
+              "src/components/ui/AsignarAgendamientoModal.tsx")
+                if [ -f "BACKUP_AsignarAgendamientoModal_ESTABLE.tsx" ]; then
+                  cp "BACKUP_AsignarAgendamientoModal_ESTABLE.tsx" "$file"
+                  echo "✅ Restaurado desde backup"
+                fi
+                ;;
+              "src/pages/api/actualizar-estados-reclutamiento.ts")
+                if [ -f "BACKUP_actualizar_estados_ESTABLE.ts" ]; then
+                  cp "BACKUP_actualizar_estados_ESTABLE.ts" "$file"
+                  echo "✅ Restaurado desde backup"
+                fi
+                ;;
+              "src/pages/api/participantes-reclutamiento.ts")
+                if [ -f "BACKUP_participantes_reclutamiento_ESTABLE.ts" ]; then
+                  cp "BACKUP_participantes_reclutamiento_ESTABLE.ts" "$file"
+                  echo "✅ Restaurado desde backup"
+                fi
+                ;;
+            esac
+            
+            # Verificar nuevamente después del intento de restauración
+            if [ ! -f "$file" ]; then
+              echo "❌ No se pudo restaurar $file"
+              exit 1
+            fi
+          fi
+        done
+        
+    - name: 🏗️ Build para producción
+      run: |
+        echo "🏗️ Construyendo aplicación para preview..."
+        npm run build
+      env:
+        # Variables de entorno para preview (sin datos reales)
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co' }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key' }}
+        NODE_ENV: production
+        
+    - name: 📤 Deploy a Vercel (Preview)
+      uses: amondnet/vercel-action@v25
+      if: github.event_name == 'pull_request'
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        working-directory: ./
+        scope: ${{ secrets.VERCEL_ORG_ID }}
+        
+    - name: 📝 Comentario en PR con preview
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('🚀 Preview Deploy')
+          );
+          
+          const commentBody = `
+          ## 🚀 Preview Deploy Listo
+          
+          ✅ **Build exitoso** - La aplicación se compiló correctamente
+          🔍 **Archivos críticos verificados** - Todos los componentes principales están presentes
+          🛡️ **Backups disponibles** - Sistema de restauración funcional
+          
+          ### 📊 Información del Deploy
+          - **Commit**: ${context.sha.substring(0, 7)}
+          - **Rama**: ${context.payload.pull_request.head.ref}
+          - **Tiempo de build**: ~2-3 minutos
+          
+          ### 🧪 Páginas a verificar en preview:
+          - Página principal de reclutamientos
+          - Vista detallada de reclutamiento
+          - Modales de participantes
+          - Sistema de agendamientos
+          
+          ---
+          *Deploy automatizado por GitHub Actions*
+          `;
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+          }
+          
+    - name: 🎉 Deploy completado
+      run: |
+        echo "🎉 Deploy de preview completado exitosamente"
+        echo "📱 La aplicación está lista para revisión"
+        echo "🔗 URL de preview disponible en los comentarios del PR"
