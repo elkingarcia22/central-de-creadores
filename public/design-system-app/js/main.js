@@ -1,64 +1,198 @@
-// Main JavaScript for Design System App
-
-// Global state
+// Main JavaScript - Fixed Version
 let currentSection = 'colors';
-let currentTheme = 'light';
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-    setupEventListeners();
-    setupColorCopy();
-});
-
-function initializeApp() {
-    // Set initial active section
-    showSection('colors');
-    
-    // Initialize theme
-    applyTheme(currentTheme);
-    
-    // Setup navigation
-    setupNavigation();
-}
-
-function setupEventListeners() {
-    // Menu toggle for mobile
-    const menuToggle = document.querySelector('.menu-toggle');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleSidebar);
-    }
-    
-    // Close modal when clicking outside
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-    }
-}
-
-function setupNavigation() {
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const section = this.getAttribute('data-section');
-            showSection(section);
+// Load section content
+async function loadSectionContent(sectionId) {
+    const contentMap = {
+        colors: `
+            <div class="content-header">
+                <h2>🌈 Sistema de Colores</h2>
+                <p>Paleta de colores del sistema de diseño</p>
+            </div>
             
-            // Update active menu item
-            menuItems.forEach(mi => mi.classList.remove('active'));
-            this.classList.add('active');
+            <div class="section">
+                <h3>🎨 Colores Primarios</h3>
+                <div class="demo-group">
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch brand-primary"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#1E40AF">
+                            <div class="color-swatch brand-primary-dark"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary Dark</span>
+                                <span class="color-hex">#1E40AF</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#60A5FA">
+                            <div class="color-swatch brand-primary-light"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary Light</span>
+                                <span class="color-hex">#60A5FA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>✅ Colores Semánticos</h3>
+                <div class="demo-group">
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#10B981">
+                            <div class="color-swatch semantic-success"></div>
+                            <div class="color-info">
+                                <span class="color-name">Success</span>
+                                <span class="color-hex">#10B981</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#EF4444">
+                            <div class="color-swatch semantic-error"></div>
+                            <div class="color-info">
+                                <span class="color-name">Error</span>
+                                <span class="color-hex">#EF4444</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#F59E0B">
+                            <div class="color-swatch semantic-warning"></div>
+                            <div class="color-info">
+                                <span class="color-name">Warning</span>
+                                <span class="color-hex">#F59E0B</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch semantic-info"></div>
+                            <div class="color-info">
+                                <span class="color-name">Info</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        buttons: `
+            <div class="content-header">
+                <h2>🔘 Botones</h2>
+                <p>Componentes de botones del sistema</p>
+            </div>
             
-            // Update page title
-            updatePageTitle(this.textContent);
-        });
-    });
+            <div class="section">
+                <h3>🎨 Tipos de Botones</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-error">Error</button>
+                        <button class="btn btn-outline">Outline</button>
+                        <button class="btn btn-ghost">Ghost</button>
+                    </div>
+                </div>
+                
+                <h3>📏 Tamaños</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <button class="btn btn-primary btn-sm">Small</button>
+                        <button class="btn btn-primary">Medium</button>
+                        <button class="btn btn-primary btn-lg">Large</button>
+                    </div>
+                </div>
+                
+                <h3>⚡ Estados</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <button class="btn btn-primary">Normal</button>
+                        <button class="btn btn-primary" disabled>Disabled</button>
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        inputs: `
+            <div class="content-header">
+                <h2>📝 Inputs</h2>
+                <p>Componentes de entrada de datos</p>
+            </div>
+            
+            <div class="section">
+                <h3>📋 Tipos de Input</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <input type="text" class="input" placeholder="Input de texto">
+                        <input type="email" class="input" placeholder="Input de email">
+                        <input type="password" class="input" placeholder="Input de contraseña">
+                        <input type="number" class="input" placeholder="Input numérico">
+                    </div>
+                </div>
+                
+                <h3>🎯 Estados</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <input type="text" class="input" placeholder="Normal">
+                        <input type="text" class="input input-success" placeholder="Exitoso" value="Correcto">
+                        <input type="text" class="input input-error" placeholder="Con error" value="Error">
+                        <input type="text" class="input" placeholder="Deshabilitado" disabled>
+                    </div>
+                </div>
+                
+                <h3>📝 Textarea</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <textarea class="input" placeholder="Escribe un mensaje..." rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        cards: `
+            <div class="content-header">
+                <h2>🃏 Cards</h2>
+                <p>Componentes de tarjetas</p>
+            </div>
+            
+            <div class="section">
+                <h3>🎨 Tipos de Cards</h3>
+                <div class="demo-group">
+                    <div class="card">
+                        <div class="card-header">Card Básico</div>
+                        <div class="card-content">Este es un card básico con contenido simple.</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">Card con Acciones</div>
+                        <div class="card-content">Card con botones de acción.</div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Acción 1</button>
+                            <button class="btn btn-outline btn-sm">Acción 2</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">Card con Usuario</div>
+                        <div class="card-content">
+                            <strong>Juan Pérez</strong><br>
+                            Email: juan@ejemplo.com<br>
+                            Rol: Administrador
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Editar</button>
+                            <button class="btn btn-error btn-sm">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    };
+    
+    return contentMap[sectionId] || '<p>Contenido no disponible</p>';
 }
 
-function showSection(sectionId) {
+// Show section with comparison
+async function showSection(sectionId) {
     // Hide all sections
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(section => {
@@ -70,272 +204,282 @@ function showSection(sectionId) {
     if (targetSection) {
         targetSection.classList.add('active');
         currentSection = sectionId;
-    }
-}
-
-function updatePageTitle(title) {
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-        pageTitle.textContent = title;
-    }
-}
-
-function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    
-    if (sidebar) {
-        sidebar.classList.toggle('open');
-    }
-    
-    if (mainContent) {
-        mainContent.classList.toggle('sidebar-open');
-    }
-}
-
-function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    applyTheme(currentTheme);
-    
-    // Update theme button
-    const themeButton = document.querySelector('.header-actions .btn');
-    if (themeButton) {
-        themeButton.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-    }
-}
-
-function applyTheme(theme) {
-    document.body.className = theme;
-    
-    if (theme === 'dark') {
-        document.body.style.backgroundColor = '#1f2937';
-        document.body.style.color = '#f9fafb';
-    } else {
-        document.body.style.backgroundColor = '#f5f5f5';
-        document.body.style.color = '#333';
-    }
-}
-
-function setupColorCopy() {
-    const colorItems = document.querySelectorAll('.color-item');
-    colorItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const colorHex = this.getAttribute('data-color');
-            copyToClipboard(colorHex);
-            
-            // Visual feedback
-            this.classList.add('copied');
+        
+        // Load content
+        const content = await loadSectionContent(sectionId);
+        targetSection.innerHTML = content;
+        
+        // Add comparison if it's a supported section
+        if (['colors', 'buttons', 'inputs', 'cards'].includes(sectionId)) {
             setTimeout(() => {
-                this.classList.remove('copied');
-            }, 300);
+                addComparison(sectionId);
+            }, 100);
+        }
+    }
+}
+
+// Add comparison to section
+function addComparison(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    
+    // Check if comparison already exists
+    if (section.querySelector('.theme-comparison')) return;
+    
+    const comparisonHTML = getComparisonHTML(sectionId);
+    if (comparisonHTML) {
+        section.insertAdjacentHTML('beforeend', comparisonHTML);
+    }
+}
+
+// Get comparison HTML
+function getComparisonHTML(sectionId) {
+    const comparisons = {
+        colors: `
+            <div class="theme-comparison">
+                <div class="theme-section light">
+                    <div class="theme-label">☀️ Modo Claro</div>
+                    <h4>Colores en Modo Claro</h4>
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch brand-primary"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#10B981">
+                            <div class="color-swatch semantic-success"></div>
+                            <div class="color-info">
+                                <span class="color-name">Success</span>
+                                <span class="color-hex">#10B981</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#EF4444">
+                            <div class="color-swatch semantic-error"></div>
+                            <div class="color-info">
+                                <span class="color-name">Error</span>
+                                <span class="color-hex">#EF4444</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#F59E0B">
+                            <div class="color-swatch semantic-warning"></div>
+                            <div class="color-info">
+                                <span class="color-name">Warning</span>
+                                <span class="color-hex">#F59E0B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theme-section dark">
+                    <div class="theme-label">🌙 Modo Oscuro</div>
+                    <h4>Colores en Modo Oscuro</h4>
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch brand-primary"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#10B981">
+                            <div class="color-swatch semantic-success"></div>
+                            <div class="color-info">
+                                <span class="color-name">Success</span>
+                                <span class="color-hex">#10B981</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#EF4444">
+                            <div class="color-swatch semantic-error"></div>
+                            <div class="color-info">
+                                <span class="color-name">Error</span>
+                                <span class="color-hex">#EF4444</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#F59E0B">
+                            <div class="color-swatch semantic-warning"></div>
+                            <div class="color-info">
+                                <span class="color-name">Warning</span>
+                                <span class="color-hex">#F59E0B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        buttons: `
+            <div class="theme-comparison">
+                <div class="theme-section light">
+                    <div class="theme-label">☀️ Modo Claro</div>
+                    <h4>Botones en Modo Claro</h4>
+                    <div class="demo-items">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-error">Error</button>
+                        <button class="btn btn-outline">Outline</button>
+                        <button class="btn btn-ghost">Ghost</button>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h5>Tamaños</h5>
+                        <div class="demo-items">
+                            <button class="btn btn-primary btn-sm">Small</button>
+                            <button class="btn btn-primary">Medium</button>
+                            <button class="btn btn-primary btn-lg">Large</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theme-section dark">
+                    <div class="theme-label">🌙 Modo Oscuro</div>
+                    <h4>Botones en Modo Oscuro</h4>
+                    <div class="demo-items">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-error">Error</button>
+                        <button class="btn btn-outline">Outline</button>
+                        <button class="btn btn-ghost">Ghost</button>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h5>Tamaños</h5>
+                        <div class="demo-items">
+                            <button class="btn btn-primary btn-sm">Small</button>
+                            <button class="btn btn-primary">Medium</button>
+                            <button class="btn btn-primary btn-lg">Large</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        inputs: `
+            <div class="theme-comparison">
+                <div class="theme-section light">
+                    <div class="theme-label">☀️ Modo Claro</div>
+                    <h4>Inputs en Modo Claro</h4>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input Normal</label>
+                        <input type="text" class="input" placeholder="Escribe algo aquí...">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input con Foco</label>
+                        <input type="text" class="input" placeholder="Input con foco" style="border-color: #3B82F6;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input Exitoso</label>
+                        <input type="text" class="input input-success" placeholder="Input exitoso" value="Correcto">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input con Error</label>
+                        <input type="text" class="input input-error" placeholder="Input con error" value="Error">
+                    </div>
+                </div>
+                
+                <div class="theme-section dark">
+                    <div class="theme-label">🌙 Modo Oscuro</div>
+                    <h4>Inputs en Modo Oscuro</h4>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input Normal</label>
+                        <input type="text" class="input" placeholder="Escribe algo aquí...">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input con Foco</label>
+                        <input type="text" class="input" placeholder="Input con foco" style="border-color: #60a5fa;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input Exitoso</label>
+                        <input type="text" class="input input-success" placeholder="Input exitoso" value="Correcto">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Input con Error</label>
+                        <input type="text" class="input input-error" placeholder="Input con error" value="Error">
+                    </div>
+                </div>
+            </div>
+        `,
+        
+        cards: `
+            <div class="theme-comparison">
+                <div class="theme-section light">
+                    <div class="theme-label">☀️ Modo Claro</div>
+                    <h4>Cards en Modo Claro</h4>
+                    <div class="card" style="margin-bottom: 15px;">
+                        <div class="card-header">Card Básico</div>
+                        <div class="card-content">Este es un card básico en modo claro. Tiene un fondo blanco y texto oscuro.</div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Acción 1</button>
+                            <button class="btn btn-outline btn-sm">Acción 2</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theme-section dark">
+                    <div class="theme-label">🌙 Modo Oscuro</div>
+                    <h4>Cards en Modo Oscuro</h4>
+                    <div class="card" style="margin-bottom: 15px;">
+                        <div class="card-header">Card Básico</div>
+                        <div class="card-content">Este es un card básico en modo oscuro. Tiene un fondo oscuro y texto claro.</div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Acción 1</button>
+                            <button class="btn btn-outline btn-sm">Acción 2</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    };
+    
+    return comparisons[sectionId] || '';
+}
+
+// Setup navigation
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
             
-            showAlert(`Color ${colorHex} copiado al portapapeles!`);
+            // Remove active class from all links
+            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Add active class to clicked link
+            link.classList.add('active');
+            
+            // Get section ID from href
+            const sectionId = link.getAttribute('href').substring(1);
+            showSection(sectionId);
         });
     });
 }
 
-function copyToClipboard(text) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text);
-    } else {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-    }
-}
-
-function showAlert(message, type = 'info') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type}`;
-    alertDiv.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; font-size: 18px; cursor: pointer;">×</button>
-    `;
-    
-    alertDiv.style.position = 'fixed';
-    alertDiv.style.top = '20px';
-    alertDiv.style.right = '20px';
-    alertDiv.style.zIndex = '1001';
-    alertDiv.style.minWidth = '300px';
-    alertDiv.style.maxWidth = '400px';
-    
-    document.body.appendChild(alertDiv);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (alertDiv.parentElement) {
-            alertDiv.remove();
-        }
-    }, 5000);
-}
-
-function openModal(type = 'default') {
-    const modal = document.getElementById('modalOverlay');
-    const title = document.getElementById('modalTitle');
-    const content = document.getElementById('modalContent');
-    
-    if (!modal || !title || !content) return;
-    
-    switch (type) {
-        case 'confirm':
-            title.textContent = 'Confirmar Acción';
-            content.innerHTML = `
-                <p>¿Estás seguro de que quieres realizar esta acción?</p>
-                <p style="color: #6b7280; font-size: 0.9rem;">Esta operación no se puede deshacer.</p>
-            `;
-            break;
-        case 'form':
-            title.textContent = 'Formulario de Ejemplo';
-            content.innerHTML = `
-                <form>
-                    <div class="form-group">
-                        <label for="name">Nombre:</label>
-                        <input type="text" id="name" class="input" placeholder="Ingresa tu nombre">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" class="input" placeholder="Ingresa tu email">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Mensaje:</label>
-                        <textarea id="message" class="input" rows="4" placeholder="Escribe tu mensaje"></textarea>
-                    </div>
-                </form>
-            `;
-            break;
-        default:
-            title.textContent = 'Modal de Ejemplo';
-            content.innerHTML = `
-                <p>Este es un modal de ejemplo. Puedes cerrarlo haciendo clic en la X o en Cancelar.</p>
-                <p style="color: #6b7280; font-size: 0.9rem;">Los modales son útiles para mostrar información adicional o solicitar confirmación del usuario.</p>
-            `;
-    }
-    
-    modal.style.display = 'flex';
-}
-
-function closeModal() {
-    const modal = document.getElementById('modalOverlay');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-function exportDesignSystem() {
-    const exportData = {
-        colors: getColorData(),
-        typography: getTypographyData(),
-        spacing: getSpacingData(),
-        components: getComponentData(),
-        exportDate: new Date().toISOString(),
-        version: '1.0.0'
-    };
-    
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(dataBlob);
-    link.download = 'design-system-export.json';
-    link.click();
-    
-    showAlert('Sistema de diseño exportado exitosamente!', 'success');
-}
-
-function getColorData() {
-    const colors = {};
+// Setup color copy functionality
+function setupColorCopy() {
     const colorItems = document.querySelectorAll('.color-item');
     
     colorItems.forEach(item => {
-        const name = item.querySelector('.color-name').textContent;
-        const hex = item.getAttribute('data-color');
-        colors[name] = hex;
+        item.addEventListener('click', () => {
+            const color = item.getAttribute('data-color');
+            navigator.clipboard.writeText(color).then(() => {
+                // Show feedback
+                const originalText = item.querySelector('.color-hex').textContent;
+                item.querySelector('.color-hex').textContent = '¡Copiado!';
+                setTimeout(() => {
+                    item.querySelector('.color-hex').textContent = originalText;
+                }, 1000);
+            });
+        });
     });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setupNavigation();
+    setupColorCopy();
     
-    return colors;
-}
-
-function getTypographyData() {
-    return {
-        fontFamily: {
-            primary: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-            serif: 'Georgia, "Times New Roman", serif',
-            mono: '"Monaco", "Menlo", "Ubuntu Mono", monospace'
-        },
-        fontSize: {
-            xs: '0.75rem',
-            sm: '0.875rem',
-            base: '1rem',
-            lg: '1.125rem',
-            xl: '1.25rem',
-            '2xl': '1.5rem',
-            '3xl': '1.875rem',
-            '4xl': '2.25rem'
-        },
-        fontWeight: {
-            light: 300,
-            normal: 400,
-            medium: 500,
-            semibold: 600,
-            bold: 700,
-            extrabold: 800
-        }
-    };
-}
-
-function getSpacingData() {
-    return {
-        xs: '4px',
-        sm: '8px',
-        md: '16px',
-        lg: '24px',
-        xl: '32px',
-        '2xl': '48px'
-    };
-}
-
-function getComponentData() {
-    return {
-        buttons: {
-            variants: ['primary', 'secondary', 'success', 'error', 'outline', 'ghost'],
-            sizes: ['sm', 'md', 'lg']
-        },
-        inputs: {
-            types: ['text', 'email', 'password', 'textarea', 'select'],
-            states: ['default', 'focus', 'error', 'success', 'disabled']
-        },
-        cards: {
-            variants: ['default', 'interactive', 'with-actions']
-        }
-    };
-}
-
-// Utility functions
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function throttle(func, limit) {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
+    // Show initial section
+    showSection('colors');
+});
