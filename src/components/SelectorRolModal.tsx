@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useTheme } from '../contexts/ThemeContext';
 import { useRol } from '../contexts/RolContext';
 import { Modal, Button, Typography, Card } from '../components/ui';
-import { AdministradorIcon, InvestigadorIcon, ReclutadorIcon } from '../components/icons';
+import { AdministradorIcon, InvestigadorIcon, ReclutadorIcon } from '../components/login-icons';
 
 interface SelectorRolModalProps {
   roles: Array<{ id: string; nombre: string }>;
