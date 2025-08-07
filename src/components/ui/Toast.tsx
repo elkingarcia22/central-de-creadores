@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckIcon, CloseIcon, AlertTriangleIcon, InfoIcon } from '../icons';
+import { CheckIcon, CloseIcon, AlertTriangleIcon, InfoIcon } from './toast-icons';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
