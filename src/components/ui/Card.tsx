@@ -16,13 +16,13 @@ const Card: React.FC<CardProps> = ({
   const getVariantStyles = () => {
     switch (variant) {
       case 'elevated':
-        return 'bg-card text-card-foreground shadow-lg border border-border';
+        return 'bg-card shadow-lg border border-border';
       case 'outlined':
-        return 'bg-card text-card-foreground border border-border';
+        return 'bg-card border border-border';
       case 'filled':
-        return 'bg-muted text-muted-foreground';
+        return 'bg-muted';
       default:
-        return 'bg-card text-card-foreground shadow-lg border border-border';
+        return 'bg-card shadow-lg border border-border';
     }
   };
 

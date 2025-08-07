@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Colores semánticos ADICIONALES (no sobrescriben los estándar)
+        // Colores semánticos del sistema de diseño
         background: 'rgb(var(--background))',
         foreground: 'rgb(var(--foreground))',
         
@@ -34,7 +34,6 @@ module.exports = {
         destructive: {
           DEFAULT: 'rgb(var(--destructive))',
           foreground: 'rgb(var(--destructive-foreground))',
-          hover: 'rgb(var(--destructive-hover))',
         },
         
         success: {
@@ -48,6 +47,7 @@ module.exports = {
         },
         
         input: 'rgb(var(--input))',
+        'input-solid': 'rgb(var(--input-solid))',
         border: 'rgb(var(--border))',
         ring: 'rgb(var(--ring))',
         
@@ -59,11 +59,6 @@ module.exports = {
         accent: {
           DEFAULT: 'rgb(var(--accent))',
           foreground: 'rgb(var(--accent-foreground))',
-        },
-        
-        title: {
-          DEFAULT: 'rgb(var(--title))',
-          foreground: 'rgb(var(--title-foreground))',
         },
       },
       fontFamily: {
