@@ -3,53 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Diseño - Central de Creadores</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/colors.css">
-    <link rel="stylesheet" href="css/typography.css">
-    <link rel="stylesheet" href="css/spacing.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/themes.css">
-    <link rel="stylesheet" href="css/dark-mode-fix.css">
+    <title>Sistema de Diseño - Comparación Lado a Lado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3B82F6;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav button {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .nav button:hover {
+            background: #e0e0e0;
+        }
+
+        .nav button.active {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .theme-section {
+            padding: 2rem;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+
+        .light-theme {
+            background: white;
+            color: #333;
+            border-color: #e0e0e0;
+        }
+
+        .dark-theme {
+            background: #1f2937;
+            color: #f9fafb;
+            border-color: #374151;
+        }
+
+        .theme-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .demo-grid {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+        }
+
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-error {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #3B82F6;
+            border: 2px solid #3B82F6;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #6B7280;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .dark-theme .card {
+            background: #374151;
+            border-color: #4B5563;
+            color: #f9fafb;
+        }
+
+        .dark-theme .btn-primary {
+            background: #60A5FA;
+        }
+
+        .dark-theme .btn-secondary {
+            background: #9CA3AF;
+        }
+
+        .dark-theme .input {
+            background: #374151;
+            border-color: #4B5563;
+            color: #f9fafb;
+        }
+
+        .dark-theme .input:focus {
+            border-color: #60A5FA;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .color-item {
+            text-align: center;
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin: 0 auto 0.5rem;
+            border: 2px solid #e0e0e0;
+        }
+
+        .color-primary { background: #3B82F6; }
+        .color-success { background: #10B981; }
+        .color-error { background: #EF4444; }
+        .color-warning { background: #F59E0B; }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
-<body data-theme="light">
+<body>
     <header class="header">
-        <div class="logo">Central de Creadores DS</div>
-        <div class="theme-toggle">
-            <button id="theme-toggle-light" class="theme-button active">☀️ Claro</button>
-            <button id="theme-toggle-dark" class="theme-button">🌙 Oscuro</button>
-        </div>
-    </header>
-    
-    <aside class="sidebar">
-        <nav class="nav-menu">
-            <ul>
-                <li><a href="#colors" data-section="colors">🌈 Colores</a></li>
-                <li><a href="#typography" data-section="typography">📝 Tipografía</a></li>
-                <li><a href="#spacing" data-section="spacing">📏 Espaciado</a></li>
-                <li><a href="#shadows" data-section="shadows">🌫️ Sombras</a></li>
-                <li><a href="#buttons" data-section="buttons">🔘 Botones</a></li>
-                <li><a href="#inputs" data-section="inputs">📝 Inputs</a></li>
-                <li><a href="#cards" data-section="cards">🃏 Cards</a></li>
-                <li><a href="#modals" data-section="modals">🪟 Modales</a></li>
-                <li><a href="#alerts" data-section="alerts">⚠️ Alertas</a></li>
-                <li><a href="#badges" data-section="badges">🏷️ Badges</a></li>
-                <li><a href="#progress" data-section="progress">📊 Progreso</a></li>
-                <li><a href="#switches" data-section="switches">🔘 Switches</a></li>
-                <li><a href="#playground" data-section="playground">🎮 Playground</a></li>
-                <li><a href="#generator" data-section="generator">⚙️ Generador</a></li>
-                <li><a href="#export" data-section="export">📤 Exportar</a></li>
-            </ul>
+        <div class="logo">🎨 Sistema de Diseño - Comparación Lado a Lado</div>
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showSection('colors')">🌈 Colores</button>
+            <button class="nav-btn" onclick="showSection('buttons')">🔘 Botones</button>
+            <button class="nav-btn" onclick="showSection('inputs')">📝 Inputs</button>
+            <button class="nav-btn" onclick="showSection('cards')">🃏 Cards</button>
         </nav>
-    </aside>
-    
-    <main class="main-content">
-        <!-- Content sections will be loaded here by JavaScript -->
+    </header>
+
+    <main class="main">
+        <div id="content">
+            <!-- El contenido se cargará aquí -->
+        </div>
     </main>
 
-    <script src="js/main.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/playground.js"></script>
-    <script src="js/themes.js"></script>
+    <script>
+        function showSection(section) {
+            // Actualizar botones activos
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Cargar contenido
+            const content = getSectionContent(section);
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function getSectionContent(section) {
+            const sections = {
+                colors: `
+                    <h2 class="section-title">🌈 Comparación de Colores</h2>
+                    <div class="comparison">
+                        <div class="theme-section light-theme">
+                            <div class="theme-label">☀️ Modo Claro</div>
+                            <div class="color-grid">
+                                <div class="color-item">
+                                    <div class="color-swatch color-primary"></div>
+                                    <div>Primary</div>
+                                    <small>#3B82F6</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-success"></div>
+                                    <div>Success</div>
+                                    <small>#10B981</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-error"></div>
+                                    <div>Error</div>
+                                    <small>#EF4444</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-warning"></div>
+                                    <div>Warning</div>
+                                    <small>#F59E0B</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-section dark-theme">
+                            <div class="theme-label">🌙 Modo Oscuro</div>
+                            <div class="color-grid">
+                                <div class="color-item">
+                                    <div class="color-swatch color-primary"></div>
+                                    <div>Primary</div>
+                                    <small>#3B82F6</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-success"></div>
+                                    <div>Success</div>
+                                    <small>#10B981</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-error"></div>
+                                    <div>Error</div>
+                                    <small>#EF4444</small>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch color-warning"></div>
+                                    <div>Warning</div>
+                                    <small>#F59E0B</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                
+                buttons: `
+                    <h2 class="section-title">🔘 Comparación de Botones</h2>
+                    <div class="comparison">
+                        <div class="theme-section light-theme">
+                            <div class="theme-label">☀️ Modo Claro</div>
+                            <div class="demo-grid">
+                                <button class="btn btn-primary">Primary</button>
+                                <button class="btn btn-secondary">Secondary</button>
+                                <button class="btn btn-success">Success</button>
+                                <button class="btn btn-error">Error</button>
+                                <button class="btn btn-outline">Outline</button>
+                                <button class="btn btn-ghost">Ghost</button>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-section dark-theme">
+                            <div class="theme-label">🌙 Modo Oscuro</div>
+                            <div class="demo-grid">
+                                <button class="btn btn-primary">Primary</button>
+                                <button class="btn btn-secondary">Secondary</button>
+                                <button class="btn btn-success">Success</button>
+                                <button class="btn btn-error">Error</button>
+                                <button class="btn btn-outline">Outline</button>
+                                <button class="btn btn-ghost">Ghost</button>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                
+                inputs: `
+                    <h2 class="section-title">📝 Comparación de Inputs</h2>
+                    <div class="comparison">
+                        <div class="theme-section light-theme">
+                            <div class="theme-label">☀️ Modo Claro</div>
+                            <div class="demo-grid">
+                                <input type="text" class="input" placeholder="Input normal">
+                                <input type="email" class="input" placeholder="Input email">
+                                <input type="password" class="input" placeholder="Input password">
+                                <textarea class="input" placeholder="Textarea" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-section dark-theme">
+                            <div class="theme-label">🌙 Modo Oscuro</div>
+                            <div class="demo-grid">
+                                <input type="text" class="input" placeholder="Input normal">
+                                <input type="email" class="input" placeholder="Input email">
+                                <input type="password" class="input" placeholder="Input password">
+                                <textarea class="input" placeholder="Textarea" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                
+                cards: `
+                    <h2 class="section-title">🃏 Comparación de Cards</h2>
+                    <div class="comparison">
+                        <div class="theme-section light-theme">
+                            <div class="theme-label">☀️ Modo Claro</div>
+                            <div class="card">
+                                <h3>Card Básico</h3>
+                                <p>Este es un card en modo claro. Tiene fondo blanco y texto oscuro.</p>
+                                <button class="btn btn-primary">Acción</button>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-section dark-theme">
+                            <div class="theme-label">🌙 Modo Oscuro</div>
+                            <div class="card">
+                                <h3>Card Básico</h3>
+                                <p>Este es un card en modo oscuro. Tiene fondo oscuro y texto claro.</p>
+                                <button class="btn btn-primary">Acción</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return sections[section] || '<p>Sección no encontrada</p>';
+        }
+
+        // Cargar sección inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('colors');
+        });
+    </script>
 </body>
 </html>
