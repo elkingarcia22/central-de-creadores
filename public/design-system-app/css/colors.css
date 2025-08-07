@@ -1,0 +1,204 @@
+/* Colors CSS */
+
+.color-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.color-category {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.color-category h4 {
+    font-size: 1.3rem;
+    color: #1f2937;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.color-item {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.color-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-swatch {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    position: relative;
+}
+
+.color-info {
+    padding: 15px;
+    background: white;
+}
+
+.color-name {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #1f2937;
+}
+
+.color-hex {
+    font-family: monospace;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Brand Colors */
+.brand-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+/* Semantic Colors */
+.semantic-success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.semantic-error {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.semantic-warning {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.semantic-info {
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+/* Neutral Colors */
+.neutral-white {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 1px solid #E5E7EB;
+}
+
+.neutral-black {
+    background-color: #000000;
+}
+
+.neutral-gray-50 {
+    background-color: #F9FAFB;
+    color: #000000;
+    border: 1px solid #E5E7EB;
+}
+
+.neutral-gray-100 {
+    background-color: #F3F4F6;
+    color: #000000;
+    border: 1px solid #E5E7EB;
+}
+
+.neutral-gray-200 {
+    background-color: #E5E7EB;
+    color: #000000;
+    border: 1px solid #D1D5DB;
+}
+
+.neutral-gray-300 {
+    background-color: #D1D5DB;
+    color: #000000;
+    border: 1px solid #9CA3AF;
+}
+
+.neutral-gray-400 {
+    background-color: #9CA3AF;
+}
+
+.neutral-gray-500 {
+    background-color: #6B7280;
+}
+
+.neutral-gray-600 {
+    background-color: #4B5563;
+}
+
+.neutral-gray-700 {
+    background-color: #374151;
+}
+
+.neutral-gray-800 {
+    background-color: #1F2937;
+}
+
+.neutral-gray-900 {
+    background-color: #111827;
+}
+
+/* Color Copy Feedback */
+.color-item.copied {
+    animation: colorCopied 0.3s ease;
+}
+
+@keyframes colorCopied {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Color Usage Examples */
+.color-usage {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.color-usage h5 {
+    font-size: 1.1rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+
+.usage-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.usage-example {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.usage-example.primary {
+    border-left-color: #3B82F6;
+}
+
+.usage-example.success {
+    border-left-color: #10B981;
+}
+
+.usage-example.error {
+    border-left-color: #EF4444;
+}
+
+.usage-example.warning {
+    border-left-color: #F59E0B;
+}

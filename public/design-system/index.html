@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Diseño - Central de Creadores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .color-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .color-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .color-swatch {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+        }
+
+        .color-info {
+            padding: 15px;
+            background: white;
+        }
+
+        .color-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .color-hex {
+            font-family: monospace;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .component-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+        }
+
+        .component-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .component-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .brand-colors {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        }
+
+        .semantic-colors {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+
+        .neutral-colors {
+            background: linear-gradient(135deg, #6B7280 0%, #374151 100%);
+        }
+
+        .error-colors {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        .warning-colors {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+
+        .info-colors {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        }
+
+        .white-text {
+            color: white !important;
+        }
+
+        .black-text {
+            color: black !important;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .colors-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Sistema de Diseño</h1>
+            <p>Central de Creadores - Paleta de Colores y Componentes</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="section">
+            <h2>📊 Estadísticas del Sistema</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">17</div>
+                    <div class="stat-label">Colores del Sistema</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Componentes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">37</div>
+                    <div class="stat-label">Componentes de UI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">13</div>
+                    <div class="stat-label">Componentes Especializados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colores del Sistema -->
+        <div class="section">
+            <h2>🌈 Paleta de Colores</h2>
+            
+            <h3 style="margin: 20px 0 15px 0; color: #2d3748;">Brand Colors</h3>
+            <div class="colors-grid">
+                <div class="color-card">
+                    <div class="color-swatch brand-colors">Primary</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary</div>
+                        <div class="color-hex">#3B82F6</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Color principal de la marca</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0 15px 0; color: #2d3748;">Semantic Colors</h3>
+            <div class="colors-grid">
+                <div class="color-card">
+                    <div class="color-swatch semantic-colors">Success</div>
+                    <div class="color-info">
+                        <div class="color-name">Success</div>
+                        <div class="color-hex">#10B981</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Para acciones exitosas</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch error-colors">Error</div>
+                    <div class="color-info">
+                        <div class="color-name">Error</div>
+                        <div class="color-hex">#EF4444</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Para errores y alertas</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch warning-colors">Warning</div>
+                    <div class="color-info">
+                        <div class="color-name">Warning</div>
+                        <div class="color-hex">#F59E0B</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Para advertencias</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch info-colors">Info</div>
+                    <div class="color-info">
+                        <div class="color-name">Info</div>
+                        <div class="color-hex">#3B82F6</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Para información</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0 15px 0; color: #2d3748;">Neutral Colors</h3>
+            <div class="colors-grid">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #FFFFFF; color: #000000;">White</div>
+                    <div class="color-info">
+                        <div class="color-name">White</div>
+                        <div class="color-hex">#FFFFFF</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Color blanco</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #000000;">Black</div>
+                    <div class="color-info">
+                        <div class="color-name">Black</div>
+                        <div class="color-hex">#000000</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Color negro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #F9FAFB; color: #000000;">Gray 50</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 50</div>
+                        <div class="color-hex">#F9FAFB</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris muy claro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #F3F4F6; color: #000000;">Gray 100</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 100</div>
+                        <div class="color-hex">#F3F4F6</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris claro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #E5E7EB; color: #000000;">Gray 200</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 200</div>
+                        <div class="color-hex">#E5E7EB</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris medio claro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #D1D5DB; color: #000000;">Gray 300</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 300</div>
+                        <div class="color-hex">#D1D5DB</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris medio</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #9CA3AF;">Gray 400</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 400</div>
+                        <div class="color-hex">#9CA3AF</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris medio oscuro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #6B7280;">Gray 500</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 500</div>
+                        <div class="color-hex">#6B7280</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris oscuro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #4B5563;">Gray 600</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 600</div>
+                        <div class="color-hex">#4B5563</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris muy oscuro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #374151;">Gray 700</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 700</div>
+                        <div class="color-hex">#374151</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris casi negro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #1F2937;">Gray 800</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 800</div>
+                        <div class="color-hex">#1F2937</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris negro claro</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: #111827;">Gray 900</div>
+                    <div class="color-info">
+                        <div class="color-name">Gray 900</div>
+                        <div class="color-hex">#111827</div>
+                        <div style="font-size: 12px; color: #888; margin-top: 5px;">Gris negro</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Componentes del Sistema -->
+        <div class="section">
+            <h2>🧩 Componentes del Sistema</h2>
+            <div class="components-grid">
+                <div class="component-card">
+                    <div class="component-title">🎨 UI Components (37)</div>
+                    <div class="component-description">Componentes básicos de interfaz</div>
+                    <ul style="font-size: 14px; color: #666; line-height: 1.8;">
+                        <li>Button, Input, Select, Textarea</li>
+                        <li>Card, Modal, Toast, Badge</li>
+                        <li>Chip, ProgressBar, Tooltip</li>
+                        <li>DataTable, UserAvatar, UserSelector</li>
+                        <li>FilterBar, ActionsMenu, NavigationItem</li>
+                        <li>Sidebar, TopNavigation, MobileNavigation</li>
+                        <li>Layout, Typography, EmptyState</li>
+                        <li>MultiSelect, DatePicker, Slider</li>
+                        <li>Tabs, ConfirmModal, InlineEdit</li>
+                        <li>MetricCard, DonutChart, GroupedActions</li>
+                        <li>FilterDrawer, UserMenu, RolSelector</li>
+                        <li>DepartamentoSelector, LinkModal, SideModal</li>
+                    </ul>
+                </div>
+                
+                <div class="component-card">
+                    <div class="component-title">🔧 Specialized Components (13)</div>
+                    <div class="component-description">Componentes especializados para la plataforma</div>
+                    <ul style="font-size: 14px; color: #666; line-height: 1.8;">
+                        <li>AgregarParticipanteModal</li>
+                        <li>CrearParticipanteFriendFamilyModal</li>
+                        <li>CrearParticipanteExternoModal</li>
+                        <li>CrearParticipanteInternoModal</li>
+                        <li>CrearReclutamientoModal</li>
+                        <li>ConvertirSeguimientoModal</li>
+                        <li>EditarReclutamientoModal</li>
+                        <li>AsignarAgendamientoModal</li>
+                        <li>SeguimientoModal</li>
+                        <li>InlineUserSelect</li>
+                        <li>EditarResponsableAgendamientoModal</li>
+                        <li>ToastContainer, SimpleAvatar</li>
+                        <li>UserSelectorWithAvatar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Sistema -->
+        <div class="section">
+            <h2>📋 Información del Sistema</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">🎯 Colores Semánticos</h3>
+                    <ul style="font-size: 14px; color: #666; line-height: 1.8;">
+                        <li><strong>Primary:</strong> Color principal de la marca</li>
+                        <li><strong>Success:</strong> Para acciones exitosas y confirmaciones</li>
+                        <li><strong>Error:</strong> Para errores y alertas críticas</li>
+                        <li><strong>Warning:</strong> Para advertencias y alertas</li>
+                        <li><strong>Info:</strong> Para información y notificaciones</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">🎨 Escala de Grises</h3>
+                    <ul style="font-size: 14px; color: #666; line-height: 1.8;">
+                        <li><strong>50-200:</strong> Fondos y elementos sutiles</li>
+                        <li><strong>300-500:</strong> Bordes y elementos medios</li>
+                        <li><strong>600-900:</strong> Textos y elementos importantes</li>
+                        <li><strong>White/Black:</strong> Contraste máximo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Agregar interactividad
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hacer las tarjetas de colores interactivas
+            const colorCards = document.querySelectorAll('.color-card');
+            colorCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const colorHex = this.querySelector('.color-hex').textContent;
+                    navigator.clipboard.writeText(colorHex).then(() => {
+                        // Mostrar feedback visual
+                        const originalBackground = this.style.background;
+                        this.style.background = '#10B981';
+                        this.style.transform = 'scale(1.05)';
+                        
+                        setTimeout(() => {
+                            this.style.background = originalBackground;
+                            this.style.transform = '';
+                        }, 200);
+                    });
+                });
+                
+                card.style.cursor = 'pointer';
+            });
+
+            // Agregar tooltip
+            colorCards.forEach(card => {
+                card.title = 'Click para copiar el código de color';
+            });
+        });
+    </script>
+</body>
+</html>
