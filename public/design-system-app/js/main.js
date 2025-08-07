@@ -1,8 +1,9 @@
-// Main JavaScript - Fixed Version
+// Main JavaScript - Simple and Working Version
+
 let currentSection = 'colors';
 
 // Load section content
-async function loadSectionContent(sectionId) {
+function loadSectionContent(sectionId) {
     const contentMap = {
         colors: `
             <div class="content-header">
@@ -72,6 +73,79 @@ async function loadSectionContent(sectionId) {
                     </div>
                 </div>
             </div>
+            
+            <!-- COMPARACIÓN LADO A LADO -->
+            <div class="theme-comparison">
+                <div class="theme-section light">
+                    <div class="theme-label">☀️ Modo Claro</div>
+                    <h4>Colores en Modo Claro</h4>
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch brand-primary"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#10B981">
+                            <div class="color-swatch semantic-success"></div>
+                            <div class="color-info">
+                                <span class="color-name">Success</span>
+                                <span class="color-hex">#10B981</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#EF4444">
+                            <div class="color-swatch semantic-error"></div>
+                            <div class="color-info">
+                                <span class="color-name">Error</span>
+                                <span class="color-hex">#EF4444</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#F59E0B">
+                            <div class="color-swatch semantic-warning"></div>
+                            <div class="color-info">
+                                <span class="color-name">Warning</span>
+                                <span class="color-hex">#F59E0B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theme-section dark">
+                    <div class="theme-label">�� Modo Oscuro</div>
+                    <h4>Colores en Modo Oscuro</h4>
+                    <div class="color-grid">
+                        <div class="color-item" data-color="#3B82F6">
+                            <div class="color-swatch brand-primary"></div>
+                            <div class="color-info">
+                                <span class="color-name">Primary</span>
+                                <span class="color-hex">#3B82F6</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#10B981">
+                            <div class="color-swatch semantic-success"></div>
+                            <div class="color-info">
+                                <span class="color-name">Success</span>
+                                <span class="color-hex">#10B981</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#EF4444">
+                            <div class="color-swatch semantic-error"></div>
+                            <div class="color-info">
+                                <span class="color-name">Error</span>
+                                <span class="color-hex">#EF4444</span>
+                            </div>
+                        </div>
+                        <div class="color-item" data-color="#F59E0B">
+                            <div class="color-swatch semantic-warning"></div>
+                            <div class="color-info">
+                                <span class="color-name">Warning</span>
+                                <span class="color-hex">#F59E0B</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `,
         
         buttons: `
@@ -110,206 +184,8 @@ async function loadSectionContent(sectionId) {
                     </div>
                 </div>
             </div>
-        `,
-        
-        inputs: `
-            <div class="content-header">
-                <h2>📝 Inputs</h2>
-                <p>Componentes de entrada de datos</p>
-            </div>
             
-            <div class="section">
-                <h3>📋 Tipos de Input</h3>
-                <div class="demo-group">
-                    <div class="demo-items">
-                        <input type="text" class="input" placeholder="Input de texto">
-                        <input type="email" class="input" placeholder="Input de email">
-                        <input type="password" class="input" placeholder="Input de contraseña">
-                        <input type="number" class="input" placeholder="Input numérico">
-                    </div>
-                </div>
-                
-                <h3>🎯 Estados</h3>
-                <div class="demo-group">
-                    <div class="demo-items">
-                        <input type="text" class="input" placeholder="Normal">
-                        <input type="text" class="input input-success" placeholder="Exitoso" value="Correcto">
-                        <input type="text" class="input input-error" placeholder="Con error" value="Error">
-                        <input type="text" class="input" placeholder="Deshabilitado" disabled>
-                    </div>
-                </div>
-                
-                <h3>📝 Textarea</h3>
-                <div class="demo-group">
-                    <div class="demo-items">
-                        <textarea class="input" placeholder="Escribe un mensaje..." rows="3"></textarea>
-                    </div>
-                </div>
-            </div>
-        `,
-        
-        cards: `
-            <div class="content-header">
-                <h2>🃏 Cards</h2>
-                <p>Componentes de tarjetas</p>
-            </div>
-            
-            <div class="section">
-                <h3>🎨 Tipos de Cards</h3>
-                <div class="demo-group">
-                    <div class="card">
-                        <div class="card-header">Card Básico</div>
-                        <div class="card-content">Este es un card básico con contenido simple.</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">Card con Acciones</div>
-                        <div class="card-content">Card con botones de acción.</div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary btn-sm">Acción 1</button>
-                            <button class="btn btn-outline btn-sm">Acción 2</button>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">Card con Usuario</div>
-                        <div class="card-content">
-                            <strong>Juan Pérez</strong><br>
-                            Email: juan@ejemplo.com<br>
-                            Rol: Administrador
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary btn-sm">Editar</button>
-                            <button class="btn btn-error btn-sm">Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `
-    };
-    
-    return contentMap[sectionId] || '<p>Contenido no disponible</p>';
-}
-
-// Show section with comparison
-async function showSection(sectionId) {
-    // Hide all sections
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    // Show target section
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-        targetSection.classList.add('active');
-        currentSection = sectionId;
-        
-        // Load content
-        const content = await loadSectionContent(sectionId);
-        targetSection.innerHTML = content;
-        
-        // Add comparison if it's a supported section
-        if (['colors', 'buttons', 'inputs', 'cards'].includes(sectionId)) {
-            setTimeout(() => {
-                addComparison(sectionId);
-            }, 100);
-        }
-    }
-}
-
-// Add comparison to section
-function addComparison(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (!section) return;
-    
-    // Check if comparison already exists
-    if (section.querySelector('.theme-comparison')) return;
-    
-    const comparisonHTML = getComparisonHTML(sectionId);
-    if (comparisonHTML) {
-        section.insertAdjacentHTML('beforeend', comparisonHTML);
-    }
-}
-
-// Get comparison HTML
-function getComparisonHTML(sectionId) {
-    const comparisons = {
-        colors: `
-            <div class="theme-comparison">
-                <div class="theme-section light">
-                    <div class="theme-label">☀️ Modo Claro</div>
-                    <h4>Colores en Modo Claro</h4>
-                    <div class="color-grid">
-                        <div class="color-item" data-color="#3B82F6">
-                            <div class="color-swatch brand-primary"></div>
-                            <div class="color-info">
-                                <span class="color-name">Primary</span>
-                                <span class="color-hex">#3B82F6</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#10B981">
-                            <div class="color-swatch semantic-success"></div>
-                            <div class="color-info">
-                                <span class="color-name">Success</span>
-                                <span class="color-hex">#10B981</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#EF4444">
-                            <div class="color-swatch semantic-error"></div>
-                            <div class="color-info">
-                                <span class="color-name">Error</span>
-                                <span class="color-hex">#EF4444</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#F59E0B">
-                            <div class="color-swatch semantic-warning"></div>
-                            <div class="color-info">
-                                <span class="color-name">Warning</span>
-                                <span class="color-hex">#F59E0B</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="theme-section dark">
-                    <div class="theme-label">🌙 Modo Oscuro</div>
-                    <h4>Colores en Modo Oscuro</h4>
-                    <div class="color-grid">
-                        <div class="color-item" data-color="#3B82F6">
-                            <div class="color-swatch brand-primary"></div>
-                            <div class="color-info">
-                                <span class="color-name">Primary</span>
-                                <span class="color-hex">#3B82F6</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#10B981">
-                            <div class="color-swatch semantic-success"></div>
-                            <div class="color-info">
-                                <span class="color-name">Success</span>
-                                <span class="color-hex">#10B981</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#EF4444">
-                            <div class="color-swatch semantic-error"></div>
-                            <div class="color-info">
-                                <span class="color-name">Error</span>
-                                <span class="color-hex">#EF4444</span>
-                            </div>
-                        </div>
-                        <div class="color-item" data-color="#F59E0B">
-                            <div class="color-swatch semantic-warning"></div>
-                            <div class="color-info">
-                                <span class="color-name">Warning</span>
-                                <span class="color-hex">#F59E0B</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `,
-        
-        buttons: `
+            <!-- COMPARACIÓN LADO A LADO -->
             <div class="theme-comparison">
                 <div class="theme-section light">
                     <div class="theme-label">☀️ Modo Claro</div>
@@ -356,6 +232,41 @@ function getComparisonHTML(sectionId) {
         `,
         
         inputs: `
+            <div class="content-header">
+                <h2>📝 Inputs</h2>
+                <p>Componentes de entrada de datos</p>
+            </div>
+            
+            <div class="section">
+                <h3>📋 Tipos de Input</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <input type="text" class="input" placeholder="Input de texto">
+                        <input type="email" class="input" placeholder="Input de email">
+                        <input type="password" class="input" placeholder="Input de contraseña">
+                        <input type="number" class="input" placeholder="Input numérico">
+                    </div>
+                </div>
+                
+                <h3>🎯 Estados</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <input type="text" class="input" placeholder="Normal">
+                        <input type="text" class="input input-success" placeholder="Exitoso" value="Correcto">
+                        <input type="text" class="input input-error" placeholder="Con error" value="Error">
+                        <input type="text" class="input" placeholder="Deshabilitado" disabled>
+                    </div>
+                </div>
+                
+                <h3>📝 Textarea</h3>
+                <div class="demo-group">
+                    <div class="demo-items">
+                        <textarea class="input" placeholder="Escribe un mensaje..." rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COMPARACIÓN LADO A LADO -->
             <div class="theme-comparison">
                 <div class="theme-section light">
                     <div class="theme-label">☀️ Modo Claro</div>
@@ -402,6 +313,44 @@ function getComparisonHTML(sectionId) {
         `,
         
         cards: `
+            <div class="content-header">
+                <h2>🃏 Cards</h2>
+                <p>Componentes de tarjetas</p>
+            </div>
+            
+            <div class="section">
+                <h3>🎨 Tipos de Cards</h3>
+                <div class="demo-group">
+                    <div class="card">
+                        <div class="card-header">Card Básico</div>
+                        <div class="card-content">Este es un card básico con contenido simple.</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">Card con Acciones</div>
+                        <div class="card-content">Card con botones de acción.</div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Acción 1</button>
+                            <button class="btn btn-outline btn-sm">Acción 2</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">Card con Usuario</div>
+                        <div class="card-content">
+                            <strong>Juan Pérez</strong><br>
+                            Email: juan@ejemplo.com<br>
+                            Rol: Administrador
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-sm">Editar</button>
+                            <button class="btn btn-error btn-sm">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COMPARACIÓN LADO A LADO -->
             <div class="theme-comparison">
                 <div class="theme-section light">
                     <div class="theme-label">☀️ Modo Claro</div>
@@ -432,7 +381,29 @@ function getComparisonHTML(sectionId) {
         `
     };
     
-    return comparisons[sectionId] || '';
+    return contentMap[sectionId] || '<p>Contenido no disponible</p>';
+}
+
+// Show section
+function showSection(sectionId) {
+    currentSection = sectionId;
+    
+    // Update active nav item
+    const navItems = document.querySelectorAll('.nav-menu a');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('data-section') === sectionId) {
+            item.classList.add('active');
+        }
+    });
+    
+    // Load and display content
+    const mainContent = document.querySelector('.main-content');
+    const content = loadSectionContent(sectionId);
+    mainContent.innerHTML = content;
+    
+    // Setup color copy functionality
+    setupColorCopy();
 }
 
 // Setup navigation
@@ -442,15 +413,7 @@ function setupNavigation() {
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            // Remove active class from all links
-            navLinks.forEach(l => l.classList.remove('active'));
-            
-            // Add active class to clicked link
-            link.classList.add('active');
-            
-            // Get section ID from href
-            const sectionId = link.getAttribute('href').substring(1);
+            const sectionId = link.getAttribute('data-section');
             showSection(sectionId);
         });
     });
@@ -478,8 +441,5 @@ function setupColorCopy() {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     setupNavigation();
-    setupColorCopy();
-    
-    // Show initial section
     showSection('colors');
 });
