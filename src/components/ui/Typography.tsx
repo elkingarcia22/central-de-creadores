@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 export interface TypographyProps {
   children: React.ReactNode;
@@ -21,23 +20,21 @@ const Typography: React.FC<TypographyProps> = ({
   as,
   ...props
 }) => {
-  const { theme } = useTheme();
-
   const baseClasses = 'transition-colors duration-200';
   
   const variantClasses = {
-    h1: 'text-2xl md:text-3xl lg:text-4xl',
-    h2: 'text-xl md:text-2xl lg:text-3xl',
-    h3: 'text-lg md:text-xl lg:text-2xl',
-    h4: 'text-base md:text-lg lg:text-xl',
-    h5: 'text-base md:text-lg',
-    h6: 'text-sm md:text-base',
-    subtitle1: 'text-base md:text-lg',
-    subtitle2: 'text-sm md:text-base',
-    body1: 'text-base',
-    body2: 'text-sm',
-    caption: 'text-xs',
-    overline: 'text-xs uppercase tracking-wider'
+    h1: 'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl',
+    h2: 'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0',
+    h3: 'scroll-m-20 text-2xl font-semibold tracking-tight',
+    h4: 'scroll-m-20 text-xl font-semibold tracking-tight',
+    h5: 'scroll-m-20 text-lg font-semibold tracking-tight',
+    h6: 'scroll-m-20 text-base font-semibold tracking-tight',
+    subtitle1: 'text-lg font-medium leading-6',
+    subtitle2: 'text-base font-medium leading-6',
+    body1: 'leading-7 [&:not(:first-child)]:mt-6',
+    body2: 'text-sm leading-6',
+    caption: 'text-sm font-medium leading-none',
+    overline: 'text-sm font-medium uppercase tracking-wide'
   };
 
   const weightClasses = {
@@ -64,7 +61,7 @@ const Typography: React.FC<TypographyProps> = ({
     danger: 'text-destructive',
     info: 'text-primary',
     default: 'text-foreground',
-    title: 'text-title'
+    title: 'text-foreground'
   };
 
   const classes = [
@@ -137,4 +134,4 @@ export const Overline: React.FC<Omit<TypographyProps, 'variant'>> = (props) => (
   <Typography variant="overline" {...props} />
 );
 
-export default Typography; 
+export default Typography;

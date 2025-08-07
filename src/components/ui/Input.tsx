@@ -1,6 +1,4 @@
 import React, { forwardRef } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { ClockIcon } from '../icons';
 
 export interface InputProps {
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'datetime-local' | 'time';
@@ -66,85 +64,63 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   step,
   ...props
 }, ref) => {
-  const { theme } = useTheme();
-
-  // Clases base con eliminación de spinners para inputs number
-  const baseClasses = `
-    block w-full rounded-lg border transition-colors duration-200 
-    focus:outline-none focus:ring-2 focus:ring-offset-0 
-    disabled:opacity-50 disabled:cursor-not-allowed 
-    hover:bg-accent/50 input-autofill-fix input-consistent
-    ${type === 'number' ? 'input-no-spinners' : ''}
-  `.replace(/\s+/g, ' ').trim();
+  const baseClasses = 'flex w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
   
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm min-h-[36px]',
-    md: 'px-4 py-2 text-sm min-h-[44px]',
-    lg: 'px-4 py-3 text-base min-h-[52px]'
+    sm: 'h-8 text-xs',
+    md: 'h-10 text-sm',
+    lg: 'h-12 text-base'
   };
 
   const variantClasses = {
-    default: 'bg-input-solid border-border text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-ring',
-    error: 'bg-input-solid border-destructive text-foreground placeholder:text-muted-foreground focus:border-destructive focus:ring-destructive',
-    success: 'bg-input-solid border-success text-foreground placeholder:text-muted-foreground focus:border-success focus:ring-success'
+    default: 'border-input focus:border-ring',
+    error: 'border-destructive focus:border-destructive focus:ring-destructive',
+    success: 'border-success focus:border-success focus:ring-success'
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
+  const iconPadding = icon ? (iconPosition === 'left' ? 'pl-10' : 'pr-10') : '';
   
-  // Para inputs de tipo time, no usar ícono personalizado para evitar conflictos
-  const timeIcon = null; // Removido para evitar conflictos con controles nativos
-  const finalIcon = icon || timeIcon;
-  const finalIconPosition = iconPosition;
-  const iconPadding = finalIcon ? (finalIconPosition === 'left' ? 'pl-10' : 'pr-10') : '';
-
   const inputClasses = [
     baseClasses,
     sizeClasses[size],
-    variantClasses[error ? 'error' : variant],
+    variantClasses[variant],
     widthClass,
     iconPadding,
-    // Estilos específicos para inputs de tiempo
-    type === 'time' ? 'time-input-styles' : '',
     className
   ].filter(Boolean).join(' ');
 
-  const iconClasses = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
+  const containerClasses = `relative ${fullWidth ? 'w-full' : ''}`;
 
   return (
-    <div className={`${fullWidth ? 'w-full' : ''}`}>
+    <div className={containerClasses}>
       {label && (
-        <label 
-          htmlFor={id || name} 
-          className="block text-sm font-medium text-foreground mb-0.5"
-        >
+        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block">
           {label}
-          {required && <span className="text-destructive ml-1">*</span>}
         </label>
       )}
       
       <div className="relative">
-        {finalIcon && finalIconPosition === 'left' && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-            <span className={iconClasses}>
-              {finalIcon}
-            </span>
+        {icon && iconPosition === 'left' && (
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+            {icon}
           </div>
         )}
         
         <input
           ref={ref}
           type={type}
-          id={id || name}
-          name={name}
+          placeholder={placeholder}
           value={value}
           defaultValue={defaultValue}
-          placeholder={placeholder}
           onChange={onChange}
           onBlur={onBlur}
           onFocus={onFocus}
           disabled={disabled}
           readOnly={readOnly}
           required={required}
+          name={name}
+          id={id}
           autoComplete={autoComplete}
           maxLength={maxLength}
           minLength={minLength}
@@ -154,34 +130,23 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           step={step}
           className={inputClasses}
           {...props}
-          // Debug para inputs de tiempo
-          {...(type === 'time' && {
-            'data-debug': 'time-input',
-            'data-disabled': disabled,
-            'data-value': value,
-            'data-readonly': readOnly
-          })}
         />
         
-        {finalIcon && finalIconPosition === 'right' && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-muted-foreground z-10">
-            <span className={iconClasses}>
-              {finalIcon}
-            </span>
+        {icon && iconPosition === 'right' && (
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+            {icon}
           </div>
         )}
+        
         {endAdornment && (
-          <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
             {endAdornment}
           </div>
         )}
       </div>
       
       {(helperText || error) && (
-        <p className={`text-sm mt-0.5 ${error 
-          ? 'text-destructive'
-          : 'text-muted-foreground'
-        }`}>
+        <p className={`text-xs mt-1 ${error ? 'text-destructive' : 'text-muted-foreground'}`}>
           {error || helperText}
         </p>
       )}
@@ -191,4 +156,4 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
 
 Input.displayName = 'Input';
 
-export default Input; 
+export default Input;
