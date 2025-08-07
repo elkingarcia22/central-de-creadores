@@ -21,10 +21,6 @@ const preview = {
           name: 'dark',
           value: '#1a1a1a',
         },
-        {
-          name: 'gray',
-          value: '#f5f5f5',
-        },
       ],
     },
     viewport: {
@@ -50,12 +46,6 @@ const preview = {
             height: '800px',
           },
         },
-      },
-    },
-    docs: {
-      toc: true,
-      source: {
-        state: 'open',
       },
     },
   },

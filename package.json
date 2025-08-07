@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.0.10",
@@ -28,7 +30,26 @@
     "typescript": "^5.0.0"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^4.1.0",
+    "@storybook/addon-a11y": "^7.6.17",
+    "@storybook/addon-backgrounds": "^7.6.17",
+    "@storybook/addon-controls": "^7.6.17",
+    "@storybook/addon-docs": "^7.6.17",
+    "@storybook/addon-essentials": "^7.6.17",
+    "@storybook/addon-interactions": "^7.6.17",
+    "@storybook/addon-links": "^7.6.17",
+    "@storybook/addon-measure": "^7.6.17",
+    "@storybook/addon-onboarding": "^9.1.1",
+    "@storybook/addon-outline": "^7.6.17",
+    "@storybook/addon-viewport": "^7.6.17",
+    "@storybook/blocks": "^7.6.17",
+    "@storybook/nextjs": "^7.6.17",
+    "@storybook/react": "^7.6.17",
+    "@storybook/react-vite": "^7.6.20",
+    "@storybook/testing-library": "^0.2.2",
     "eslint": "^8.0.0",
-    "eslint-config-next": "^13.0.0"
+    "eslint-config-next": "^13.0.0",
+    "eslint-plugin-storybook": "^9.1.1",
+    "storybook": "^9.1.1"
   }
 }

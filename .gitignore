@@ -126,3 +126,5 @@ temp-*.sql
 # Archivos de configuración local de Supabase
 supabase/.env*
 supabase/config.toml.local
+*storybook.log
+storybook-static
