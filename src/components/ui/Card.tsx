@@ -1,51 +1,57 @@
 import React from 'react';
 
+// Función cn simple para combinar clases
+const cn = (...classes: (string | undefined | null | boolean)[]) => {
+  return classes.filter(Boolean).join(' ');
+};
+
 interface CardProps {
   children: React.ReactNode;
-  variant?: 'elevated' | 'outlined' | 'filled';
-  padding?: 'sm' | 'md' | 'lg' | 'xl';
+  variant?: 'default' | 'elevated' | 'outlined';
   className?: string;
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  onClick?: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ 
-  children, 
-  variant = 'elevated', 
+const Card: React.FC<CardProps> = ({
+  children,
+  variant = 'default',
+  className = '',
   padding = 'md',
-  className = ''
+  onClick
 }) => {
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'elevated':
-        return 'bg-card shadow-lg border border-border';
-      case 'outlined':
-        return 'bg-card border border-border';
-      case 'filled':
-        return 'bg-muted';
-      default:
-        return 'bg-card shadow-lg border border-border';
-    }
+  const baseClasses = 'rounded-lg transition-colors';
+  
+  const variantClasses = {
+    default: 'bg-card text-card-foreground border border-slate-200 dark:border-slate-700',
+    elevated: 'bg-card text-card-foreground shadow-md',
+    outlined: 'bg-background border border-slate-200 dark:border-slate-700 text-foreground'
   };
-
-  const getPaddingStyles = () => {
-    switch (padding) {
-      case 'sm':
-        return 'p-3';
-      case 'md':
-        return 'p-4';
-      case 'lg':
-        return 'p-6';
-      case 'xl':
-        return 'p-8';
-      default:
-        return 'p-4';
-    }
+  
+  const paddingClasses = {
+    none: '',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6'
   };
-
+  
+  const clickableClass = onClick ? 'cursor-pointer hover:bg-accent/50' : '';
+  
   return (
-    <div className={`rounded-lg ${getVariantStyles()} ${getPaddingStyles()} ${className}`}>
+    <div
+      className={cn(
+        baseClasses,
+        variantClasses[variant],
+        paddingClasses[padding],
+        clickableClass,
+        className
+      )}
+      onClick={onClick}
+    >
       {children}
     </div>
   );
 };
 
 export default Card;
+export type { CardProps };
