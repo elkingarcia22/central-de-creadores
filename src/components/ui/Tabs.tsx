@@ -53,25 +53,25 @@ export const Tabs: React.FC<TabsProps> = ({
 
   const variantClasses = {
     default: {
-      container: 'border-b border-border',
+      container: 'border-b border-gray-200',
       tab: `transition-all duration-200 font-medium ${sizeClasses[size]}`,
-      active: 'text-primary border-b-2 border-primary',
-      inactive: 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border',
-      disabled: 'text-muted-foreground/50 cursor-not-allowed'
+      active: 'text-blue-500 border-b-2 border-blue-500',
+      inactive: 'text-gray-500 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300',
+      disabled: 'text-gray-400 cursor-not-allowed'
     },
     pills: {
-      container: 'bg-muted-solid rounded-lg p-1',
+      container: 'bg-gray-100 rounded-lg p-1',
       tab: `transition-all duration-200 font-medium rounded-md ${sizeClasses[size]}`,
-      active: 'text-primary-foreground bg-primary shadow-sm',
-      inactive: 'text-muted-foreground hover:text-foreground hover:bg-accent',
-      disabled: 'text-muted-foreground/50 cursor-not-allowed'
+      active: 'text-white bg-blue-500 shadow-sm',
+      inactive: 'text-gray-600 hover:text-gray-900 hover:bg-gray-200',
+      disabled: 'text-gray-400 cursor-not-allowed'
     },
     underline: {
       container: '',
       tab: `transition-all duration-200 font-medium relative ${sizeClasses[size]}`,
-      active: 'text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary',
-      inactive: 'text-muted-foreground hover:text-foreground',
-      disabled: 'text-muted-foreground/50 cursor-not-allowed'
+      active: 'text-blue-500 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-500',
+      inactive: 'text-gray-500 hover:text-gray-900',
+      disabled: 'text-gray-400 cursor-not-allowed'
     }
   };
 
@@ -102,7 +102,7 @@ export const Tabs: React.FC<TabsProps> = ({
               )}
               <span className={fullWidth ? '' : 'whitespace-nowrap'}>{tab.label}</span>
               {tab.badge && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full min-w-[16px] h-4 flex items-center justify-center">
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center">
                   {tab.badge}
                 </span>
               )}
@@ -119,4 +119,4 @@ export const Tabs: React.FC<TabsProps> = ({
   );
 };
 
-export default Tabs; 
+export default Tabs;

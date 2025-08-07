@@ -54,14 +54,14 @@ const Typography: React.FC<TypographyProps> = ({
   };
 
   const colorClasses = {
-    primary: 'text-primary',
-    secondary: 'text-muted-foreground',
-    success: 'text-success',
-    warning: 'text-warning',
-    danger: 'text-destructive',
-    info: 'text-primary',
-    default: 'text-foreground',
-    title: 'text-foreground'
+    primary: 'text-blue-500',
+    secondary: 'text-gray-500',
+    success: 'text-green-600',
+    warning: 'text-yellow-500',
+    danger: 'text-red-600',
+    info: 'text-blue-500',
+    default: 'text-gray-900',
+    title: 'text-gray-900'
   };
 
   const classes = [
