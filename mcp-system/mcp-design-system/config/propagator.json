@@ -1,0 +1,153 @@
+{
+  "token_mapping": {
+    "colors": {
+      "primary": {
+        "value": "rgb(12 91 239)",
+        "classes": ["bg-blue-500", "text-blue-500", "border-blue-500"],
+        "variables": ["--primary"]
+      },
+      "primary_hover": {
+        "value": "rgb(29 78 216)",
+        "classes": ["hover:bg-blue-600", "hover:text-blue-600", "hover:border-blue-600"],
+        "variables": ["--primary-hover"]
+      },
+      "secondary": {
+        "value": "rgb(226 232 240)",
+        "classes": ["bg-gray-200", "text-gray-200", "border-gray-200"],
+        "variables": ["--secondary"]
+      },
+      "destructive": {
+        "value": "rgb(220 38 38)",
+        "classes": ["bg-red-500", "text-red-500", "border-red-500"],
+        "variables": ["--destructive"]
+      },
+      "success": {
+        "value": "rgb(22 163 74)",
+        "classes": ["bg-green-600", "text-green-600", "border-green-600"],
+        "variables": ["--success"]
+      },
+      "warning": {
+        "value": "rgb(234 179 8)",
+        "classes": ["bg-yellow-500", "text-yellow-500", "border-yellow-500"],
+        "variables": ["--warning"]
+      }
+    },
+    "typography": {
+      "font_family": {
+        "value": "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
+        "classes": ["font-sans"],
+        "variables": ["--font-family"]
+      },
+      "font_size": {
+        "xs": {
+          "value": "0.75rem",
+          "classes": ["text-xs"],
+          "variables": ["--text-xs"]
+        },
+        "sm": {
+          "value": "0.875rem",
+          "classes": ["text-sm"],
+          "variables": ["--text-sm"]
+        },
+        "base": {
+          "value": "1rem",
+          "classes": ["text-base"],
+          "variables": ["--text-base"]
+        },
+        "lg": {
+          "value": "1.125rem",
+          "classes": ["text-lg"],
+          "variables": ["--text-lg"]
+        },
+        "xl": {
+          "value": "1.25rem",
+          "classes": ["text-xl"],
+          "variables": ["--text-xl"]
+        },
+        "2xl": {
+          "value": "1.5rem",
+          "classes": ["text-2xl"],
+          "variables": ["--text-2xl"]
+        },
+        "3xl": {
+          "value": "1.875rem",
+          "classes": ["text-3xl"],
+          "variables": ["--text-3xl"]
+        },
+        "4xl": {
+          "value": "2.25rem",
+          "classes": ["text-4xl"],
+          "variables": ["--text-4xl"]
+        },
+        "5xl": {
+          "value": "3rem",
+          "classes": ["text-5xl"],
+          "variables": ["--text-5xl"]
+        }
+      }
+    },
+    "spacing": {
+      "0": {
+        "value": "0px",
+        "classes": ["p-0", "m-0", "gap-0"],
+        "variables": ["--spacing-0"]
+      },
+      "px": {
+        "value": "1px",
+        "classes": ["p-px", "m-px", "gap-px"],
+        "variables": ["--spacing-px"]
+      },
+      "0.5": {
+        "value": "0.125rem",
+        "classes": ["p-0.5", "m-0.5", "gap-0.5"],
+        "variables": ["--spacing-0.5"]
+      },
+      "1": {
+        "value": "0.25rem",
+        "classes": ["p-1", "m-1", "gap-1"],
+        "variables": ["--spacing-1"]
+      },
+      "1.5": {
+        "value": "0.375rem",
+        "classes": ["p-1.5", "m-1.5", "gap-1.5"],
+        "variables": ["--spacing-1.5"]
+      },
+      "2": {
+        "value": "0.5rem",
+        "classes": ["p-2", "m-2", "gap-2"],
+        "variables": ["--spacing-2"]
+      },
+      "2.5": {
+        "value": "0.625rem",
+        "classes": ["p-2.5", "m-2.5", "gap-2.5"],
+        "variables": ["--spacing-2.5"]
+      },
+      "3": {
+        "value": "0.75rem",
+        "classes": ["p-3", "m-3", "gap-3"],
+        "variables": ["--spacing-3"]
+      },
+      "3.5": {
+        "value": "0.875rem",
+        "classes": ["p-3.5", "m-3.5", "gap-3.5"],
+        "variables": ["--spacing-3.5"]
+      },
+      "4": {
+        "value": "1rem",
+        "classes": ["p-4", "m-4", "gap-4"],
+        "variables": ["--spacing-4"]
+      }
+    }
+  },
+  "file_patterns": {
+    "components": ["src/components/**/*.tsx", "src/components/**/*.jsx"],
+    "styles": ["src/styles/**/*.css", "src/styles/**/*.scss"],
+    "stories": ["src/stories/**/*.stories.tsx", "src/stories/**/*.stories.jsx"]
+  },
+  "propagation": {
+    "auto_update": true,
+    "update_dependencies": true,
+    "update_stories": true,
+    "backup_files": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "analysis_types": {
+    "accessibility": {
+      "rules": ["check_aria_labels", "check_color_contrast", "check_keyboard_navigation"],
+      "severity": "high"
+    },
+    "performance": {
+      "rules": ["check_bundle_size", "check_render_optimization", "check_memoization"],
+      "severity": "medium"
+    },
+    "design": {
+      "rules": ["check_design_tokens", "check_consistency", "check_responsive_design"],
+      "severity": "high"
+    }
+  },
+  "suggestions": {
+    "accessibility": {
+      "missing_aria_label": "Agregar aria-label para mejorar accesibilidad",
+      "low_contrast": "Mejorar contraste de colores para cumplir WCAG"
+    },
+    "performance": {
+      "unnecessary_render": "Optimizar re-renders usando React.memo",
+      "missing_memo": "Agregar memoización para props costosas"
+    },
+    "design": {
+      "hardcoded_colors": "Usar design tokens en lugar de colores hardcodeados",
+      "inconsistent_spacing": "Usar escala de espaciado consistente"
+    }
+  }
+}

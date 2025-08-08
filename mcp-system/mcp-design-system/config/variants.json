@@ -1,0 +1,138 @@
+{
+  "variant_types": {
+    "size": {
+      "options": ["xs", "sm", "md", "lg", "xl"],
+      "properties": {
+        "padding": {
+          "xs": "px-2 py-1",
+          "sm": "px-3 py-1.5",
+          "md": "px-4 py-2",
+          "lg": "px-6 py-3",
+          "xl": "px-8 py-4"
+        },
+        "font_size": {
+          "xs": "text-xs",
+          "sm": "text-sm",
+          "md": "text-base",
+          "lg": "text-lg",
+          "xl": "text-xl"
+        },
+        "icon_size": {
+          "xs": "w-3 h-3",
+          "sm": "w-4 h-4",
+          "md": "w-5 h-5",
+          "lg": "w-6 h-6",
+          "xl": "w-7 h-7"
+        }
+      }
+    },
+    "color": {
+      "options": ["primary", "secondary", "success", "warning", "danger"],
+      "properties": {
+        "background": {
+          "primary": "bg-blue-500 hover:bg-blue-600",
+          "secondary": "bg-gray-500 hover:bg-gray-600",
+          "success": "bg-green-600 hover:bg-green-700",
+          "warning": "bg-yellow-500 hover:bg-yellow-600",
+          "danger": "bg-red-500 hover:bg-red-600"
+        },
+        "text": {
+          "primary": "text-white",
+          "secondary": "text-white",
+          "success": "text-white",
+          "warning": "text-black",
+          "danger": "text-white"
+        },
+        "border": {
+          "primary": "border-blue-500",
+          "secondary": "border-gray-500",
+          "success": "border-green-600",
+          "warning": "border-yellow-500",
+          "danger": "border-red-500"
+        }
+      }
+    },
+    "state": {
+      "options": ["default", "hover", "active", "disabled", "loading"],
+      "properties": {
+        "opacity": {
+          "default": "opacity-100",
+          "hover": "hover:opacity-90",
+          "active": "active:opacity-80",
+          "disabled": "opacity-50",
+          "loading": "opacity-70"
+        },
+        "cursor": {
+          "default": "cursor-pointer",
+          "hover": "cursor-pointer",
+          "active": "cursor-pointer",
+          "disabled": "cursor-not-allowed",
+          "loading": "cursor-wait"
+        },
+        "transform": {
+          "default": "",
+          "hover": "hover:scale-105",
+          "active": "active:scale-95",
+          "disabled": "",
+          "loading": ""
+        }
+      }
+    },
+    "theme": {
+      "options": ["light", "dark"],
+      "properties": {
+        "background": {
+          "light": {
+            "primary": "bg-blue-500",
+            "secondary": "bg-gray-500"
+          },
+          "dark": {
+            "primary": "bg-blue-400",
+            "secondary": "bg-gray-600"
+          }
+        },
+        "text": {
+          "light": {
+            "primary": "text-white",
+            "secondary": "text-white"
+          },
+          "dark": {
+            "primary": "text-gray-900",
+            "secondary": "text-white"
+          }
+        }
+      }
+    }
+  },
+  "component_variants": {
+    "Button": {
+      "types": ["size", "color", "state"],
+      "default_props": {
+        "size": "md",
+        "color": "primary",
+        "state": "default"
+      }
+    },
+    "Input": {
+      "types": ["size", "state"],
+      "default_props": {
+        "size": "md",
+        "state": "default"
+      }
+    },
+    "Card": {
+      "types": ["size", "theme"],
+      "default_props": {
+        "size": "md",
+        "theme": "light"
+      }
+    },
+    "Typography": {
+      "types": ["size", "color"],
+      "default_props": {
+        "size": "base",
+        "color": "primary"
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "version": "7.0",
+  "addons": [
+    "@storybook/addon-essentials",
+    "@storybook/addon-a11y",
+    "@storybook/addon-interactions",
+    "@storybook/addon-links",
+    "@storybook/addon-styling",
+    "@storybook/addon-themes"
+  ],
+  "framework": {
+    "name": "@storybook/nextjs",
+    "options": {}
+  },
+  "stories": [
+    "../src/components/**/*.stories.@(js|jsx|ts|tsx)",
+    "../src/stories/**/*.stories.@(js|jsx|ts|tsx)"
+  ],
+  "staticDirs": ["../public"],
+  "features": {
+    "emotionAlias": false,
+    "interactionsDebugger": true
+  },
+  "docs": {
+    "autodocs": true,
+    "defaultName": "Documentation"
+  },
+  "typescript": {
+    "reactDocgen": "react-docgen-typescript",
+    "reactDocgenTypescriptOptions": {
+      "compilerOptions": {
+        "allowSyntheticDefaultImports": false,
+        "esModuleInterop": false
+      },
+      "propFilter": {
+        "skipPropsWithoutDoc": false
+      }
+    }
+  },
+  "core": {
+    "builder": "@storybook/builder-webpack5"
+  },
+  "webpackFinal": {
+    "resolve": {
+      "alias": {
+        "@": "../src"
+      }
+    }
+  },
+  "theme": {
+    "base": "light",
+    "brandTitle": "Central de Creadores Design System",
+    "brandUrl": "/",
+    "brandImage": "/logo.png",
+    "brandTarget": "_self",
+    "colorPrimary": "#0C5BEF",
+    "colorSecondary": "#E2E8F0",
+    "appBg": "#F1F5F9",
+    "appContentBg": "#FFFFFF",
+    "appBorderColor": "#E2E8F0",
+    "appBorderRadius": 4,
+    "fontBase": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    "fontCode": "Monaco, 'Courier New', monospace",
+    "textColor": "#0F172A",
+    "textInverseColor": "#FFFFFF",
+    "textMutedColor": "#64748B",
+    "barTextColor": "#0F172A",
+    "barSelectedColor": "#0C5BEF",
+    "barBg": "#FFFFFF",
+    "inputBg": "#FFFFFF",
+    "inputBorder": "#E2E8F0",
+    "inputTextColor": "#0F172A",
+    "inputBorderRadius": 4
+  }
+}
