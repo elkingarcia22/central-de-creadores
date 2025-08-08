@@ -1,0 +1,82 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: 'class',
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Colores semánticos del sistema de diseño
+        background: 'rgb(var(--background))',
+        foreground: 'rgb(var(--foreground))',
+        
+        card: 'rgb(var(--card))',
+        'card-foreground': 'rgb(var(--card-foreground))',
+        
+        primary: {
+          DEFAULT: 'rgb(var(--primary))',
+          foreground: 'rgb(var(--primary-foreground))',
+        },
+        
+        secondary: {
+          DEFAULT: 'rgb(var(--secondary))',
+          foreground: 'rgb(var(--secondary-foreground))',
+        },
+        
+        muted: {
+          DEFAULT: 'rgb(var(--muted))',
+          foreground: 'rgb(var(--muted-foreground))',
+        },
+        
+        destructive: {
+          DEFAULT: 'rgb(var(--destructive))',
+          foreground: 'rgb(var(--destructive-foreground))',
+        },
+        
+        success: {
+          DEFAULT: 'rgb(var(--success))',
+          foreground: 'rgb(var(--success-foreground))',
+        },
+        
+        warning: {
+          DEFAULT: 'rgb(var(--warning))',
+          foreground: 'rgb(var(--warning-foreground))',
+        },
+        
+        input: 'rgb(var(--input))',
+        'input-solid': 'rgb(var(--input-solid))',
+        border: 'rgb(var(--border))',
+        ring: 'rgb(var(--ring))',
+        
+        popover: {
+          DEFAULT: 'rgb(var(--popover))',
+          foreground: 'rgb(var(--popover-foreground))',
+        },
+        
+        accent: {
+          DEFAULT: 'rgb(var(--accent))',
+          foreground: 'rgb(var(--accent-foreground))',
+        },
+        
+        title: {
+          DEFAULT: 'rgb(var(--title))',
+          foreground: 'rgb(var(--title-foreground))',
+        },
+      },
+      fontFamily: {
+        sans: [
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif'
+        ]
+      }
+    },
+  },
+  plugins: [],
+}

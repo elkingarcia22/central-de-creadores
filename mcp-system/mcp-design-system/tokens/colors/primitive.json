@@ -1,0 +1,125 @@
+{
+  "color": {
+    "primitive": {
+      "blue": {
+        "50": { "value": "239 246 255", "type": "color" },
+        "100": { "value": "219 234 254", "type": "color" },
+        "200": { "value": "191 219 254", "type": "color" },
+        "300": { "value": "147 197 253", "type": "color" },
+        "400": { "value": "96 165 250", "type": "color" },
+        "500": { "value": "59 130 246", "type": "color" },
+        "600": { "value": "37 99 235", "type": "color" },
+        "700": { "value": "29 78 216", "type": "color" },
+        "800": { "value": "30 64 175", "type": "color" },
+        "900": { "value": "30 58 138", "type": "color" },
+        "950": { "value": "23 37 84", "type": "color" }
+      },
+      "gray": {
+        "50": { "value": "249 250 251", "type": "color" },
+        "100": { "value": "243 244 246", "type": "color" },
+        "200": { "value": "229 231 235", "type": "color" },
+        "300": { "value": "209 213 219", "type": "color" },
+        "400": { "value": "156 163 175", "type": "color" },
+        "500": { "value": "107 114 128", "type": "color" },
+        "600": { "value": "75 85 99", "type": "color" },
+        "700": { "value": "55 65 81", "type": "color" },
+        "800": { "value": "31 41 55", "type": "color" },
+        "900": { "value": "17 24 39", "type": "color" },
+        "950": { "value": "3 7 18", "type": "color" }
+      },
+      "zinc": {
+        "50": { "value": "250 250 250", "type": "color" },
+        "100": { "value": "244 244 245", "type": "color" },
+        "200": { "value": "228 228 231", "type": "color" },
+        "300": { "value": "212 212 216", "type": "color" },
+        "400": { "value": "161 161 170", "type": "color" },
+        "500": { "value": "113 113 122", "type": "color" },
+        "600": { "value": "82 82 91", "type": "color" },
+        "700": { "value": "63 63 70", "type": "color" },
+        "800": { "value": "39 39 42", "type": "color" },
+        "900": { "value": "24 24 27", "type": "color" },
+        "950": { "value": "9 9 11", "type": "color" }
+      },
+      "slate": {
+        "50": { "value": "248 250 252", "type": "color" },
+        "100": { "value": "241 245 249", "type": "color" },
+        "200": { "value": "226 232 240", "type": "color" },
+        "300": { "value": "203 213 225", "type": "color" },
+        "400": { "value": "148 163 184", "type": "color" },
+        "500": { "value": "100 116 139", "type": "color" },
+        "600": { "value": "71 85 105", "type": "color" },
+        "700": { "value": "51 65 85", "type": "color" },
+        "800": { "value": "30 41 59", "type": "color" },
+        "900": { "value": "15 23 42", "type": "color" },
+        "950": { "value": "2 6 23", "type": "color" }
+      },
+      "red": {
+        "50": { "value": "254 242 242", "type": "color" },
+        "100": { "value": "254 226 226", "type": "color" },
+        "200": { "value": "254 202 202", "type": "color" },
+        "300": { "value": "252 165 165", "type": "color" },
+        "400": { "value": "248 113 113", "type": "color" },
+        "500": { "value": "239 68 68", "type": "color" },
+        "600": { "value": "220 38 38", "type": "color" },
+        "700": { "value": "185 28 28", "type": "color" },
+        "800": { "value": "153 27 27", "type": "color" },
+        "900": { "value": "127 29 29", "type": "color" },
+        "950": { "value": "69 10 10", "type": "color" }
+      },
+      "green": {
+        "50": { "value": "240 253 244", "type": "color" },
+        "100": { "value": "220 252 231", "type": "color" },
+        "200": { "value": "187 247 208", "type": "color" },
+        "300": { "value": "134 239 172", "type": "color" },
+        "400": { "value": "74 222 128", "type": "color" },
+        "500": { "value": "34 197 94", "type": "color" },
+        "600": { "value": "22 163 74", "type": "color" },
+        "700": { "value": "21 128 61", "type": "color" },
+        "800": { "value": "22 101 52", "type": "color" },
+        "900": { "value": "20 83 45", "type": "color" },
+        "950": { "value": "5 46 22", "type": "color" }
+      },
+      "yellow": {
+        "50": { "value": "254 252 232", "type": "color" },
+        "100": { "value": "254 249 195", "type": "color" },
+        "200": { "value": "254 240 138", "type": "color" },
+        "300": { "value": "253 224 71", "type": "color" },
+        "400": { "value": "250 204 21", "type": "color" },
+        "500": { "value": "234 179 8", "type": "color" },
+        "600": { "value": "202 138 4", "type": "color" },
+        "700": { "value": "161 98 7", "type": "color" },
+        "800": { "value": "133 77 14", "type": "color" },
+        "900": { "value": "113 63 18", "type": "color" },
+        "950": { "value": "66 32 6", "type": "color" }
+      },
+      "purple": {
+        "50": { "value": "250 245 255", "type": "color" },
+        "100": { "value": "243 232 255", "type": "color" },
+        "200": { "value": "233 213 255", "type": "color" },
+        "300": { "value": "216 180 254", "type": "color" },
+        "400": { "value": "196 181 253", "type": "color" },
+        "500": { "value": "168 85 247", "type": "color" },
+        "600": { "value": "147 51 234", "type": "color" },
+        "700": { "value": "126 34 206", "type": "color" },
+        "800": { "value": "107 33 168", "type": "color" },
+        "900": { "value": "88 28 135", "type": "color" },
+        "950": { "value": "59 7 100", "type": "color" }
+      },
+      "teal": {
+        "50": { "value": "240 253 250", "type": "color" },
+        "100": { "value": "204 251 241", "type": "color" },
+        "200": { "value": "153 246 228", "type": "color" },
+        "300": { "value": "94 234 212", "type": "color" },
+        "400": { "value": "45 212 191", "type": "color" },
+        "500": { "value": "20 184 166", "type": "color" },
+        "600": { "value": "13 148 136", "type": "color" },
+        "700": { "value": "15 118 110", "type": "color" },
+        "800": { "value": "17 94 89", "type": "color" },
+        "900": { "value": "19 78 74", "type": "color" },
+        "950": { "value": "4 47 46", "type": "color" }
+      },
+      "white": { "value": "255 255 255", "type": "color" },
+      "black": { "value": "0 0 0", "type": "color" }
+    }
+  }
+}

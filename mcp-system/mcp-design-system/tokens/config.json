@@ -1,0 +1,34 @@
+{
+  "designTokens": {
+    "version": "1.0.0",
+    "name": "Central de Creadores Design System",
+    "description": "Sistema de design tokens robusto basado en la estructura de Contentful",
+    "structure": {
+      "primitive": "Tokens base sin significado semántico",
+      "semantic": "Tokens con significado y propósito específico",
+      "component": "Tokens específicos para componentes"
+    },
+    "modes": {
+      "light": "Tema claro",
+      "dark": "Tema oscuro"
+    },
+    "collections": {
+      "colors": "Paleta de colores completa",
+      "typography": "Sistema tipográfico",
+      "spacing": "Sistema de espaciado",
+      "shadows": "Sistema de sombras"
+    },
+    "transformers": {
+      "css": "Generación de variables CSS",
+      "tailwind": "Configuración de Tailwind CSS",
+      "figma": "Sincronización con Figma",
+      "storybook": "Integración con Storybook"
+    },
+    "guidelines": {
+      "naming": "Usar prefijos descriptivos (color, spacing, etc.)",
+      "semantic": "Tokens semánticos deben tener significado claro",
+      "primitive": "Tokens primitivos deben ser reutilizables",
+      "component": "Tokens de componentes deben ser específicos"
+    }
+  }
+}

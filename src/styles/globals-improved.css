@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === SISTEMA DE COLORES MEJORADO BASADO EN MEJORES PRÁCTICAS === */
+:root {
+  /* === MODO CLARO OPTIMIZADO === */
+  --background-primary: 248 250 252;    /* slate-50 - Fondo principal suave */
+  --background-secondary: 255 255 255;   /* white - Fondo secundario */
+  --background-tertiary: 241 245 249;   /* slate-100 - Fondo terciario */
+  --background-overlay: 255 255 255;    /* white - Fondos de overlay */
+  
+  --surface-primary: 255 255 255;       /* white - Superficie principal */
+  --surface-secondary: 248 250 252;     /* slate-50 - Superficie secundaria */
+  --surface-tertiary: 241 245 249;      /* slate-100 - Superficie terciaria */
+  --surface-overlay: 255 255 255;       /* white - Superficie de overlay */
+  
+  --text-primary: 15 23 42;             /* slate-900 - Texto principal */
+  --text-secondary: 100 116 139;        /* slate-500 - Texto secundario */
+  --text-tertiary: 148 163 184;         /* slate-400 - Texto terciario */
+  --text-disabled: 203 213 225;         /* slate-300 - Texto deshabilitado */
+  --text-inverse: 255 255 255;          /* white - Texto inverso */
+  
+  --border-primary: 226 232 240;        /* slate-200 - Borde principal */
+  --border-secondary: 241 245 249;      /* slate-100 - Borde secundario */
+  --border-focus: 12 91 239;            /* #0C5BEF - Borde de foco */
+  --border-error: 239 68 68;            /* red-500 - Borde de error */
+  
+  --interactive-primary: 12 91 239;     /* #0C5BEF - Interactivo primario */
+  --interactive-primary-hover: 29 78 216; /* blue-700 - Hover primario */
+  --interactive-secondary: 100 116 139; /* slate-500 - Interactivo secundario */
+  --interactive-secondary-hover: 71 85 105; /* slate-600 - Hover secundario */
+  
+  --feedback-success: 22 163 74;        /* green-600 - Éxito */
+  --feedback-warning: 245 158 11;       /* amber-500 - Advertencia */
+  --feedback-error: 239 68 68;          /* red-500 - Error */
+  --feedback-info: 12 91 239;           /* #0C5BEF - Información */
+}
+
+.dark {
+  /* === MODO OSCURO OPTIMIZADO === */
+  --background-primary: 9 9 11;         /* zinc-950 - Fondo principal oscuro */
+  --background-secondary: 20 20 23;     /* zinc-900 - Fondo secundario */
+  --background-tertiary: 39 39 42;      /* zinc-800 - Fondo terciario */
+  --background-overlay: 20 20 23;       /* zinc-900 - Fondos de overlay */
+  
+  --surface-primary: 20 20 23;          /* zinc-900 - Superficie principal */
+  --surface-secondary: 39 39 42;        /* zinc-800 - Superficie secundaria */
+  --surface-tertiary: 63 63 70;         /* zinc-700 - Superficie terciaria */
+  --surface-overlay: 20 20 23;          /* zinc-900 - Superficie de overlay */
+  
+  --text-primary: 250 250 250;          /* zinc-50 - Texto principal */
+  --text-secondary: 161 161 170;        /* zinc-400 - Texto secundario */
+  --text-tertiary: 113 113 122;         /* zinc-500 - Texto terciario */
+  --text-disabled: 63 63 70;            /* zinc-600 - Texto deshabilitado */
+  --text-inverse: 9 9 11;               /* zinc-950 - Texto inverso */
+  
+  --border-primary: 63 63 70;           /* zinc-600 - Borde principal */
+  --border-secondary: 39 39 42;         /* zinc-800 - Borde secundario */
+  --border-focus: 120 160 255;          /* blue-400 - Borde de foco */
+  --border-error: 255 140 140;          /* red-400 - Borde de error */
+  
+  --interactive-primary: 120 160 255;   /* blue-400 - Interactivo primario */
+  --interactive-primary-hover: 96 165 250; /* blue-500 - Hover primario */
+  --interactive-secondary: 161 161 170; /* zinc-400 - Interactivo secundario */
+  --interactive-secondary-hover: 212 212 216; /* zinc-300 - Hover secundario */
+  
+  --feedback-success: 120 220 150;      /* green-400 - Éxito */
+  --feedback-warning: 255 210 100;      /* yellow-400 - Advertencia */
+  --feedback-error: 255 140 140;        /* red-400 - Error */
+  --feedback-info: 96 165 250;          /* blue-400 - Información */
+}
+
+/* === COMPONENTES MEJORADOS === */
+@layer components {
+  /* Botones optimizados */
+  .btn-primary {
+    @apply bg-interactive-primary text-text-inverse border border-interactive-primary;
+    @apply hover:bg-interactive-primary-hover hover:border-interactive-primary-hover;
+    @apply focus:ring-2 focus:ring-border-focus focus:ring-offset-2;
+    @apply transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-surface-primary text-text-primary border border-border-primary;
+    @apply hover:bg-surface-secondary hover:border-border-secondary;
+    @apply focus:ring-2 focus:ring-border-focus focus:ring-offset-2;
+    @apply transition-colors duration-200;
+  }
+  
+  /* Inputs optimizados */
+  .input-base {
+    @apply bg-surface-primary text-text-primary border border-border-primary;
+    @apply placeholder:text-text-tertiary;
+    @apply focus:border-border-focus focus:ring-2 focus:ring-border-focus focus:ring-offset-2;
+    @apply transition-colors duration-200;
+  }
+  
+  /* Cards optimizadas */
+  .card-base {
+    @apply bg-surface-primary border border-border-primary;
+    @apply shadow-sm;
+    @apply transition-colors duration-200;
+  }
+  
+  /* Estados de feedback */
+  .feedback-success {
+    @apply bg-feedback-success/10 text-feedback-success border border-feedback-success/20;
+  }
+  
+  .feedback-warning {
+    @apply bg-feedback-warning/10 text-feedback-warning border border-feedback-warning/20;
+  }
+  
+  .feedback-error {
+    @apply bg-feedback-error/10 text-feedback-error border border-feedback-error/20;
+  }
+  
+  .feedback-info {
+    @apply bg-feedback-info/10 text-feedback-info border border-feedback-info/20;
+  }
+}
+
+/* === UTILIDADES DE ACCESIBILIDAD === */
+@layer utilities {
+  .focus-visible {
+    @apply focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2;
+  }
+  
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  }
+}
+
+/* === ANIMACIONES SUAVES === */
+@layer base {
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
+/* === MEJORAS DE CONTRASTE === */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: 0 0 0;
+    --text-secondary: 51 51 51;
+    --border-primary: 0 0 0;
+  }
+  
+  .dark {
+    --text-primary: 255 255 255;
+    --text-secondary: 204 204 204;
+    --border-primary: 255 255 255;
+  }
+}
+
+/* === REDUCCIÓN DE MOVIMIENTO === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    @apply transition-none duration-0;
+  }
+}
