@@ -47,52 +47,52 @@
 }
 
 .dark {
-  /* === MODO OSCURO MEJORADO (Cursor/Figma Style) === */
+  /* === MODO OSCURO CORREGIDO === */
   --background: 9 9 11;          /* zinc-950 - Gris puro profundo */
   --foreground: 250 250 250;     /* Blanco casi puro */
   
   --card: 20 20 23;              /* zinc-900 - Gris carbón */
   --card-foreground: 248 250 252; /* slate-50 */
   
-  /* === COLORES PRIMARIOS MÁS PASTEL === */
-  --primary: 120 160 255;        /* Azul mucho más pastel y suave */
-  --primary-foreground: 15 23 42; /* slate-900 */
-  --primary-hover: 96 165 250;   /* blue-400 - Hover más claro en modo oscuro */
+  /* === COLORES PRIMARIOS CORREGIDOS === */
+  --primary: 120 160 255;        /* Azul pastel suave */
+  --primary-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
+  --primary-hover: 96 165 250;   /* blue-400 - Hover más claro */
   
   --secondary: 39 39 42;         /* zinc-800 - Gris medio */
-  --secondary-foreground: 212 212 216; /* zinc-300 */
+  --secondary-foreground: 250 250 250; /* BLANCO - Corregido para contraste */
   
   --muted: 63 63 70;             /* zinc-700 - Fondos más visibles */
   --muted-foreground: 161 161 170; /* zinc-400 - Texto secundario */
   
-  /* === COLORES DE ESTADO MÁS PASTEL === */
-  --destructive: 255 140 140;    /* Rojo mucho más pastel */
-  --destructive-foreground: 15 23 42; /* slate-900 */
-  --destructive-hover: 68 10 10;     /* zinc-900 con tinte rojo sutil para hover */
+  /* === COLORES DE ESTADO CORREGIDOS === */
+  --destructive: 255 140 140;    /* Rojo pastel */
+  --destructive-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
+  --destructive-hover: 68 10 10;     /* zinc-900 con tinte rojo sutil */
   
-  --success: 120 220 150;        /* Verde mucho más pastel */
-  --success-foreground: 15 23 42; /* slate-900 */
+  --success: 120 220 150;        /* Verde pastel */
+  --success-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
   
-  --warning: 255 210 100;        /* Amarillo mucho más pastel */
-  --warning-foreground: 15 23 42; /* slate-900 */
+  --warning: 255 210 100;        /* Amarillo pastel */
+  --warning-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
   
-  /* === COLORES ADICIONALES PASTEL === */
+  /* === COLORES ADICIONALES CORREGIDOS === */
   --info: 96 165 250;            /* blue-400 - Azul información suave */
-  --info-foreground: 15 23 42;   /* slate-900 */
+  --info-foreground: 255 255 255;   /* BLANCO - Corregido para contraste */
   
   --input: 39 39 42;             /* zinc-800 - Inputs grises */
   --input-solid: 39 39 42;       /* zinc-800 - Inputs grises */
-  --border: 63 63 70;            /* zinc-700 - Borde visible en modo oscuro */
+  --border: 63 63 70;            /* zinc-700 - Borde visible */
   --ring: 120 160 255;           /* Azul pastel suave - Foco */
   
-  --popover: 20 20 23;           /* zinc-900 - Fondos de dropdowns en dark */
+  --popover: 20 20 23;           /* zinc-900 - Fondos de dropdowns */
   --popover-foreground: 248 250 252; /* slate-50 */
-  --accent: 63 63 70;            /* zinc-700 - Para hover states más visibles en dark */
-  --accent-foreground: 212 212 216; /* zinc-300 */
+  --accent: 63 63 70;            /* zinc-700 - Para hover states */
+  --accent-foreground: 250 250 250; /* BLANCO - Corregido para contraste */
   
-  /* === COLORES PARA TÍTULOS === */
-  --title: 156 163 175;          /* gray-400 - Gris claro para títulos en dark */
-  --title-foreground: 15 23 42;  /* slate-900 */
+  /* === COLORES PARA TÍTULOS CORREGIDOS === */
+  --title: 250 250 250;          /* BLANCO - Corregido para contraste */
+  --title-foreground: 255 255 255;  /* BLANCO - Corregido para contraste */
 }
 
 /* === ESTILOS BASE === */
@@ -101,7 +101,7 @@
 }
 
 .dark * {
-  border-color: rgb(63 63 70); /* zinc-700 en modo oscuro mejorado */
+  border-color: rgb(63 63 70); /* zinc-700 en modo oscuro */
 }
 
 body {
