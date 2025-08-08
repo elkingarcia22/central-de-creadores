@@ -1,0 +1,141 @@
+{
+  "name": "Typography System",
+  "version": "1.0.0",
+  "description": "Enhanced typography system based on UX Planet and UX Collective principles",
+  "principles": {
+    "hierarchy": "Clear visual hierarchy using size, weight, and spacing",
+    "accessibility": "WCAG AAA compliance with 7:1 contrast ratio",
+    "readability": "Optimal line length of 50-75 characters",
+    "responsiveness": "Scalable typography across all devices",
+    "semantic": "Meaningful token names that convey purpose"
+  },
+  "scale": {
+    "ratio": 1.25,
+    "base": "16px",
+    "breakpoints": {
+      "mobile": "320px",
+      "tablet": "768px",
+      "desktop": "1024px",
+      "wide": "1440px"
+    }
+  },
+  "variants": {
+    "display": {
+      "description": "Large display text for hero sections",
+      "size": "6xl",
+      "weight": "extrabold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h1": {
+      "description": "Main page headings",
+      "size": "4xl",
+      "weight": "extrabold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h2": {
+      "description": "Section headings",
+      "size": "3xl",
+      "weight": "bold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h3": {
+      "description": "Subsection headings",
+      "size": "2xl",
+      "weight": "semibold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h4": {
+      "description": "Card and component headings",
+      "size": "xl",
+      "weight": "semibold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h5": {
+      "description": "Small headings",
+      "size": "lg",
+      "weight": "semibold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "h6": {
+      "description": "Smallest headings",
+      "size": "base",
+      "weight": "semibold",
+      "tracking": "tight",
+      "lineHeight": "tight"
+    },
+    "body1": {
+      "description": "Primary body text",
+      "size": "base",
+      "weight": "normal",
+      "lineHeight": "relaxed",
+      "maxWidth": "65ch"
+    },
+    "body2": {
+      "description": "Secondary body text",
+      "size": "sm",
+      "weight": "normal",
+      "lineHeight": "normal",
+      "maxWidth": "65ch"
+    },
+    "subtitle1": {
+      "description": "Primary subtitles",
+      "size": "lg",
+      "weight": "medium",
+      "lineHeight": "normal"
+    },
+    "subtitle2": {
+      "description": "Secondary subtitles",
+      "size": "base",
+      "weight": "medium",
+      "lineHeight": "normal"
+    },
+    "caption": {
+      "description": "Caption text for images and small details",
+      "size": "sm",
+      "weight": "medium",
+      "lineHeight": "none",
+      "tracking": "wide"
+    },
+    "overline": {
+      "description": "Overline text for labels",
+      "size": "sm",
+      "weight": "medium",
+      "tracking": "wider",
+      "transform": "uppercase"
+    },
+    "label": {
+      "description": "Form labels and small text",
+      "size": "sm",
+      "weight": "medium",
+      "lineHeight": "tight"
+    },
+    "button": {
+      "description": "Button text",
+      "size": "sm",
+      "weight": "medium",
+      "lineHeight": "tight",
+      "tracking": "wide"
+    }
+  },
+  "accessibility": {
+    "minContrastRatio": "4.5:1",
+    "targetContrastRatio": "7:1",
+    "minFontSize": "16px",
+    "maxLineLength": "65ch",
+    "minLineHeight": "1.4",
+    "focusIndicator": "2px solid currentColor"
+  },
+  "guidelines": {
+    "hierarchy": "Use size, weight, and spacing to create clear visual hierarchy",
+    "contrast": "Ensure sufficient contrast for all text elements",
+    "spacing": "Use consistent spacing between text elements",
+    "readability": "Keep line length between 50-75 characters",
+    "responsiveness": "Scale typography appropriately for different screen sizes"
+  }
+}
