@@ -19,7 +19,8 @@ import {
   EmpresasIcon,
   ConfiguracionesIcon,
   ConocimientoIcon,
-  UsuariosIcon
+  UsuariosIcon,
+  DesignSystemIcon
 } from '../icons';
 import PerfilPersonalModal from '../usuarios/PerfilPersonalModal';
 
@@ -61,7 +62,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
           { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-muted-foreground" /> }
         ]
       },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     investigador: [
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
@@ -69,14 +70,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
       { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     reclutador: [
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Configuraciones', href: '/configuraciones', icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
   };
 
