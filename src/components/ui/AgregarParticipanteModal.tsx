@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { SideModal } from './SideModal';
+import SideModal from './SideModal';
 import Typography from './Typography';
 import Button from './Button';
 import Select from './Select';

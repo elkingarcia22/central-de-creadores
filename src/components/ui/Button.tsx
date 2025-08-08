@@ -10,7 +10,9 @@ export const Button = ({
   const variantClasses = { 
     primary: "bg-blue-500 text-white hover:bg-blue-600", 
     secondary: "bg-gray-500 text-white hover:bg-gray-600", 
-    destructive: "bg-red-500 text-white hover:bg-red-600" 
+    destructive: "bg-red-500 text-white hover:bg-red-600",
+    ghost: "bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
+    ghost: "bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
   }; 
   const sizeClasses = { 
     sm: "px-3 py-1.5 text-sm", 
