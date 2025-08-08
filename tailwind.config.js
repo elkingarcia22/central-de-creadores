@@ -60,6 +60,11 @@ module.exports = {
           DEFAULT: 'rgb(var(--accent))',
           foreground: 'rgb(var(--accent-foreground))',
         },
+        
+        title: {
+          DEFAULT: 'rgb(var(--title))',
+          foreground: 'rgb(var(--title-foreground))',
+        },
       },
       fontFamily: {
         sans: [
