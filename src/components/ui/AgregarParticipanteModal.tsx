@@ -730,6 +730,7 @@ export default function AgregarParticipanteModal({
           </Button>
           <Button
             type="submit"
+            variant="primary"
             disabled={loading}
             fullWidth
           >
