@@ -58,7 +58,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const footer = (
     <div className="flex gap-3">
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={onClose}
         disabled={loading}
       >

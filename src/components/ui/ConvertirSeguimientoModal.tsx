@@ -151,7 +151,7 @@ export const ConvertirSeguimientoModal: React.FC<ConvertirSeguimientoModalProps>
       footer={
         <div className="flex gap-3">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={handleClose}
             disabled={converting}
           >

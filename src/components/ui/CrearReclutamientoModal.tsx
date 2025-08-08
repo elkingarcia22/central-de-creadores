@@ -486,7 +486,7 @@ export default function CrearReclutamientoModal({
   const footer = (
     <div className="flex gap-3">
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={handleClose}
         disabled={loading}
       >
@@ -669,7 +669,7 @@ export default function CrearReclutamientoModal({
               
               {tipoParticipante === 'interno' && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setMostrarModalInterno(true)}
                   disabled={loading}
@@ -681,7 +681,7 @@ export default function CrearReclutamientoModal({
 
               {tipoParticipante === 'externo' && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setMostrarModalExterno(true)}
                   disabled={loading}
@@ -693,7 +693,7 @@ export default function CrearReclutamientoModal({
 
               {tipoParticipante === 'friend_family' && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setMostrarModalFriendFamily(true)}
                   disabled={loading}

@@ -81,7 +81,7 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
   const footer = (
     <div className="flex space-x-3">
       <Button
-        variant="outline"
+        variant="secondary"
         size="lg"
         onClick={onClose}
         fullWidth

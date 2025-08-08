@@ -132,7 +132,7 @@ export default function CrearParticipanteFriendFamilyModal({
   const footer = (
     <div className="flex gap-3">
       <Button
-        variant="outline"
+        variant="secondary"
         onClick={handleClose}
         disabled={loading}
       >
