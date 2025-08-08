@@ -80,7 +80,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
             focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
             ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
           `}
-          aria-label="Más acciones - Actualizado"
+          aria-label="MENU ROJO FUNCIONA"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
@@ -94,8 +94,8 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
           ref={menuRef}
           className={`
             fixed z-[9999]
-            bg-white dark:bg-gray-800 
-            border border-gray-200 dark:border-gray-700
+            bg-red-500 dark:bg-red-800 
+            border-2 border-blue-500 dark:border-blue-400
             rounded-lg shadow-lg
             py-1
           `}
