@@ -756,7 +756,7 @@ export default function ReclutamientoPage() {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
               <div>
-                <Typography variant="h1" color="title" weight="bold">
+                <Typography variant="h2" color="title" weight="bold">
                   Reclutamiento
                 </Typography>
                 <Typography variant="subtitle1" color="secondary">
@@ -789,7 +789,7 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {metricas.total}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -806,7 +806,7 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {metricas.estados.pendientes}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -823,7 +823,7 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {metricasRiesgo.alto + metricasRiesgo.medio}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -840,7 +840,7 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {metricas.estados.completados}
                     </Typography>
                     <Typography variant="body2" color="secondary">

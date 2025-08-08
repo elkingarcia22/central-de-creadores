@@ -129,7 +129,7 @@ const Dashboard = () => {
         {/* Dashboard principal */}
         <Card variant="elevated" padding="lg">
           <div className="text-center">
-            <Typography variant="h1" color="title" weight="bold" className="mb-4">
+            <Typography variant="h2" color="title" weight="bold" className="mb-4">
               Bienvenido al dashboard de{' '}
               <span className="text-primary capitalize">{currentRol}</span>
             </Typography>
@@ -142,7 +142,7 @@ const Dashboard = () => {
               <Card variant="elevated" padding="lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {stats.investigaciones}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -158,7 +158,7 @@ const Dashboard = () => {
               <Card variant="elevated" padding="lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {stats.riesgo}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -174,7 +174,7 @@ const Dashboard = () => {
               <Card variant="elevated" padding="lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {stats.sesiones}
                     </Typography>
                     <Typography variant="body2" color="secondary">
@@ -190,7 +190,7 @@ const Dashboard = () => {
               <Card variant="elevated" padding="lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                       {stats.empresas}
                     </Typography>
                     <Typography variant="body2" color="secondary">

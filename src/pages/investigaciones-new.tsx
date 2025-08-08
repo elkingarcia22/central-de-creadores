@@ -94,7 +94,7 @@ const InvestigacionesPage: NextPage = () => {
                   <InvestigacionesIcon className="w-8 h-8 text-blue-600" />
                 </div>
                 <div>
-                  <Typography variant="h1" color="title" weight="bold">
+                  <Typography variant="h2" color="title" weight="bold">
                     Investigaciones
                   </Typography>
                   <Typography variant="subtitle1" color="secondary">
@@ -119,7 +119,7 @@ const InvestigacionesPage: NextPage = () => {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {stats.total}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -135,7 +135,7 @@ const InvestigacionesPage: NextPage = () => {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {stats.enProgreso}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -151,7 +151,7 @@ const InvestigacionesPage: NextPage = () => {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {stats.finalizadas}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -167,7 +167,7 @@ const InvestigacionesPage: NextPage = () => {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {stats.enBorrador}
                   </Typography>
                   <Typography variant="body2" color="secondary">

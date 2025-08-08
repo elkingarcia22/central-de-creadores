@@ -127,7 +127,7 @@ export default function EmpresasPage() {
                   <EmpresasIcon className="w-8 h-8 text-green-600" />
                 </div>
                 <div>
-                  <Typography variant="h1" color="title" weight="bold">
+                  <Typography variant="h2" color="title" weight="bold">
                     Empresas
                   </Typography>
                   <Typography variant="subtitle1" color="secondary">
@@ -180,7 +180,7 @@ export default function EmpresasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {empresas.length}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -196,7 +196,7 @@ export default function EmpresasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {empresasActivas}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -212,7 +212,7 @@ export default function EmpresasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {totalProyectos}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -228,7 +228,7 @@ export default function EmpresasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {empresas.length > 0 ? Math.round(totalProyectos / empresas.length) : 0}
                 </Typography>
                 <Typography variant="body2" color="secondary">

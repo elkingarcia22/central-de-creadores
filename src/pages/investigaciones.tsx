@@ -1192,7 +1192,7 @@ export default function InvestigacionesPage() {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
                 <div>
-                  <Typography variant="h1" color="title" weight="bold">
+                  <Typography variant="h2" color="title" weight="bold">
                     Investigaciones
                   </Typography>
                   <Typography variant="subtitle1" color="secondary">
@@ -1215,7 +1215,7 @@ export default function InvestigacionesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {investigaciones.length}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -1232,7 +1232,7 @@ export default function InvestigacionesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {investigaciones.filter(inv => inv.estado === 'en_progreso').length}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -1249,7 +1249,7 @@ export default function InvestigacionesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {metricasSeguimientos?.seguimientos?.total || 0}
                   </Typography>
                   <Typography variant="body2" color="secondary">
@@ -1266,7 +1266,7 @@ export default function InvestigacionesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {investigaciones.length > 0 
                       ? Math.round((investigaciones.filter(inv => inv.estado === 'finalizado').length / investigaciones.length) * 100)
                       : 0}%

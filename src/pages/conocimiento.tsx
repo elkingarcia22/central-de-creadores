@@ -135,7 +135,7 @@ export default function ConocimientoPage() {
                 <ConocimientoIcon className="w-8 h-8 text-indigo-600" />
               </div>
               <div>
-                <Typography variant="h1" color="title" weight="bold">
+                <Typography variant="h2" color="title" weight="bold">
                   Conocimiento
                 </Typography>
                 <Typography variant="subtitle1" color="secondary">
@@ -181,7 +181,7 @@ export default function ConocimientoPage() {
                       <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {articulos.length}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -197,7 +197,7 @@ export default function ConocimientoPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {articulosPublicados}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -213,7 +213,7 @@ export default function ConocimientoPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {totalVistas}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -229,7 +229,7 @@ export default function ConocimientoPage() {
           <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                     {totalDescargas}
                   </Typography>
                   <Typography variant="body2" color="secondary">

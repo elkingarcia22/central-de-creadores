@@ -139,7 +139,7 @@ export default function ParticipantesPage() {
                   <ParticipantesIcon className="w-8 h-8 text-purple-600" />
                 </div>
                 <div>
-                  <Typography variant="h1" color="title" weight="bold">
+                  <Typography variant="h2" color="title" weight="bold">
                     Participantes
                   </Typography>
                   <Typography variant="subtitle1" color="secondary">
@@ -192,7 +192,7 @@ export default function ParticipantesPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {participantes.length}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -208,7 +208,7 @@ export default function ParticipantesPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {participantesActivos}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -224,7 +224,7 @@ export default function ParticipantesPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {totalSesionesCompletadas}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -240,7 +240,7 @@ export default function ParticipantesPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {totalSesionesPendientes}
                 </Typography>
                 <Typography variant="body2" color="secondary">

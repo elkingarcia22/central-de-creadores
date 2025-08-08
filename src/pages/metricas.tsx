@@ -120,7 +120,7 @@ export default function MetricasPage() {
                   <MetricasIcon className="w-8 h-8 text-red-600" />
                 </div>
                 <div>
-                  <Typography variant="h1" color="title" weight="bold">
+                  <Typography variant="h2" color="title" weight="bold">
                     Métricas
                   </Typography>
                   <Typography variant="subtitle1" color="secondary">
@@ -163,7 +163,7 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {metricas.totalInvestigaciones}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -179,7 +179,7 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {metricas.totalSesiones}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -195,7 +195,7 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {metricas.totalParticipantes}
                 </Typography>
                 <Typography variant="body2" color="secondary">
@@ -211,7 +211,7 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                   {metricas.tasaCompletitud}%
                 </Typography>
                 <Typography variant="body2" color="secondary">
