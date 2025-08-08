@@ -50,53 +50,53 @@ const Chip: React.FC<ChipProps> = ({
   const variantClasses = {
     default: outlined
       ? theme === 'dark'
-        ? 'border border-gray-500 text-gray-200 bg-transparent'
-        : 'border border-gray-300 text-gray-700 bg-transparent'
+        ? 'border border-muted text-muted-foreground bg-transparent'
+        : 'border border-muted text-muted-foreground bg-transparent'
       : theme === 'dark'
-        ? 'bg-gray-700 text-gray-200'
-        : 'bg-gray-100 text-gray-800',
+        ? 'bg-muted text-muted-foreground'
+        : 'bg-muted text-muted-foreground',
     primary: outlined
       ? theme === 'dark'
-        ? 'border border-blue-400 text-blue-300 bg-transparent'
-        : 'border border-blue-500 text-blue-700 bg-transparent'
+        ? 'border border-primary text-primary bg-transparent'
+        : 'border border-primary text-primary bg-transparent'
       : theme === 'dark'
-        ? 'bg-blue-900/30 text-blue-200 border border-blue-700/50'
-        : 'bg-blue-100 text-blue-800',
+        ? 'bg-primary text-primary-foreground'
+        : 'bg-primary text-primary-foreground',
     success: outlined
       ? theme === 'dark'
-        ? 'border border-green-400 text-green-300 bg-transparent'
-        : 'border border-green-500 text-green-700 bg-transparent'
+        ? 'border border-success text-success bg-transparent'
+        : 'border border-success text-success bg-transparent'
       : theme === 'dark'
-        ? 'bg-green-900/30 text-green-200 border border-green-700/50'
-        : 'bg-green-100 text-green-800',
+        ? 'bg-success text-success-foreground'
+        : 'bg-success text-success-foreground',
     warning: outlined
       ? theme === 'dark'
-        ? 'border border-amber-400 text-amber-300 bg-transparent'
-        : 'border border-amber-500 text-amber-700 bg-transparent'
+        ? 'border border-warning text-warning bg-transparent'
+        : 'border border-warning text-warning bg-transparent'
       : theme === 'dark'
-        ? 'bg-amber-900/30 text-amber-200 border border-amber-700/50'
-        : 'bg-amber-100 text-amber-800',
+        ? 'bg-warning text-warning-foreground'
+        : 'bg-warning text-warning-foreground',
     danger: outlined
       ? theme === 'dark'
-        ? 'border border-red-400 text-red-300 bg-transparent'
-        : 'border border-red-500 text-red-700 bg-transparent'
+        ? 'border border-destructive text-destructive bg-transparent'
+        : 'border border-destructive text-destructive bg-transparent'
       : theme === 'dark'
-        ? 'bg-red-900/30 text-red-200 border border-red-700/50'
-        : 'bg-red-100 text-red-800',
+        ? 'bg-destructive text-destructive-foreground'
+        : 'bg-destructive text-destructive-foreground',
     info: outlined
       ? theme === 'dark'
-        ? 'border border-cyan-400 text-cyan-300 bg-transparent'
-        : 'border border-cyan-500 text-cyan-700 bg-transparent'
+        ? 'border border-info text-info bg-transparent'
+        : 'border border-info text-info bg-transparent'
       : theme === 'dark'
-        ? 'bg-cyan-900/30 text-cyan-200 border border-cyan-700/50'
-        : 'bg-cyan-100 text-cyan-800',
+        ? 'bg-info text-info-foreground'
+        : 'bg-info text-info-foreground',
     secondary: outlined
       ? theme === 'dark'
-        ? 'border border-purple-400 text-purple-300 bg-transparent'
-        : 'border border-purple-500 text-purple-700 bg-transparent'
+        ? 'border border-secondary text-secondary-foreground bg-transparent'
+        : 'border border-secondary text-secondary-foreground bg-transparent'
       : theme === 'dark'
-        ? 'bg-purple-900/30 text-purple-200 border border-purple-700/50'
-        : 'bg-purple-100 text-purple-800'
+        ? 'bg-secondary text-secondary-foreground'
+        : 'bg-secondary text-secondary-foreground'
   };
 
   const classes = [

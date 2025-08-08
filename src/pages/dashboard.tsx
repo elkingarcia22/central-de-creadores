@@ -159,7 +159,7 @@ export default function DashboardPage() {
     return (
       <div className={`min-h-screen flex items-center justify-center bg-background`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <Typography variant="body1" color="secondary">
             Cargando dashboard...
           </Typography>
@@ -174,11 +174,11 @@ export default function DashboardPage() {
     const colorMap = {
       blue: theme === 'dark' ? 'text-gray-400 bg-gray-800 bg-opacity-50' : 'text-gray-600 bg-gray-50',
       green: theme === 'dark' ? 'text-green-400 bg-green-900 bg-opacity-20' : 'text-green-600 bg-green-50',
-      purple: theme === 'dark' ? 'text-purple-400 bg-purple-900 bg-opacity-20' : 'text-purple-600 bg-purple-50',
+      purple: theme === 'dark' ? 'text-purple-400 bg-purple-900 bg-opacity-20' : 'text-secondary bg-secondary/10',
       orange: theme === 'dark' ? 'text-orange-400 bg-orange-900 bg-opacity-20' : 'text-orange-600 bg-orange-50',
       gray: theme === 'dark' ? 'text-gray-400 bg-gray-900 bg-opacity-20' : 'text-gray-600 bg-gray-50',
       indigo: theme === 'dark' ? 'text-indigo-400 bg-indigo-900 bg-opacity-20' : 'text-indigo-600 bg-indigo-50',
-      teal: theme === 'dark' ? 'text-teal-400 bg-teal-900 bg-opacity-20' : 'text-teal-600 bg-teal-50',
+      teal: theme === 'dark' ? 'text-teal-400 bg-teal-900 bg-opacity-20' : 'text-info bg-info/10',
       pink: theme === 'dark' ? 'text-pink-400 bg-pink-900 bg-opacity-20' : 'text-pink-600 bg-pink-50'
     };
     return colorMap[color as keyof typeof colorMap] || colorMap.gray;
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                     ⚠️ RIESGO CRÍTICO ⚠️
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-red-50'}`}>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-destructive/10'}`}>
                   <AlertTriangleIcon className="w-6 h-6 text-orange-500" />
                 </div>
               </div>
@@ -242,8 +242,8 @@ export default function DashboardPage() {
                     Sesiones
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'}`}>
-                  <SesionesIcon className="w-6 h-6 text-purple-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
+                  <SesionesIcon className="w-6 h-6 text-secondary" />
                 </div>
               </div>
             </Card>
@@ -258,8 +258,8 @@ export default function DashboardPage() {
                     Empresas
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-teal-900 bg-opacity-20' : 'bg-teal-50'}`}>
-                  <EmpresasIcon className="w-6 h-6 text-teal-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-teal-900 bg-opacity-20' : 'bg-info/10'}`}>
+                  <EmpresasIcon className="w-6 h-6 text-info" />
                 </div>
               </div>
             </Card>

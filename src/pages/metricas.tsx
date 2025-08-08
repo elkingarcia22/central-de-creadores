@@ -116,8 +116,8 @@ export default function MetricasPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-red-50'} mt-1`}>
-                  <MetricasIcon className="w-8 h-8 text-red-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-destructive/10'} mt-1`}>
+                  <MetricasIcon className="w-8 h-8 text-destructive" />
                 </div>
                 <div>
                   <Typography variant="h2" color="title" weight="bold">
@@ -186,8 +186,8 @@ export default function MetricasPage() {
                   Sesiones
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'}`}>
-                <SesionesIcon className="w-6 h-6 text-purple-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
+                <SesionesIcon className="w-6 h-6 text-secondary" />
               </div>
             </div>
           </Card>
@@ -202,8 +202,8 @@ export default function MetricasPage() {
                   Participantes
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'}`}>
-                <UserIcon className="w-6 h-6 text-green-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                <UserIcon className="w-6 h-6 text-success" />
               </div>
             </div>
           </Card>
@@ -301,7 +301,7 @@ export default function MetricasPage() {
                 </div>
                 <div className={`w-full h-2 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div 
-                    className="h-2 rounded-full bg-green-600 transition-all duration-300"
+                    className="h-2 rounded-full bg-success transition-all duration-300"
                     style={{ width: `${progresoPresupuesto}%` }}
                   ></div>
                 </div>

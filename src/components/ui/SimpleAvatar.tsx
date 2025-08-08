@@ -101,7 +101,7 @@ const SimpleAvatar: React.FC<SimpleAvatarProps> = ({
   
   const classes = React.useMemo(() => `
     inline-flex items-center justify-center 
-    rounded-full bg-blue-500 text-white font-medium
+    rounded-full bg-primary text-primary-foreground font-medium
     flex-shrink-0 overflow-hidden relative
     ${sizeClasses[size]}
     ${className}
