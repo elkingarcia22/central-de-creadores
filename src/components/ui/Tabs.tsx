@@ -43,7 +43,7 @@ export const Tabs: React.FC<TabsProps> = ({
     onTabChange?.(tabId);
   };
 
-  const activeTabContent = tabs const activeTabContent = tabs.find(tab => tab.id === activeTab)?.content;const activeTabContent = tabs.find(tab => tab.id === activeTab)?.content; tabs.find(tab => tab.id === activeTab)?.content;
+  const activeTabContent = tabs && tabs.find(tab => tab.id === activeTab)?.content;
 
   const sizeClasses = {
     sm: 'text-sm px-3 py-2',
