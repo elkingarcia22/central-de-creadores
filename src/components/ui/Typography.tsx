@@ -26,23 +26,23 @@ const Typography: React.FC<TypographyProps> = ({
 }) => {
   const baseClasses = 'transition-colors duration-200';
   
-  // Escala tipográfica mejorada basada en UX Planet y UX Collective
+  // Escala tipográfica optimizada para mejor escalabilidad
   const variantClasses = {
-    display: 'scroll-m-20 text-6xl font-extrabold tracking-tight lg:text-7xl xl:text-8xl',
-    h1: 'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl',
-    h2: 'scroll-m-20 border-b pb-2 text-3xl font-bold tracking-tight first:mt-0',
-    h3: 'scroll-m-20 text-2xl font-semibold tracking-tight',
-    h4: 'scroll-m-20 text-xl font-semibold tracking-tight',
-    h5: 'scroll-m-20 text-lg font-semibold tracking-tight',
-    h6: 'scroll-m-20 text-base font-semibold tracking-tight',
-    subtitle1: 'text-lg font-medium leading-6',
-    subtitle2: 'text-base font-medium leading-6',
+    display: 'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl xl:text-6xl',
+    h1: 'scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl',
+    h2: 'scroll-m-20 border-b pb-2 text-2xl font-bold tracking-tight first:mt-0 lg:text-3xl',
+    h3: 'scroll-m-20 text-xl font-semibold tracking-tight lg:text-2xl',
+    h4: 'scroll-m-20 text-lg font-semibold tracking-tight lg:text-xl',
+    h5: 'scroll-m-20 text-base font-semibold tracking-tight lg:text-lg',
+    h6: 'scroll-m-20 text-sm font-semibold tracking-tight lg:text-base',
+    subtitle1: 'text-base font-medium leading-6 lg:text-lg',
+    subtitle2: 'text-sm font-medium leading-6 lg:text-base',
     body1: 'leading-7 [&:not(:first-child)]:mt-6 max-w-[65ch]',
     body2: 'text-sm leading-6 max-w-[65ch]',
-    caption: 'text-sm font-medium leading-none tracking-wide',
-    overline: 'text-sm font-medium uppercase tracking-wider',
-    label: 'text-sm font-medium leading-tight',
-    button: 'text-sm font-medium leading-tight tracking-wide'
+    caption: 'text-xs font-medium leading-none tracking-wide lg:text-sm',
+    overline: 'text-xs font-medium uppercase tracking-wider lg:text-sm',
+    label: 'text-xs font-medium leading-tight lg:text-sm',
+    button: 'text-xs font-medium leading-tight tracking-wide lg:text-sm'
   };
 
   const weightClasses = {
@@ -78,10 +78,10 @@ const Typography: React.FC<TypographyProps> = ({
 
   // Clases responsivas basadas en breakpoints
   const responsiveClasses = {
-    display: 'text-4xl sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl',
-    h1: 'text-3xl sm:text-4xl lg:text-5xl',
-    h2: 'text-2xl sm:text-3xl lg:text-3xl',
-    h3: 'text-xl sm:text-2xl lg:text-2xl',
+    display: 'text-3xl sm:text-4xl lg:text-5xl xl:text-6xl',
+    h1: 'text-2xl sm:text-3xl lg:text-4xl',
+    h2: 'text-xl sm:text-2xl lg:text-3xl',
+    h3: 'text-lg sm:text-xl lg:text-2xl',
     h4: 'text-lg sm:text-xl lg:text-xl',
     h5: 'text-base sm:text-lg lg:text-lg',
     h6: 'text-sm sm:text-base lg:text-base',
