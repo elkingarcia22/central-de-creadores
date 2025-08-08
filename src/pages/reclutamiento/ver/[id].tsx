@@ -896,7 +896,7 @@ const VerReclutamiento: NextPage = () => {
                 className="ml-2"
               >
                 {selectedParticipante.estado_agendamiento?.nombre}
-              </Badge>
+              </Chip>
             </div>
           )}
           {selectedParticipante.responsable_agendamiento?.nombre && (
@@ -1098,7 +1098,7 @@ const VerReclutamiento: NextPage = () => {
           {selectedParticipante.tipo && (
             <div>
               <Typography variant="caption" color="secondary">Tipo de Cliente</Typography>
-              <Badge variant={
+              <Chip variant={
                 selectedParticipante.tipo === 'interno' ? 'info' : 
                 selectedParticipante.tipo === 'friend_family' ? 'secondary' : 
                 'primary'
@@ -1106,15 +1106,15 @@ const VerReclutamiento: NextPage = () => {
                 {selectedParticipante.tipo === 'interno' ? 'Cliente Interno' : 
                  selectedParticipante.tipo === 'friend_family' ? 'Friend and Family' : 
                  'Cliente Externo'}
-              </Badge>
+              </Chip>
             </div>
           )}
           {selectedParticipante.tipo === 'externo' && selectedParticipante.estado_participante && (
             <div>
               <Typography variant="caption" color="secondary">Estado del Participante</Typography>
-              <Badge variant="success" size="sm">
+              <Chip variant="success" size="sm">
                 {selectedParticipante.estado_participante}
-              </Badge>
+              </Chip>
             </div>
           )}
           {/* Cargo solo para participantes externos que lo tengan */}
@@ -2388,7 +2388,7 @@ const VerReclutamiento: NextPage = () => {
                   className="ml-2"
                 >
                   {reclutamiento.estado_reclutamiento_nombre || 'Sin estado'}
-                </Badge>
+                </Chip>
               )}
             </div>
           </div>

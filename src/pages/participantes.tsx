@@ -215,8 +215,8 @@ export default function ParticipantesPage() {
                   Activos
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'}`}>
-                <UserIcon className="w-6 h-6 text-green-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                <UserIcon className="w-6 h-6 text-success" />
               </div>
             </div>
           </Card>
@@ -247,8 +247,8 @@ export default function ParticipantesPage() {
                   Sesiones Pendientes
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                <MetricasIcon className="w-6 h-6 text-orange-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
+                <MetricasIcon className="w-6 h-6 text-warning" />
               </div>
             </div>
           </Card>

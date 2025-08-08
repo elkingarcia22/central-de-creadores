@@ -553,12 +553,12 @@ export default function ReclutamientoPage() {
       render: (value: any, row: InvestigacionReclutamiento) => {
         console.log('🎯 Renderizando columna de estado para:', row.investigacion_nombre, 'Estado:', row.estado_reclutamiento_nombre);
         return (
-          <Badge 
+          <Chip 
             variant={getEstadoReclutamientoColor(row.estado_reclutamiento_nombre)}
             size="sm"
           >
             {row.estado_reclutamiento_nombre || 'Sin estado'}
-          </Badge>
+          </Chip>
         );
       }
     },
@@ -625,12 +625,12 @@ export default function ReclutamientoPage() {
         return getPrioridadRiesgo(b.riesgo_reclutamiento) - getPrioridadRiesgo(a.riesgo_reclutamiento);
       },
       render: (value: any, row: InvestigacionReclutamiento) => (
-        <Badge 
+        <Chip 
           variant={getRiesgoColor(row.riesgo_reclutamiento)}
           size="sm"
         >
           {row.riesgo_reclutamiento || 'Bajo'}
-        </Badge>
+        </Chip>
       )
     },
     {

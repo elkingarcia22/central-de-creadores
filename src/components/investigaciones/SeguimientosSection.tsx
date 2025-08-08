@@ -249,9 +249,9 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
                       <Typography variant="subtitle2" weight="medium">
                         {formatearFecha(seguimiento.fecha_seguimiento)}
                       </Typography>
-                      <Badge variant={getEstadoBadgeVariant(seguimiento.estado)}>
+                      <Chip variant={getEstadoBadgeVariant(seguimiento.estado)}>
                         {seguimiento.estado.charAt(0).toUpperCase() + seguimiento.estado.slice(1)}
-                      </Badge>
+                      </Chip>
                     </div>
                     <div className="flex items-center gap-2">
                       {investigacionEstado === 'en_progreso' && 
@@ -293,14 +293,14 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
                         </>
                       )}
                       {seguimiento.estado === 'convertido' && (
-                        <Badge variant="success" className="text-xs">
+                        <Chip variant="success" className="text-xs">
                           ✓ Convertido en investigación
-                        </Badge>
+                        </Chip>
                       )}
                       {seguimiento.estado === 'completado' && (
-                        <Badge variant="success" className="text-xs">
+                        <Chip variant="success" className="text-xs">
                           ✓ Completado
-                        </Badge>
+                        </Chip>
                       )}
                     </div>
                   </div>

@@ -146,9 +146,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
         <Typography variant="h3" weight="medium">
           Trazabilidad
         </Typography>
-        <Badge variant="secondary" className="text-xs">
+        <Chip variant="secondary" className="text-xs">
           {trazabilidad.origen.seguimientos.length + trazabilidad.derivadas.investigaciones.length} elementos relacionados
-        </Badge>
+        </Chip>
       </div>
 
       {/* Origen - Investigaciones que dieron origen a esta */}
@@ -159,9 +159,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
             <Typography variant="h4" weight="medium">
               Origen
             </Typography>
-            <Badge variant="secondary" className="text-xs">
+            <Chip variant="secondary" className="text-xs">
               {trazabilidad.origen.investigaciones.length} investigación(es) • {trazabilidad.origen.seguimientos.length} seguimiento(s)
-            </Badge>
+            </Chip>
           </div>
 
           <div className="space-y-4">
@@ -178,9 +178,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       {formatearFecha(investigacion.fecha_inicio)} - {formatearFecha(investigacion.fecha_fin)}
                     </Typography>
                   </div>
-                  <Badge variant={getEstadoColor(investigacion.estado)}>
+                  <Chip variant={getEstadoColor(investigacion.estado)}>
                     {investigacion.estado}
-                  </Badge>
+                  </Chip>
                 </div>
                 <Button
                   variant="ghost"
@@ -207,9 +207,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       {seguimiento.notas.substring(0, 100)}...
                     </Typography>
                   </div>
-                  <Badge variant={getEstadoColor(seguimiento.estado)}>
+                  <Chip variant={getEstadoColor(seguimiento.estado)}>
                     {seguimiento.estado}
-                  </Badge>
+                  </Chip>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {obtenerNombreUsuario(seguimiento.responsable_id)}
@@ -228,9 +228,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
             <Typography variant="h4" weight="medium">
               Investigaciones Derivadas
             </Typography>
-            <Badge variant="secondary" className="text-xs">
+            <Chip variant="secondary" className="text-xs">
               {trazabilidad.derivadas.investigaciones.length} investigación(es) • {trazabilidad.derivadas.seguimientos.length} seguimiento(s)
-            </Badge>
+            </Chip>
           </div>
 
           <div className="space-y-4">
@@ -247,9 +247,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       {formatearFecha(investigacion.fecha_inicio)} - {formatearFecha(investigacion.fecha_fin)}
                     </Typography>
                   </div>
-                  <Badge variant={getEstadoColor(investigacion.estado)}>
+                  <Chip variant={getEstadoColor(investigacion.estado)}>
                     {investigacion.estado}
-                  </Badge>
+                  </Chip>
                 </div>
                 <Button
                   variant="ghost"
@@ -276,9 +276,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       {seguimiento.notas.substring(0, 100)}...
                     </Typography>
                   </div>
-                  <Badge variant={getEstadoColor(seguimiento.estado)}>
+                  <Chip variant={getEstadoColor(seguimiento.estado)}>
                     {seguimiento.estado}
-                  </Badge>
+                  </Chip>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {obtenerNombreUsuario(seguimiento.responsable_id)}

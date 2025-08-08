@@ -236,7 +236,7 @@ export default function EmpresasPage() {
                 </Typography>
               </div>
               <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                <MetricasIcon className="w-6 h-6 text-orange-600" />
+                <MetricasIcon className="w-6 h-6 text-warning" />
               </div>
             </div>
           </Card>

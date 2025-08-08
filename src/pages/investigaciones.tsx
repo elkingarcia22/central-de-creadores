@@ -1128,7 +1128,7 @@ export default function InvestigacionesPage() {
             label: 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/ver/${row.id}`),
-            className: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+            className: 'text-primary dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
           },
           {
             label: tieneLibreto(row.id) ? 'Ver Libreto' : 'Crear Libreto',
@@ -1140,7 +1140,7 @@ export default function InvestigacionesPage() {
                 router.push(`/investigaciones/libreto/crear?investigacion=${row.id}`);
               }
             },
-            className: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+            className: 'text-primary dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
           },
           {
             label: 'Editar',
@@ -1171,7 +1171,7 @@ export default function InvestigacionesPage() {
               setInvestigacionParaSeguimiento(row);
               setShowSeguimientoModal(true);
             },
-            className: 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+            className: 'text-success dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
           });
         }
 
@@ -1222,8 +1222,8 @@ export default function InvestigacionesPage() {
                     Total Investigaciones
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-blue-50'}`}>
-                  <InvestigacionesIcon className="w-6 h-6 text-blue-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-primary/10'}`}>
+                  <InvestigacionesIcon className="w-6 h-6 text-primary" />
                 </div>
               </div>
             </Card>
@@ -1239,8 +1239,8 @@ export default function InvestigacionesPage() {
                     En Progreso
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                  <BarChartIcon className="w-6 h-6 text-orange-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
+                  <BarChartIcon className="w-6 h-6 text-warning" />
                 </div>
               </div>
             </Card>
@@ -1256,8 +1256,8 @@ export default function InvestigacionesPage() {
                     Seguimientos
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'}`}>
-                  <ClipboardListIcon className="w-6 h-6 text-purple-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
+                  <ClipboardListIcon className="w-6 h-6 text-secondary" />
                 </div>
               </div>
             </Card>
@@ -1275,8 +1275,8 @@ export default function InvestigacionesPage() {
                     Tasa Finalización
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'}`}>
-                  <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                  <CheckCircleIcon className="w-6 h-6 text-success" />
                 </div>
               </div>
             </Card>

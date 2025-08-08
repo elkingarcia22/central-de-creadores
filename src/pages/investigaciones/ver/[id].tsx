@@ -570,13 +570,13 @@ const VerInvestigacion: NextPage = () => {
         <div className="mb-4">
           <Typography variant="h3" className="mb-2">{investigacion?.nombre}</Typography>
           <div className="flex items-center gap-3">
-            <Badge variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
+            <Chip variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
               {formatearEstado(investigacion?.estado || '')}
-            </Badge>
+            </Chip>
             {investigacion?.tipo_investigacion_nombre && (
-              <Badge variant="secondary">
+              <Chip variant="secondary">
                 {investigacion.tipo_investigacion_nombre}
-              </Badge>
+              </Chip>
             )}
           </div>
         </div>

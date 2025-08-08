@@ -204,8 +204,8 @@ export default function SesionesPage() {
                   Total Sesiones
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'}`}>
-                <SesionesIcon className="w-6 h-6 text-purple-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
+                <SesionesIcon className="w-6 h-6 text-secondary" />
               </div>
             </div>
           </Card>
@@ -236,8 +236,8 @@ export default function SesionesPage() {
                   Esta Semana
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'}`}>
-                <MetricasIcon className="w-6 h-6 text-green-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                <MetricasIcon className="w-6 h-6 text-success" />
               </div>
             </div>
           </Card>
