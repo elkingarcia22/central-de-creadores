@@ -5,7 +5,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Badge } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip } from '../../../components/ui';
 import { 
   ArrowLeftIcon,
   InfoIcon,

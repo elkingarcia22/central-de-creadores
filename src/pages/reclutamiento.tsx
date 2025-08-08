@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
-import { Layout, Typography, Card, Button, DataTable, Input, Badge, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
+import { Layout, Typography, Card, Button, DataTable, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';

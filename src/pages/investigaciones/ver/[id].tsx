@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal } from '../../../components/ui';
 import { SeguimientosSection } from '../../../components/investigaciones/SeguimientosSection';
 import { TrazabilidadSection } from '../../../components/investigaciones/TrazabilidadSection';
 import ActividadesTab from '../../../components/investigaciones/ActividadesTab';

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Typography, Button, Card, Badge, ConfirmModal } from '../ui';
+import { Typography, Button, Card, Chip, ConfirmModal } from '../ui';
 import SeguimientoSideModal from '../ui/SeguimientoSideModal';
 import { PlusIcon, EditIcon, TrashIcon, CopyIcon, FileTextIcon } from '../icons';
 import { 

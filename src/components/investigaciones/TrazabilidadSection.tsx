@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Typography, Card, Button, Badge } from '../ui';
+import { Typography, Card, Button, Chip } from '../ui';
 import { 
   ArrowLeftIcon, 
   FileTextIcon, 

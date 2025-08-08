@@ -7,7 +7,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip } from '../../../components/ui';
 import EditarReclutamientoModal from '../../../components/ui/EditarReclutamientoModal';
 import EditarResponsableAgendamientoModal from '../../../components/ui/EditarResponsableAgendamientoModal';
 import AgregarParticipanteModal from '../../../components/ui/AgregarParticipanteModal';
