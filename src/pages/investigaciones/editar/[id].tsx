@@ -382,7 +382,7 @@ const EditarInvestigacionPage: NextPage = () => {
                   className="capitalize"
                 >
                   {investigacion.estado?.replace('_', ' ')}
-                </Badge>
+                </Chip>
               </div>
               <Typography variant="body2" color="secondary">
                 Edita la información de la investigación
