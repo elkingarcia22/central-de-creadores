@@ -16,12 +16,6 @@ import {
   SunIcon
 } from '../components/icons';
 
-// Componentes de las secciones
-import ColorsSection from '../components/design-system/ColorsSection';
-import TypographySection from '../components/design-system/TypographySection';
-import ComponentsSection from '../components/design-system/ComponentsSection';
-import SpacingSection from '../components/design-system/SpacingSection';
-import IconsSection from '../components/design-system/IconsSection';
 
 const DesignSystemPage: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
