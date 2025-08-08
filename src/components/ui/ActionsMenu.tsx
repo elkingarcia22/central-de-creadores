@@ -80,7 +80,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
             focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
             ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}
           `}
-          aria-label="Más acciones"
+          aria-label="Más acciones - Actualizado"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
