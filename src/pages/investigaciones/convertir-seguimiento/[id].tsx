@@ -291,10 +291,10 @@ const ConvertirSeguimientoPage: NextPage = () => {
               <div className="flex items-center gap-3">
                 <Chip variant="info">
                   {formatearFecha(seguimiento.fecha_seguimiento)}
-                </Badge>
+                </Chip>
                 <Chip variant="default">
                   {seguimiento.estado}
-                </Badge>
+                </Chip>
               </div>
               
               <div className="bg-muted p-4 rounded-lg">
