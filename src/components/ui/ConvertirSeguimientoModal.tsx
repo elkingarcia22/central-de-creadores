@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { SideModal, Button, Input, Textarea, Select, Typography, UserSelectorWithAvatar, DatePicker } from './index';
+import { SideModal } from './SideModal';
+import { Button } from './Button';
+import { Input } from './Input';
+import { Textarea } from './Textarea';
+import { Select } from './Select';
+import { Typography } from './Typography';
+import { UserSelectorWithAvatar } from './UserSelectorWithAvatar';
+import { DatePicker } from './DatePicker';
 import { CopyIcon, CloseIcon } from '../icons';
 import type { SeguimientoInvestigacion } from '../../types/seguimientos';
 

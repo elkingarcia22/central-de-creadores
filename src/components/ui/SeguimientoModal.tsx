@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Modal, Button, Input, Textarea, Select, Typography, UserSelectorWithAvatar } from './index';
+import { Modal } from './Modal';
+import { Button } from './Button';
+import { Input } from './Input';
+import { Textarea } from './Textarea';
+import { Select } from './Select';
+import { Typography } from './Typography';
+import { UserSelectorWithAvatar } from './UserSelectorWithAvatar';
 import { SaveIcon, CloseIcon } from '../icons';
 import type { SeguimientoInvestigacion, SeguimientoFormData } from '../../types/seguimientos';
 import { ESTADOS_SEGUIMIENTO } from '../../types/seguimientos';

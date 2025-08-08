@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { SideModal, Typography, Button, Select, UserSelectorWithAvatar, DatePicker, Input } from './index';
+import { SideModal } from './SideModal';
+import { Typography } from './Typography';
+import { Button } from './Button';
+import { Select } from './Select';
+import { UserSelectorWithAvatar } from './UserSelectorWithAvatar';
+import { DatePicker } from './DatePicker';
+import { Input } from './Input';
 import { getUserTimezone, getCurrentDateTime, debugTimezone, getMinDate, createUTCDateFromLocal } from '../../utils/timezone';
 
 interface EditarReclutamientoModalProps {
