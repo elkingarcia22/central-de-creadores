@@ -73,17 +73,15 @@ const DesignSystemPage: React.FC = () => {
         <div className="border-b border-border bg-card">
           <div className="container mx-auto px-6">
             <Tabs
-              value={activeTab}
-              onChange={setActiveTab}
-              items={tabs.map(tab => ({
-                value: tab.id,
-                label: (
-                  <div className="flex items-center gap-2">
-                    <tab.icon className="w-4 h-4" />
-                    {tab.label}
-                  </div>
-                )
+              tabs={tabs.map(tab => ({
+                id: tab.id,
+                label: tab.label,
+                icon: <tab.icon className="w-4 h-4" />,
+                content: null
               }))}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              defaultActiveTab="colors"
             />
           </div>
         </div>
