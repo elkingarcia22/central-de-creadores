@@ -595,7 +595,7 @@ export default function AgregarParticipanteModal({
             
             {tipoParticipante === 'interno' && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => setMostrarModalInterno(true)}
                 disabled={loading}
@@ -607,7 +607,7 @@ export default function AgregarParticipanteModal({
 
             {tipoParticipante === 'externo' && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => setMostrarModalExterno(true)}
                 disabled={loading}
@@ -619,7 +619,7 @@ export default function AgregarParticipanteModal({
 
             {tipoParticipante === 'friend_family' && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => setMostrarModalFriendFamily(true)}
                 disabled={loading}
@@ -721,7 +721,7 @@ export default function AgregarParticipanteModal({
         <div className="flex gap-3 pt-4">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={onClose}
             disabled={loading}
             fullWidth

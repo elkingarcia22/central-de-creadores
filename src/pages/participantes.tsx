@@ -135,8 +135,8 @@ export default function ParticipantesPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'} mt-1`}>
-                  <ParticipantesIcon className="w-8 h-8 text-purple-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'} mt-1`}>
+                  <ParticipantesIcon className="w-8 h-8 text-secondary" />
                 </div>
                 <div>
                   <Typography variant="h2" color="title" weight="bold">

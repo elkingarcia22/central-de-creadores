@@ -140,8 +140,8 @@ export default function SesionesPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'} mt-1`}>
-                  <SesionesIcon className="w-8 h-8 text-orange-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'} mt-1`}>
+                  <SesionesIcon className="w-8 h-8 text-warning" />
                 </div>
                 <div>
                   <Typography variant="h2" color="title" weight="bold">
@@ -252,8 +252,8 @@ export default function SesionesPage() {
                   En Curso
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                <UserIcon className="w-6 h-6 text-orange-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
+                <UserIcon className="w-6 h-6 text-warning" />
               </div>
             </div>
           </Card>
@@ -364,14 +364,14 @@ export default function SesionesPage() {
                 {/* Acciones */}
                 <div className="flex gap-2 pt-2">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => router.push(`/sesiones/${sesion.id}`)}
                   >
                     Ver Detalles
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => router.push(`/sesiones/${sesion.id}/editar`)}
                   >

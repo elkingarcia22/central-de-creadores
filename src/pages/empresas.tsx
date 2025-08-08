@@ -123,8 +123,8 @@ export default function EmpresasPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'} mt-1`}>
-                  <EmpresasIcon className="w-8 h-8 text-green-600" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'} mt-1`}>
+                  <EmpresasIcon className="w-8 h-8 text-success" />
                 </div>
                 <div>
                   <Typography variant="h2" color="title" weight="bold">
@@ -203,8 +203,8 @@ export default function EmpresasPage() {
                   Empresas Activas
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-green-50'}`}>
-                <UserIcon className="w-6 h-6 text-green-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                <UserIcon className="w-6 h-6 text-success" />
               </div>
             </div>
           </Card>
@@ -339,21 +339,21 @@ export default function EmpresasPage() {
                 {/* Acciones */}
                 <div className="flex gap-2 pt-2">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}`)}
                   >
                     Ver Detalles
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}/editar`)}
                   >
                     Editar
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}/proyectos`)}
                   >

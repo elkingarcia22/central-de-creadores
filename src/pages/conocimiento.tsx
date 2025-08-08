@@ -131,8 +131,8 @@ export default function ConocimientoPage() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-start gap-4">
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900 bg-opacity-20' : 'bg-indigo-50'} mt-1`}>
-                <ConocimientoIcon className="w-8 h-8 text-indigo-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900 bg-opacity-20' : 'bg-info/10'} mt-1`}>
+                <ConocimientoIcon className="w-8 h-8 text-info" />
               </div>
               <div>
                 <Typography variant="h2" color="title" weight="bold">
@@ -188,8 +188,8 @@ export default function ConocimientoPage() {
                   Total Artículos
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900 bg-opacity-20' : 'bg-indigo-50'}`}>
-                <ConocimientoIcon className="w-6 h-6 text-indigo-600" />
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900 bg-opacity-20' : 'bg-info/10'}`}>
+                <ConocimientoIcon className="w-6 h-6 text-info" />
               </div>
             </div>
           </Card>
@@ -437,7 +437,7 @@ export default function ConocimientoPage() {
               >
                   <div className="text-center space-y-3">
                     <div className="inline-flex p-3 rounded-lg bg-card">
-                      <ConocimientoIcon className="w-8 h-8 text-indigo-600" />
+                      <ConocimientoIcon className="w-8 h-8 text-info" />
                     </div>
                     <div>
                       <Typography variant="h5" weight="semibold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>

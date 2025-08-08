@@ -379,7 +379,7 @@ export default function MetricasPage() {
                       </Button>
                     )}
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       size="sm"
                       onClick={() => router.push(`/metricas/reporte/${reporte.id}`)}
                     >
@@ -413,7 +413,7 @@ export default function MetricasPage() {
               Exportar Datos
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="lg"
               onClick={() => router.push('/metricas/configuracion')}
             >

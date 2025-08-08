@@ -294,8 +294,8 @@ export default function AsignarAgendamientoModal({
                 Investigación *
               </Typography>
               {investigaciones.length === 0 ? (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                  <Typography variant="body2" color="secondary" className="text-yellow-700 dark:text-yellow-300">
+                <div className="bg-warning/10 dark:bg-warning/20 p-4 rounded-lg">
+                  <Typography variant="body2" color="secondary" className="text-warning">
                     No hay investigaciones disponibles para asignar agendamiento. 
                     Todas las investigaciones ya tienen reclutamiento asignado o no están en estado "por agendar".
                   </Typography>
@@ -325,8 +325,8 @@ export default function AsignarAgendamientoModal({
               {isEditMode ? 'Responsable del Agendamiento' : 'Responsable del Agendamiento *'}
             </Typography>
             {responsables.length === 0 ? (
-              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-                <Typography variant="body2" color="secondary" className="text-red-700 dark:text-red-300">
+              <div className="bg-destructive/10 dark:bg-destructive/20 p-4 rounded-lg">
+                <Typography variant="body2" color="secondary" className="text-destructive">
                   No se pudieron cargar los usuarios responsables. 
                   Verifica que existan usuarios en el sistema con roles de reclutador o administrador.
                 </Typography>
