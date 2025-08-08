@@ -31,7 +31,7 @@ export const Tabs: React.FC<TabsProps> = ({
   className = '',
   fullWidth = false
 }) => {
-  const [internalActiveTab, setInternalActiveTab] = useState(defaultActiveTab || (tabs const [internalActiveTab, setInternalActiveTab] = useState(defaultActiveTab || tabs[0]?.id);const [internalActiveTab, setInternalActiveTab] = useState(defaultActiveTab || tabs[0]?.id); tabs.length > 0 ? tabs[0]?.id : undefined));
+  const [internalActiveTab, setInternalActiveTab] = useState(defaultActiveTab || (tabs && tabs.length > 0 ? tabs[0]?.id : undefined));
   const { theme } = useTheme();
 
   const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalActiveTab;
@@ -82,7 +82,7 @@ export const Tabs: React.FC<TabsProps> = ({
       {/* Tab Headers */}
       <div className={`flex ${fullWidth ? 'w-full' : ''} ${currentVariant.container}`}>
         <div className={`flex ${fullWidth ? 'w-full' : 'space-x-1'} ${variant === 'pills' ? '' : 'space-x-0'}`}>
-          {tabs {tabs.map((tab) => ({tabs.map((tab) => ( tabs.length > 0 ? tabs.map((tab) => (
+          {tabs && tabs.length > 0 ? tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => !tab.disabled && handleTabChange(tab.id)}
@@ -107,7 +107,7 @@ export const Tabs: React.FC<TabsProps> = ({
                 </span>
               )}
             </button>
-          ))}
+          )) : null}
         </div>
       </div>
 
