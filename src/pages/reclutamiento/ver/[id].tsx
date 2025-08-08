@@ -891,7 +891,7 @@ const VerReclutamiento: NextPage = () => {
           {selectedParticipante.estado_agendamiento?.nombre && (
             <div className="flex items-center gap-2">
               <Typography variant="caption" color="secondary">Estado de Agendamiento</Typography>
-              <Badge
+              <Chip
                 variant={getEstadoAgendamientoBadgeVariant(selectedParticipante.estado_agendamiento.nombre)}
                 className="ml-2"
               >
@@ -2383,7 +2383,7 @@ const VerReclutamiento: NextPage = () => {
             <div className="flex items-center gap-3">
               <Typography variant="h2">Ver Reclutamiento</Typography>
               {reclutamiento && (
-                <Badge
+                <Chip
                   variant={getEstadoBadgeVariant(reclutamiento.estado_reclutamiento_nombre)}
                   className="ml-2"
                 >

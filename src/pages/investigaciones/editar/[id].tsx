@@ -377,7 +377,7 @@ const EditarInvestigacionPage: NextPage = () => {
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <Typography variant="h2">{investigacion.nombre}</Typography>
-                <Badge 
+                <Chip 
                   variant={obtenerColorEstado(investigacion.estado)} 
                   className="capitalize"
                 >
