@@ -114,7 +114,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
               onClick={() => handleActionClick(action)}
               disabled={action.disabled}
               className={`
-                w-full flex items-center gap-3 px-4 py-2 text-sm
+                w-full flex items-center gap-3 px-4 py-2.5 text-sm
                 transition-colors duration-200
                 ${action.disabled 
                   ? 'opacity-50 cursor-not-allowed' 
@@ -123,7 +123,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                 ${action.className || 'text-gray-700 dark:text-gray-200'}
               `}
             >
-              <span className="flex-shrink-0">
+              <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
                 {action.icon}
               </span>
               <span className="truncate">
