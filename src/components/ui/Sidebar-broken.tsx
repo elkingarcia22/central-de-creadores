@@ -96,11 +96,13 @@ const Sidebar: React.FC<SidebarProps> = ({
             position="right"
             delay={isCollapsed ? 200 : 0}
           >
-            <NavigationItem
-              {...item}
-              isCollapsed={isCollapsed}
-              onClick={() => onItemClick?.(item.href)}
-            />
+            <div>
+              <NavigationItem
+                {...item}
+                isCollapsed={isCollapsed}
+                onClick={() => onItemClick?.(item.href)}
+              />
+            </div>
           </Tooltip>
         ))}
       </nav>
@@ -111,14 +113,16 @@ const Sidebar: React.FC<SidebarProps> = ({
           position="right"
           delay={isCollapsed ? 200 : 0}
         >
-          <NavigationItem
-            label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
-            href="#"
-            icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-muted-foreground" /> : <MoonIcon className="w-6 h-6 text-muted-foreground" />}
-            isCollapsed={isCollapsed}
-            onClick={toggleTheme}
-            asButton={true}
-          />
+          <div>
+            <NavigationItem
+              label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
+              href="#"
+              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-muted-foreground" /> : <MoonIcon className="w-6 h-6 text-muted-foreground" />}
+              isCollapsed={isCollapsed}
+              onClick={toggleTheme}
+              asButton={true}
+            />
+          </div>
         </Tooltip>
         
         {onSettings && (
@@ -127,14 +131,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             position="right"
             delay={isCollapsed ? 200 : 0}
           >
-            <NavigationItem
-              label="Configuraciones"
-              href="#"
-              icon={<SettingsIcon className="w-6 h-6 text-muted-foreground" />}
-              isCollapsed={isCollapsed}
-              onClick={onSettings}
-              asButton={true}
-            />
+            <div>
+              <NavigationItem
+                label="Configuraciones"
+                href="#"
+                icon={<SettingsIcon className="w-6 h-6 text-muted-foreground" />}
+                isCollapsed={isCollapsed}
+                onClick={onSettings}
+                asButton={true}
+              />
+            </div>
           </Tooltip>
         )}
         
@@ -144,15 +150,17 @@ const Sidebar: React.FC<SidebarProps> = ({
             position="right"
             delay={isCollapsed ? 200 : 0}
           >
-            <NavigationItem
-              label="Cerrar sesión"
-              href="#"
-              icon={<LogoutIcon className="w-6 h-6 text-red-600" />}
-              isCollapsed={isCollapsed}
-              onClick={onLogout}
-              asButton={true}
-              className="text-red-600 hover:text-red-700"
-            />
+            <div>
+              <NavigationItem
+                label="Cerrar sesión"
+                href="#"
+                icon={<LogoutIcon className="w-6 h-6 text-red-600" />}
+                isCollapsed={isCollapsed}
+                onClick={onLogout}
+                asButton={true}
+                className="text-red-600 hover:text-red-700"
+              />
+            </div>
           </Tooltip>
         )}
       </div>
