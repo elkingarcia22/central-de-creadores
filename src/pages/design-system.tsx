@@ -5,14 +5,15 @@ import TypographySection from '../components/design-system/TypographySection';
 import ComponentsSection from '../components/design-system/ComponentsSection';
 import SpacingSection from '../components/design-system/SpacingSection';
 import IconsSection from '../components/design-system/IconsSection';
+import ElevationSection from '../components/design-system/ElevationSection';
 import { 
   PaletteIcon, 
   TypeIcon, 
   BoxIcon, 
   GridIcon, 
-  EyeIcon
+  EyeIcon,
+  ElevationIcon
 } from '../components/icons';
-
 
 const DesignSystemPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('colors');
@@ -23,6 +24,7 @@ const DesignSystemPage: React.FC = () => {
     { id: 'components', label: 'Componentes', icon: BoxIcon, content: <ComponentsSection /> },
     { id: 'spacing', label: 'Espaciado', icon: GridIcon, content: <SpacingSection /> },
     { id: 'icons', label: 'Iconos', icon: EyeIcon, content: <IconsSection /> },
+    { id: 'elevation', label: 'Elevación', icon: ElevationIcon, content: <ElevationSection /> },
   ];
 
   return (
