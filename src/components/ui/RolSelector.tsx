@@ -7,11 +7,32 @@ import { ChevronDownIcon, UserIcon } from '../icons';
 interface RolSelectorProps {
   className?: string;
   variant?: 'sidebar' | 'mobile';
+  isCollapsed?: boolean;
 }
+
+// Función para abreviar nombres de roles
+const abbreviateRole = (role: string): string => {
+  const roleLower = role.toLowerCase();
+  switch (roleLower) {
+    case 'administrador':
+      return 'Admin';
+    case 'investigador':
+      return 'Inv';
+    case 'reclutador':
+      return 'Rec';
+    case 'coordinador':
+      return 'Coord';
+    case 'supervisor':
+      return 'Sup';
+    default:
+      return role.length > 8 ? role.substring(0, 8) + '...' : role;
+  }
+};
 
 export const RolSelector: React.FC<RolSelectorProps> = ({ 
   className = '', 
-  variant = 'sidebar' 
+  variant = 'sidebar',
+  isCollapsed = false
 }) => {
   const { rolSeleccionado, rolesDisponibles, setRolSeleccionado } = useRol();
   const { theme } = useTheme();
@@ -41,19 +62,6 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
     }
   }, []);
 
-  // Debug: Log para ver los estados
-  useEffect(() => {
-    console.log('RolSelector Debug:', {
-      mounted,
-      rolSeleccionado,
-      rolesDisponibles,
-      localRoles,
-      rolesLength: rolesDisponibles?.length,
-      localRolesLength: localRoles?.length,
-      availableRoles: rolesDisponibles && rolesDisponibles.length > 0 ? rolesDisponibles : localRoles
-    });
-  }, [mounted, rolSeleccionado, rolesDisponibles, localRoles]);
-
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -70,7 +78,7 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
   if (!mounted) {
     return (
       <span className={`capitalize ${className}`}>
-        {rolSeleccionado || 'Usuario'}
+        {isCollapsed ? abbreviateRole(rolSeleccionado || 'Usuario') : (rolSeleccionado || 'Usuario')}
       </span>
     );
   }
@@ -84,7 +92,7 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
   if (!availableRoles || availableRoles.length <= 1) {
     return (
       <span className={`capitalize ${className}`}>
-        {rolSeleccionado || 'Usuario'}
+        {isCollapsed ? abbreviateRole(rolSeleccionado || 'Usuario') : (rolSeleccionado || 'Usuario')}
       </span>
     );
   }
@@ -94,13 +102,13 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
     const rolNormalizado = roleName.toLowerCase();
     switch (rolNormalizado) {
       case 'administrador':
-        return '/investigaciones'; // Módulo principal para administrador
+        return '/investigaciones';
       case 'investigador':
-        return '/investigaciones'; // Módulo principal para investigador
+        return '/investigaciones';
       case 'reclutador':
-        return '/reclutamiento'; // Módulo principal para reclutador
+        return '/reclutamiento';
       default:
-        return `/dashboard/${rolNormalizado}`; // Fallback al dashboard específico
+        return `/dashboard/${rolNormalizado}`;
     }
   };
 
@@ -127,12 +135,14 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
           ${isSidebar ? 'text-sm' : 'text-base'}
         `}
       >
-        <span>{rolSeleccionado || 'Usuario'}</span>
-        <ChevronDownIcon 
-          className={`${isSidebar ? 'w-3 h-3' : 'w-4 h-4'} transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
-        />
+        <span>{isCollapsed ? abbreviateRole(rolSeleccionado || 'Usuario') : (rolSeleccionado || 'Usuario')}</span>
+        {!isCollapsed && (
+          <ChevronDownIcon 
+            className={`${isSidebar ? 'w-3 h-3' : 'w-4 h-4'} transition-transform ${
+              isOpen ? 'rotate-180' : ''
+            }`} 
+          />
+        )}
       </button>
 
       {isOpen && (
@@ -172,4 +182,4 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
       )}
     </div>
   );
-}; 
+};
