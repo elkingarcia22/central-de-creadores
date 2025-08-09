@@ -35,7 +35,7 @@
 .dark {
   /* === MODO OSCURO === */
   --background: 10 10 10; /* zinc-950 */
-  --foreground: 250 250 250; /* slate-50 */
+  --foreground: 255 255 255; /* slate-50 */
   --card: 20 20 20; /* zinc-900 */
   --card-foreground: 250 250 250; /* slate-50 */
   --primary: 70 107 211; /* Azul pastel */
@@ -56,7 +56,7 @@
   --info-foreground: 255 255 255; /* white */
   --input: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
   --input-solid: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
-  --border: 63 63 70; /* zinc-600 - Más claro para mejor contraste */
+  --border: 161 161 170; /* zinc-500 - Más claro para que se vea en modo oscuro */
   --ring: 70 107 211; /* Azul pastel */
   --popover: 20 20 20; /* zinc-900 */
   --popover-foreground: 250 250 250; /* slate-50 */
