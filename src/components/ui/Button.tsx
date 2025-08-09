@@ -6,7 +6,7 @@ export const Button = ({
   size = "md", 
   ...props 
 }) => { 
-  const baseClasses = "px-4 py-2 rounded-md font-medium transition-colors"; 
+  const baseClasses = "px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-start"; 
   const variantClasses = { 
     primary: "bg-blue-500 text-white hover:bg-blue-600", 
     secondary: "bg-gray-500 text-white hover:bg-gray-600", 

@@ -34,7 +34,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   }`;
   
     const activeClasses = isActive
-    ? 'bg-primary text-primary-foreground border-r-2 border-primary'
+    ? 'bg-muted text-foreground border-r-2 border-primary'
     : 'text-muted-foreground hover:bg-muted hover:text-foreground';
   
   const handleClick = (e: React.MouseEvent) => {
