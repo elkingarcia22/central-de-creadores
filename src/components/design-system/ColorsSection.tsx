@@ -26,75 +26,67 @@ const ColorsSection: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Modo Claro */}
-        <Card className="p-6">
-          <div className="mb-4">
-            
-            <Typography variant="h3" weight="semibold">
-              Modo Claro
-            </Typography>
-          </div>
-          
-          <div className="space-y-4">
-            {colorTokens.map((token) => (
-              <div key={token.name} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                <div>
-                  <Typography variant="subtitle2" weight="medium">
-                    {token.name}
-                  </Typography>
-                  <Typography variant="caption" color="secondary">
-                    {token.description}
-                  </Typography>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-12 h-8 rounded border border-border"
-                    style={{ backgroundColor: token.light }}
-                  ></div>
-                  <Typography variant="caption" className="font-mono">
-                    {token.light}
-                  </Typography>
-                </div>
+      {/* Modo Claro */}
+      <Card className="p-6">
+        <Typography variant="h3" weight="semibold" className="mb-4">
+          Modo Claro
+        </Typography>
+        
+        <div className="space-y-4">
+          {colorTokens.map((token) => (
+            <div key={token.name} className="flex items-center justify-between p-3 border border-border rounded-lg">
+              <div>
+                <Typography variant="subtitle2" weight="medium">
+                  {token.name}
+                </Typography>
+                <Typography variant="caption" color="secondary">
+                  {token.description}
+                </Typography>
               </div>
-            ))}
-          </div>
-        </Card>
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-12 h-8 rounded border border-border"
+                  style={{ backgroundColor: token.light }}
+                ></div>
+                <Typography variant="caption" className="font-mono">
+                  {token.light}
+                </Typography>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
 
-        {/* Modo Oscuro */}
-        <Card className="p-6">
-          <div className="mb-4">
-            
-            <Typography variant="h3" weight="semibold">
-              Modo Oscuro
-            </Typography>
-          </div>
-          
-          <div className="space-y-4">
-            {colorTokens.map((token) => (
-              <div key={token.name} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                <div>
-                  <Typography variant="subtitle2" weight="medium">
-                    {token.name}
-                  </Typography>
-                  <Typography variant="caption" color="secondary">
-                    {token.description}
-                  </Typography>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-12 h-8 rounded border border-border"
-                    style={{ backgroundColor: token.dark }}
-                  ></div>
-                  <Typography variant="caption" className="font-mono">
-                    {token.dark}
-                  </Typography>
-                </div>
+      {/* Modo Oscuro */}
+      <Card className="p-6">
+        <Typography variant="h3" weight="semibold" className="mb-4">
+          Modo Oscuro
+        </Typography>
+        
+        <div className="space-y-4">
+          {colorTokens.map((token) => (
+            <div key={token.name} className="flex items-center justify-between p-3 border border-border rounded-lg">
+              <div>
+                <Typography variant="subtitle2" weight="medium">
+                  {token.name}
+                </Typography>
+                <Typography variant="caption" color="secondary">
+                  {token.description}
+                </Typography>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-12 h-8 rounded border border-border"
+                  style={{ backgroundColor: token.dark }}
+                ></div>
+                <Typography variant="caption" className="font-mono">
+                  {token.dark}
+                </Typography>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       {/* Ejemplos de uso */}
       <Card className="p-6">
