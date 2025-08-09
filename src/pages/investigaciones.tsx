@@ -1158,7 +1158,7 @@ export default function InvestigacionesPage() {
             label: 'Eliminar',
             icon: <TrashIcon className="w-4 h-4" />,
             onClick: () => handleDelete(row),
-            className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300'
+            className: 'text-destructive hover:text-destructive/80'
           }
         ];
 

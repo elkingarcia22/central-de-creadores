@@ -208,7 +208,7 @@ export default function GestionUsuariosPage() {
       onClick: (row: any) => {
         setUsuarioDelete(row);
       },
-      className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
     }
   ];
 
@@ -223,7 +223,7 @@ export default function GestionUsuariosPage() {
         }
         setBulkDeleteUsers(selectedIds);
       },
-      className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
     }
   ];
 

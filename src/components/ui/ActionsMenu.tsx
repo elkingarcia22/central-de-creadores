@@ -76,7 +76,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
           onClick={() => setIsOpen(!isOpen)}
           className={`
             p-2 rounded-md transition-colors duration-200
-            hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1
+            hover:bg-muted focus:outline-none focus:outline-none
             text-muted-foreground
           `}
           aria-label="Más opciones"

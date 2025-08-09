@@ -490,7 +490,7 @@ const VerInvestigacion: NextPage = () => {
       label: 'Eliminar',
       icon: <TrashIcon className="w-4 h-4" />,
       onClick: handleEliminarInvestigacion,
-      className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300'
+      className: 'text-destructive hover:text-destructive/80'
     }
   ];
 
