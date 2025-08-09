@@ -29,7 +29,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   
   const isActive = href && (router.pathname === href || router.asPath === href);
   
-  const baseClasses = `flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+  const baseClasses = `flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
     isCollapsed ? 'justify-center px-2' : ''
   }`;
   
@@ -53,7 +53,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           onClick={handleClick}
           aria-expanded={open}
         >
-          <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
+          <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 text-center leading-none">{icon}</span>
           {!isCollapsed && <span className="flex-1 text-left">{label}</span>}
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -84,7 +84,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         className={`${baseClasses} ${activeClasses} ${className} w-full focus:outline-none`}
         onClick={onClick}
       >
-        <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
+        <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 text-center leading-none">{icon}</span>
         {!isCollapsed && <span>{label}</span>}
       </button>
     );
@@ -105,7 +105,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         if (onClick) onClick();
       }}
     >
-      <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
+      <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 text-center leading-none">{icon}</span>
       {!isCollapsed && <span>{label}</span>}
     </Link>
   );
