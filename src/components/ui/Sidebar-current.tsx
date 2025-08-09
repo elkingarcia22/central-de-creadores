@@ -48,6 +48,70 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const displayName = user?.name || user?.email || 'Usuario';
 
+  // Función para renderizar NavigationItem con o sin tooltip
+  const renderNavigationItem = (item: SidebarItem, key: string) => {
+    const navItem = (
+      <NavigationItem
+        {...item}
+        isCollapsed={isCollapsed}
+        onClick={() => onItemClick?.(item.href)}
+      />
+    );
+
+    // Solo usar tooltip cuando está contraído
+    if (isCollapsed) {
+      return (
+        <Tooltip 
+          key={key}
+          content={item.label} 
+          position="right"
+          delay={200}
+        >
+          {navItem}
+        </Tooltip>
+      );
+    }
+
+    return <div key={key}>{navItem}</div>;
+  };
+
+  // Función para renderizar NavigationItem de acciones con o sin tooltip
+  const renderActionItem = (
+    label: string,
+    href: string,
+    icon: React.ReactNode,
+    onClick: () => void,
+    className?: string,
+    asButton = false
+  ) => {
+    const navItem = (
+      <NavigationItem
+        label={label}
+        href={href}
+        icon={icon}
+        isCollapsed={isCollapsed}
+        onClick={onClick}
+        asButton={asButton}
+        className={className}
+      />
+    );
+
+    // Solo usar tooltip cuando está contraído
+    if (isCollapsed) {
+      return (
+        <Tooltip 
+          content={label} 
+          position="right"
+          delay={200}
+        >
+          {navItem}
+        </Tooltip>
+      );
+    }
+
+    return <div>{navItem}</div>;
+  };
+
   return (
     <div className={`flex flex-col flex-grow bg-card border-r border-slate-200 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
       <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-200 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''} relative`}>
@@ -89,118 +153,36 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <nav className={`flex-1 px-2 py-4 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
-        {items.map((item) => {
-          const navItem = (
-            <NavigationItem
-              {...item}
-              isCollapsed={isCollapsed}
-              onClick={() => onItemClick?.(item.href)}
-            />
-          );
-
-          // Solo usar tooltip cuando está contraído
-          if (isCollapsed) {
-            return (
-              <Tooltip 
-                key={item.href}
-                content={item.label} 
-                position="right"
-                delay={200}
-              >
-                {navItem}
-              </Tooltip>
-            );
-          }
-
-          return <div key={item.href}>{navItem}</div>;
-        })}
+        {items.map((item) => renderNavigationItem(item, item.href))}
       </nav>
 
       <div className={`px-2 py-4 border-t border-slate-200 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
-        {/* Tema */}
-        {(() => {
-          const navItem = (
-            <NavigationItem
-              label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
-              href="#"
-              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-muted-foreground" /> : <MoonIcon className="w-6 h-6 text-muted-foreground" />}
-              isCollapsed={isCollapsed}
-              onClick={toggleTheme}
-              asButton={true}
-            />
-          );
-
-          if (isCollapsed) {
-            return (
-              <Tooltip 
-                content={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'} 
-                position="right"
-                delay={200}
-              >
-                {navItem}
-              </Tooltip>
-            );
-          }
-
-          return <div>{navItem}</div>;
-        })()}
+        {renderActionItem(
+          theme === 'dark' ? 'Tema claro' : 'Tema oscuro',
+          '#',
+          theme === 'dark' ? <SunIcon className="w-6 h-6 text-muted-foreground" /> : <MoonIcon className="w-6 h-6 text-muted-foreground" />,
+          toggleTheme,
+          undefined,
+          true
+        )}
         
-        {/* Configuraciones */}
-        {onSettings && (() => {
-          const navItem = (
-            <NavigationItem
-              label="Configuraciones"
-              href="#"
-              icon={<SettingsIcon className="w-6 h-6 text-muted-foreground" />}
-              isCollapsed={isCollapsed}
-              onClick={onSettings}
-              asButton={true}
-            />
-          );
-
-          if (isCollapsed) {
-            return (
-              <Tooltip 
-                content="Configuraciones" 
-                position="right"
-                delay={200}
-              >
-                {navItem}
-              </Tooltip>
-            );
-          }
-
-          return <div>{navItem}</div>;
-        })()}
+        {onSettings && renderActionItem(
+          'Configuraciones',
+          '#',
+          <SettingsIcon className="w-6 h-6 text-muted-foreground" />,
+          onSettings,
+          undefined,
+          true
+        )}
         
-        {/* Cerrar sesión */}
-        {onLogout && (() => {
-          const navItem = (
-            <NavigationItem
-              label="Cerrar sesión"
-              href="#"
-              icon={<LogoutIcon className="w-6 h-6 text-red-600" />}
-              isCollapsed={isCollapsed}
-              onClick={onLogout}
-              asButton={true}
-              className="text-red-600 hover:text-red-700"
-            />
-          );
-
-          if (isCollapsed) {
-            return (
-              <Tooltip 
-                content="Cerrar sesión" 
-                position="right"
-                delay={200}
-              >
-                {navItem}
-              </Tooltip>
-            );
-          }
-
-          return <div>{navItem}</div>;
-        })()}
+        {onLogout && renderActionItem(
+          'Cerrar sesión',
+          '#',
+          <LogoutIcon className="w-6 h-6 text-red-600" />,
+          onLogout,
+          'text-red-600 hover:text-red-700',
+          true
+        )}
       </div>
     </div>
   );
