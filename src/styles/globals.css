@@ -57,7 +57,7 @@
   --card-foreground: 248 250 252; /* slate-50 */
   
   /* === COLORES PRIMARIOS CORREGIDOS === */
-  --primary: 120 160 255;        /* Azul pastel suave */
+  --primary: 70 107 211;        /* Azul pastel suave */
   --primary-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
   --primary-hover: 96 165 250;   /* blue-400 - Hover más claro */
   
@@ -85,7 +85,7 @@
   --input: 39 39 42;             /* zinc-800 - Inputs grises */
   --input-solid: 39 39 42;       /* zinc-800 - Inputs grises */
   --border: 63 63 70;            /* zinc-700 - Borde visible */
-  --ring: 120 160 255;           /* Azul pastel suave - Foco */
+  --ring: 70 107 211;           /* Azul pastel suave - Foco */
   
   --popover: 20 20 23;           /* zinc-900 - Fondos de dropdowns */
   --popover-foreground: 248 250 252; /* slate-50 */
