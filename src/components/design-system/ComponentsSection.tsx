@@ -11,7 +11,8 @@ import {
   Tabs,
   ProgressBar,
   UserAvatar,
-  SimpleAvatar
+  SimpleAvatar,
+  ActionsMenu
 } from '../ui';
 import { 
   PlusIcon, 
@@ -20,12 +21,42 @@ import {
   UserIcon,
   CheckCircleIcon,
   AlertTriangleIcon,
-  InfoIcon
+  InfoIcon,
+  EyeIcon,
+  DownloadIcon
 } from '../icons';
 
 const ComponentsSection: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [showSideModal, setShowSideModal] = useState(false);
+
+  // Acciones de ejemplo para ActionsMenu
+  const menuActions = [
+    {
+      label: 'Ver detalles',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: () => console.log('Ver detalles'),
+      className: 'text-blue-600 hover:text-blue-700'
+    },
+    {
+      label: 'Editar',
+      icon: <EditIcon className="w-4 h-4" />,
+      onClick: () => console.log('Editar'),
+      className: 'text-green-600 hover:text-green-700'
+    },
+    {
+      label: 'Descargar',
+      icon: <DownloadIcon className="w-4 h-4" />,
+      onClick: () => console.log('Descargar'),
+      className: 'text-purple-600 hover:text-purple-700'
+    },
+    {
+      label: 'Eliminar',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: () => console.log('Eliminar'),
+      className: 'text-red-600 hover:text-red-700'
+    }
+  ];
 
   return (
     <div className="space-y-8">

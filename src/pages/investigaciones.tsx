@@ -16,6 +16,7 @@ import FilterDrawer from '../components/ui/FilterDrawer';
 import Chip from '../components/ui/Chip';
 import type { FilterValuesInvestigacion, FilterOptions } from '../components/ui/FilterDrawer';
 import ActionsMenu from '../components/ui/ActionsMenu';
+import TestActionsMenu from '../components/ui/TestActionsMenu';
 import GroupedActions from '../components/ui/GroupedActions';
 import { InlineSelect, InlineDate } from '../components/ui/InlineEdit';
 import InlineUserSelect from '../components/ui/InlineUserSelect';
@@ -1199,6 +1200,7 @@ export default function InvestigacionesPage() {
                   Gestiona y organiza todas las investigaciones
                   </Typography>
               </div>
+              <TestActionsMenu />
               <Button
                 variant="primary"
                 size="lg"
@@ -1296,7 +1298,8 @@ export default function InvestigacionesPage() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Button
+                <TestActionsMenu />
+              <Button
                   variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
                   onClick={handleOpenFilters}
                   className="relative flex items-center gap-2"

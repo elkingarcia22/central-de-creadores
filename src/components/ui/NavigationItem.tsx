@@ -34,7 +34,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   }`;
   
     const activeClasses = isActive
-    ? 'bg-muted text-foreground border-r-2 border-primary'
+    ? 'bg-primary text-primary-foreground border-r-2 border-primary'
     : 'text-muted-foreground hover:bg-muted hover:text-foreground';
   
   const handleClick = (e: React.MouseEvent) => {
@@ -53,7 +53,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           onClick={handleClick}
           aria-expanded={open}
         >
-          <span className="text-base">{icon}</span>
+          <span className="text-base w-4 h-4 flex items-center justify-center">{icon}</span>
           {!isCollapsed && <span className="flex-1 text-left">{label}</span>}
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -84,7 +84,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         className={`${baseClasses} ${activeClasses} ${className} w-full focus:outline-none`}
         onClick={onClick}
       >
-        <span className="text-base">{icon}</span>
+        <span className="text-base w-4 h-4 flex items-center justify-center">{icon}</span>
         {!isCollapsed && <span>{label}</span>}
       </button>
     );
@@ -105,7 +105,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         if (onClick) onClick();
       }}
     >
-      <span className="text-base">{icon}</span>
+      <span className="text-base w-4 h-4 flex items-center justify-center">{icon}</span>
       {!isCollapsed && <span>{label}</span>}
     </Link>
   );
