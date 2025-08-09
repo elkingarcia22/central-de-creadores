@@ -164,7 +164,7 @@ const ColorsSection: React.FC = () => {
                 style={{ backgroundColor: token.lightBg }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <Typography variant="subtitle2" weight="medium" className="text-foreground">
+                  <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
                     Modo Claro
                   </Typography>
                   <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ const ColorsSection: React.FC = () => {
                       className="w-8 h-8 rounded border border-border"
                       style={{ backgroundColor: token.light }}
                     ></div>
-                    <Typography variant="caption" className="font-mono text-foreground">
+                    <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
                       {token.light}
                     </Typography>
                   </div>
@@ -190,7 +190,7 @@ const ColorsSection: React.FC = () => {
                       </Typography>
                     </div>
                     <div className="flex-1">
-                      <Typography variant="body2" className="text-foreground">
+                      <Typography variant="body2" style={{ color: "rgb(15 23 42)" }}>
                         Color de fondo
                       </Typography>
                     </div>
@@ -206,7 +206,7 @@ const ColorsSection: React.FC = () => {
                       </Typography>
                     </div>
                     <div className="flex-1">
-                      <Typography variant="body2" className="text-foreground">
+                      <Typography variant="body2" style={{ color: "rgb(15 23 42)" }}>
                         Color de texto
                       </Typography>
                     </div>
