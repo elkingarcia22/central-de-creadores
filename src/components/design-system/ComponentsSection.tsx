@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon } from '../icons';
+import { Typography, Card, Button } from '../ui';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, DownloadIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -29,10 +29,25 @@ const ComponentsSection: React.FC = () => {
 
   const renderButtonComponent = () => {
     const buttonVariants = [
-      { name: 'primary', label: 'Primario', className: 'bg-blue-500 text-white hover:bg-blue-600' },
-      { name: 'secondary', label: 'Secundario', className: 'bg-gray-500 text-white hover:bg-gray-600' },
-      { name: 'destructive', label: 'Destructivo', className: 'bg-red-500 text-white hover:bg-red-600' },
-      { name: 'ghost', label: 'Ghost', className: 'bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }
+      { name: 'primary', label: 'Primario', variant: 'primary' as const },
+      { name: 'secondary', label: 'Secundario', variant: 'secondary' as const },
+      { name: 'outline', label: 'Outline', variant: 'outline' as const },
+      { name: 'ghost', label: 'Ghost', variant: 'ghost' as const },
+      { name: 'destructive', label: 'Destructivo', variant: 'destructive' as const }
+    ];
+
+    const buttonSizes = [
+      { name: 'sm', label: 'Pequeño', size: 'sm' as const },
+      { name: 'md', label: 'Mediano', size: 'md' as const },
+      { name: 'lg', label: 'Grande', size: 'lg' as const }
+    ];
+
+    const buttonExamples = [
+      { name: 'Con Icono Izquierda', icon: <PlusIcon />, iconPosition: 'left' as const },
+      { name: 'Con Icono Derecha', icon: <DownloadIcon />, iconPosition: 'right' as const },
+      { name: 'Solo Icono', icon: <EditIcon />, iconOnly: true },
+      { name: 'Cargando', loading: true },
+      { name: 'Deshabilitado', disabled: true }
     ];
 
     return (
@@ -46,13 +61,15 @@ const ComponentsSection: React.FC = () => {
           </Typography>
         </div>
 
+        {/* Variantes */}
         <Card className="p-6">
-          <Typography variant="h3" weight="semibold" className="mb-4 text-card-foreground">
+          <Typography variant="h3" weight="semibold" className="mb-4">
             Variantes
           </Typography>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {buttonVariants.map((variant) => (
               <div key={variant.name} className="space-y-4">
+                {/* Modo Claro */}
                 <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                   <div className="flex items-center justify-between mb-3">
                     <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
@@ -63,12 +80,13 @@ const ComponentsSection: React.FC = () => {
                     </Typography>
                   </div>
                   <div className="space-y-3">
-                    <button className={`px-4 py-2.5 rounded-md font-medium transition-colors ${variant.className}`}>
+                    <Button variant={variant.variant}>
                       {variant.label}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
+                {/* Modo Oscuro */}
                 <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
                   <div className="flex items-center justify-between mb-3">
                     <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
@@ -79,9 +97,115 @@ const ComponentsSection: React.FC = () => {
                     </Typography>
                   </div>
                   <div className="space-y-3">
-                    <button className={`px-4 py-2.5 rounded-md font-medium transition-colors ${variant.className}`}>
+                    <Button variant={variant.variant}>
                       {variant.label}
-                    </button>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Tamaños
+          </Typography>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {buttonSizes.map((size) => (
+              <div key={size.name} className="space-y-4">
+                {/* Modo Claro */}
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      Modo Claro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
+                      {size.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <Button variant="primary" size={size.size}>
+                      {size.label}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Modo Oscuro */}
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      Modo Oscuro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
+                      {size.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <Button variant="primary" size={size.size}>
+                      {size.label}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Ejemplos de Uso
+          </Typography>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {buttonExamples.map((example, index) => (
+              <div key={index} className="space-y-4">
+                {/* Modo Claro */}
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      Modo Claro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
+                      {example.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <Button 
+                      variant="primary"
+                      icon={example.icon}
+                      iconPosition={example.iconPosition}
+                      iconOnly={example.iconOnly}
+                      loading={example.loading}
+                      disabled={example.disabled}
+                    >
+                      {!example.iconOnly && !example.loading && example.name}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Modo Oscuro */}
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      Modo Oscuro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
+                      {example.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <Button 
+                      variant="primary"
+                      icon={example.icon}
+                      iconPosition={example.iconPosition}
+                      iconOnly={example.iconOnly}
+                      loading={example.loading}
+                      disabled={example.disabled}
+                    >
+                      {!example.iconOnly && !example.loading && example.name}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -130,22 +254,22 @@ const ComponentsSection: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <Card className="p-4">
+          <Card variant="default" padding="md" className="bg-card border border-slate-200 dark:border-slate-700">
             <Typography variant="h3" weight="semibold" className="mb-4 text-card-foreground">
               Categorías
             </Typography>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {componentCategories.map((category) => (
                 <div key={category.id}>
                   <button
                     onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-                    className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground text-muted-foreground hover:bg-muted hover:text-foreground hover:text-foreground focus:outline-none"
+                    className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
                   >
-                    <div>
-                      <Typography variant="subtitle2" weight="medium">
+                    <div className="text-left">
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
                         {category.name}
                       </Typography>
-                      <Typography variant="caption" color="secondary">
+                      <Typography variant="caption" className="text-muted-foreground">
                         {category.description}
                       </Typography>
                     </div>
@@ -157,7 +281,7 @@ const ComponentsSection: React.FC = () => {
                   </button>
                   
                   {activeCategory === category.id && (
-                    <div className="ml-4 mt-2 space-y-1">
+                    <div className="ml-4 mt-1 space-y-1">
                       {category.components.map((component) => (
                         <button
                           key={component.id}
@@ -168,10 +292,10 @@ const ComponentsSection: React.FC = () => {
                               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                           }`}
                         >
-                          <Typography variant="body2" weight="medium">
+                          <Typography variant="body2" weight="medium" className="text-foreground">
                             {component.name}
                           </Typography>
-                          <Typography variant="caption" color="secondary">
+                          <Typography variant="caption" className="text-muted-foreground">
                             {component.description}
                           </Typography>
                         </button>
