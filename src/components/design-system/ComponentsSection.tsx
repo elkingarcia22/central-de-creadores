@@ -1,62 +1,121 @@
 import React, { useState } from 'react';
-import { 
-  Typography, 
-  Card, 
-  Button, 
-  Chip, 
-  Input, 
-  Select, 
-  Modal,
-  SideModal,
-  Tabs,
-  ProgressBar,
-  UserAvatar,
-  SimpleAvatar,
-  ActionsMenu
-} from '../ui';
-import { 
-  PlusIcon, 
-  EditIcon, 
-  TrashIcon, 
-  UserIcon,
-  CheckCircleIcon,
-  AlertTriangleIcon,
-  InfoIcon,
-  EyeIcon,
-  DownloadIcon
-} from '../icons';
+import { Typography, Card } from '../ui';
+import { ChevronDownIcon, ChevronRightIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [showSideModal, setShowSideModal] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeComponent, setActiveComponent] = useState<string | null>(null);
 
-  // Acciones de ejemplo para ActionsMenu
-  const menuActions = [
+  const componentCategories = [
     {
-      label: 'Ver detalles',
-      icon: <EyeIcon className="w-4 h-4" />,
-      onClick: () => console.log('Ver detalles'),
-      className: 'text-blue-600 hover:text-blue-700'
+      id: 'inputs',
+      name: 'Inputs',
+      description: 'Campos de entrada de datos',
+      components: [
+        { id: 'text-input', name: 'Input de Texto', description: 'Campo de texto simple' },
+        { id: 'textarea', name: 'Área de Texto', description: 'Campo de texto multilínea' },
+        { id: 'select', name: 'Selector', description: 'Lista desplegable' }
+      ]
     },
     {
-      label: 'Editar',
-      icon: <EditIcon className="w-4 h-4" />,
-      onClick: () => console.log('Editar'),
-      className: 'text-green-600 hover:text-green-700'
-    },
-    {
-      label: 'Descargar',
-      icon: <DownloadIcon className="w-4 h-4" />,
-      onClick: () => console.log('Descargar'),
-      className: 'text-purple-600 hover:text-purple-700'
-    },
-    {
-      label: 'Eliminar',
-      icon: <TrashIcon className="w-4 h-4" />,
-      onClick: () => console.log('Eliminar'),
-      className: 'text-red-600 hover:text-red-700'
+      id: 'buttons',
+      name: 'Botones',
+      description: 'Elementos de acción',
+      components: [
+        { id: 'button', name: 'Botón', description: 'Botón principal de acción' }
+      ]
     }
   ];
+
+  const renderButtonComponent = () => {
+    const buttonVariants = [
+      { name: 'primary', label: 'Primario', className: 'bg-blue-500 text-white hover:bg-blue-600' },
+      { name: 'secondary', label: 'Secundario', className: 'bg-gray-500 text-white hover:bg-gray-600' },
+      { name: 'destructive', label: 'Destructivo', className: 'bg-red-500 text-white hover:bg-red-600' },
+      { name: 'ghost', label: 'Ghost', className: 'bg-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800' }
+    ];
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <Typography variant="h2" weight="bold" className="mb-2">
+            Botón
+          </Typography>
+          <Typography variant="body1" color="secondary">
+            Componente principal para acciones y navegación
+          </Typography>
+        </div>
+
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Variantes
+          </Typography>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {buttonVariants.map((variant) => (
+              <div key={variant.name} className="space-y-4">
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      Modo Claro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
+                      {variant.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <button className={`px-4 py-2.5 rounded-md font-medium transition-colors ${variant.className}`}>
+                      {variant.label}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      Modo Oscuro
+                    </Typography>
+                    <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
+                      {variant.name}
+                    </Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <button className={`px-4 py-2.5 rounded-md font-medium transition-colors ${variant.className}`}>
+                      {variant.label}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderComponentContent = () => {
+    if (!activeComponent) {
+      return (
+        <div className="text-center py-12">
+          <Typography variant="body1" color="secondary">
+            Selecciona un componente para ver sus detalles
+          </Typography>
+        </div>
+      );
+    }
+
+    switch (activeComponent) {
+      case 'button':
+        return renderButtonComponent();
+      default:
+        return (
+          <div className="text-center py-12">
+            <Typography variant="body1" color="secondary">
+              Componente en desarrollo
+            </Typography>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -69,238 +128,66 @@ const ComponentsSection: React.FC = () => {
         </Typography>
       </div>
 
-      {/* Botones */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Botones
-        </Typography>
-        
-        <div className="space-y-4">
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Variantes
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="primary">Primario</Button>
-              <Button variant="secondary">Secundario</Button>
-              <Button variant="ghost">Ghost</Button>
-              <Button variant="outline">Outline</Button>
-            </div>
-          </div>
-          
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Estados
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="primary" loading>Guardando...</Button>
-              <Button variant="secondary" disabled>Deshabilitado</Button>
-            </div>
-          </div>
-          
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Tamaños
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm">Pequeño</Button>
-              <Button size="md">Mediano</Button>
-              <Button size="lg">Grande</Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Chips */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Chips
-        </Typography>
-        
-        <div className="space-y-4">
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Variantes
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              <Chip variant="default">Default</Chip>
-              <Chip variant="primary">Primario</Chip>
-              <Chip variant="secondary">Secundario</Chip>
-              <Chip variant="success">Éxito</Chip>
-              <Chip variant="warning">Advertencia</Chip>
-              <Chip variant="danger">Error</Chip>
-              <Chip variant="info">Info</Chip>
-            </div>
-          </div>
-          
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Tamaños
-            </Typography>
-            <div className="flex flex-wrap gap-2">
-              <Chip size="sm">Pequeño</Chip>
-              <Chip size="md">Mediano</Chip>
-              <Chip size="lg">Grande</Chip>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Formularios */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Formularios
-        </Typography>
-        
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Campo de texto"
-              placeholder="Escribe algo..."
-              fullWidth
-            />
-            
-            <Select
-              label="Selector"
-              placeholder="Selecciona una opción"
-              options={[
-                { value: '1', label: 'Opción 1' },
-                { value: '2', label: 'Opción 2' },
-                { value: '3', label: 'Opción 3' },
-              ]}
-              fullWidth
-            />
-          </div>
-        </div>
-      </Card>
-
-      {/* Avatares */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Avatares
-        </Typography>
-        
-        <div className="space-y-4">
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Tipos
-            </Typography>
-            <div className="flex flex-wrap gap-4">
-              <div className="text-center">
-                <UserAvatar
-                  user={{
-                    id: '1',
-                    full_name: 'Juan Pérez',
-                    email: 'juan@ejemplo.com',
-                    avatar_url: null
-                  }}
-                  size="lg"
-                />
-                <Typography variant="caption" className="mt-1">Usuario con avatar</Typography>
-              </div>
-              
-              <div className="text-center">
-                <SimpleAvatar
-                  name="María García"
-                  size="lg"
-                />
-                <Typography variant="caption" className="mt-1">Usuario sin avatar</Typography>
-              </div>
-              
-              <div className="text-center">
-                <UserAvatar
-                  user={{
-                    id: '1',
-                    full_name: 'Ana López',
-                    email: 'ana@ejemplo.com',
-                    avatar_url: null
-                  }}
-                  size="md"
-                />
-                <Typography variant="caption" className="mt-1">Tamaño mediano</Typography>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Progreso */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Barras de Progreso
-        </Typography>
-        
-        <div className="space-y-4">
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Estados
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <Card className="p-4">
+            <Typography variant="h3" weight="semibold" className="mb-4">
+              Categorías
             </Typography>
             <div className="space-y-2">
-              <ProgressBar value={25} max={100} />
-              <ProgressBar value={50} max={100} />
-              <ProgressBar value={75} max={100} />
-              <ProgressBar value={100} max={100} />
+              {componentCategories.map((category) => (
+                <div key={category.id}>
+                  <button
+                    onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+                    className="flex items-center justify-between w-full p-2 text-left hover:bg-muted rounded-md transition-colors"
+                  >
+                    <div>
+                      <Typography variant="subtitle2" weight="medium">
+                        {category.name}
+                      </Typography>
+                      <Typography variant="caption" color="secondary">
+                        {category.description}
+                      </Typography>
+                    </div>
+                    {activeCategory === category.id ? (
+                      <ChevronDownIcon className="w-4 h-4" />
+                    ) : (
+                      <ChevronRightIcon className="w-4 h-4" />
+                    )}
+                  </button>
+                  
+                  {activeCategory === category.id && (
+                    <div className="ml-4 mt-2 space-y-1">
+                      {category.components.map((component) => (
+                        <button
+                          key={component.id}
+                          onClick={() => setActiveComponent(component.id)}
+                          className={`w-full p-2 text-left rounded-md transition-colors ${
+                            activeComponent === component.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:bg-muted'
+                          }`}
+                        >
+                          <Typography variant="body2" weight="medium">
+                            {component.name}
+                          </Typography>
+                          <Typography variant="caption" color="secondary">
+                            {component.description}
+                          </Typography>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Modales */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Modales
-        </Typography>
-        
-        <div className="flex gap-2">
-          <Button onClick={() => setShowModal(true)}>
-            Abrir Modal
-          </Button>
-          <Button onClick={() => setShowSideModal(true)}>
-            Abrir Side Modal
-          </Button>
+          </Card>
         </div>
 
-        {/* Modal */}
-        <Modal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title="Ejemplo de Modal"
-          size="md"
-        >
-          <Typography variant="body1">
-            Este es un ejemplo de modal del sistema de diseño.
-          </Typography>
-        </Modal>
-
-        {/* Side Modal */}
-        <SideModal
-          isOpen={showSideModal}
-          onClose={() => setShowSideModal(false)}
-          title="Ejemplo de Side Modal"
-          width="lg"
-        >
-          <Typography variant="body1">
-            Este es un ejemplo de side modal del sistema de diseño.
-          </Typography>
-        </SideModal>
-      </Card>
-
-      {/* Tabs */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Pestañas
-        </Typography>
-        
-        <Tabs
-          value="tab1"
-          onChange={() => {}}
-          items={[
-            { value: 'tab1', label: 'Pestaña 1' },
-            { value: 'tab2', label: 'Pestaña 2' },
-            { value: 'tab3', label: 'Pestaña 3' },
-          ]}
-        />
-      </Card>
+        <div className="lg:col-span-3">
+          {renderComponentContent()}
+        </div>
+      </div>
     </div>
   );
 };
