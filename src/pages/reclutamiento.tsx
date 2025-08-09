@@ -649,7 +649,7 @@ export default function ReclutamientoPage() {
             label: 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
             onClick: () => router.push(`/reclutamiento/ver/${row.reclutamiento_id}`),
-            className: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Agregar Participante',
@@ -658,28 +658,8 @@ export default function ReclutamientoPage() {
               setInvestigacionSeleccionada(row);
               setShowCrearReclutamientoModal(true);
             },
-            className: 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
-          {
-            label: 'Actualizar Estado',
-            icon: <LoadingIcon className="w-4 h-4" />,
-            onClick: () => {
-              // Obtener el estado actual basándose en el progreso
-              const porcentaje = row.porcentaje_completitud || 0;
-              let estadoId = '';
-              
-              if (porcentaje === 0) {
-                estadoId = 'd32b84d1-6209-41d9-8108-03588ca1f9b5'; // Pendiente de agendamiento
-              } else if (porcentaje < 100) {
-                estadoId = '5b90c88c-0dc0-45d8-87c4-43fdebf2967c'; // En progreso
-              } else {
-                estadoId = '7b923720-3a4e-41db-967f-0f346114f029'; // Finalizado
-              }
-              
-              handleActualizarEstado(row.investigacion_id, estadoId);
-            },
-            className: 'text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300'
-          }
         ];
 
         // Agregar acción de crear seguimiento si la investigación está en progreso
@@ -688,7 +668,7 @@ export default function ReclutamientoPage() {
             label: 'Crear Seguimiento',
             icon: <ClipboardListIcon className="w-4 h-4" />,
             onClick: () => router.push(`/seguimientos/crear?investigacion=${row.investigacion_id}`),
-            className: 'text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           });
         }
 
