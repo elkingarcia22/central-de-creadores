@@ -74,9 +74,9 @@ const ComponentsSection: React.FC = () => {
                 </Typography>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
                         Modo Claro
                       </Typography>
                     </div>
@@ -88,9 +88,9 @@ const ComponentsSection: React.FC = () => {
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
                         Modo Oscuro
                       </Typography>
                     </div>
@@ -119,9 +119,9 @@ const ComponentsSection: React.FC = () => {
                 </Typography>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
                         Modo Claro
                       </Typography>
                     </div>
@@ -133,9 +133,9 @@ const ComponentsSection: React.FC = () => {
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
                         Modo Oscuro
                       </Typography>
                     </div>
@@ -164,9 +164,9 @@ const ComponentsSection: React.FC = () => {
                 </Typography>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
                         Modo Claro
                       </Typography>
                     </div>
@@ -185,9 +185,9 @@ const ComponentsSection: React.FC = () => {
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
+                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
                         Modo Oscuro
                       </Typography>
                     </div>
