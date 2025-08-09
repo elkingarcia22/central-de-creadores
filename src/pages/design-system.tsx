@@ -11,7 +11,7 @@ import {
   TypeIcon, 
   BoxIcon, 
   GridIcon, 
-  EyeIcon,
+  SearchIcon,
   ElevationIcon
 } from '../components/icons';
 
@@ -23,7 +23,7 @@ const DesignSystemPage: React.FC = () => {
     { id: 'typography', label: 'Tipografía', icon: TypeIcon, content: <TypographySection /> },
     { id: 'components', label: 'Componentes', icon: BoxIcon, content: <ComponentsSection /> },
     { id: 'spacing', label: 'Espaciado', icon: GridIcon, content: <SpacingSection /> },
-    { id: 'icons', label: 'Iconos', icon: EyeIcon, content: <IconsSection /> },
+    { id: 'icons', label: 'Iconos', icon: SearchIcon, content: <IconsSection /> },
     { id: 'elevation', label: 'Elevación', icon: ElevationIcon, content: <ElevationSection /> },
   ];
 
