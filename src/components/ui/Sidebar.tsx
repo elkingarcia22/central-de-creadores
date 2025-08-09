@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full justify-start ${isCollapsed ? 'px-2' : 'px-3'}`}
         >
           {theme === 'dark' ? <SunIcon className="w-4 h-4 flex-shrink-0" /> : <MoonIcon className="w-4 h-4 flex-shrink-0" />}
-          {!isCollapsed && <span className="ml-2">{theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}</span>}
+          {!isCollapsed && <span className="ml-2.5">{theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}</span>}
         </Button>
         
         {onSettings && (
@@ -94,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className={`w-full justify-start ${isCollapsed ? 'px-2' : 'px-3'}`}
           >
             <SettingsIcon className="w-4 h-4 flex-shrink-0" />
-            {!isCollapsed && <span className="ml-2">Configuraciones</span>}
+            {!isCollapsed && <span className="ml-2.5">Configuraciones</span>}
           </Button>
         )}
         
@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className={`w-full justify-start text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 ${isCollapsed ? 'px-2' : 'px-3'}`}
           >
             <LogoutIcon className="w-4 h-4 flex-shrink-0" />
-            {!isCollapsed && <span className="ml-2">Cerrar sesión</span>}
+            {!isCollapsed && <span className="ml-2.5">Cerrar sesión</span>}
           </Button>
         )}
       </div>
