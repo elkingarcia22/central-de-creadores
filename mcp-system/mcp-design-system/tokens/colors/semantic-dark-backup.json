@@ -20,7 +20,7 @@
         "success-foreground": { "value": "{color.primitive.white.value}", "type": "color" },
         "warning": { "value": "{color.primitive.yellow.500.value}", "type": "color" },
         "warning-foreground": { "value": "{color.primitive.slate.900.value}", "type": "color" },
-        "info": { "value": "96 165 250", "type": "color" },
+        "info": { "value": "{color.primitive.blue.400.value}", "type": "color" },
         "info-foreground": { "value": "{color.primitive.white.value}", "type": "color" },
         "input": { "value": "{color.primitive.white.value}", "type": "color" },
         "input-solid": { "value": "{color.primitive.white.value}", "type": "color" },
