@@ -66,13 +66,13 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="h3" weight="semibold" className="mb-4">
             Variantes
           </Typography>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {buttonVariants.map((variant) => (
               <Card key={variant.name} className="p-6">
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {variant.name}
                 </Typography>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Modo Claro */}
                   <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
@@ -123,13 +123,13 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="h3" weight="semibold" className="mb-4">
             Tamaños
           </Typography>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {buttonSizes.map((size) => (
               <Card key={size.name} className="p-6">
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {size.name}
                 </Typography>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Modo Claro */}
                   <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
@@ -180,13 +180,13 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="h3" weight="semibold" className="mb-4">
             Ejemplos de Uso
           </Typography>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {buttonExamples.map((example, index) => (
               <Card key={index} className="p-6">
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {example.name}
                 </Typography>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Modo Claro */}
                   <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
                     <div className="flex items-center justify-between mb-3">
