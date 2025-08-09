@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, MailIcon, LockIcon } from '../icons';
 
 // Componente Button específico para el sistema de diseño con estilos hardcodeados
 interface DesignSystemButtonProps {
@@ -125,6 +125,132 @@ const DesignSystemButton: React.FC<DesignSystemButtonProps> = ({
     >
       {renderContent()}
     </button>
+  );
+};
+
+// Componente Input específico para el sistema de diseño con estilos hardcodeados
+interface DesignSystemInputProps {
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'datetime-local' | 'time';
+  placeholder?: string;
+  value?: string | number;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'error' | 'success';
+  disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  fullWidth?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right';
+  label?: string;
+  helperText?: string;
+  error?: string;
+  className?: string;
+  theme?: "light" | "dark";
+}
+
+const DesignSystemInput: React.FC<DesignSystemInputProps> = ({
+  type = 'text',
+  placeholder,
+  value,
+  size = 'md',
+  variant = 'default',
+  disabled = false,
+  readOnly = false,
+  required = false,
+  fullWidth = false,
+  icon,
+  iconPosition = 'left',
+  label,
+  helperText,
+  error,
+  className = '',
+  theme = "light",
+  ...props
+}) => {
+  const baseClasses = "block w-full rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm min-h-[36px]',
+    md: 'px-4 py-2 text-sm min-h-[44px]',
+    lg: 'px-4 py-3 text-base min-h-[52px]'
+  };
+
+  // Estilos hardcodeados para modo claro
+  const lightVariantClasses = {
+    default: 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500',
+    error: 'bg-white border-red-500 text-gray-900 placeholder:text-gray-500 focus:border-red-500 focus:ring-red-500',
+    success: 'bg-white border-green-500 text-gray-900 placeholder:text-gray-500 focus:border-green-500 focus:ring-green-500'
+  };
+
+  // Estilos hardcodeados para modo oscuro
+  const darkVariantClasses = {
+    default: 'bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400',
+    error: 'bg-gray-800 border-red-400 text-white placeholder:text-gray-400 focus:border-red-400 focus:ring-red-400',
+    success: 'bg-gray-800 border-green-400 text-white placeholder:text-gray-400 focus:border-green-400 focus:ring-green-400'
+  };
+
+  const widthClass = fullWidth ? 'w-full' : '';
+  const iconPadding = icon ? (iconPosition === 'left' ? 'pl-10' : 'pr-10') : '';
+  const variantClasses = theme === "dark" ? darkVariantClasses : lightVariantClasses;
+  
+  const inputClasses = [
+    baseClasses,
+    sizeClasses[size],
+    variantClasses[error ? 'error' : variant],
+    widthClass,
+    iconPadding,
+    className
+  ].filter(Boolean).join(' ');
+
+  const iconClasses = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
+  const labelColor = theme === "dark" ? "text-white" : "text-gray-900";
+  const helperColor = theme === "dark" ? "text-gray-400" : "text-gray-600";
+  const errorColor = theme === "dark" ? "text-red-400" : "text-red-600";
+
+  return (
+    <div className={`${fullWidth ? 'w-full' : ''}`}>
+      {label && (
+        <label className={`block text-sm font-medium mb-0.5 ${labelColor}`}>
+          {label}
+          {required && <span className={`ml-1 ${errorColor}`}>*</span>}
+        </label>
+      )}
+      
+      <div className="relative">
+        {icon && iconPosition === 'left' && (
+          <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+            <span className={iconClasses}>
+              {icon}
+            </span>
+          </div>
+        )}
+        
+        <input
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          disabled={disabled}
+          readOnly={readOnly}
+          required={required}
+          className={inputClasses}
+          {...props}
+        />
+        
+        {icon && iconPosition === 'right' && (
+          <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+            <span className={iconClasses}>
+              {icon}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      {(helperText || error) && (
+        <p className={`text-sm mt-0.5 ${error ? errorColor : helperColor}`}>
+          {error || helperText}
+        </p>
+      )}
+    </div>
   );
 };
 
@@ -359,9 +485,285 @@ const ComponentsSection: React.FC = () => {
     );
   };
 
+  const renderInputComponent = () => {
+    const inputTypes = [
+      { name: 'text', label: 'Texto', type: 'text' as const, placeholder: 'Escribe algo...' },
+      { name: 'email', label: 'Email', type: 'email' as const, placeholder: 'correo@ejemplo.com' },
+      { name: 'password', label: 'Contraseña', type: 'password' as const, placeholder: '••••••••' },
+      { name: 'search', label: 'Búsqueda', type: 'search' as const, placeholder: 'Buscar...' }
+    ];
+
+    const inputSizes = [
+      { name: 'sm', label: 'Pequeño', size: 'sm' as const },
+      { name: 'md', label: 'Mediano', size: 'md' as const },
+      { name: 'lg', label: 'Grande', size: 'lg' as const }
+    ];
+
+    const inputVariants = [
+      { name: 'default', label: 'Por defecto', variant: 'default' as const },
+      { name: 'error', label: 'Error', variant: 'error' as const, error: 'Campo requerido' },
+      { name: 'success', label: 'Éxito', variant: 'success' as const }
+    ];
+
+    const inputExamples = [
+      { name: 'Con Icono Izquierda', icon: <SearchIcon />, iconPosition: 'left' as const },
+      { name: 'Con Icono Derecha', icon: <MailIcon />, iconPosition: 'right' as const },
+      { name: 'Con Label', label: 'Nombre completo' },
+      { name: 'Con Helper Text', helperText: 'Ingresa tu nombre completo' },
+      { name: 'Deshabilitado', disabled: true }
+    ];
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <Typography variant="h2" weight="bold" className="mb-2">
+            Input
+          </Typography>
+          <Typography variant="body1" color="secondary">
+            Campo de entrada de datos
+          </Typography>
+        </div>
+
+        {/* Tipos */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Tipos
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {inputTypes.map((inputType) => (
+              <Card key={inputType.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {inputType.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(248 250 252)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        type={inputType.type}
+                        placeholder={inputType.placeholder}
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(10 10 10)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        type={inputType.type}
+                        placeholder={inputType.placeholder}
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Tamaños
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {inputSizes.map((size) => (
+              <Card key={size.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {size.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(248 250 252)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        size={size.size}
+                        placeholder="Placeholder"
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(10 10 10)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        size={size.size}
+                        placeholder="Placeholder"
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Variantes */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Variantes
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {inputVariants.map((variant) => (
+              <Card key={variant.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {variant.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(248 250 252)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Placeholder"
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(10 10 10)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Placeholder"
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {inputExamples.map((example, index) => (
+              <Card key={index} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {example.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(248 250 252)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        icon={example.icon}
+                        iconPosition={example.iconPosition}
+                        label={example.label}
+                        helperText={example.helperText}
+                        disabled={example.disabled}
+                        placeholder="Placeholder"
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: 'rgb(10 10 10)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemInput 
+                        icon={example.icon}
+                        iconPosition={example.iconPosition}
+                        label={example.label}
+                        helperText={example.helperText}
+                        disabled={example.disabled}
+                        placeholder="Placeholder"
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   const renderComponentContent = () => {
     if (activeComponent === 'button') {
       return renderButtonComponent();
+    }
+    
+    if (activeComponent === 'text-input') {
+      return renderInputComponent();
     }
 
     return (
