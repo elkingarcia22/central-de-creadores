@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Card, Chip } from '../ui';
 
-const ColorsSection: React.FC = () => {
+const ColorsSectionNew: React.FC = () => {
   const colorTokens = [
     { 
       name: 'primary', 
@@ -325,4 +325,4 @@ const ColorsSection: React.FC = () => {
   );
 };
 
-export default ColorsSection;
+export default ColorsSectionNew;
