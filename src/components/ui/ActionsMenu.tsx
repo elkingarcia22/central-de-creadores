@@ -118,10 +118,10 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                   ? 'opacity-50 cursor-not-allowed' 
                   : 'hover:bg-accent'
                 }
-                ${action.className || 'text-popover-foreground'}
+                ${action.className || '!text-popover-foreground'}
               `}
             >
-              <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+              <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-current">
                 {action.icon}
               </span>
               <span className="truncate">
