@@ -31,11 +31,11 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = "rounded-md font-medium transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"; 
   
   const variantClasses = { 
-    primary: "bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500", 
-    secondary: "bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600", 
-    outline: "border border-gray-300 bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800",
-    ghost: "bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-500 dark:text-gray-200 dark:hover:bg-gray-800",
-    destructive: "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500"
+    primary: "bg-primary text-primary-foreground hover:bg-primary-hover focus:ring-primary", 
+    secondary: "bg-secondary text-secondary-foreground hover:bg-accent focus:ring-secondary", 
+    outline: "border border-border bg-transparent text-foreground hover:bg-muted focus:ring-border",
+    ghost: "bg-transparent text-foreground hover:bg-muted focus:ring-muted",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive-hover focus:ring-destructive"
   }; 
   
   const sizeClasses = { 
