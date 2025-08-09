@@ -5,7 +5,7 @@ import Typography from './Typography';
 import { RolSelector } from './RolSelector';
 import SimpleAvatar from './SimpleAvatar';
 import Button from './Button';
-import { SunIcon, MoonIcon, SettingsIcon, LogoutIcon, ChevronLeftIcon, ChevronRightIcon } from '../icons';
+import { SunIcon, MoonIcon, SettingsIcon, LogoutIcon } from '../icons';
 
 interface SidebarItem {
   label: string;
@@ -49,22 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={`flex flex-col flex-grow bg-card border-r border-slate-200 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-200 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''} relative`}>
-        {/* Botón de colapsar/expandir en la esquina superior derecha */}
-        {onToggleCollapse && (
-          <button
-            onClick={onToggleCollapse}
-            className="absolute top-2 right-2 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors"
-            aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-          >
-            {isCollapsed ? (
-              <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
-            ) : (
-              <ChevronLeftIcon className="w-4 h-4 text-muted-foreground" />
-            )}
-          </button>
-        )}
-        
+      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-200 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''}`}>
         <SimpleAvatar
           src={user?.avatar}
           fallbackText={displayName}
@@ -121,7 +106,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             isCollapsed={isCollapsed}
             onClick={onLogout}
             asButton={true}
-            className="text-red-600 hover:text-red-700"
           />
         )}
       </div>
