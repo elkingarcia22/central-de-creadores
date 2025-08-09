@@ -72,19 +72,13 @@ const ComponentsSection: React.FC = () => {
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {variant.name}
                 </Typography>
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
                         Modo Claro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(12 91 239)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
-                          {variant.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button variant={variant.variant}>
@@ -94,17 +88,11 @@ const ComponentsSection: React.FC = () => {
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
                         Modo Oscuro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(70 107 211)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
-                          {variant.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button variant={variant.variant}>
@@ -129,19 +117,13 @@ const ComponentsSection: React.FC = () => {
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {size.name}
                 </Typography>
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
                         Modo Claro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(12 91 239)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
-                          {size.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button variant="primary" size={size.size}>
@@ -151,17 +133,11 @@ const ComponentsSection: React.FC = () => {
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
                         Modo Oscuro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(70 107 211)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
-                          {size.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button variant="primary" size={size.size}>
@@ -178,7 +154,7 @@ const ComponentsSection: React.FC = () => {
         {/* Ejemplos */}
         <Card className="p-6">
           <Typography variant="h3" weight="semibold" className="mb-4">
-            Ejemplos de Uso
+            Ejemplos
           </Typography>
           <div className="grid grid-cols-1 gap-6">
             {buttonExamples.map((example, index) => (
@@ -186,19 +162,13 @@ const ComponentsSection: React.FC = () => {
                 <Typography variant="h3" weight="semibold" className="mb-4">
                   {example.name}
                 </Typography>
-                <div className="grid grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Modo Claro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(248 250 252)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
                         Modo Claro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(12 91 239)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: "rgb(15 23 42)" }}>
-                          {example.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button 
@@ -209,23 +179,17 @@ const ComponentsSection: React.FC = () => {
                         loading={example.loading}
                         disabled={example.disabled}
                       >
-                        {!example.iconOnly && !example.loading && example.name}
+                        {!example.iconOnly && example.name}
                       </Button>
                     </div>
                   </div>
 
                   {/* Modo Oscuro */}
-                  <div className="p-6 rounded-lg border border-border" style={{ backgroundColor: 'rgb(10 10 10)' }}>
+                  <div className="p-6 rounded-lg border border-border bg-background dark:bg-background">
                     <div className="flex items-center justify-between mb-3">
-                      <Typography variant="subtitle2" weight="medium" style={{ color: 'rgb(250 250 250)' }}>
+                      <Typography variant="subtitle2" weight="medium" className="text-foreground dark:text-foreground">
                         Modo Oscuro
                       </Typography>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded border border-border" style={{ backgroundColor: 'rgb(70 107 211)' }}></div>
-                        <Typography variant="caption" className="font-mono" style={{ color: 'rgb(250 250 250)' }}>
-                          {example.name}
-                        </Typography>
-                      </div>
                     </div>
                     <div className="space-y-3">
                       <Button 
@@ -236,7 +200,7 @@ const ComponentsSection: React.FC = () => {
                         loading={example.loading}
                         disabled={example.disabled}
                       >
-                        {!example.iconOnly && !example.loading && example.name}
+                        {!example.iconOnly && example.name}
                       </Button>
                     </div>
                   </div>
@@ -250,28 +214,17 @@ const ComponentsSection: React.FC = () => {
   };
 
   const renderComponentContent = () => {
-    if (!activeComponent) {
-      return (
-        <div className="text-center py-12">
-          <Typography variant="body1" color="secondary">
-            Selecciona un componente para ver sus detalles
-          </Typography>
-        </div>
-      );
+    if (activeComponent === 'button') {
+      return renderButtonComponent();
     }
 
-    switch (activeComponent) {
-      case 'button':
-        return renderButtonComponent();
-      default:
-        return (
-          <div className="text-center py-12">
-            <Typography variant="body1" color="secondary">
-              Componente en desarrollo
-            </Typography>
-          </div>
-        );
-    }
+    return (
+      <Card className="p-6 text-center">
+        <Typography variant="body1" color="secondary">
+          Selecciona un componente del menú para ver sus ejemplos.
+        </Typography>
+      </Card>
+    );
   };
 
   return (
@@ -285,63 +238,53 @@ const ComponentsSection: React.FC = () => {
         </Typography>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">
-          <Card variant="default" padding="md" className="bg-card border border-slate-200 dark:border-slate-700">
-            <Typography variant="h3" weight="semibold" className="mb-4 text-card-foreground">
-              Categorías
-            </Typography>
-            <div className="space-y-1">
-              {componentCategories.map((category) => (
-                <div key={category.id}>
-                  <button
-                    onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-                    className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
-                  >
-                    <div className="text-left">
-                      <Typography variant="subtitle2" weight="medium" className="text-foreground">
-                        {category.name}
-                      </Typography>
-                      <Typography variant="caption" className="text-muted-foreground">
-                        {category.description}
-                      </Typography>
-                    </div>
-                    {activeCategory === category.id ? (
-                      <ChevronDownIcon className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </button>
-                  
-                  {activeCategory === category.id && (
-                    <div className="ml-4 mt-1 space-y-1">
-                      {category.components.map((component) => (
-                        <button
-                          key={component.id}
-                          onClick={() => setActiveComponent(component.id)}
-                          className={`w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-left focus:outline-none ${
-                            activeComponent === component.id
-                              ? 'bg-muted text-foreground border-r-2 border-primary'
-                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                          }`}
-                        >
-                          <Typography variant="body2" weight="medium" className="text-foreground">
-                            {component.name}
-                          </Typography>
-                          <Typography variant="caption" className="text-muted-foreground">
-                            {component.description}
-                          </Typography>
-                        </button>
-                      ))}
-                    </div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Menú de Categorías */}
+        <div className="lg:w-64 flex-shrink-0">
+          <Card className="p-4 space-y-2">
+            {componentCategories.map((category) => (
+              <div key={category.id}>
+                <button
+                  onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
+                  className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+                >
+                  <span className="flex items-center gap-2">
+                    {category.id === 'inputs' && <PlusIcon className="w-4 h-4" />}
+                    {category.id === 'buttons' && <EditIcon className="w-4 h-4" />}
+                    {category.name}
+                  </span>
+                  {activeCategory === category.id ? (
+                    <ChevronDownIcon className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
                   )}
-                </div>
-              ))}
-            </div>
+                </button>
+                {activeCategory === category.id && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {category.components.map((component) => (
+                      <button
+                        key={component.id}
+                        onClick={() => setActiveComponent(component.id)}
+                        className={`w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-left focus:outline-none ${
+                          activeComponent === component.id
+                            ? 'bg-muted text-foreground border-r-2 border-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
+                      >
+                        <Typography variant="body2" weight="medium">
+                          {component.name}
+                        </Typography>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </Card>
         </div>
 
-        <div className="lg:col-span-3">
+        {/* Contenido del Componente Seleccionado */}
+        <div className="flex-1">
           {renderComponentContent()}
         </div>
       </div>
