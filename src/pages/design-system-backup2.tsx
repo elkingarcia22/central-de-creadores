@@ -18,11 +18,11 @@ const DesignSystemPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('colors');
 
   const tabs = [
-    { id: 'colors', label: 'Colores', icon: PaletteIcon, content: <ColorsSection /> },
-    { id: 'typography', label: 'Tipografía', icon: TypeIcon, content: <TypographySection /> },
-    { id: 'components', label: 'Componentes', icon: BoxIcon, content: <ComponentsSection /> },
-    { id: 'spacing', label: 'Espaciado', icon: GridIcon, content: <SpacingSection /> },
-    { id: 'icons', label: 'Iconos', icon: EyeIcon, content: <IconsSection /> },
+    { id: 'colors', label: 'Colores', icon: PaletteIcon },
+    { id: 'typography', label: 'Tipografía', icon: TypeIcon },
+    { id: 'components', label: 'Componentes', icon: BoxIcon },
+    { id: 'spacing', label: 'Espaciado', icon: GridIcon },
+    { id: 'icons', label: 'Iconos', icon: EyeIcon },
   ];
 
   return (
@@ -42,19 +42,30 @@ const DesignSystemPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Navegación y Contenido */}
+        {/* Navegación */}
+        <div className="border-b border-border bg-card">
+          <div className="container mx-auto px-6">
+            <Tabs
+              tabs={tabs.map(tab => ({
+                id: tab.id,
+                label: tab.label,
+                icon: <tab.icon className="w-4 h-4" />,
+                content: null
+              }))}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              defaultActiveTab="colors"
+            />
+          </div>
+        </div>
+
+        {/* Contenido */}
         <div className="container mx-auto px-6 py-2">
-          <Tabs
-            tabs={tabs.map(tab => ({
-              id: tab.id,
-              label: tab.label,
-              icon: <tab.icon className="w-4 h-4" />,
-              content: tab.content
-            }))}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            defaultActiveTab="colors"
-          />
+          {activeTab === 'colors' && <ColorsSection />}
+          {activeTab === 'typography' && <TypographySection />}
+          {activeTab === 'components' && <ComponentsSection />}
+          {activeTab === 'spacing' && <SpacingSection />}
+          {activeTab === 'icons' && <IconsSection />}
         </div>
       </div>
     </Layout>
