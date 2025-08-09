@@ -47,29 +47,29 @@ const Chip: React.FC<ChipProps> = ({
     lg: 'w-5 h-5 flex-shrink-0'
   };
 
-  // Nuevos estilos basados en la imagen del sistema de diseño
+  // Estilos usando tokens de colores para mejor consistencia
   const variantClasses = {
     default: outlined
-      ? 'border border-gray-300 text-gray-700 bg-white'
-      : 'bg-gray-100 text-gray-700',
+      ? 'border border-muted text-muted-foreground bg-transparent'
+      : 'bg-muted text-muted-foreground',
     primary: outlined
-      ? 'border border-blue-500 text-blue-700 bg-white'
-      : 'bg-blue-100 text-blue-700',
+      ? 'border border-primary text-primary bg-transparent'
+      : 'bg-primary/10 text-primary',
     success: outlined
-      ? 'border border-green-500 text-green-700 bg-white'
-      : 'bg-green-100 text-green-700',
+      ? 'border border-success text-success bg-transparent'
+      : 'bg-success/10 text-success',
     warning: outlined
-      ? 'border border-yellow-500 text-yellow-700 bg-white'
-      : 'bg-yellow-100 text-yellow-700',
+      ? 'border border-warning text-warning bg-transparent'
+      : 'bg-warning/10 text-warning',
     danger: outlined
-      ? 'border border-red-500 text-red-700 bg-white'
-      : 'bg-red-100 text-red-700',
+      ? 'border border-destructive text-destructive bg-transparent'
+      : 'bg-destructive/10 text-destructive',
     info: outlined
-      ? 'border border-blue-400 text-blue-600 bg-white'
-      : 'bg-blue-50 text-blue-600',
+      ? 'border border-info text-info bg-transparent'
+      : 'bg-info/10 text-info',
     secondary: outlined
-      ? 'border border-gray-400 text-gray-600 bg-white'
-      : 'bg-gray-50 text-gray-600'
+      ? 'border border-secondary text-secondary-foreground bg-transparent'
+      : 'bg-secondary/20 text-secondary-foreground'
   };
 
   const classes = [

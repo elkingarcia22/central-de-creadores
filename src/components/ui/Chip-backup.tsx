@@ -3,7 +3,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChipProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'progress' | 'denied' | 'pending' | 'disabled' | 'completed';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   outlined?: boolean;
   rounded?: boolean;
@@ -47,64 +47,29 @@ const Chip: React.FC<ChipProps> = ({
     lg: 'w-5 h-5 flex-shrink-0'
   };
 
+  // Estilos usando tokens de colores para mejor consistencia
   const variantClasses = {
-    // Nuevos estilos basados en la imagen
-    progress: 'bg-purple-100 border border-purple-300 text-purple-700',
-    denied: 'bg-white border border-red-300 text-red-700',
-    pending: 'bg-blue-100 border border-blue-300 text-blue-700',
-    disabled: 'bg-white border border-gray-300 text-gray-700',
-    completed: 'bg-white border border-green-300 text-green-700',
-    
-    // Estilos originales mantenidos para compatibilidad
     default: outlined
-      ? theme === 'dark'
-        ? 'border border-muted text-muted-foreground bg-transparent'
-        : 'border border-muted text-muted-foreground bg-transparent'
-      : theme === 'dark'
-        ? 'bg-muted text-muted-foreground'
-        : 'bg-muted text-muted-foreground',
+      ? 'border border-muted text-muted-foreground bg-transparent'
+      : 'bg-muted text-muted-foreground',
     primary: outlined
-      ? theme === 'dark'
-        ? 'border border-primary text-primary bg-transparent'
-        : 'border border-primary text-primary bg-transparent'
-      : theme === 'dark'
-        ? 'bg-primary text-primary-foreground'
-        : 'bg-primary text-primary-foreground',
+      ? 'border border-primary text-primary bg-transparent'
+      : 'bg-primary/10 text-primary',
     success: outlined
-      ? theme === 'dark'
-        ? 'border border-success text-success bg-transparent'
-        : 'border border-success text-success bg-transparent'
-      : theme === 'dark'
-        ? 'bg-success text-success-foreground'
-        : 'bg-success text-success-foreground',
+      ? 'border border-success text-success bg-transparent'
+      : 'bg-success/10 text-success',
     warning: outlined
-      ? theme === 'dark'
-        ? 'border border-warning text-warning bg-transparent'
-        : 'border border-warning text-warning bg-transparent'
-      : theme === 'dark'
-        ? 'bg-warning text-warning-foreground'
-        : 'bg-warning text-warning-foreground',
+      ? 'border border-warning text-warning bg-transparent'
+      : 'bg-warning/10 text-warning',
     danger: outlined
-      ? theme === 'dark'
-        ? 'border border-destructive text-destructive bg-transparent'
-        : 'border border-destructive text-destructive bg-transparent'
-      : theme === 'dark'
-        ? 'bg-destructive text-destructive-foreground'
-        : 'bg-destructive text-destructive-foreground',
+      ? 'border border-destructive text-destructive bg-transparent'
+      : 'bg-destructive/10 text-destructive',
     info: outlined
-      ? theme === 'dark'
-        ? 'border border-info text-info bg-transparent'
-        : 'border border-info text-info bg-transparent'
-      : theme === 'dark'
-        ? 'bg-info text-info-foreground'
-        : 'bg-info text-info-foreground',
+      ? 'border border-info text-info bg-transparent'
+      : 'bg-info/10 text-info',
     secondary: outlined
-      ? theme === 'dark'
-        ? 'border border-secondary text-secondary-foreground bg-transparent'
-        : 'border border-secondary text-secondary-foreground bg-transparent'
-      : theme === 'dark'
-        ? 'bg-secondary text-secondary-foreground'
-        : 'bg-secondary text-secondary-foreground'
+      ? 'border border-secondary text-secondary-foreground bg-transparent'
+      : 'bg-secondary/20 text-secondary-foreground'
   };
 
   const classes = [
@@ -156,4 +121,4 @@ const Chip: React.FC<ChipProps> = ({
   );
 };
 
-export default Chip; 
+export default Chip;
