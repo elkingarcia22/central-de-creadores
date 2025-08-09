@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Card, Button } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, DownloadIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -44,7 +44,7 @@ const ComponentsSection: React.FC = () => {
 
     const buttonExamples = [
       { name: 'Con Icono Izquierda', icon: <PlusIcon />, iconPosition: 'left' as const },
-      { name: 'Con Icono Derecha', icon: <DownloadIcon />, iconPosition: 'right' as const },
+      { name: 'Con Icono Derecha', icon: <SaveIcon />, iconPosition: 'right' as const },
       { name: 'Solo Icono', icon: <EditIcon />, iconOnly: true },
       { name: 'Cargando', loading: true },
       { name: 'Deshabilitado', disabled: true }
