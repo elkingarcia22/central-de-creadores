@@ -30,7 +30,7 @@ const DesignSystemPage: React.FC = () => {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <div className="border-b border-border bg-card">
-          <div className="container mx-auto px-6 py-4">
+          <div className="container mx-auto px-6 py-2">
             <div>
               <Typography variant="h1" weight="bold" className="text-foreground">
                 Sistema de Diseño
@@ -60,7 +60,7 @@ const DesignSystemPage: React.FC = () => {
         </div>
 
         {/* Contenido */}
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-2">
           {activeTab === 'colors' && <ColorsSection />}
           {activeTab === 'typography' && <TypographySection />}
           {activeTab === 'components' && <ComponentsSection />}
