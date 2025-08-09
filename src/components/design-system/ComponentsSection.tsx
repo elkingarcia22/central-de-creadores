@@ -47,7 +47,7 @@ const ComponentsSection: React.FC = () => {
         </div>
 
         <Card className="p-6">
-          <Typography variant="h3" weight="semibold" className="mb-4">
+          <Typography variant="h3" weight="semibold" className="mb-4 text-card-foreground">
             Variantes
           </Typography>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,7 +131,7 @@ const ComponentsSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
           <Card className="p-4">
-            <Typography variant="h3" weight="semibold" className="mb-4">
+            <Typography variant="h3" weight="semibold" className="mb-4 text-card-foreground">
               Categorías
             </Typography>
             <div className="space-y-2">
@@ -139,7 +139,7 @@ const ComponentsSection: React.FC = () => {
                 <div key={category.id}>
                   <button
                     onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-                    className="flex items-center justify-between w-full p-2 text-left hover:bg-muted rounded-md transition-colors"
+                    className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground text-muted-foreground hover:bg-muted hover:text-foreground hover:text-foreground focus:outline-none"
                   >
                     <div>
                       <Typography variant="subtitle2" weight="medium">
@@ -150,9 +150,9 @@ const ComponentsSection: React.FC = () => {
                       </Typography>
                     </div>
                     {activeCategory === category.id ? (
-                      <ChevronDownIcon className="w-4 h-4" />
+                      <ChevronDownIcon className="w-4 h-4 text-muted-foreground" />
                     ) : (
-                      <ChevronRightIcon className="w-4 h-4" />
+                      <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
                   
@@ -162,10 +162,10 @@ const ComponentsSection: React.FC = () => {
                         <button
                           key={component.id}
                           onClick={() => setActiveComponent(component.id)}
-                          className={`w-full p-2 text-left rounded-md transition-colors ${
+                          className={`w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-left focus:outline-none ${
                             activeComponent === component.id
-                              ? 'bg-primary text-primary-foreground'
-                              : 'hover:bg-muted'
+                              ? 'bg-muted text-foreground border-r-2 border-primary'
+                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                           }`}
                         >
                           <Typography variant="body2" weight="medium">
