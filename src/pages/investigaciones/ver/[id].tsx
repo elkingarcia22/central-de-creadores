@@ -478,13 +478,13 @@ const VerInvestigacion: NextPage = () => {
       label: 'Editar',
       icon: <EditIcon className="w-4 h-4" />,
       onClick: () => router.push(`/investigaciones/editar/${investigacion?.id}`),
-      className: 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100'
+      className: 'text-popover-foreground hover:text-popover-foreground/80'
     },
     {
       label: 'Duplicar',
       icon: <CopyIcon className="w-4 h-4" />,
       onClick: () => router.push(`/investigaciones/crear?duplicate=${investigacion?.id}`),
-      className: 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100'
+      className: 'text-popover-foreground hover:text-popover-foreground/80'
     },
     {
       label: 'Eliminar',

@@ -1128,7 +1128,7 @@ export default function InvestigacionesPage() {
             label: 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/ver/${row.id}`),
-            className: 'text-primary dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: tieneLibreto(row.id) ? 'Ver Libreto' : 'Crear Libreto',
@@ -1140,19 +1140,19 @@ export default function InvestigacionesPage() {
                 router.push(`/investigaciones/libreto/crear?investigacion=${row.id}`);
               }
             },
-            className: 'text-primary dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Editar',
             icon: <EditIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/editar/${row.id}`),
-            className: 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Duplicar',
             icon: <CopyIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/crear?duplicate=${row.id}`),
-            className: 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100'
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Eliminar',
@@ -1171,7 +1171,7 @@ export default function InvestigacionesPage() {
               setInvestigacionParaSeguimiento(row);
               setShowSeguimientoModal(true);
             },
-            className: 'text-success dark:text-green-400 hover:text-green-700 dark:hover:text-green-300'
+            className: 'text-success hover:text-success/80'
           });
         }
 
