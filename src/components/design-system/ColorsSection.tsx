@@ -273,54 +273,6 @@ const ColorsSection: React.FC = () => {
           </Card>
         ))}
       </div>
-
-      {/* Ejemplos de uso en componentes */}
-      <Card className="p-6">
-        <Typography variant="h3" weight="semibold" className="mb-4">
-          Ejemplos de Uso en Componentes
-        </Typography>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="space-y-3">
-            <Typography variant="subtitle2" weight="medium">Estados</Typography>
-            <div className="flex flex-wrap gap-2">
-              <Chip variant="success">Éxito</Chip>
-              <Chip variant="warning">Advertencia</Chip>
-              <Chip variant="danger">Error</Chip>
-              <Chip variant="info">Info</Chip>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <Typography variant="subtitle2" weight="medium">Botones</Typography>
-            <div className="flex flex-wrap gap-2">
-              <button className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm">Primario</button>
-              <button className="px-3 py-1 bg-secondary text-secondary-foreground rounded text-sm">Secundario</button>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <Typography variant="subtitle2" weight="medium">Fondos</Typography>
-            <div className="space-y-2">
-              <div className="h-8 bg-background border border-border rounded flex items-center justify-center">
-                <Typography variant="caption">Background</Typography>
-              </div>
-              <div className="h-8 bg-card border border-border rounded flex items-center justify-center">
-                <Typography variant="caption">Card</Typography>
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <Typography variant="subtitle2" weight="medium">Texto</Typography>
-            <div className="space-y-2">
-              <div className="text-foreground">Texto principal</div>
-              <div className="text-muted-foreground">Texto secundario</div>
-              <div className="text-popover-foreground">Texto en popover</div>
-            </div>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 };
