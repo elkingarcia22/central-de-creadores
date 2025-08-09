@@ -5,6 +5,7 @@ import Typography from './Typography';
 import { RolSelector } from './RolSelector';
 import SimpleAvatar from './SimpleAvatar';
 import Button from './Button';
+import Tooltip from './Tooltip';
 import { SunIcon, MoonIcon, SettingsIcon, LogoutIcon, ChevronLeftIcon, ChevronRightIcon } from '../icons';
 
 interface SidebarItem {
@@ -71,15 +72,11 @@ const Sidebar: React.FC<SidebarProps> = ({
           size="xl"
           className="border-2 border-slate-200 dark:border-zinc-700"
         />
-        
-        {/* Selector de rol siempre visible */}
-        {user && (
-          <div className={`mt-3 text-center w-full flex flex-col items-center ${isCollapsed ? 'mt-2' : ''}`}>
-            {!isCollapsed && (
-              <Typography variant="body2" weight="medium" className="text-foreground truncate">
-                {displayName}
-              </Typography>
-            )}
+        {!isCollapsed && user && (
+          <div className="mt-3 text-center w-full flex flex-col items-center">
+            <Typography variant="body2" weight="medium" className="text-foreground truncate">
+              {displayName}
+            </Typography>
             <RolSelector variant="sidebar" className="text-muted-foreground" />
           </div>
         )}
