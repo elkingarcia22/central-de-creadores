@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, MailIcon, LockIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, EmailIcon, PasswordIcon } from '../icons';
 
 // Componente Button específico para el sistema de diseño con estilos hardcodeados
 interface DesignSystemButtonProps {
@@ -507,7 +507,7 @@ const ComponentsSection: React.FC = () => {
 
     const inputExamples = [
       { name: 'Con Icono Izquierda', icon: <SearchIcon />, iconPosition: 'left' as const },
-      { name: 'Con Icono Derecha', icon: <MailIcon />, iconPosition: 'right' as const },
+      { name: 'Con Icono Derecha', icon: <EmailIcon />, iconPosition: 'right' as const },
       { name: 'Con Label', label: 'Nombre completo' },
       { name: 'Con Helper Text', helperText: 'Ingresa tu nombre completo' },
       { name: 'Deshabilitado', disabled: true }
