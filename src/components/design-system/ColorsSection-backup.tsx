@@ -29,8 +29,8 @@ const ColorsSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Modo Claro */}
         <Card className="p-6">
-          <div className="mb-4">
-            
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
             <Typography variant="h3" weight="semibold">
               Modo Claro
             </Typography>
@@ -63,8 +63,8 @@ const ColorsSection: React.FC = () => {
 
         {/* Modo Oscuro */}
         <Card className="p-6">
-          <div className="mb-4">
-            
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
             <Typography variant="h3" weight="semibold">
               Modo Oscuro
             </Typography>
