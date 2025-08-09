@@ -5,7 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '../icons';
 import SimpleAvatar from './SimpleAvatar';
 import Typography from './Typography';
-import RolSelector from '../usuarios/RolSelector';
+import RolSelector from './RolSelector';
 import { Button } from './Button';
 import { SunIcon, MoonIcon, SettingsIcon, LogoutIcon } from '../icons';
 
