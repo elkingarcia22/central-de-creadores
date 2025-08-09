@@ -33,8 +33,8 @@ export const Button: React.FC<ButtonProps> = ({
   const variantClasses = { 
     primary: "bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary", 
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 focus:ring-secondary", 
-    outline: "border border-border bg-transparent text-foreground hover:bg-muted focus:ring-border",
-    ghost: "bg-transparent text-foreground hover:bg-muted focus:ring-muted",
+    outline: "border border-border bg-transparent text-foreground hover:bg-muted focus:ring-border dark:border-slate-600 dark:text-slate-200",
+    ghost: "bg-transparent text-foreground hover:bg-muted focus:ring-muted dark:text-slate-200 dark:hover:bg-slate-800",
     destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive"
   }; 
   
