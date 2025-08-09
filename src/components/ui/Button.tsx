@@ -34,7 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
     primary: "bg-primary text-primary-foreground hover:bg-primary-hover focus:ring-primary", 
     secondary: "bg-secondary text-secondary-foreground hover:bg-accent focus:ring-secondary", 
     outline: "border border-border bg-transparent text-foreground hover:bg-muted focus:ring-border",
-    ghost: "bg-transparent text-foreground hover:bg-muted focus:ring-muted",
+    ghost: "bg-transparent text-card-foreground hover:bg-muted focus:ring-muted",
     destructive: "bg-destructive text-destructive-foreground hover:bg-destructive-hover focus:ring-destructive"
   }; 
   

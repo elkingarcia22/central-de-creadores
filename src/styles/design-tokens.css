@@ -37,12 +37,12 @@
   --background: 10 10 10; /* zinc-950 */
   --foreground: 255 255 255; /* slate-50 */
   --card: 20 20 20; /* zinc-900 */
-  --card-foreground: 250 250 250; /* slate-50 */
+  --card-foreground: 255 255 255; /* slate-50 */
   --primary: 70 107 211; /* Azul pastel */
   --primary-foreground: 255 255 255; /* white */
   --primary-hover: 96 165 250; /* blue-400 */
   --secondary: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
-  --secondary-foreground: 250 250 250; /* slate-50 - Más claro para mejor contraste */
+  --secondary-foreground: 255 255 255; /* slate-50 - Más claro para mejor contraste */
   --muted: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
   --muted-foreground: 180 180 180; /* zinc-300 - Más claro para mejor contraste */
   --destructive: 239 68 68; /* red-500 */
@@ -59,9 +59,9 @@
   --border: 161 161 170; /* zinc-500 - Más claro para que se vea en modo oscuro */
   --ring: 70 107 211; /* Azul pastel */
   --popover: 20 20 20; /* zinc-900 */
-  --popover-foreground: 250 250 250; /* slate-50 */
+  --popover-foreground: 255 255 255; /* slate-50 */
   --accent: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
-  --accent-foreground: 250 250 250; /* slate-50 - Más claro para mejor contraste */
+  --accent-foreground: 255 255 255; /* slate-50 - Más claro para mejor contraste */
   --title: 250 250 250; /* white */
   --title-foreground: 255 255 255; /* white */
 }
