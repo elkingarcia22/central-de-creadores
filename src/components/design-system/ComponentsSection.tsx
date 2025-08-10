@@ -1423,7 +1423,6 @@ const ComponentsSection: React.FC = () => {
       </div>
     );
   };
-  };
 
   const renderComponentContent = () => {
     if (activeComponent === 'button') {
