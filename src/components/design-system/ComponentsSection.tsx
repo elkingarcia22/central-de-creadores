@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, EmailIcon, PasswordIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, EmailIcon, PasswordIcon, FileTextIcon } from '../icons';
 
 // Componente Button específico para el sistema de diseño con estilos hardcodeados
 interface DesignSystemButtonProps {
@@ -254,6 +254,117 @@ const DesignSystemInput: React.FC<DesignSystemInputProps> = ({
   );
 };
 
+
+// Componente Textarea específico para el sistema de diseño con estilos hardcodeados
+interface DesignSystemTextareaProps {
+  placeholder?: string;
+  value?: string;
+  size?: "sm" | "md" | "lg";
+  variant?: "default" | "error" | "success";
+  disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  fullWidth?: boolean;
+  label?: string;
+  helperText?: string;
+  error?: string;
+  className?: string;
+  rows?: number;
+  resize?: "none" | "both" | "horizontal" | "vertical";
+  theme?: "light" | "dark";
+}
+
+const DesignSystemTextarea: React.FC<DesignSystemTextareaProps> = ({
+  placeholder,
+  value,
+  size = "md",
+  variant = "default",
+  disabled = false,
+  readOnly = false,
+  required = false,
+  fullWidth = false,
+  label,
+  helperText,
+  error,
+  className = "",
+  rows = 3,
+  resize = "vertical",
+  theme = "light",
+  ...props
+}) => {
+  const baseClasses = "block w-full rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed";
+  
+  const sizeClasses = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-4 py-3 text-base"
+  };
+  
+  // Estilos hardcodeados para modo claro
+  const lightVariantClasses = {
+    default: "bg-white border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:ring-blue-500",
+    error: "bg-white border-red-500 text-gray-900 placeholder:text-gray-500 focus:border-red-500 focus:ring-red-500",
+    success: "bg-white border-green-500 text-gray-900 placeholder:text-gray-500 focus:border-green-500 focus:ring-green-500"
+  };
+  
+  // Estilos hardcodeados para modo oscuro
+  const darkVariantClasses = {
+    default: "bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400",
+    error: "bg-gray-800 border-red-400 text-white placeholder:text-gray-400 focus:border-red-400 focus:ring-red-400",
+    success: "bg-gray-800 border-green-400 text-white placeholder:text-gray-400 focus:border-green-400 focus:ring-green-400"
+  };
+  
+  const resizeClasses = {
+    none: "resize-none",
+    both: "resize",
+    horizontal: "resize-x",
+    vertical: "resize-y"
+  };
+  
+  const variantClasses = theme === "dark" ? darkVariantClasses : lightVariantClasses;
+  const widthClass = fullWidth ? "w-full" : "";
+  
+  const textareaClasses = [
+    baseClasses,
+    sizeClasses[size],
+    variantClasses[error ? "error" : variant],
+    resizeClasses[resize],
+    widthClass,
+    className
+  ].filter(Boolean).join(" ");
+  
+  const labelColor = theme === "dark" ? "rgb(250 250 250)" : "rgb(15 23 42)";
+  const helperColor = theme === "dark" ? "rgb(161 161 170)" : "rgb(100 116 139)";
+  const errorColor = theme === "dark" ? "rgb(248 113 113)" : "rgb(239 68 68)";
+  
+  return (
+    <div className={`${fullWidth ? "w-full" : ""}`}>
+      {label && (
+        <label className="block text-sm font-medium mb-0.5" style={{ color: labelColor }}>
+          {label}
+          {required && <span style={{ color: errorColor }} className="ml-1">*</span>}
+        </label>
+      )}
+      
+      <textarea
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        readOnly={readOnly}
+        required={required}
+        rows={rows}
+        className={textareaClasses}
+        {...props}
+      />
+      
+      {(helperText || error) && (
+        <p className="text-sm mt-0.5" style={{ color: error ? errorColor : helperColor }}>
+          {error || helperText}
+        </p>
+      )}
+    </div>
+  );
+};
 const ComponentsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeComponent, setActiveComponent] = useState<string | null>(null);
@@ -755,6 +866,223 @@ const ComponentsSection: React.FC = () => {
         </Card>
       </div>
     );
+
+  const renderTextareaComponent = () => {
+    const textareaVariants = [
+      { name: "default", label: "Por defecto", variant: "default" as const },
+      { name: "error", label: "Error", variant: "error" as const, error: "Este campo es requerido" },
+      { name: "success", label: "Éxito", variant: "success" as const }
+    ];
+
+    const textareaSizes = [
+      { name: "Pequeño", size: "sm" as const },
+      { name: "Mediano", size: "md" as const },
+      { name: "Grande", size: "lg" as const }
+    ];
+
+    const textareaExamples = [
+      { name: "Con Label", label: "Descripción" },
+      { name: "Con Helper Text", helperText: "Describe tu experiencia en detalle" },
+      { name: "Con Error", error: "Este campo es requerido" },
+      { name: "Deshabilitado", disabled: true },
+      { name: "Solo Lectura", readOnly: true, value: "Este texto no se puede editar" },
+      { name: "Sin Redimensionar", resize: "none" as const },
+      { name: "Redimensionar Horizontal", resize: "horizontal" as const },
+      { name: "Redimensionar Ambos", resize: "both" as const }
+    ];
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <Typography variant="h2" weight="bold" className="mb-2">
+            Área de Texto
+          </Typography>
+          <Typography variant="body1" color="secondary">
+            Campo de texto multilínea para contenido extenso
+          </Typography>
+        </div>
+
+        {/* Variantes */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Variantes
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {textareaVariants.map((variant) => (
+              <Card key={variant.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {variant.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Tamaños
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {textareaSizes.map((size) => (
+              <Card key={size.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {size.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        size={size.size}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        size={size.size}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {textareaExamples.map((example, index) => (
+              <Card key={index} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {example.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        label={example.label}
+                        helperText={example.helperText}
+                        error={example.error}
+                        disabled={example.disabled}
+                        readOnly={example.readOnly}
+                        value={example.value}
+                        resize={example.resize}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemTextarea 
+                        label={example.label}
+                        helperText={example.helperText}
+                        error={example.error}
+                        disabled={example.disabled}
+                        readOnly={example.readOnly}
+                        value={example.value}
+                        resize={example.resize}
+                        placeholder="Escribe tu descripción aquí..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  };
   };
 
   const renderComponentContent = () => {
@@ -763,6 +1091,10 @@ const ComponentsSection: React.FC = () => {
     }
     
     if (activeComponent === 'text-input') {
+      return renderInputComponent();
+    }
+    
+    if (activeComponent === 'textarea') {
       return renderInputComponent();
     }
 
