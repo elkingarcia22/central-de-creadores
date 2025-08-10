@@ -1435,7 +1435,11 @@ const ComponentsSection: React.FC = () => {
     }
     
     if (activeComponent === 'textarea') {
-      return renderInputComponent();
+      return renderTextareaComponent();
+    }
+    
+    if (activeComponent === 'select') {
+      return renderSelectComponent();
     }
 
     return (
