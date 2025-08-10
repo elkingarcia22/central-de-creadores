@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, EmailIcon, PasswordIcon, FileTextIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, TrashIcon, SaveIcon, SearchIcon, EmailIcon, PasswordIcon, FileTextIcon, CheckIcon } from '../icons';
 
 // Componente Button específico para el sistema de diseño con estilos hardcodeados
 interface DesignSystemButtonProps {
@@ -364,6 +364,115 @@ const DesignSystemTextarea: React.FC<DesignSystemTextareaProps> = ({
       )}
     </div>
   );
+
+// Componente Select específico para el sistema de diseño con estilos hardcodeados
+interface DesignSystemSelectProps {
+  options: { value: string | number; label: string; disabled?: boolean }[];
+  value?: string | number;
+  placeholder?: string;
+  size?: "sm" | "md" | "lg";
+  variant?: "default" | "error" | "success";
+  disabled?: boolean;
+  required?: boolean;
+  fullWidth?: boolean;
+  label?: string;
+  helperText?: string;
+  error?: string;
+  className?: string;
+  theme?: "light" | "dark";
+}
+
+const DesignSystemSelect: React.FC<DesignSystemSelectProps> = ({
+  options,
+  value,
+  placeholder = "Seleccionar opción...",
+  size = "md",
+  variant = "default",
+  disabled = false,
+  required = false,
+  fullWidth = false,
+  label,
+  helperText,
+  error,
+  className = "",
+  theme = "light",
+  ...props
+}) => {
+  const sizeClasses = {
+    sm: "px-3 py-1.5 text-sm min-h-[36px]",
+    md: "px-4 py-2 text-sm min-h-[44px]",
+    lg: "px-4 py-3 text-base min-h-[52px]"
+  };
+
+  // Estilos hardcodeados para modo claro
+  const lightVariantClasses = {
+    default: "bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500",
+    error: "bg-white border-red-500 text-gray-900 focus:border-red-500 focus:ring-red-500",
+    success: "bg-white border-green-500 text-gray-900 focus:border-green-500 focus:ring-green-500"
+  };
+
+  // Estilos hardcodeados para modo oscuro
+  const darkVariantClasses = {
+    default: "bg-gray-800 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400",
+    error: "bg-gray-800 border-red-400 text-white focus:border-red-400 focus:ring-red-400",
+    success: "bg-gray-800 border-green-400 text-white placeholder:text-gray-400 focus:border-green-400 focus:ring-green-400"
+  };
+
+  const selectedOption = options?.find(option => option.value === value);
+  const variantClasses = theme === "dark" ? darkVariantClasses : lightVariantClasses;
+  const widthClass = fullWidth ? "w-full" : "";
+
+  const selectClasses = [
+    "w-full",
+    sizeClasses[size],
+    "border rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200",
+    variantClasses[error ? "error" : variant],
+    widthClass,
+    className
+  ].filter(Boolean).join(" ");
+
+  const labelColor = theme === "dark" ? "rgb(250 250 250)" : "rgb(15 23 42)";
+  const helperColor = theme === "dark" ? "rgb(161 161 170)" : "rgb(100 116 139)";
+  const errorColor = theme === "dark" ? "rgb(248 113 113)" : "rgb(239 68 68)";
+  const placeholderColor = theme === "dark" ? "rgb(161 161 170)" : "rgb(100 116 139)";
+  const textColor = theme === "dark" ? "rgb(250 250 250)" : "rgb(15 23 42)";
+  const iconColor = theme === "dark" ? "rgb(161 161 170)" : "rgb(100 116 139)";
+
+  return (
+    <div className={`${fullWidth ? "w-full" : ""}`}>
+      {label && (
+        <label className="block text-sm font-medium mb-0.5" style={{ color: labelColor }}>
+          {label}
+          {required && <span style={{ color: errorColor }} className="ml-1">*</span>}
+        </label>
+      )}
+      
+      <div className="relative">
+        <button
+          type="button"
+          disabled={disabled}
+          className={selectClasses}
+        >
+          <div className="flex items-center justify-between">
+            <span className="truncate" style={{ color: selectedOption ? textColor : placeholderColor }}>
+              {selectedOption ? selectedOption.label : placeholder}
+            </span>
+            <ChevronDownIcon 
+              className="w-5 h-5 flex-shrink-0 ml-2 transition-transform duration-200" 
+              style={{ color: iconColor }}
+            />
+          </div>
+        </button>
+      </div>
+      
+      {(helperText || error) && (
+        <p className="text-sm mt-0.5" style={{ color: error ? errorColor : helperColor }}>
+          {error || helperText}
+        </p>
+      )}
+    </div>
+  );
+};
 };
 const ComponentsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -1071,6 +1180,237 @@ const ComponentsSection: React.FC = () => {
                         value={example.value}
                         resize={example.resize}
                         placeholder="Escribe tu descripción aquí..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderSelectComponent = () => {
+    const selectVariants = [
+      { name: "default", label: "Por defecto", variant: "default" as const },
+      { name: "error", label: "Error", variant: "error" as const, error: "Este campo es requerido" },
+      { name: "success", label: "Éxito", variant: "success" as const }
+    ];
+
+    const selectSizes = [
+      { name: "Pequeño", size: "sm" as const },
+      { name: "Mediano", size: "md" as const },
+      { name: "Grande", size: "lg" as const }
+    ];
+
+    const selectExamples = [
+      { name: "Con Label", label: "País" },
+      { name: "Con Helper Text", helperText: "Selecciona tu país de residencia" },
+      { name: "Con Error", error: "Este campo es requerido" },
+      { name: "Deshabilitado", disabled: true },
+      { name: "Con Valor Seleccionado", value: "colombia" },
+      { name: "Opciones Múltiples", options: [
+        { value: "colombia", label: "Colombia" },
+        { value: "mexico", label: "México" },
+        { value: "argentina", label: "Argentina" },
+        { value: "chile", label: "Chile" },
+        { value: "peru", label: "Perú" }
+      ] }
+    ];
+
+    const defaultOptions = [
+      { value: "colombia", label: "Colombia" },
+      { value: "mexico", label: "México" },
+      { value: "argentina", label: "Argentina" },
+      { value: "chile", label: "Chile" },
+      { value: "peru", label: "Perú" }
+    ];
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <Typography variant="h2" weight="bold" className="mb-2">
+            Selector
+          </Typography>
+          <Typography variant="body1" color="secondary">
+            Lista desplegable para selección de opciones
+          </Typography>
+        </div>
+
+        {/* Variantes */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Variantes
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {selectVariants.map((variant) => (
+              <Card key={variant.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {variant.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={defaultOptions}
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Selecciona un país..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={defaultOptions}
+                        variant={variant.variant}
+                        error={variant.error}
+                        placeholder="Selecciona un país..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Tamaños
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {selectSizes.map((size) => (
+              <Card key={size.name} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {size.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={defaultOptions}
+                        size={size.size}
+                        placeholder="Selecciona un país..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={defaultOptions}
+                        size={size.size}
+                        placeholder="Selecciona un país..."
+                        theme="dark"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          <div className="grid grid-cols-1 gap-6">
+            {selectExamples.map((example, index) => (
+              <Card key={index} className="p-6">
+                <Typography variant="h3" weight="semibold" className="mb-4">
+                  {example.name}
+                </Typography>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Modo Claro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(248 250 252)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(15 23 42)" }}>
+                        Modo Claro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={example.options || defaultOptions}
+                        value={example.value}
+                        label={example.label}
+                        helperText={example.helperText}
+                        error={example.error}
+                        disabled={example.disabled}
+                        placeholder="Selecciona un país..."
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Modo Oscuro */}
+                  <div 
+                    className="p-6 rounded-lg border border-border"
+                    style={{ backgroundColor: "rgb(10 10 10)" }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Typography variant="subtitle2" weight="medium" style={{ color: "rgb(250 250 250)" }}>
+                        Modo Oscuro
+                      </Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <DesignSystemSelect 
+                        options={example.options || defaultOptions}
+                        value={example.value}
+                        label={example.label}
+                        helperText={example.helperText}
+                        error={example.error}
+                        disabled={example.disabled}
+                        placeholder="Selecciona un país..."
                         theme="dark"
                       />
                     </div>
