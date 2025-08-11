@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
-import { Typography, Card } from '../ui';
-import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon } from '../icons';
+import { Typography, Card, Button } from '../ui';
+import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, SaveIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeComponent, setActiveComponent] = useState<string | null>(null);
 
   const componentCategories = [
+    {
+      id: "buttons",
+      name: "Buttons",
+      components: [
+        { id: "button", name: "Button" }
+      ]
+    },
     {
       id: "inputs",
       name: "Inputs",
@@ -15,28 +22,240 @@ const ComponentsSection: React.FC = () => {
         { id: "textarea", name: "Textarea" },
         { id: "select", name: "Select" }
       ]
-    },
-    {
-      id: "buttons",
-      name: "Buttons",
-      components: [
-        { id: "button", name: "Button" }
-      ]
     }
   ];
 
-  const renderComponentContent = () => {
-    if (activeComponent === 'button') {
-      return (
+  const renderButtonComponent = () => {
+    return (
+      <div className="space-y-8">
+        {/* Descripción */}
         <Card className="p-6">
           <Typography variant="h3" weight="bold" className="mb-4">
             Button Component
           </Typography>
-          <Typography variant="body1" color="secondary">
-            Componente de botón con variantes y tamaños...
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente Button es la base para todas las acciones interactivas en la interfaz. 
+            Proporciona múltiples variantes, tamaños y estados para diferentes contextos de uso.
           </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="body2" weight="medium" className="mb-2">
+              Props disponibles:
+            </Typography>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• <code className="bg-background px-1 rounded">variant</code>: primary, secondary, outline, ghost, destructive</li>
+              <li>• <code className="bg-background px-1 rounded">size</code>: sm, md, lg</li>
+              <li>• <code className="bg-background px-1 rounded">icon</code>: ReactNode para mostrar iconos</li>
+              <li>• <code className="bg-background px-1 rounded">iconPosition</code>: left, right</li>
+              <li>• <code className="bg-background px-1 rounded">iconOnly</code>: boolean para botones solo con icono</li>
+              <li>• <code className="bg-background px-1 rounded">loading</code>: boolean para estado de carga</li>
+              <li>• <code className="bg-background px-1 rounded">disabled</code>: boolean para estado deshabilitado</li>
+            </ul>
+          </div>
         </Card>
-      );
+
+        {/* Variantes */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Variantes
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes estilos visuales para distintos contextos de uso.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Primary */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Primary
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón principal para acciones importantes y llamadas a la acción.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="primary" size="sm">Small</Button>
+                <Button variant="primary">Medium</Button>
+                <Button variant="primary" size="lg">Large</Button>
+              </div>
+            </div>
+
+            {/* Secondary */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Secondary
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón secundario para acciones complementarias.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" size="sm">Small</Button>
+                <Button variant="secondary">Medium</Button>
+                <Button variant="secondary" size="lg">Large</Button>
+              </div>
+            </div>
+
+            {/* Outline */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Outline
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón con borde para acciones menos prominentes.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm">Small</Button>
+                <Button variant="outline">Medium</Button>
+                <Button variant="outline" size="lg">Large</Button>
+              </div>
+            </div>
+
+            {/* Ghost */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Ghost
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón transparente para acciones sutiles.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="ghost" size="sm">Small</Button>
+                <Button variant="ghost">Medium</Button>
+                <Button variant="ghost" size="lg">Large</Button>
+              </div>
+            </div>
+
+            {/* Destructive */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Destructive
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón para acciones destructivas como eliminar.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="destructive" size="sm">Small</Button>
+                <Button variant="destructive">Medium</Button>
+                <Button variant="destructive" size="lg">Large</Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Estados */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Estados
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes estados del botón para feedback visual.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Con Iconos */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Con Iconos
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botones con iconos para mejorar la comprensión visual.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="primary" icon={<PlusIcon className="w-4 h-4" />}>
+                  Agregar
+                </Button>
+                <Button variant="outline" icon={<EditIcon className="w-4 h-4" />} iconPosition="right">
+                  Editar
+                </Button>
+                <Button variant="ghost" icon={<SaveIcon className="w-4 h-4" />} iconOnly />
+              </div>
+            </div>
+
+            {/* Loading y Disabled */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Loading y Disabled
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Estados para indicar carga o deshabilitación.
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="primary" loading>
+                  Cargando
+                </Button>
+                <Button variant="primary" disabled>
+                  Deshabilitado
+                </Button>
+                <Button variant="outline" loading>
+                  Cargando
+                </Button>
+                <Button variant="outline" disabled>
+                  Deshabilitado
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Ejemplos de Uso */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Ejemplos de Uso
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Casos de uso comunes y patrones recomendados.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Formularios */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Formularios
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="primary">Guardar</Button>
+                <Button variant="outline">Cancelar</Button>
+                <Button variant="ghost">Resetear</Button>
+              </div>
+            </div>
+
+            {/* Acciones de Lista */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Acciones de Lista
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" icon={<EditIcon className="w-4 h-4" />}>
+                  Editar
+                </Button>
+                <Button variant="destructive" size="sm" icon={<PlusIcon className="w-4 h-4" />}>
+                  Eliminar
+                </Button>
+                <Button variant="ghost" size="sm" icon={<SaveIcon className="w-4 h-4" />} iconOnly />
+              </div>
+            </div>
+
+            {/* Navegación */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Navegación
+              </Typography>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="primary" size="lg">
+                  Continuar
+                </Button>
+                <Button variant="secondary" size="lg">
+                  Volver
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderComponentContent = () => {
+    if (activeComponent === 'button') {
+      return renderButtonComponent();
     }
     
     if (activeComponent === 'text-input') {
