@@ -643,7 +643,7 @@ const ComponentsSection: React.FC = () => {
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
                   <code className="bg-background px-1 rounded">options</code>
-                  <span>: array de opciones {value, label}</span>
+                  <span>: array de opciones con value y label</span>
                 </Typography>
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
