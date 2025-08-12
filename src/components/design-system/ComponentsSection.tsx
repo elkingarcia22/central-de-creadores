@@ -260,14 +260,244 @@ const ComponentsSection: React.FC = () => {
     
     if (activeComponent === 'text-input') {
       return (
-        <Card className="p-6">
-          <Typography variant="h3" weight="bold" className="mb-4">
-            Text Input Component
-          </Typography>
-          <Typography variant="body1" color="secondary">
-            Componente de entrada de texto...
-          </Typography>
-        </Card>
+        <div className="space-y-8">
+          {/* Descripción */}
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Input Component
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-4">
+              El componente Input es la base para la entrada de texto en formularios. 
+              Proporciona múltiples variantes, tamaños y estados para diferentes tipos de entrada.
+            </Typography>
+            <div className="bg-muted p-4 rounded-lg">
+              <Typography variant="body2" weight="medium" className="mb-2">
+                Props disponibles:
+              </Typography>
+              <ul className="text-sm space-y-1 text-muted-foreground">
+                <li>• <code className="bg-background px-1 rounded">type</code>: text, email, password, number, tel, url</li>
+                <li>• <code className="bg-background px-1 rounded">size</code>: sm, md, lg</li>
+                <li>• <code className="bg-background px-1 rounded">placeholder</code>: texto de placeholder</li>
+                <li>• <code className="bg-background px-1 rounded">disabled</code>: boolean para estado deshabilitado</li>
+                <li>• <code className="bg-background px-1 rounded">error</code>: boolean para estado de error</li>
+                <li>• <code className="bg-background px-1 rounded">icon</code>: ReactNode para mostrar iconos</li>
+              </ul>
+            </div>
+          </Card>
+
+          {/* Tipos de Input */}
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Tipos de Input
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Diferentes tipos de entrada para distintos contextos de uso.
+            </Typography>
+            
+            <div className="space-y-6">
+              {/* Text */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Text
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada de texto básica para nombres, títulos, etc.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="text" placeholder="Nombre completo" />
+                  </div>
+                  <div className="w-64">
+                    <Input type="text" placeholder="Apellido" size="sm" />
+                  </div>
+                  <div className="w-64">
+                    <Input type="text" placeholder="Título" size="lg" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Email
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada específica para direcciones de correo electrónico.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="email" placeholder="correo@ejemplo.com" />
+                  </div>
+                  <div className="w-64">
+                    <Input type="email" placeholder="correo@ejemplo.com" icon={<PlusIcon className="w-4 h-4" />} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Password
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada segura para contraseñas con ocultación automática.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="password" placeholder="Contraseña" />
+                  </div>
+                  <div className="w-64">
+                    <Input type="password" placeholder="Confirmar contraseña" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Number */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Number
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada numérica para cantidades, edades, etc.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="number" placeholder="Edad" />
+                  </div>
+                  <div className="w-64">
+                    <Input type="number" placeholder="Cantidad" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Tel */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Teléfono
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada para números de teléfono.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="tel" placeholder="+1 (555) 123-4567" />
+                  </div>
+                </div>
+              </div>
+
+              {/* URL */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  URL
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Entrada para direcciones web.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input type="url" placeholder="https://ejemplo.com" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Estados */}
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Estados
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Diferentes estados del input para feedback visual.
+            </Typography>
+            
+            <div className="space-y-6">
+              {/* Con Iconos */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Con Iconos
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Inputs con iconos para mejorar la comprensión visual.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input placeholder="Buscar..." icon={<PlusIcon className="w-4 h-4" />} />
+                  </div>
+                  <div className="w-64">
+                    <Input placeholder="Correo electrónico" icon={<PlusIcon className="w-4 h-4" />} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Error y Disabled */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Error y Disabled
+                </Typography>
+                <Typography variant="body2" color="secondary" className="mb-3">
+                  Estados para indicar errores o deshabilitación.
+                </Typography>
+                <div className="flex flex-wrap gap-4">
+                  <div className="w-64">
+                    <Input placeholder="Campo con error" error />
+                  </div>
+                  <div className="w-64">
+                    <Input placeholder="Campo deshabilitado" disabled />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Ejemplos de Uso */}
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Ejemplos de Uso
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Casos de uso comunes y patrones recomendados.
+            </Typography>
+            
+            <div className="space-y-6">
+              {/* Formulario de Registro */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Formulario de Registro
+                </Typography>
+                <div className="space-y-4 max-w-md">
+                  <Input placeholder="Nombre completo" />
+                  <Input type="email" placeholder="Correo electrónico" />
+                  <Input type="password" placeholder="Contraseña" />
+                  <Input type="password" placeholder="Confirmar contraseña" />
+                </div>
+              </div>
+
+              {/* Formulario de Contacto */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Formulario de Contacto
+                </Typography>
+                <div className="space-y-4 max-w-md">
+                  <Input placeholder="Nombre" />
+                  <Input type="email" placeholder="Email" />
+                  <Input type="tel" placeholder="Teléfono" />
+                  <Input placeholder="Asunto" />
+                </div>
+              </div>
+
+              {/* Búsqueda */}
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Búsqueda
+                </Typography>
+                <div className="max-w-md">
+                  <Input placeholder="Buscar..." icon={<PlusIcon className="w-4 h-4" />} />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
       );
     }
     
