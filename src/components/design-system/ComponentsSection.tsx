@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button, Input } from '../ui';
+import { Typography, Card, Button, Input, Textarea } from '../ui';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, SaveIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
@@ -508,7 +508,7 @@ const ComponentsSection: React.FC = () => {
             Textarea Component
           </Typography>
           <Typography variant="body1" color="secondary">
-            Componente de área de texto...
+            Componente de área de texto multilínea para formularios.
           </Typography>
         </Card>
       );
