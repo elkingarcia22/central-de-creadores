@@ -509,8 +509,32 @@ const ComponentsSection: React.FC = () => {
           </Typography>
           <Typography variant="body1" color="secondary">
             Componente de área de texto multilínea para formularios.
-          <div className="mt-4">
-            <Textarea placeholder="Ejemplo de textarea..." rows={3} />
+          <div className="space-y-4 mt-4">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Tamaños</Typography>
+              <div className="space-y-2">
+                <Textarea size="sm" placeholder="Small..." rows={2} />
+                <Textarea placeholder="Medium..." rows={3} />
+                <Textarea size="lg" placeholder="Large..." rows={5} />
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Estados</Typography>
+              <div className="space-y-2">
+                <Textarea label="Con Label" placeholder="Con etiqueta..." helperText="Texto de ayuda" rows={3} />
+                <Textarea placeholder="Con error..." error="Campo requerido" rows={3} />
+                <Textarea placeholder="Deshabilitado..." disabled rows={3} />
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Redimensionamiento</Typography>
+              <div className="space-y-2">
+                <Textarea placeholder="Vertical..." resize="vertical" rows={3} />
+                <Textarea placeholder="Horizontal..." resize="horizontal" rows={3} />
+                <Textarea placeholder="Ambas..." resize="both" rows={3} />
+                <Textarea placeholder="Ninguna..." resize="none" rows={3} />
+              </div>
+            </div>
           </div>
           </Typography>
         </Card>
