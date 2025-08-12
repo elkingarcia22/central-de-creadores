@@ -531,6 +531,62 @@ const ComponentsSection: React.FC = () => {
     
     if (activeComponent === 'textarea') {
       return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Textarea Component
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-4">
+              El componente Textarea es la base para la entrada de texto multilínea en formularios.
+            </Typography>
+            <div className="bg-muted p-4 rounded-lg">
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Props disponibles:
+              </Typography>
+              <div className="space-y-1">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">size</code>
+                  <span>: sm, md, lg</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">rows</code>
+                  <span>: número de filas iniciales</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">placeholder</code>
+                  <span>: texto de placeholder</span>
+                </Typography>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Tamaños
+            </Typography>
+            <div className="space-y-4">
+              <Textarea size="sm" placeholder="Small..." rows={2} />
+              <Textarea placeholder="Medium..." rows={3} />
+              <Textarea size="lg" placeholder="Large..." rows={5} />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Estados
+            </Typography>
+            <div className="space-y-4">
+              <Textarea label="Con Label" placeholder="Con etiqueta..." helperText="Texto de ayuda" rows={3} />
+              <Textarea placeholder="Con error..." error="Campo requerido" rows={3} />
+              <Textarea placeholder="Deshabilitado..." disabled rows={3} />
+            </div>
+          </Card>
+        </div>
+      );
+      return (
         <Card className="p-6">
           <Typography variant="h3" weight="bold" className="mb-4">
             Textarea Component
@@ -570,6 +626,62 @@ const ComponentsSection: React.FC = () => {
     }
     
     if (activeComponent === 'select') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Select Component
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-4">
+              El componente Select es la base para la selección de opciones en formularios.
+            </Typography>
+            <div className="bg-muted p-4 rounded-lg">
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Props disponibles:
+              </Typography>
+              <div className="space-y-1">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">options</code>
+                  <span>: array de opciones {value, label}</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">placeholder</code>
+                  <span>: texto de placeholder</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">size</code>
+                  <span>: sm, md, lg</span>
+                </Typography>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Tamaños
+            </Typography>
+            <div className="space-y-4">
+              <Select options={[{ value: "colombia", label: "Colombia" }, { value: "mexico", label: "México" }]} placeholder="Small..." size="sm" />
+              <Select options={[{ value: "active", label: "Activo" }, { value: "inactive", label: "Inactivo" }]} placeholder="Medium..." />
+              <Select options={[{ value: "tech", label: "Tecnología" }, { value: "design", label: "Diseño" }]} placeholder="Large..." size="lg" />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Estados
+            </Typography>
+            <div className="space-y-4">
+              <Select options={[{ value: "colombia", label: "Colombia" }]} label="Con Label" placeholder="Con etiqueta..." helperText="Texto de ayuda" />
+              <Select options={[{ value: "active", label: "Activo" }]} placeholder="Con error..." error="Campo requerido" />
+              <Select options={[{ value: "tech", label: "Tecnología" }]} placeholder="Deshabilitado..." disabled />
+            </div>
+          </Card>
+        </div>
+      );
       return (
         <Card className="p-6">
           <Typography variant="h3" weight="bold" className="mb-4">
