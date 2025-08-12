@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button, Input, Textarea, Select } from '../ui';
+import { Typography, Card, Button, Input, Textarea } from '../ui';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, SaveIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
@@ -508,23 +508,37 @@ const ComponentsSection: React.FC = () => {
             Textarea Component
           </Typography>
           <Typography variant="body1" color="secondary">
-            Componente de área de texto...
-          <div className="mt-4">
-            <Textarea placeholder="Ejemplo de textarea..." rows={3} />
+            Componente de área de texto multilínea para formularios.
+          <div className="space-y-4 mt-4">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Tamaños</Typography>
+              <div className="space-y-2">
+                <Textarea size="sm" placeholder="Small..." rows={2} />
+                <Textarea placeholder="Medium..." rows={3} />
+                <Textarea size="lg" placeholder="Large..." rows={5} />
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Estados</Typography>
+              <div className="space-y-2">
+                <Textarea label="Con Label" placeholder="Con etiqueta..." helperText="Texto de ayuda" rows={3} />
+                <Textarea placeholder="Con error..." error="Campo requerido" rows={3} />
+                <Textarea placeholder="Deshabilitado..." disabled rows={3} />
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Redimensionamiento</Typography>
+              <div className="space-y-2">
+                <Textarea placeholder="Vertical..." resize="vertical" rows={3} />
+                <Textarea placeholder="Horizontal..." resize="horizontal" rows={3} />
+                <Textarea placeholder="Ambas..." resize="both" rows={3} />
+                <Textarea placeholder="Ninguna..." resize="none" rows={3} />
+              </div>
+            </div>
           </div>
           </Typography>
         </Card>
       );
-          <div className="mt-4">
-            <Select 
-              options={[
-                { value: "colombia", label: "Colombia" },
-                { value: "mexico", label: "México" },
-                { value: "argentina", label: "Argentina" }
-              ]}
-              placeholder="Ejemplo de select..."
-            />
-          </div>
     }
     
     if (activeComponent === 'select') {
@@ -534,7 +548,70 @@ const ComponentsSection: React.FC = () => {
             Select Component
           </Typography>
           <Typography variant="body1" color="secondary">
-            Componente de selección...
+            Componente de selección de opciones para formularios.
+          <div className="space-y-4 mt-4">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Tamaños</Typography>
+              <div className="space-y-2">
+                <Select 
+                  options={[
+                    { value: "colombia", label: "Colombia" },
+                    { value: "mexico", label: "México" },
+                    { value: "argentina", label: "Argentina" }
+                  ]}
+                  placeholder="Small..."
+                  size="sm"
+                />
+                <Select 
+                  options={[
+                    { value: "active", label: "Activo" },
+                    { value: "inactive", label: "Inactivo" },
+                    { value: "pending", label: "Pendiente" }
+                  ]}
+                  placeholder="Medium..."
+                />
+                <Select 
+                  options={[
+                    { value: "technology", label: "Tecnología" },
+                    { value: "design", label: "Diseño" },
+                    { value: "marketing", label: "Marketing" }
+                  ]}
+                  placeholder="Large..."
+                  size="lg"
+                />
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Estados</Typography>
+              <div className="space-y-2">
+                <Select 
+                  options={[
+                    { value: "colombia", label: "Colombia" },
+                    { value: "mexico", label: "México" }
+                  ]}
+                  label="Con Label"
+                  placeholder="Con etiqueta..."
+                  helperText="Texto de ayuda"
+                />
+                <Select 
+                  options={[
+                    { value: "active", label: "Activo" },
+                    { value: "inactive", label: "Inactivo" }
+                  ]}
+                  placeholder="Con error..."
+                  error="Campo requerido"
+                />
+                <Select 
+                  options={[
+                    { value: "technology", label: "Tecnología" },
+                    { value: "design", label: "Diseño" }
+                  ]}
+                  placeholder="Deshabilitado..."
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
           </Typography>
         </Card>
       );
