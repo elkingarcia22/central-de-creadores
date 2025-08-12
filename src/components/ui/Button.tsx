@@ -39,9 +39,9 @@ export const Button: React.FC<ButtonProps> = ({
   }; 
   
   const sizeClasses = { 
-    sm: iconOnly ? "w-8 h-8" : "px-3 py-1.5 text-sm gap-1.5 min-w-[80px]", 
-    md: iconOnly ? "w-10 h-10" : "px-4 py-2 gap-2 min-w-[100px]", 
-    lg: iconOnly ? "w-12 h-12" : "px-6 py-3 text-lg gap-2.5 min-w-[120px]" 
+    sm: iconOnly ? "w-8 h-8" : "px-2 py-1 text-xs gap-1 min-w-[60px] h-8", 
+    md: iconOnly ? "w-10 h-10" : "px-4 py-2 gap-2 min-w-[100px] h-10", 
+    lg: iconOnly ? "w-12 h-12" : "px-6 py-3 text-lg gap-2.5 min-w-[120px] h-12" 
   }; 
 
   const iconSizeClasses = {
