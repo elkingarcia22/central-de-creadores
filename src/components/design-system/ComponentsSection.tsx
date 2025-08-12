@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button } from '../ui';
+import { Typography, Card, Button, Input } from '../ui';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon, EditIcon, SaveIcon } from '../icons';
 
 const ComponentsSection: React.FC = () => {
