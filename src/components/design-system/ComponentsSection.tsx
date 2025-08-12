@@ -38,41 +38,41 @@ const ComponentsSection: React.FC = () => {
             Proporciona múltiples variantes, tamaños y estados para diferentes contextos de uso.
           </Typography>
           <div className="bg-muted p-4 rounded-lg">
-            <Typography variant="body2" weight="medium" className="mb-2">
+            <Typography variant="subtitle2" weight="semibold" className="mb-2">
               Props disponibles:
             </Typography>
             <div className="space-y-1">
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">variant</code>
                 <span>: primary, secondary, outline, ghost, destructive</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">size</code>
                 <span>: sm, md, lg</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">icon</code>
                 <span>: ReactNode para mostrar iconos</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">iconPosition</code>
                 <span>: left, right</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">iconOnly</code>
                 <span>: boolean para botones solo con icono</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">loading</code>
                 <span>: boolean para estado de carga</span>
               </Typography>
-              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+              <Typography variant="caption" color="muted" className="flex items-center gap-2">
                 <span>•</span>
                 <code className="bg-background px-1 rounded">disabled</code>
                 <span>: boolean para estado deshabilitado</span>
@@ -299,16 +299,16 @@ const ComponentsSection: React.FC = () => {
               Proporciona múltiples variantes, tamaños y estados para diferentes tipos de entrada.
             </Typography>
             <div className="bg-muted p-4 rounded-lg">
-              <Typography variant="body2" weight="medium" className="mb-2">
+              <Typography variant="subtitle2" weight="semibold" className="mb-2">
                 Props disponibles:
               </Typography>
               <div className="space-y-1">
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">type</code><span>: text, email, password, number, tel, url</span></Typography>
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">size</code><span>: sm, md, lg</span></Typography>
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">placeholder</code><span>: texto de placeholder</span></Typography>
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">disabled</code><span>: boolean para estado deshabilitado</span></Typography>
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">error</code><span>: boolean para estado de error</span></Typography>
-                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">icon</code><span>: ReactNode para mostrar iconos</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">type</code><span>: text, email, password, number, tel, url</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">size</code><span>: sm, md, lg</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">placeholder</code><span>: texto de placeholder</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">disabled</code><span>: boolean para estado deshabilitado</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">error</code><span>: boolean para estado de error</span></Typography>
+                <Typography variant="caption" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">icon</code><span>: ReactNode para mostrar iconos</span></Typography>
               </div>
             </div>
           </Card>
@@ -698,7 +698,7 @@ const ComponentsSection: React.FC = () => {
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         }`}
                       >
-                        <Typography variant="body2" weight="medium">
+                        <Typography variant="subtitle2" weight="semibold">
                           {component.name}
                         </Typography>
                       </button>
