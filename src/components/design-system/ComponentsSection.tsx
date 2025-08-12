@@ -41,15 +41,43 @@ const ComponentsSection: React.FC = () => {
             <Typography variant="body2" weight="medium" className="mb-2">
               Props disponibles:
             </Typography>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• <code className="bg-background px-1 rounded">variant</code>: primary, secondary, outline, ghost, destructive</li>
-              <li>• <code className="bg-background px-1 rounded">size</code>: sm, md, lg</li>
-              <li>• <code className="bg-background px-1 rounded">icon</code>: ReactNode para mostrar iconos</li>
-              <li>• <code className="bg-background px-1 rounded">iconPosition</code>: left, right</li>
-              <li>• <code className="bg-background px-1 rounded">iconOnly</code>: boolean para botones solo con icono</li>
-              <li>• <code className="bg-background px-1 rounded">loading</code>: boolean para estado de carga</li>
-              <li>• <code className="bg-background px-1 rounded">disabled</code>: boolean para estado deshabilitado</li>
-            </ul>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">variant</code>
+                <span>: primary, secondary, outline, ghost, destructive</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">size</code>
+                <span>: sm, md, lg</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">icon</code>
+                <span>: ReactNode para mostrar iconos</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">iconPosition</code>
+                <span>: left, right</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">iconOnly</code>
+                <span>: boolean para botones solo con icono</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">loading</code>
+                <span>: boolean para estado de carga</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">disabled</code>
+                <span>: boolean para estado deshabilitado</span>
+              </Typography>
+            </div>
           </div>
         </Card>
 
@@ -274,14 +302,14 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" weight="medium" className="mb-2">
                 Props disponibles:
               </Typography>
-              <ul className="text-sm space-y-1 text-muted-foreground">
-                <li>• <code className="bg-background px-1 rounded">type</code>: text, email, password, number, tel, url</li>
-                <li>• <code className="bg-background px-1 rounded">size</code>: sm, md, lg</li>
-                <li>• <code className="bg-background px-1 rounded">placeholder</code>: texto de placeholder</li>
-                <li>• <code className="bg-background px-1 rounded">disabled</code>: boolean para estado deshabilitado</li>
-                <li>• <code className="bg-background px-1 rounded">error</code>: boolean para estado de error</li>
-                <li>• <code className="bg-background px-1 rounded">icon</code>: ReactNode para mostrar iconos</li>
-              </ul>
+              <div className="space-y-1">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">type</code><span>: text, email, password, number, tel, url</span></Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">size</code><span>: sm, md, lg</span></Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">placeholder</code><span>: texto de placeholder</span></Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">disabled</code><span>: boolean para estado deshabilitado</span></Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">error</code><span>: boolean para estado de error</span></Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2"><span>•</span><code className="bg-background px-1 rounded">icon</code><span>: ReactNode para mostrar iconos</span></Typography>
+              </div>
             </div>
           </Card>
 
@@ -645,7 +673,7 @@ const ComponentsSection: React.FC = () => {
               <div key={category.id}>
                 <button
                   onClick={() => setActiveCategory(activeCategory === category.id ? null : category.id)}
-                  className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
+                  className="flex items-center justify-between w-full px-3 py-2.5 rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
                 >
                   <span className="flex items-center gap-2">
                     {category.id === 'inputs' && <PlusIcon className="w-4 h-4" />}
@@ -664,7 +692,7 @@ const ComponentsSection: React.FC = () => {
                       <button
                         key={component.id}
                         onClick={() => setActiveComponent(component.id)}
-                        className={`w-full px-3 py-2.5 text-sm font-medium rounded-md transition-colors text-left focus:outline-none ${
+                        className={`w-full px-3 py-2.5 rounded-md transition-colors text-left focus:outline-none ${
                           activeComponent === component.id
                             ? 'bg-muted text-foreground border-r-2 border-primary'
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
