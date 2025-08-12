@@ -506,9 +506,9 @@ const ComponentsSection: React.FC = () => {
         <Card className="p-6">
           <Typography variant="h3" weight="bold" className="mb-4">
             Textarea Component
+          </Typography>
           <Typography variant="body1" color="secondary">
             Componente de área de texto multilínea para formularios.
-          </Typography>
           <div className="mt-4">
             <Textarea placeholder="Ejemplo de textarea..." rows={3} />
           </div>
