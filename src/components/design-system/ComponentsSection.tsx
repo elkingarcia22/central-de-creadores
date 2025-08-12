@@ -510,6 +510,12 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="body1" color="secondary">
             Componente de área de texto...
           <div className="mt-4">
+            <Textarea placeholder="Ejemplo de textarea..." rows={3} />
+          </div>
+          </Typography>
+        </Card>
+      );
+          <div className="mt-4">
             <Select 
               options={[
                 { value: "colombia", label: "Colombia" },
@@ -519,9 +525,6 @@ const ComponentsSection: React.FC = () => {
               placeholder="Ejemplo de select..."
             />
           </div>
-          </Typography>
-        </Card>
-      );
     }
     
     if (activeComponent === 'select') {
