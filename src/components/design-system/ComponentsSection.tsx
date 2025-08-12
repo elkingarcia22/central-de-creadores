@@ -509,68 +509,15 @@ const ComponentsSection: React.FC = () => {
           </Typography>
           <Typography variant="body1" color="secondary">
             Componente de área de texto...
-          <div className="space-y-4 mt-4">
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-2">Tamaños</Typography>
-              <div className="space-y-2">
-                <Select 
-                  options={[
-                    { value: "colombia", label: "Colombia" },
-                    { value: "mexico", label: "México" },
-                    { value: "argentina", label: "Argentina" }
-                  ]}
-                  placeholder="Small..."
-                  size="sm"
-                />
-                <Select 
-                  options={[
-                    { value: "active", label: "Activo" },
-                    { value: "inactive", label: "Inactivo" },
-                    { value: "pending", label: "Pendiente" }
-                  ]}
-                  placeholder="Medium..."
-                />
-                <Select 
-                  options={[
-                    { value: "technology", label: "Tecnología" },
-                    { value: "design", label: "Diseño" },
-                    { value: "marketing", label: "Marketing" }
-                  ]}
-                  placeholder="Large..."
-                  size="lg"
-                />
-              </div>
-            </div>
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-2">Estados</Typography>
-              <div className="space-y-2">
-                <Select 
-                  options={[
-                    { value: "colombia", label: "Colombia" },
-                    { value: "mexico", label: "México" }
-                  ]}
-                  label="Con Label"
-                  placeholder="Con etiqueta..."
-                  helperText="Texto de ayuda"
-                />
-                <Select 
-                  options={[
-                    { value: "active", label: "Activo" },
-                    { value: "inactive", label: "Inactivo" }
-                  ]}
-                  placeholder="Con error..."
-                  error="Campo requerido"
-                />
-                <Select 
-                  options={[
-                    { value: "technology", label: "Tecnología" },
-                    { value: "design", label: "Diseño" }
-                  ]}
-                  placeholder="Deshabilitado..."
-                  disabled
-                />
-              </div>
-            </div>
+          <div className="mt-4">
+            <Select 
+              options={[
+                { value: "colombia", label: "Colombia" },
+                { value: "mexico", label: "México" },
+                { value: "argentina", label: "Argentina" }
+              ]}
+              placeholder="Ejemplo de select..."
+            />
           </div>
           </Typography>
         </Card>
@@ -584,7 +531,7 @@ const ComponentsSection: React.FC = () => {
             Select Component
           </Typography>
           <Typography variant="body1" color="secondary">
-            Componente de selección de opciones para formularios.
+            Componente de selección...
           </Typography>
         </Card>
       );
