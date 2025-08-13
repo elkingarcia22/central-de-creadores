@@ -77,6 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     ],
     investigador: [
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
