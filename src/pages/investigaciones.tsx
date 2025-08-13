@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
+import { useUser } from '../contexts/UserContext';
+import { usePermisos } from '../utils/permisosUtils';
 import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
@@ -191,6 +193,8 @@ export default function InvestigacionesPage() {
   const { rolSeleccionado, loading: rolLoading } = useRol();
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
+  const { userProfile } = useUser();
+  const { tienePermiso, esAdministrador, usuarioId } = usePermisos();
   const router = useRouter();
 
   // TODOS LOS ESTADOS JUNTOS AL INICIO
@@ -433,7 +437,15 @@ export default function InvestigacionesPage() {
   const fetchInvestigaciones = async () => {
     try {
       setLoading(true);
-      const response = await obtenerInvestigaciones();
+      
+      // Verificar permisos antes de cargar
+      if (!tienePermiso('investigaciones', 'ver')) {
+        console.log('❌ Usuario no tiene permisos para ver investigaciones');
+        setInvestigaciones([]);
+        return;
+      }
+      
+      const response = await obtenerInvestigaciones(usuarioId, esAdministrador());
       
       if (response.data && response.data.length > 0) {
         // Primera investigación cargada

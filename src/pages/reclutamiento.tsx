@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
+import { useUser } from '../contexts/UserContext';
+import { usePermisos } from '../utils/permisosUtils';
 import { Layout, Typography, Card, Button, DataTable, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
@@ -90,6 +92,8 @@ export default function ReclutamientoPage() {
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
+  const { userProfile } = useUser();
+  const { tienePermiso, esAdministrador, usuarioId } = usePermisos();
   const router = useRouter();
 
   // Estados
@@ -176,7 +180,16 @@ export default function ReclutamientoPage() {
   const fetchMetricasReclutamientos = async () => {
     try {
       console.log('📊 Iniciando fetchMetricasReclutamientos...');
-      const response = await fetch('/api/metricas-reclutamientos');
+      
+      // Verificar permisos antes de cargar
+      if (!tienePermiso('reclutamientos', 'ver')) {
+        console.log('❌ Usuario no tiene permisos para ver reclutamientos');
+        setInvestigaciones([]);
+        return;
+      }
+      
+      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${esAdministrador()}`;
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         console.log('📊 Datos recibidos de la API:', data);
@@ -591,7 +604,7 @@ export default function ReclutamientoPage() {
           variant={getRiesgoBadgeVariant(row.riesgo_reclutamiento || 'bajo')}
           size="sm"
         >
-          {getRiesgoText(row.riesgo_reclutamiento || 'bajo')}
+          {getRiesgoText((row.riesgo_reclutamiento || 'bajo') as any)}
         </Chip>
       )
     },

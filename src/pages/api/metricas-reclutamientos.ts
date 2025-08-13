@@ -39,8 +39,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Obtener investigaciones por agendar (automáticas)
-    const { data: investigacionesPorAgendar, error: errorPorAgendar } = await supabase
+    const { usuarioId, esAdmin } = req.query;
+    
+    console.log('🔍 Obteniendo métricas de reclutamientos...');
+    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin);
+
+    // Construir consulta base para investigaciones
+    let queryInvestigaciones = supabase
       .from('investigaciones')
       .select(`
         id,
@@ -59,6 +64,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_reclutamiento
       `)
       .eq('estado', 'por_agendar');
+
+    // Aplicar filtros de asignación si no es administrador
+    if (esAdmin !== 'true' && usuarioId) {
+      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
+      queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+    }
+
+    const { data: investigacionesPorAgendar, error: errorPorAgendar } = await queryInvestigaciones;
 
     if (errorPorAgendar) {
       console.error('Error obteniendo investigaciones por agendar:', errorPorAgendar);

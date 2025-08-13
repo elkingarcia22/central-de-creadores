@@ -270,15 +270,23 @@ export const obtenerCategoriasRiesgo = async (): Promise<RespuestaAPI<RiesgoCate
 // FUNCIONES PRINCIPALES - INVESTIGACIONES
 // ====================================
 
-export const obtenerInvestigaciones = async (): Promise<RespuestaAPI<Investigacion[]>> => {
+export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolean = false): Promise<RespuestaAPI<Investigacion[]>> => {
   try {
     console.log('🔍 Obteniendo investigaciones con datos relacionados...');
+    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin);
     
-    // ESTRATEGIA 1: Consulta básica primero
-    const { data: investigaciones, error } = await supabase
+    // ESTRATEGIA 1: Consulta básica con filtros de asignación
+    let query = supabase
       .from('investigaciones')
-      .select('*')
-      .order('creado_el', { ascending: false });
+      .select('*');
+    
+    // Aplicar filtros de asignación si no es administrador
+    if (!esAdmin && usuarioId) {
+      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
+      query = query.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+    }
+    
+    const { data: investigaciones, error } = await query.order('creado_el', { ascending: false });
 
     if (error) {
       console.error('❌ Error en consulta principal:', error);
