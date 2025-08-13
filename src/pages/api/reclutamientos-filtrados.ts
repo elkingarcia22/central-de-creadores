@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { data: investigacionesAsignadas } = await supabase
         .from('investigaciones')
         .select('id')
-        .or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
+        .or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
 
       const idsInvestigaciones = investigacionesAsignadas?.map(inv => inv.id) || [];
       
