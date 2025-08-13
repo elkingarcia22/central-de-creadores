@@ -50,6 +50,13 @@ export default function Login() {
   const [loginSuccess, setLoginSuccess] = useState(false)
   const [hasCheckedSession, setHasCheckedSession] = useState(false)
 
+  // Log cuando cambie el error
+  useEffect(() => {
+    if (error) {
+      console.log('🔍 Estado de error actualizado:', error);
+    }
+  }, [error]);
+
   // Verificar si ya hay una sesión activa al cargar el componente
   useEffect(() => {
     const checkSession = async () => {
@@ -133,12 +140,15 @@ export default function Login() {
     setError('');
 
     try {
+      console.log('🔐 Intentando login con:', { email, password: password ? '***' : 'vacío' });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('❌ Error de autenticación:', error);
+        console.log('🔍 Estableciendo error en estado:', error.message);
         setError(error.message);
         return;
       }
