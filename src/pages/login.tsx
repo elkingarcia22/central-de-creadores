@@ -205,6 +205,8 @@ export default function Login() {
       return 'investigador'
     } else if (roleId === 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c') {
       return 'reclutador'
+    } else if (roleId === '7e329b4c-3716-4781-919e-54106b51ca99') {
+      return 'agendador'
     } else {
       return 'usuario'
     }
@@ -220,6 +222,8 @@ export default function Login() {
         return '/investigaciones'; // Módulo principal para investigador
       case 'reclutador':
         return '/reclutamiento'; // Módulo principal para reclutador
+      case 'agendador':
+        return '/reclutamiento'; // Módulo principal para agendador
       default:
         return `/dashboard/${rolNormalizado}`; // Fallback al dashboard específico
     }

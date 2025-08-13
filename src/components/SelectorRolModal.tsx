@@ -16,7 +16,7 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { showSuccess, showError } = useToast();
-  const { setRol } = useRol();
+  const { setRolSeleccionado } = useRol();
 
   const handleConfirmRole = async () => {
     if (!selectedRole) return;
@@ -29,7 +29,7 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
       }
 
       // Establecer el rol en el contexto
-      setRol(selectedRoleData);
+      setRolSeleccionado(selectedRoleData.nombre);
 
       // Determinar el módulo principal según el rol
       const getMainModuleForRole = (roleName: string): string => {
