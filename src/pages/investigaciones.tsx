@@ -445,7 +445,11 @@ export default function InvestigacionesPage() {
         return;
       }
       
-      const response = await obtenerInvestigaciones(usuarioId, esAdministrador());
+      // Verificar si el rol activo es administrador
+      const rolActivoEsAdmin = rolSeleccionado?.toLowerCase() === 'administrador';
+      console.log('🎭 Rol Activo:', rolSeleccionado, 'Es Admin:', rolActivoEsAdmin);
+      
+      const response = await obtenerInvestigaciones(usuarioId, rolActivoEsAdmin);
       
       if (response.data && response.data.length > 0) {
         // Primera investigación cargada
