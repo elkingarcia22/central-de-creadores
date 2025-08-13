@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useUser } from '../../contexts/UserContext';
+import { usePermisos } from '../../utils/permisosUtils';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -46,6 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const router = useRouter();
   const { rolSeleccionado, setRolSeleccionado, rolesDisponibles, setRolesDisponibles } = useRol();
   const { userProfile, userEmail, userName, userImage, refreshUser } = useUser();
+  const { esAdministrador } = usePermisos();
   const [editModalOpen, setEditModalOpen] = useState(false);
 
   // Sincronizar el contexto de rol con la URL
@@ -98,8 +100,8 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     ],
   };
 
-  // Configuración de elementos de utilidad (común para todos los roles)
-  const utilityItems = [
+  // Configuración de elementos de utilidad (solo para administradores)
+  const utilityItems = esAdministrador() ? [
     { 
       label: 'Configuraciones', 
       href: '/configuraciones', 
@@ -109,7 +111,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       ]
     },
     { label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
-  ];
+  ] : [];
 
   // Usar el rol del contexto si existe
   const menuRol = rolSeleccionado?.toLowerCase() || rol?.toLowerCase();
