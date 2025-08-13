@@ -72,7 +72,7 @@ export default function GestionUsuariosPage() {
       'bcc17f6a-d751-4c39-a479-412abddde0fa': 'Administrador',
       'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7': 'Investigador',
       'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c': 'Reclutador',
-      'agendador-uuid-placeholder': 'Agendador' // TODO: Reemplazar con UUID real
+      '7e329b4c-3716-4781-919e-54106b51ca99': 'Agendador'
     };
     return rolesMap[rolUUID as keyof typeof rolesMap] || rolUUID;
   };
