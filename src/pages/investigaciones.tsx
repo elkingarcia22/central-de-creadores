@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
+import DiagnosticoPermisos from '../components/DiagnosticoPermisos';
 import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
@@ -1130,7 +1131,8 @@ export default function InvestigacionesPage() {
   ];
 
   return (
-    <Layout rol={rolSeleccionado}>
+    <>
+      <Layout rol={rolSeleccionado}>
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
@@ -1335,5 +1337,7 @@ export default function InvestigacionesPage() {
         }))}
       />
     </Layout>
+    <DiagnosticoPermisos />
+    </>
   );
 }

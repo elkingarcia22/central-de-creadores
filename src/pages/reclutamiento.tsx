@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
+import DiagnosticoPermisos from '../components/DiagnosticoPermisos';
 import { Layout, Typography, Card, Button, DataTable, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
@@ -706,7 +707,8 @@ export default function ReclutamientoPage() {
   }
 
   return (
-    <Layout rol={rolSeleccionado}>
+    <>
+      <Layout rol={rolSeleccionado}>
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
@@ -916,5 +918,7 @@ export default function ReclutamientoPage() {
         loading={loadingDelete}
       /> */}
     </Layout>
+    <DiagnosticoPermisos />
+    </>
   );
 } 
