@@ -199,6 +199,14 @@ export default function GestionUsuariosPage() {
       label: 'Editar',
       icon: <EditIcon className="w-4 h-4" />,
       onClick: (row: any) => {
+        console.log('🖱️ Clic en editar usuario:', row);
+        console.log('📊 Datos del usuario a editar:', {
+          id: row.id,
+          full_name: row.full_name,
+          email: row.email,
+          roles: row.roles,
+          avatar_url: row.avatar_url
+        });
         setUsuarioEdit(row);
       },
               className: 'text-primary hover:text-primary/80'
@@ -259,9 +267,13 @@ export default function GestionUsuariosPage() {
     try {
       setLoadingUsuarios(true);
       const response = await obtenerUsuarios();
+      console.log('📊 Usuarios cargados:', response.data);
+      if (response.data && response.data.length > 0) {
+        console.log('👤 Primer usuario:', response.data[0]);
+      }
       setUsuarios(response.data || []);
     } catch (error) {
-      // Error handling sin logs innecesarios
+      console.error('❌ Error cargando usuarios:', error);
       setUsuarios([]);
     } finally {
       setLoadingUsuarios(false);

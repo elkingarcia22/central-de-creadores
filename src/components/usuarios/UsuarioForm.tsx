@@ -38,7 +38,14 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
 
   // Actualizar formulario cuando cambie el usuario (para modo edición)
   useEffect(() => {
+    console.log('🔄 UsuarioForm: Usuario recibido:', usuario);
     if (usuario) {
+      console.log('📝 UsuarioForm: Estableciendo datos del formulario:', {
+        full_name: usuario.full_name,
+        email: usuario.email,
+        roles: usuario.roles,
+        avatar_url: usuario.avatar_url
+      });
       setFormData({
         full_name: usuario.full_name || '',
         email: usuario.email || '',
