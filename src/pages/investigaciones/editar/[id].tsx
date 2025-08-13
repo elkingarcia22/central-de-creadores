@@ -5,6 +5,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
+import { usePermisos } from '../../../utils/permisosUtils';
 import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip } from '../../../components/ui';
 import { 
   ArrowLeftIcon,
@@ -47,6 +48,7 @@ const EditarInvestigacionPage: NextPage = () => {
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
   const { userProfile: usuarioLogueado } = useUser();
+  const { tienePermisoSobreElemento, esAdministrador } = usePermisos();
   const router = useRouter();
   const { id } = router.query;
   
@@ -304,14 +306,15 @@ const EditarInvestigacionPage: NextPage = () => {
     );
   }
 
-  if (!rolesPermitidos.includes(rolSeleccionado || '')) {
+  // Verificar permisos de edición cuando la investigación esté cargada
+  if (investigacion && !tienePermisoSobreElemento(investigacion, 'investigaciones', 'editar')) {
     return (
       <Layout rol={rolSeleccionado}>
         <div className="py-8">
           <Card className="p-8 text-center">
             <Typography variant="h4" className="mb-4">Acceso denegado</Typography>
             <Typography variant="body1" color="secondary" className="mb-6">
-              No tienes permisos para editar investigaciones
+              No tienes permisos para editar esta investigación
             </Typography>
             <Button variant="primary" onClick={() => router.push('/investigaciones')}>
               Volver a Investigaciones

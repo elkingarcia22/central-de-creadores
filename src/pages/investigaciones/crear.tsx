@@ -5,6 +5,7 @@ import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
+import { usePermisos } from '../../utils/permisosUtils';
 import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, ConfirmModal } from '../../components/ui';
 import { 
   ArrowLeftIcon,
@@ -50,11 +51,28 @@ const CrearInvestigacionPage: NextPage = () => {
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
   const { userProfile: usuarioLogueado } = useUser();
+  const { tienePermiso } = usePermisos();
   const router = useRouter();
   const { duplicate } = router.query; // Detectar parámetro de duplicación
 
-  // Verificar permisos de rol
-  const rolPermitido = rolesPermitidos.includes(rolSeleccionado?.toLowerCase() || '');
+  // Verificar permisos de creación
+  if (!tienePermiso('investigaciones', 'crear')) {
+    return (
+      <Layout rol={rolSeleccionado}>
+        <div className="py-8">
+          <Card className="p-8 text-center">
+            <Typography variant="h4" className="mb-4">Acceso denegado</Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              No tienes permisos para crear investigaciones
+            </Typography>
+            <Button variant="primary" onClick={() => router.push('/investigaciones')}>
+              Volver a Investigaciones
+            </Button>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
   
   if (loading) {
     return (
@@ -68,34 +86,6 @@ const CrearInvestigacionPage: NextPage = () => {
       </Layout>
     );
   }
-
-  // SOLUCIÓN TEMPORAL: Si el usuario está autenticado pero no tiene rol, permitir acceso
-  const tieneAcceso = () => {
-    // Si el rol está explícitamente permitido
-    if (rolesPermitidos.includes(rolSeleccionado || '')) {
-      console.log('✅ Acceso permitido por rol válido:', rolSeleccionado);
-      return true;
-    }
-    
-    // Si el usuario está autenticado y tiene al menos un rol disponible
-    if (usuarioLogueado?.id && rolesDisponibles.length > 0) {
-      console.log('✅ Usuario autenticado con roles disponibles, permitiendo acceso temporal');
-      console.log('- Usuario ID:', usuarioLogueado.id);
-      console.log('- Roles disponibles:', rolesDisponibles);
-      return true;
-    }
-    
-    // TEMPORAL: Si el usuario está autenticado, permitir acceso
-    if (usuarioLogueado?.id) {
-      console.log('⚠️ Usuario autenticado sin roles detectados, permitiendo acceso temporal para debug');
-      console.log('- Usuario ID:', usuarioLogueado.id);
-      console.log('- Email:', usuarioLogueado.email);
-      return true;
-    }
-    
-    console.log('❌ Acceso denegado - Usuario no autenticado');
-    return false;
-  };
   
   const [loadingForm, setLoadingForm] = useState(false);
   const [esDuplicacion, setEsDuplicacion] = useState(false);
@@ -449,24 +439,7 @@ const CrearInvestigacionPage: NextPage = () => {
     router.push('/investigaciones');
   };
 
-  // Verificar permisos
-  if (!tieneAcceso()) {
-    return (
-      <Layout rol={rolSeleccionado}>
-        <div className="py-8">
-          <Card className="p-8 text-center">
-            <Typography variant="h4" className="mb-4">Acceso denegado</Typography>
-            <Typography variant="body1" color="secondary" className="mb-6">
-              No tienes permisos para crear investigaciones
-            </Typography>
-            <Button variant="primary" onClick={() => router.push('/investigaciones')}>
-              Volver a Investigaciones
-            </Button>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
+
 
   // Mostrar loading mientras se carga la investigación para duplicar
   if (loadingDuplicacion) {
