@@ -323,7 +323,7 @@ export default function Login() {
               variant="primary"
               size="lg"
               loading={loading}
-              fullWidth
+              className="w-full"
               disabled={!email || !password}
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
