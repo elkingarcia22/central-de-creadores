@@ -448,6 +448,8 @@ export default function InvestigacionesPage() {
       // Verificar si el rol activo es administrador
       const rolActivoEsAdmin = rolSeleccionado?.toLowerCase() === 'administrador';
       console.log('🎭 Rol Activo:', rolSeleccionado, 'Es Admin:', rolActivoEsAdmin);
+      console.log('👤 Usuario ID:', usuarioId);
+      console.log('🔒 Aplicando filtros de asignación:', !rolActivoEsAdmin);
       
       const response = await obtenerInvestigaciones(usuarioId, rolActivoEsAdmin);
       

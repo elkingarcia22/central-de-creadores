@@ -188,7 +188,9 @@ export default function ReclutamientoPage() {
         return;
       }
       
-      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${esAdministrador()}&rol=${rolSeleccionado}`;
+      const rolActivoEsAdmin = rolSeleccionado?.toLowerCase() === 'administrador';
+      console.log('🎭 Rol Activo en Reclutamiento:', rolSeleccionado, 'Es Admin:', rolActivoEsAdmin);
+      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${rolActivoEsAdmin}&rol=${rolSeleccionado}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
