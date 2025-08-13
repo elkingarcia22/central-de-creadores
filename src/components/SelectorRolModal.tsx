@@ -41,6 +41,8 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
             return '/investigaciones';
           case 'reclutador':
             return '/reclutamiento';
+          case 'agendador':
+            return '/reclutamiento';
           default:
             return '/investigaciones';
         }
@@ -71,6 +73,8 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
         return <InvestigadorIcon className="w-8 h-8" />;
       case 'reclutador':
         return <ReclutadorIcon className="w-8 h-8" />;
+      case 'agendador':
+        return <ReclutadorIcon className="w-8 h-8" />; // Usar el mismo icono que reclutador
       default:
         return <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
           <span className="text-sm font-bold text-gray-600">{roleName[0]}</span>

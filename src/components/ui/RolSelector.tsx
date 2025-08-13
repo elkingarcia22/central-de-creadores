@@ -20,6 +20,8 @@ const abbreviateRole = (role: string): string => {
       return 'Inv';
     case 'reclutador':
       return 'Rec';
+    case 'agendador':
+      return 'Agend';
     case 'coordinador':
       return 'Coord';
     case 'supervisor':
@@ -106,6 +108,8 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
       case 'investigador':
         return '/investigaciones';
       case 'reclutador':
+        return '/reclutamiento';
+      case 'agendador':
         return '/reclutamiento';
       default:
         return `/dashboard/${rolNormalizado}`;

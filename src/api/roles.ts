@@ -40,7 +40,8 @@ export async function obtenerRoles(): Promise<{ data: Rol[], error: string | nul
 export const ROLES_DEFAULT = [
   { value: 'bcc17f6a-d751-4c39-a479-412abddde0fa', label: 'Administrador' },
   { value: 'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7', label: 'Investigador' },
-  { value: 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c', label: 'Reclutador' }
+  { value: 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c', label: 'Reclutador' },
+  { value: 'agendador-uuid-placeholder', label: 'Agendador' } // TODO: Reemplazar con UUID real
 ];
 
 /**
