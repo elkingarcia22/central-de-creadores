@@ -50,6 +50,7 @@ import {
   obtenerPaises
 } from '../../../api/supabase-libretos';
 import { formatearFecha } from '../../../utils/fechas';
+import { getEstadoInvestigacionVariant, getEstadoInvestigacionText } from '../../../utils/estadoUtils';
 import { 
   obtenerSeguimientosPorInvestigacion, 
   obtenerTrazabilidadCompleta,
@@ -494,48 +495,14 @@ const VerInvestigacion: NextPage = () => {
     }
   ];
 
-  // Estados para mostrar badges con colores
+  // Estados para mostrar badges con colores (usando funciones centralizadas)
   const getEstadoBadgeVariant = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'en_borrador':
-        return 'default';
-      case 'por_agendar':
-        return 'warning';
-      case 'por_iniciar':
-        return 'info';
-      case 'en_progreso':
-        return 'info';
-      case 'finalizado':
-        return 'success';
-      case 'pausado':
-        return 'secondary';
-      case 'cancelado':
-        return 'danger';
-      default:
-        return 'default';
-    }
+    return getEstadoInvestigacionVariant(estado);
   };
 
-  // Formatear el estado para mostrar
+  // Formatear el estado para mostrar (usando funciones centralizadas)
   const formatearEstado = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'en_borrador':
-        return 'En Borrador';
-      case 'por_agendar':
-        return 'Por Agendar';
-      case 'por_iniciar':
-        return 'Por Iniciar';
-      case 'en_progreso':
-        return 'En Progreso';
-      case 'finalizado':
-        return 'Finalizado';
-      case 'pausado':
-        return 'Pausado';
-      case 'cancelado':
-        return 'Cancelado';
-      default:
-        return estado || 'Sin estado';
-    }
+    return getEstadoInvestigacionText(estado);
   };
 
   // Componente Empty State reutilizable

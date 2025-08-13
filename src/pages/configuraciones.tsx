@@ -210,21 +210,21 @@ export default function ConfiguracionesPage() {
             <div className="flex flex-wrap gap-4">
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/configuraciones/gestion-usuarios')}
               >
                 Gestionar Usuarios
               </Button>
               <Button
                 variant="success"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/empresas')}
               >
                 Configurar Empresas
               </Button>
               <Button
                 variant="outline"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/dashboard')}
               >
                 Volver al Dashboard

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChevronDownIcon } from '../icons';
@@ -26,6 +26,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
 }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const submenuRef = useRef<HTMLDivElement>(null);
   
   const isActive = href && (router.pathname === href || router.asPath === href);
   
@@ -37,17 +38,40 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     ? 'bg-muted text-foreground border-r-2 border-primary'
     : 'text-muted-foreground hover:bg-muted hover:text-foreground';
   
+  // Cerrar submenú cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (submenuRef.current && !submenuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open && isCollapsed) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open, isCollapsed]);
+
   const handleClick = (e: React.MouseEvent) => {
-    if (subMenu && !isCollapsed) {
+    if (subMenu) {
       e.preventDefault();
-      setOpen((v) => !v);
+      if (isCollapsed) {
+        // Si está contraído, expandir temporalmente y mostrar submenú
+        setOpen((v) => !v);
+      } else {
+        // Si está expandido, toggle normal
+        setOpen((v) => !v);
+      }
     }
     if (onClick) onClick();
   };
 
   if (subMenu && subMenu.length > 0) {
     return (
-      <div>
+      <div className={`${isCollapsed ? 'relative' : ''}`} ref={submenuRef}>
         <button
           className={`${baseClasses} ${activeClasses} w-full focus:outline-none`}
           onClick={handleClick}
@@ -60,15 +84,15 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           )}
         </button>
         
-        {/* Submenú solo si no está colapsado y abierto */}
-        {!isCollapsed && open && subMenu && (
-          <div className="ml-8 mt-1 space-y-1">
+        {/* Submenú cuando está abierto (expandido o contraído) */}
+        {open && subMenu && (
+          <div className={`${isCollapsed ? 'absolute left-full top-0 ml-2 bg-card border border-slate-200 dark:border-zinc-700 rounded-md shadow-lg z-50 min-w-48' : 'ml-8 mt-1'} space-y-1`}>
             {subMenu.map((subItem, index) => (
               <NavigationItem
                 key={subItem.href}
                 {...subItem}
                 isCollapsed={false}
-                className="text-sm"
+                className={`text-sm ${isCollapsed ? 'px-3 py-2' : ''}`}
               />
             ))}
           </div>

@@ -12,6 +12,7 @@ import {
   DocumentIcon,
   MetricasIcon
 } from '../components/icons';
+import { getEstadoSesionVariant, getEstadoSesionText } from '../utils/estadoUtils';
 
 export default function SesionesPage() {
   const { rolSeleccionado } = useRol();
@@ -80,25 +81,7 @@ export default function SesionesPage() {
     }
   ];
 
-  const getStatusColor = (estado: string) => {
-    switch (estado) {
-      case 'programada': return 'warning';
-      case 'en_curso': return 'success';
-      case 'completada': return 'info';
-      case 'cancelada': return 'danger';
-      default: return 'default';
-    }
-  };
 
-  const getStatusText = (estado: string) => {
-    switch (estado) {
-      case 'programada': return 'Programada';
-      case 'en_curso': return 'En Curso';
-      case 'completada': return 'Completada';
-      case 'cancelada': return 'Cancelada';
-      default: return estado;
-    }
-  };
 
   const getTipoColor = (tipo: string) => {
     switch (tipo) {
@@ -154,7 +137,7 @@ export default function SesionesPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/sesiones/nueva')}
               >
                 Nueva Sesión
@@ -278,10 +261,10 @@ export default function SesionesPage() {
                         {sesion.titulo}
                       </Typography>
                       <Chip 
-                        variant={getStatusColor(sesion.estado)}
+                        variant={getEstadoSesionVariant(sesion.estado)}
                         size="sm"
                       >
-                        {getStatusText(sesion.estado)}
+                        {getEstadoSesionText(sesion.estado)}
                       </Chip>
                       <Chip 
                         variant={getTipoColor(sesion.tipo)}
@@ -364,14 +347,14 @@ export default function SesionesPage() {
                 {/* Acciones */}
                 <div className="flex gap-2 pt-2">
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => router.push(`/sesiones/${sesion.id}`)}
                   >
                     Ver Detalles
                   </Button>
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => router.push(`/sesiones/${sesion.id}/editar`)}
                   >

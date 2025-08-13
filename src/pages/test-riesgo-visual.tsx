@@ -1,8 +1,10 @@
 import React from 'react';
-import { Layout } from '../components/ui/Layout';
+import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
+import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText } from '../utils/riesgoUtils';
+import { getEstadoInvestigacionVariant } from '../utils/estadoUtils';
 
 // Función para calcular el nivel de riesgo (igual que en investigaciones.tsx)
 const calcularNivelRiesgo = (investigacion: any): {
@@ -65,27 +67,7 @@ const calcularNivelRiesgo = (investigacion: any): {
   }
 };
 
-const getRiesgoBadgeVariant = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': return 'danger';
-    case 'medio': return 'warning';
-    case 'bajo': return 'success';
-    case 'completado': return 'info';
-    case 'sin_fecha': return 'secondary';
-    default: return 'default';
-  }
-};
 
-const getRiesgoIcon = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': return '🔴';
-    case 'medio': return '🟡';
-    case 'bajo': return '🟢';
-    case 'completado': return '✅';
-    case 'sin_fecha': return '⚪';
-    default: return '⚪';
-  }
-};
 
 export default function TestRiesgoVisualPage() {
   // Datos de prueba
@@ -131,14 +113,24 @@ export default function TestRiesgoVisualPage() {
   const RiesgoColumn = ({ investigacion }: { investigacion: any }) => {
     const riesgoInfo = calcularNivelRiesgo(investigacion);
     const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
-    const icon = getRiesgoIcon(riesgoInfo.nivel);
+    const iconName = getRiesgoIconName(riesgoInfo.nivel);
+
+    // Mapeo de iconos por nombre
+    const iconMap: { [key: string]: string } = {
+      AlertTriangleIcon: '🔴',
+      ExclamationTriangleIcon: '🟡',
+      CheckCircleIcon: '🟢',
+      QuestionMarkCircleIcon: '⚪'
+    };
+
+    const icon = iconMap[iconName] || '⚪';
 
     return (
       <div className="flex flex-col gap-1 py-1">
         <div className="flex items-center gap-2">
           <span className="text-sm">{icon}</span>
           <Badge variant={badgeVariant} className="text-xs whitespace-nowrap">
-            {riesgoInfo.nivel.charAt(0).toUpperCase() + riesgoInfo.nivel.slice(1)}
+            {getRiesgoText(riesgoInfo.nivel)}
           </Badge>
         </div>
         <div className="text-xs text-muted-foreground whitespace-nowrap">
@@ -192,7 +184,7 @@ export default function TestRiesgoVisualPage() {
                         <div className="font-medium">{investigacion.nombre}</div>
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <Badge variant={investigacion.estado === 'finalizado' ? 'success' : 'warning'}>
+                        <Badge variant={getEstadoInvestigacionVariant(investigacion.estado)}>
                           {investigacion.estado}
                         </Badge>
                       </td>

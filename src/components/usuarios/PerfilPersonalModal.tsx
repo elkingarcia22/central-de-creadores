@@ -75,8 +75,8 @@ const PerfilPersonalModal: React.FC<PerfilPersonalModalProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setError('');
 
     if (!formData.full_name || !formData.email) {
@@ -164,8 +164,30 @@ const PerfilPersonalModal: React.FC<PerfilPersonalModalProps> = ({
   const currentAvatar = avatarPreview || currentAvatarUrl;
 
   return (
-    <SideModal isOpen={isOpen} onClose={onClose} title="Editar Perfil Personal">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <SideModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title="Editar Perfil Personal"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={submitting}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={submitting}
+            loading={submitting}
+          >
+            Guardar Cambios
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-6">
         {error && (
           <div className="p-4 bg-destructive-hover border border-destructive rounded-lg">
             <p className="text-error-600 dark:text-error-400 text-sm">{error}</p>
@@ -237,25 +259,7 @@ const PerfilPersonalModal: React.FC<PerfilPersonalModalProps> = ({
             required
           />
         </div>
-
-        {/* Botones */}
-        <div className="flex justify-end space-x-3 pt-6">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={submitting}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            disabled={submitting}
-          >
-            {submitting ? 'Guardando...' : 'Guardar Cambios'}
-          </Button>
-        </div>
-      </form>
+      </div>
     </SideModal>
   );
 };

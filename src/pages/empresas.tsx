@@ -12,6 +12,7 @@ import {
   DocumentIcon,
   MetricasIcon
 } from '../components/icons';
+import { getEstadoEmpresaVariant, getEstadoEmpresaText } from '../utils/estadoUtils';
 
 export default function EmpresasPage() {
   const { rolSeleccionado } = useRol();
@@ -95,14 +96,7 @@ export default function EmpresasPage() {
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'activa': return 'success';
-      case 'inactiva': return 'danger';
-      case 'pendiente': return 'warning';
-      default: return 'default';
-    }
-  };
+
 
   const filteredEmpresas = empresas.filter(empresa => {
     const matchesSearch = empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,7 +131,7 @@ export default function EmpresasPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/empresas/nueva')}
               >
                 Nueva Empresa
@@ -272,12 +266,12 @@ export default function EmpresasPage() {
                       >
                         {empresa.tamaño}
                       </Chip>
-                      <Chip 
-                        variant={getEstadoColor(empresa.estado)}
-                        size="sm"
-                      >
-                        {empresa.estado}
-                      </Chip>
+                                          <Chip 
+                      variant={getEstadoEmpresaVariant(empresa.estado)}
+                      size="sm"
+                    >
+                      {getEstadoEmpresaText(empresa.estado)}
+                    </Chip>
                     </div>
                     <Typography variant="body1" color="secondary" className="mb-3">
                       {empresa.descripcion}
@@ -339,21 +333,21 @@ export default function EmpresasPage() {
                 {/* Acciones */}
                 <div className="flex gap-2 pt-2">
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}`)}
                   >
                     Ver Detalles
                   </Button>
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}/editar`)}
                   >
                     Editar
                   </Button>
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => router.push(`/empresas/${empresa.id}/proyectos`)}
                   >

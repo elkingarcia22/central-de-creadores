@@ -12,6 +12,7 @@ import {
   DocumentIcon,
   MetricasIcon
 } from '../components/icons';
+import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../utils/estadoUtils';
 
 export default function ParticipantesPage() {
   const { rolSeleccionado } = useRol();
@@ -88,15 +89,7 @@ export default function ParticipantesPage() {
     }
   ];
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'activo': return 'success';
-      case 'inactivo': return 'danger';
-      case 'pendiente': return 'warning';
-      case 'bloqueado': return 'default';
-      default: return 'default';
-    }
-  };
+
 
   const getGeneroColor = (genero: string) => {
     switch (genero) {
@@ -149,7 +142,7 @@ export default function ParticipantesPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/participantes/nuevo')}
               >
                 Nuevo Participante
@@ -272,12 +265,12 @@ export default function ParticipantesPage() {
                       <Typography variant="h4" weight="semibold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                         {participante.nombre}
                       </Typography>
-                      <Chip 
-                        variant={getEstadoColor(participante.estado)}
-                        size="sm"
-                      >
-                        {participante.estado}
-                      </Chip>
+                                          <Chip 
+                      variant={getEstadoParticipanteVariant(participante.estado)}
+                      size="sm"
+                    >
+                      {getEstadoParticipanteText(participante.estado)}
+                    </Chip>
                       <Chip 
                         variant={getGeneroColor(participante.genero)}
                         size="sm"

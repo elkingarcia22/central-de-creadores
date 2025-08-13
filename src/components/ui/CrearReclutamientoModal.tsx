@@ -3,6 +3,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { obtenerUsuarios } from '../../api/supabase-investigaciones';
 import { getMinDate, createUTCDateFromLocal } from '../../utils/timezone';
+import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../utils/estadoUtils';
+import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
 import { 
   SideModal, 
   Typography, 
@@ -10,7 +12,9 @@ import {
   Input, 
   Select, 
   UserSelectorWithAvatar,
-  DatePicker
+  DatePicker,
+  TimePicker,
+  Chip
 } from './index';
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
@@ -596,13 +600,12 @@ export default function CrearReclutamientoModal({
             <Typography variant="subtitle2" weight="medium" className="mb-2">
               Hora de la Sesión *
             </Typography>
-            <Input
-              type="time"
+            <TimePicker
               value={horaSesion}
-              onChange={(e) => setHoraSesion(e.target.value)}
+              onChange={setHoraSesion}
+              placeholder="--:-- --"
               disabled={loading}
-              required
-              fullWidth
+              format="12h"
             />
           </div>
 
@@ -722,11 +725,14 @@ export default function CrearReclutamientoModal({
                     <span className="text-sm font-medium">{participanteSeleccionado.email}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Tipo:</span>
-                  <span className="text-sm font-medium capitalize">
-                    {participanteSeleccionado.tipo === 'externo' ? 'Cliente Externo' : participanteSeleccionado.tipo === 'interno' ? 'Cliente Interno' : 'Friend and Family'}
-                  </span>
+                  <Chip 
+                    variant={getTipoParticipanteVariant(participanteSeleccionado.tipo)}
+                    size="sm"
+                  >
+                    {getTipoParticipanteText(participanteSeleccionado.tipo)}
+                  </Chip>
                 </div>
                 {participanteSeleccionado.empresa_nombre && (
                   <div className="flex justify-between">
@@ -741,9 +747,14 @@ export default function CrearReclutamientoModal({
                   </div>
                 )}
                 {participanteSeleccionado.estado && (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Estado:</span>
-                    <span className="text-sm font-medium capitalize">{participanteSeleccionado.estado}</span>
+                    <Chip 
+                      variant={getEstadoParticipanteVariant(participanteSeleccionado.estado)}
+                      size="sm"
+                    >
+                      {getEstadoParticipanteText(participanteSeleccionado.estado)}
+                    </Chip>
                   </div>
                 )}
                 {participanteSeleccionado.productos_relacionados && participanteSeleccionado.productos_relacionados.length > 0 && (

@@ -3,7 +3,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChipProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet';
   size?: 'sm' | 'md' | 'lg';
   outlined?: boolean;
   rounded?: boolean;
@@ -59,8 +59,8 @@ const Chip: React.FC<ChipProps> = ({
       ? 'border border-success text-success bg-transparent'
       : 'bg-success/10 text-success',
     warning: outlined
-      ? 'border border-warning text-warning bg-transparent'
-      : 'bg-warning/10 text-warning',
+      ? 'border border-warning text-warning-foreground bg-transparent'
+      : 'bg-warning/10 text-warning-foreground',
     danger: outlined
       ? 'border border-destructive text-destructive bg-transparent'
       : 'bg-destructive/10 text-destructive',
@@ -69,7 +69,34 @@ const Chip: React.FC<ChipProps> = ({
       : 'bg-info/10 text-info',
     secondary: outlined
       ? 'border border-secondary text-secondary-foreground bg-transparent'
-      : 'bg-secondary/20 text-secondary-foreground'
+      : 'bg-secondary/20 text-secondary-foreground',
+    'accent-blue': outlined
+      ? 'border border-accent-blue text-accent-blue bg-transparent'
+      : 'bg-accent-blue/10 text-accent-blue',
+    'accent-purple': outlined
+      ? 'border border-accent-purple text-accent-purple bg-transparent'
+      : 'bg-accent-purple/10 text-accent-purple',
+    'accent-orange': outlined
+      ? 'border border-accent-orange text-accent-orange bg-transparent'
+      : 'bg-accent-orange/10 text-accent-orange',
+    'accent-teal': outlined
+      ? 'border border-accent-teal text-accent-teal bg-transparent'
+      : 'bg-accent-teal/10 text-accent-teal',
+    'accent-indigo': outlined
+      ? 'border border-accent-indigo text-accent-indigo bg-transparent'
+      : 'bg-accent-indigo/10 text-accent-indigo',
+    'accent-pink': outlined
+      ? 'border border-accent-pink text-accent-pink bg-transparent'
+      : 'bg-accent-pink/10 text-accent-pink',
+    'accent-cyan': outlined
+      ? 'border border-accent-cyan text-accent-cyan bg-transparent'
+      : 'bg-accent-cyan/10 text-accent-cyan',
+    'accent-emerald': outlined
+      ? 'border border-accent-emerald text-accent-emerald bg-transparent'
+      : 'bg-accent-emerald/10 text-accent-emerald',
+    'accent-violet': outlined
+      ? 'border border-accent-violet text-accent-violet bg-transparent'
+      : 'bg-accent-violet/10 text-accent-violet'
   };
 
   const classes = [

@@ -1,0 +1,289 @@
+  const renderTextareaComponent = () => {
+    return (
+      <div className="space-y-8">
+        {/* Descripción */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Textarea Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente Textarea es la base para la entrada de texto multilínea en formularios.
+            Proporciona múltiples tamaños, estados y opciones de redimensionamiento para diferentes contextos de uso.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="body2" weight="medium" className="mb-2">
+              Props disponibles:
+            </Typography>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• <code className="bg-background px-1 rounded">size</code>: sm, md, lg</li>
+              <li>• <code className="bg-background px-1 rounded">variant</code>: default, error, success</li>
+              <li>• <code className="bg-background px-1 rounded">placeholder</code>: texto de placeholder</li>
+              <li>• <code className="bg-background px-1 rounded">disabled</code>: boolean para estado deshabilitado</li>
+              <li>• <code className="bg-background px-1 rounded">readOnly</code>: boolean para solo lectura</li>
+              <li>• <code className="bg-background px-1 rounded">rows</code>: número de filas visibles</li>
+              <li>• <code className="bg-background px-1 rounded">resize</code>: none, both, horizontal, vertical</li>
+              <li>• <code className="bg-background px-1 rounded">label</code>: etiqueta del campo</li>
+              <li>• <code className="bg-background px-1 rounded">helperText</code>: texto de ayuda</li>
+              <li>• <code className="bg-background px-1 rounded">error</code>: mensaje de error</li>
+            </ul>
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Tamaños
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes tamaños para distintos contextos de uso.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Small */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Small
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño compacto para espacios reducidos.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea size="sm" placeholder="Comentario breve..." rows={2} />
+              </div>
+            </div>
+
+            {/* Medium */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Medium
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño estándar para la mayoría de casos de uso.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea placeholder="Descripción del proyecto..." rows={3} />
+              </div>
+            </div>
+
+            {/* Large */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Large
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño grande para contenido extenso.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea size="lg" placeholder="Contenido extenso..." rows={5} />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Estados */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Estados
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes estados del textarea para feedback visual.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Con Label y Helper Text */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Con Label y Helper Text
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Textarea con etiqueta y texto de ayuda para mejor UX.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  label="Descripción del proyecto"
+                  placeholder="Describe tu proyecto en detalle..."
+                  helperText="Máximo 500 caracteres"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Error y Disabled */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Error y Disabled
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Estados para indicar errores o deshabilitación.
+              </Typography>
+              <div className="space-y-4 max-w-md">
+                <Textarea 
+                  placeholder="Campo con error"
+                  error="Este campo es requerido"
+                  rows={3}
+                />
+                <Textarea 
+                  placeholder="Campo deshabilitado"
+                  disabled
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Read Only */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Read Only
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Textarea de solo lectura para mostrar información.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  value="Este es un texto de solo lectura que no se puede editar. Se usa para mostrar información importante al usuario."
+                  readOnly
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Opciones de Redimensionamiento */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Opciones de Redimensionamiento
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes opciones para controlar el redimensionamiento del textarea.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Vertical Only */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Vertical Only (Default)
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Solo permite redimensionar verticalmente.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  placeholder="Redimensionar verticalmente..."
+                  resize="vertical"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Horizontal Only */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Horizontal Only
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Solo permite redimensionar horizontalmente.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  placeholder="Redimensionar horizontalmente..."
+                  resize="horizontal"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Both */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Both
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Permite redimensionar en ambas direcciones.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  placeholder="Redimensionar en ambas direcciones..."
+                  resize="both"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* None */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                None
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                No permite redimensionamiento.
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  placeholder="Sin redimensionamiento..."
+                  resize="none"
+                  rows={3}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Ejemplos de Uso */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Ejemplos de Uso
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Casos de uso comunes y patrones recomendados.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Formulario de Contacto */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Formulario de Contacto
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  label="Mensaje"
+                  placeholder="Escribe tu mensaje aquí..."
+                  helperText="Describe tu consulta en detalle"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Descripción de Proyecto */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Descripción de Proyecto
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  label="Descripción"
+                  placeholder="Describe los objetivos, alcance y características principales del proyecto..."
+                  helperText="Máximo 1000 caracteres"
+                  rows={6}
+                />
+              </div>
+            </div>
+
+            {/* Comentarios */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Comentarios
+              </Typography>
+              <div className="max-w-md">
+                <Textarea 
+                  placeholder="Agrega un comentario..."
+                  size="sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };

@@ -17,9 +17,10 @@ interface UsuarioFormProps {
   onClose: () => void;
   loading?: boolean;
   isEditing?: boolean;
+  hideButtons?: boolean;
 }
 
-export default function UsuarioForm({ usuario, onSubmit, onClose, loading = false, isEditing = false }: UsuarioFormProps) {
+export default function UsuarioForm({ usuario, onSubmit, onClose, loading = false, isEditing = false, hideButtons = false }: UsuarioFormProps) {
   const { showSuccess, showError, showWarning } = useToast();
   
   const [formData, setFormData] = useState<Usuario>({
@@ -358,27 +359,29 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
           </div>
         )}
 
-        {/* Botones */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            disabled={submitting}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            loading={submitting}
-            disabled={submitting || rolesLoading}
-          >
-            {submitting 
-              ? (isEditing ? 'Guardando...' : 'Creando...') 
-              : (isEditing ? 'Guardar Cambios' : 'Crear Usuario')
-            }
-          </Button>
-        </div>
+        {/* Botones - solo mostrar si no están ocultos */}
+        {!hideButtons && (
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              loading={submitting}
+              disabled={submitting || rolesLoading}
+            >
+              {submitting 
+                ? (isEditing ? 'Guardando...' : 'Creando...') 
+                : (isEditing ? 'Guardar Cambios' : 'Crear Usuario')
+              }
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

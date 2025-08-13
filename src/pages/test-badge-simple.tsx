@@ -1,6 +1,6 @@
 import React from 'react';
 import Badge from '../components/ui/Badge';
-import { Layout } from '../components/ui/Layout';
+import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 
 export default function TestBadgeSimplePage() {

@@ -12,6 +12,7 @@ import {
   DocumentIcon,
   MetricasIcon
 } from '../components/icons';
+import { getEstadoConocimientoVariant, getEstadoConocimientoText } from '../utils/estadoUtils';
 
 export default function ConocimientoPage() {
   const { rolSeleccionado } = useRol();
@@ -91,25 +92,7 @@ export default function ConocimientoPage() {
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'publicado': return 'success';
-      case 'borrador': return 'warning';
-      case 'revisión': return 'info';
-      case 'archivado': return 'default';
-      default: return 'default';
-    }
-  };
 
-  const getEstadoText = (estado: string) => {
-    switch (estado) {
-      case 'publicado': return 'Publicado';
-      case 'borrador': return 'Borrador';
-      case 'revisión': return 'En Revisión';
-      case 'archivado': return 'Archivado';
-      default: return estado;
-    }
-  };
 
   const filteredArticulos = articulos.filter(articulo => {
     const matchesSearch = articulo.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -267,12 +250,12 @@ export default function ConocimientoPage() {
                         >
                           {articulo.categoria}
                         </Chip>
-                        <Chip 
-                          variant={getEstadoColor(articulo.estado)}
-                          size="sm"
-                        >
-                          {getEstadoText(articulo.estado)}
-                        </Chip>
+                                            <Chip 
+                      variant={getEstadoConocimientoVariant(articulo.estado)}
+                      size="sm"
+                    >
+                      {getEstadoConocimientoText(articulo.estado)}
+                    </Chip>
                       </div>
                       <Typography variant="body1" color="secondary" className="mb-3">
                         {articulo.descripcion}

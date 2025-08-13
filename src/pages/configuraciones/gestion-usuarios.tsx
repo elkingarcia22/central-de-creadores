@@ -4,7 +4,7 @@ import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Layout, Typography, Card, Button, SideModal, Select, DataTable, Input, ConfirmModal } from '../../components/ui';
-import UsuarioForm from '../../components/usuarios/UsuarioForm';
+import UsuarioCreateModal from '../../components/usuarios/UsuarioCreateModal';
 import UsuarioEditModal from '../../components/usuarios/UsuarioEditModal';
 import UsuarioDeleteModal from '../../components/usuarios/UsuarioDeleteModal';
 import { supabase } from '../../api/supabase';
@@ -574,20 +574,13 @@ export default function GestionUsuariosPage() {
         </div>
       </div>
 
-      {/* Modal lateral para crear usuario */}
-      {showModal && (
-        <SideModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title="Crear Usuario"
-          width="lg"
-        >
-          <UsuarioForm
-            onSubmit={handleFormSubmit}
-            onClose={() => setShowModal(false)}
-          />
-        </SideModal>
-      )}
+      {/* Modal para crear usuario */}
+      <UsuarioCreateModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleFormSubmit}
+        loading={loadingUsuarios}
+      />
 
       {/* Modales de edición y eliminación */}
       <UsuarioEditModal

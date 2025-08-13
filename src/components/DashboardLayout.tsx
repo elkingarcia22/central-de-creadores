@@ -40,6 +40,16 @@ interface MenuItem {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Inicializar el estado del sidebar solo en el cliente
+  useEffect(() => {
+    setIsClient(true);
+    const saved = localStorage.getItem('sidebarCollapsed');
+    const initialState = saved ? JSON.parse(saved) : false;
+    console.log('DashboardLayout - Sidebar initial state:', initialState);
+    setSidebarCollapsed(initialState);
+  }, []);
   const router = useRouter();
   const { rolSeleccionado, setRolSeleccionado, rolesDisponibles } = useRol();
   const { userProfile, userEmail, userName, userImage, refreshUser } = useUser();
@@ -51,6 +61,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
       setRolSeleccionado(rol);
     }
   }, [rol, rolSeleccionado, setRolSeleccionado]);
+
+  // Guardar el estado del sidebar en localStorage cuando cambie
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
+      console.log('DashboardLayout - Sidebar state saved:', sidebarCollapsed);
+    }
+  }, [sidebarCollapsed]);
 
   // La información del usuario ahora viene del UserContext (instantáneo)
 

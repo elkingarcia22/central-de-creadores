@@ -3,21 +3,21 @@ import { SideModal, Button } from '../ui';
 import UsuarioForm from './UsuarioForm';
 
 interface Usuario {
-  id: string;
+  id?: string;
   full_name: string;
   email: string;
   roles: string[];
+  avatar_url?: string;
 }
 
-interface UsuarioEditModalProps {
+interface UsuarioCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (usuario: Usuario) => void;
-  usuario: Usuario | null;
   loading?: boolean;
 }
 
-export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loading = false }: UsuarioEditModalProps) {
+export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = false }: UsuarioCreateModalProps) {
   const [formData, setFormData] = useState<Usuario | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,7 +37,7 @@ export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loa
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Editar Usuario"
+      title="Crear Usuario"
       width="lg"
       footer={
         <div className="flex justify-end gap-3">
@@ -53,19 +53,18 @@ export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loa
             disabled={submitting || !formData}
             loading={submitting}
           >
-            Guardar Cambios
+            Crear Usuario
           </Button>
         </div>
       }
     >
       <UsuarioForm
-        usuario={usuario}
         onSubmit={handleFormSubmit}
         onClose={onClose}
         loading={loading}
-        isEditing={true}
+        isEditing={false}
         hideButtons={true}
       />
     </SideModal>
   );
-} 
+}

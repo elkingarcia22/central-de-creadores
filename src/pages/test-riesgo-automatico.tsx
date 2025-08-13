@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { obtenerInvestigaciones } from '../api/supabase-investigaciones';
-import { Layout } from '../components/ui/Layout';
+import { Layout } from '../components/ui';
 import Badge from '../components/ui/Badge';
 import Typography from '../components/ui/Typography';
+import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText } from '../utils/riesgoUtils';
+import { getEstadoInvestigacionVariant } from '../utils/estadoUtils';
 
 // Función para calcular el nivel de riesgo (igual que en investigaciones.tsx)
 const calcularNivelRiesgo = (investigacion: any): {
@@ -65,27 +67,7 @@ const calcularNivelRiesgo = (investigacion: any): {
   }
 };
 
-const getRiesgoBadgeVariant = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': return 'danger';
-    case 'medio': return 'warning';
-    case 'bajo': return 'success';
-    case 'completado': return 'info';
-    case 'sin_fecha': return 'secondary';
-    default: return 'default';
-  }
-};
 
-const getRiesgoIcon = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': return '🔴';
-    case 'medio': return '🟡';
-    case 'bajo': return '🟢';
-    case 'completado': return '✅';
-    case 'sin_fecha': return '⚪';
-    default: return '⚪';
-  }
-};
 
 export default function TestRiesgoAutomaticoPage() {
   const [investigaciones, setInvestigaciones] = useState<any[]>([]);
@@ -139,7 +121,17 @@ export default function TestRiesgoAutomaticoPage() {
             {investigaciones.map((investigacion) => {
               const riesgoInfo = calcularNivelRiesgo(investigacion);
               const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
-              const icon = getRiesgoIcon(riesgoInfo.nivel);
+              const iconName = getRiesgoIconName(riesgoInfo.nivel);
+
+              // Mapeo de iconos por nombre
+              const iconMap: { [key: string]: string } = {
+                AlertTriangleIcon: '🔴',
+                ExclamationTriangleIcon: '🟡',
+                CheckCircleIcon: '🟢',
+                QuestionMarkCircleIcon: '⚪'
+              };
+
+              const icon = iconMap[iconName] || '⚪';
 
               return (
                 <div key={investigacion.id} className="border border-border rounded-lg p-4 bg-card">
@@ -152,7 +144,7 @@ export default function TestRiesgoAutomaticoPage() {
                         <div>
                           <span className="font-medium">Estado:</span>
                           <div className="mt-1">
-                            <Badge variant={investigacion.estado === 'finalizado' ? 'success' : 'warning'}>
+                            <Badge variant={getEstadoInvestigacionVariant(investigacion.estado)}>
                               {investigacion.estado}
                             </Badge>
                           </div>
@@ -177,7 +169,7 @@ export default function TestRiesgoAutomaticoPage() {
                           <div className="mt-1 flex items-center gap-2">
                             <span>{icon}</span>
                             <Badge variant={badgeVariant} className="text-xs">
-                              {riesgoInfo.nivel.charAt(0).toUpperCase() + riesgoInfo.nivel.slice(1)}
+                              {getRiesgoText(riesgoInfo.nivel)}
                             </Badge>
                           </div>
                         </div>

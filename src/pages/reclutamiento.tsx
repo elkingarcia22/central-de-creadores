@@ -26,6 +26,8 @@ import {
   LoadingIcon
 } from '../components/icons';
 import { obtenerEstadosReclutamiento } from '../api/supabase-investigaciones';
+import { getRiesgoBadgeVariant, getRiesgoText } from '../utils/riesgoUtils';
+import { getEstadoInvestigacionVariant, getEstadoInvestigacionText, getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../utils/estadoUtils';
 
 // Tipos para la estructura de datos
 interface InvestigacionReclutamiento {
@@ -289,12 +291,6 @@ export default function ReclutamientoPage() {
 
   // Investigaciones filtradas
   const investigacionesFiltradas = useMemo(() => {
-    console.log('🔍 Investigaciones originales:', investigaciones);
-    console.log('🔍 Investigaciones con estados:', investigaciones.map(inv => ({
-      nombre: inv.investigacion_nombre,
-      estado: inv.estado_reclutamiento_nombre,
-      color: inv.estado_reclutamiento_color
-    })));
     return filtrarInvestigaciones(investigaciones, searchTerm, filters);
   }, [investigaciones, searchTerm, filters, filtrarInvestigaciones]);
 
@@ -405,46 +401,9 @@ export default function ReclutamientoPage() {
   };
 
   // Función para obtener el color del estado de reclutamiento
-  const getEstadoReclutamientoColor = (estado: string | undefined | null): 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' => {
-    console.log('🎨 getEstadoReclutamientoColor llamado con:', estado);
-    if (!estado) return 'secondary';
-    
-    switch (estado.toLowerCase()) {
-      case 'pendiente':
-        console.log('🎨 Estado pendiente -> warning');
-        return 'warning';
-      case 'en progreso':
-        console.log('🎨 Estado en progreso -> info');
-        return 'info';
-      case 'pausado':
-        console.log('🎨 Estado pausado -> warning');
-        return 'warning';
-      case 'cancelado':
-        console.log('🎨 Estado cancelado -> danger');
-        return 'danger';
-      case 'finalizado':
-        console.log('🎨 Estado finalizado -> success');
-        return 'success';
-      default:
-        console.log('🎨 Estado por defecto -> secondary');
-        return 'secondary';
-    }
-  };
 
-  // Función para obtener el color del riesgo
-  const getRiesgoColor = (riesgo: string | undefined | null): 'danger' | 'warning' | 'success' => {
-    if (!riesgo) return 'success';
-    
-    switch (riesgo.toLowerCase()) {
-      case 'alto':
-        return 'danger';
-      case 'medio':
-        return 'warning';
-      case 'bajo':
-      default:
-        return 'success';
-    }
-  };
+
+
 
   // Función para actualizar estado manualmente
   const handleActualizarEstado = async (investigacionId: string, estadoId: string) => {
@@ -551,13 +510,16 @@ export default function ReclutamientoPage() {
       sortFn: (a: InvestigacionReclutamiento, b: InvestigacionReclutamiento) => 
         (a.estado_reclutamiento_nombre || '').localeCompare(b.estado_reclutamiento_nombre || ''),
       render: (value: any, row: InvestigacionReclutamiento) => {
-        console.log('🎯 Renderizando columna de estado para:', row.investigacion_nombre, 'Estado:', row.estado_reclutamiento_nombre);
+        const estado = row.estado_reclutamiento_nombre;
+        const variant = getEstadoReclutamientoVariant(estado);
+        const text = getEstadoReclutamientoText(estado);
+        console.log('🎯 Tabla - Estado:', estado, 'Variant:', variant, 'Text:', text);
         return (
           <Chip 
-            variant={getEstadoReclutamientoColor(row.estado_reclutamiento_nombre)}
+            variant={variant}
             size="sm"
           >
-            {row.estado_reclutamiento_nombre || 'Sin estado'}
+            {text}
           </Chip>
         );
       }
@@ -626,10 +588,10 @@ export default function ReclutamientoPage() {
       },
       render: (value: any, row: InvestigacionReclutamiento) => (
         <Chip 
-          variant={getRiesgoColor(row.riesgo_reclutamiento)}
+          variant={getRiesgoBadgeVariant(row.riesgo_reclutamiento || 'bajo')}
           size="sm"
         >
-          {row.riesgo_reclutamiento || 'Bajo'}
+          {getRiesgoText(row.riesgo_reclutamiento || 'bajo')}
         </Chip>
       )
     },
@@ -745,15 +707,15 @@ export default function ReclutamientoPage() {
               </div>
               <div className="flex items-center gap-3">
                 <Button
-                  variant="secondary"
-                  size="lg"
+                  variant="outline"
+                  size="md"
                   onClick={handleAsignarAgendamiento}
                 >
                   Asignar Agendamiento
                 </Button>
                 <Button
                   variant="primary"
-                  size="lg"
+                  size="md"
                   onClick={handleCrearReclutamiento}
                 >
                   Agregar Participante

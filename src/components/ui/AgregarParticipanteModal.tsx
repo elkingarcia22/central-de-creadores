@@ -7,8 +7,12 @@ import Button from './Button';
 import Select from './Select';
 import UserSelectorWithAvatar from './UserSelectorWithAvatar';
 import DatePicker from './DatePicker';
+import { TimePicker } from './TimePicker';
 import Input from './Input';
+import Chip from './Chip';
 import { getUserTimezone, getCurrentDateTime, debugTimezone, getMinDate, createUTCDateFromLocal } from '../../utils/timezone';
+import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../utils/estadoUtils';
+import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
@@ -295,6 +299,14 @@ export default function AgregarParticipanteModal({
     : (responsables as any)?.data || (responsables as any)?.usuarios || [];
 
   // Handler para guardar
+  const handleButtonSubmit = () => {
+    // Crear un evento sintético para el formulario
+    const syntheticEvent = {
+      preventDefault: () => {},
+    } as React.FormEvent;
+    handleSubmit(syntheticEvent);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('🚀 INICIANDO handleSubmit...');
@@ -474,7 +486,32 @@ export default function AgregarParticipanteModal({
   };
 
   return (
-    <SideModal isOpen={isOpen} onClose={onClose} title="Agregar Participante" width="lg" footer={null}>
+    <SideModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title="Agregar Participante" 
+      width="lg" 
+      footer={
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={loading}
+            onClick={handleButtonSubmit}
+          >
+            {loading ? 'Guardando...' : 'Agregar Participante'}
+          </Button>
+        </div>
+      }
+    >
       <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Mostrar error si existe */}
@@ -521,12 +558,12 @@ export default function AgregarParticipanteModal({
         {/* Hora de sesión */}
         <div>
           <Typography variant="subtitle2" weight="medium" className="mb-2">Hora de la Sesión *</Typography>
-          <Input
-            type="time"
+          <TimePicker
             value={horaSesion}
-            onChange={(e) => setHoraSesion(e.target.value)}
+            onChange={setHoraSesion}
+            placeholder="--:-- --"
             disabled={loading}
-            required
+            format="12h"
           />
         </div>
 
@@ -659,11 +696,14 @@ export default function AgregarParticipanteModal({
                     <span className="text-sm font-medium">{participante.email}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Tipo:</span>
-                  <span className="text-sm font-medium capitalize">
-                    {participante.tipo === 'externo' ? 'Cliente Externo' : participante.tipo === 'interno' ? 'Cliente Interno' : 'Friend and Family'}
-                  </span>
+                  <Chip 
+                    variant={getTipoParticipanteVariant(participante.tipo)}
+                    size="sm"
+                  >
+                    {getTipoParticipanteText(participante.tipo)}
+                  </Chip>
                 </div>
                 {participante.empresa_nombre && (
                   <div className="flex justify-between">
@@ -678,14 +718,24 @@ export default function AgregarParticipanteModal({
                   </div>
                 )}
                 {participante.estado_calculado ? (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Estado:</span>
-                    <span className="text-sm font-medium">{participante.estado_calculado.estado}</span>
+                    <Chip 
+                      variant={getEstadoParticipanteVariant(participante.estado_calculado.estado)}
+                      size="sm"
+                    >
+                      {getEstadoParticipanteText(participante.estado_calculado.estado)}
+                    </Chip>
                   </div>
                 ) : participante.estado && (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Estado:</span>
-                    <span className="text-sm font-medium">{participante.estado}</span>
+                    <Chip 
+                      variant={getEstadoParticipanteVariant(participante.estado)}
+                      size="sm"
+                    >
+                      {getEstadoParticipanteText(participante.estado)}
+                    </Chip>
                   </div>
                 )}
                 {participante.productos_relacionados && participante.productos_relacionados.length > 0 && (
@@ -717,26 +767,6 @@ export default function AgregarParticipanteModal({
           );
         })()}
 
-        {/* Botones */}
-        <div className="flex gap-3 pt-4">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-            fullWidth
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={loading}
-            fullWidth
-          >
-            {loading ? 'Guardando...' : 'Agregar Participante'}
-          </Button>
-        </div>
       </form>
 
       {/* Modales para crear participantes */}

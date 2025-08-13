@@ -25,6 +25,7 @@ interface SidebarUser {
 interface SidebarProps {
   title?: string;
   items: SidebarItem[];
+  utilityItems?: SidebarItem[];
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   onItemClick?: (href: string) => void;
@@ -37,6 +38,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   title = 'Central de creadores',
   items,
+  utilityItems = [],
   isCollapsed = false,
   onToggleCollapse,
   onItemClick,
@@ -68,12 +70,17 @@ const Sidebar: React.FC<SidebarProps> = ({
           </Tooltip>
         )}
         
-        <SimpleAvatar
-          src={user?.avatar}
-          fallbackText={displayName}
-          size="xl"
-          className="border-2 border-slate-200 dark:border-zinc-700"
-        />
+        <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
+          <div>
+            <SimpleAvatar
+              src={user?.avatar}
+              fallbackText={displayName}
+              size="xl"
+              className="border-2 border-slate-200 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={onSettings}
+            />
+          </div>
+        </Tooltip>
         
         {/* Selector de rol siempre visible */}
         {user && (
@@ -117,6 +124,34 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       <div className={`px-2 py-4 border-t border-slate-200 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+        {/* Elementos de utilidad */}
+        {utilityItems.map((item) => {
+          const navItem = (
+            <NavigationItem
+              {...item}
+              isCollapsed={isCollapsed}
+              onClick={() => onItemClick?.(item.href)}
+            />
+          );
+
+          if (isCollapsed) {
+            return (
+              <Tooltip 
+                key={item.href}
+                content={item.label} 
+                position="right"
+                delay={200}
+              >
+                {navItem}
+              </Tooltip>
+            );
+          }
+
+          return <div key={item.href}>{navItem}</div>;
+        })}
+
+        {/* Configuraciones del perfil - Removido, ahora está en el avatar */}
+
         {/* Tema */}
         {(() => {
           const navItem = (
@@ -134,34 +169,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             return (
               <Tooltip 
                 content={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'} 
-                position="right"
-                delay={200}
-              >
-                {navItem}
-              </Tooltip>
-            );
-          }
-
-          return <div>{navItem}</div>;
-        })()}
-        
-        {/* Configuraciones */}
-        {onSettings && (() => {
-          const navItem = (
-            <NavigationItem
-              label="Configuraciones"
-              href="#"
-              icon={<SettingsIcon className="w-6 h-6 text-muted-foreground" />}
-              isCollapsed={isCollapsed}
-              onClick={onSettings}
-              asButton={true}
-            />
-          );
-
-          if (isCollapsed) {
-            return (
-              <Tooltip 
-                content="Configuraciones" 
                 position="right"
                 delay={200}
               >

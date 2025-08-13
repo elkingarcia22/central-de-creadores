@@ -41,6 +41,8 @@ import {
   UsersIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
+import { getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../../../utils/estadoUtils';
+import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../../utils/tipoParticipanteUtils';
 import { 
   obtenerInvestigacionPorId,
   actualizarLinkPrueba,
@@ -693,98 +695,41 @@ const VerReclutamiento: NextPage = () => {
   ];
 
   const getEstadoBadgeVariant = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'en_borrador':
-        return 'default';
-      case 'por_agendar':
-        return 'warning';
-      case 'por_iniciar':
-        return 'info';
-      case 'en_progreso':
-        return 'info';
-      case 'finalizado':
-        return 'success';
-      case 'pausado':
-        return 'secondary';
-      case 'cancelado':
-        return 'danger';
-      default:
-        return 'default';
-    }
+    return getEstadoReclutamientoVariant(estado);
   };
 
   // Formatear el estado para mostrar
   const formatearEstado = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'en_borrador':
-        return 'En Borrador';
-      case 'por_agendar':
-        return 'Por Agendar';
-      case 'por_iniciar':
-        return 'Por Iniciar';
-      case 'en_progreso':
-        return 'En Progreso';
-      case 'finalizado':
-        return 'Finalizado';
-      case 'pausado':
-        return 'Pausado';
-      case 'cancelado':
-        return 'Cancelado';
-      default:
-        return estado || 'Sin estado';
-    }
+    return getEstadoReclutamientoText(estado);
   };
 
-  // Función para obtener el color del estado de agendamiento
+  // Función para obtener el color del estado de agendamiento (DEPRECATED - usar getEstadoReclutamientoVariant)
   const getEstadoAgendamientoColor = (estado: string): string => {
     if (!estado) return '#6B7280';
     
-    switch (estado.toLowerCase()) {
-      case 'pendiente de agendamiento':
-        return '#F59E0B'; // Amarillo
-      case 'pendiente':
-        return '#F59E0B'; // Amarillo
-      case 'en progreso':
-        return '#3B82F6'; // Azul
-      case 'finalizado':
-        return '#10B981'; // Verde
-      case 'cancelado':
-        return '#EF4444'; // Rojo
-      case 'confirmado':
-        return '#8B5CF6'; // Púrpura
-      case 'reprogramado':
-        return '#6B7280'; // Gris
-      case 'no show':
-        return '#6B7280'; // Gris
-      default:
-        return '#6B7280'; // Gris por defecto
+    // Usar nuestro sistema centralizado
+    const variant = getEstadoReclutamientoVariant(estado);
+    
+    // Mapear variants a colores (solo para compatibilidad)
+    switch (variant) {
+      case 'warning': return '#F59E0B'; // Amarillo
+      case 'accent-purple': return '#8B5CF6'; // Púrpura
+      case 'success': return '#3B82F6'; // Azul (cambiado de accent-blue a success)
+      case 'accent-indigo': return '#6366F1'; // Índigo
+      case 'accent-pink': return '#EC4899'; // Rosa
+      case 'success': return '#10B981'; // Verde
+      case 'danger': return '#EF4444'; // Rojo
+      case 'secondary': return '#6B7280'; // Gris
+      default: return '#6B7280'; // Gris por defecto
     }
   };
 
-  // Función para obtener el variant del badge basado en el estado
-  const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' => {
+  // Función para obtener el variant del badge basado en el estado (ACTUALIZADA)
+  const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | 'warning' | 'accent-purple' | 'accent-indigo' | 'accent-pink' | 'danger' | 'success' | 'secondary' => {
     if (!estado) return 'default';
     
-    switch (estado.toLowerCase()) {
-      case 'pendiente de agendamiento':
-        return 'warning';
-      case 'pendiente':
-        return 'warning';
-      case 'en progreso':
-        return 'primary';
-      case 'finalizado':
-        return 'success';
-      case 'cancelado':
-        return 'danger';
-      case 'confirmado':
-        return 'info';
-      case 'reprogramado':
-        return 'secondary';
-      case 'no show':
-        return 'secondary';
-      default:
-        return 'default';
-    }
+    // Usar nuestro sistema centralizado
+    return getEstadoReclutamientoVariant(estado);
   };
 
   // Función para determinar el tipo de participante
@@ -818,27 +763,11 @@ const VerReclutamiento: NextPage = () => {
   const getTipoParticipanteBadge = (participante: any) => {
     const tipo = getTipoParticipante(participante);
     
-    switch (tipo) {
-      case 'interno':
-        return (
-          <Chip variant="info" size="sm">
-            Participante Interno
-          </Chip>
-        );
-      case 'friend_family':
-        return (
-          <Chip variant="secondary" size="sm">
-            Friend and Family
-          </Chip>
-        );
-      case 'externo':
-      default:
-        return (
-          <Chip variant="primary" size="sm">
-            Participante Externo
-          </Chip>
-        );
-    }
+    return (
+      <Chip variant={getTipoParticipanteVariant(tipo)} size="sm">
+        {getTipoParticipanteText(tipo)}
+      </Chip>
+    );
   };
 
   // Función para obtener datos específicos según el tipo de participante
@@ -2229,14 +2158,23 @@ const VerReclutamiento: NextPage = () => {
       icon: <FileTextIcon className="w-4 h-4" />, 
       content: <LibretoContent />
     }] : []),
-    // Solo mostrar el tab de participantes si hay participantes o asignaciones
-    ...(true ? [{
+    // Solo mostrar el tab de participantes si hay participantes
+    ...(participantes.length > 0 ? [{
       id: 'reclutamiento',
       label: 'Participantes y Asignaciones',
       icon: <ClipboardListIcon className="w-4 h-4" />, 
       content: <ParticipantesContent />
     }] : [])
   ];
+
+  // Debug: Log de tabs (solo en cliente)
+  if (typeof window !== 'undefined') {
+    console.log('🔍 Tabs configurados:', tabs);
+    console.log('🔍 Número de tabs:', tabs.length);
+    console.log('🔍 Tab activo:', activeTab);
+    console.log('🔍 Número de participantes:', participantes.length);
+    console.log('🔍 Participantes:', participantes);
+  }
 
   if (isInitializing || loading) {
     return (
@@ -2465,6 +2403,17 @@ const VerReclutamiento: NextPage = () => {
           variant="default"
           fullWidth={true}
         />
+
+        {/* Contenido de los tabs */}
+        <div className="mt-6">
+          {(() => {
+            const activeTabData = tabs.find(tab => tab.id === activeTab);
+            console.log('🔍 Tab activo encontrado:', activeTabData);
+            console.log('🔍 ID del tab activo:', activeTab);
+            console.log('🔍 Contenido del tab:', activeTabData?.content);
+            return activeTabData?.content;
+          })()}
+        </div>
       </div>
 
       {/* Modal unificado para gestionar links */}

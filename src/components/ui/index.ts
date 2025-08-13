@@ -13,6 +13,7 @@ export { default as LinkModal } from "./LinkModal";
 export { default as ActionsMenu } from "./ActionsMenu";
 export { default as UserSelectorWithAvatar } from "./UserSelectorWithAvatar";
 export { default as DatePicker } from "./DatePicker";
+export { TimePicker } from "./TimePicker";
 export { default as DataTable } from "./DataTable";
 export { default as Textarea } from "./Textarea";
 export { default as MultiSelect } from "./MultiSelect";

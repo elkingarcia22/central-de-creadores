@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout } from '../../components/ui/Layout';
+import { Layout } from '../../components/ui';
 import { InvestigacionFormNew } from '../../components/investigaciones/InvestigacionFormNew';
 import { useToast } from '../../contexts/ToastContext';
 import { 

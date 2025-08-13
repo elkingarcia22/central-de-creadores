@@ -30,9 +30,19 @@ export interface LayoutProps {
   className?: string;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
+const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Inicializar el estado del sidebar solo en el cliente
+  useEffect(() => {
+    setIsClient(true);
+    const saved = localStorage.getItem('sidebarCollapsed');
+    const initialState = saved ? JSON.parse(saved) : false;
+    console.log('Sidebar initial state:', initialState);
+    setSidebarCollapsed(initialState);
+  }, []);
   const router = useRouter();
   const { rolSeleccionado, setRolSeleccionado, rolesDisponibles, setRolesDisponibles } = useRol();
   const { userProfile, userEmail, userName, userImage, refreshUser } = useUser();
@@ -45,24 +55,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
     }
   }, [rol, rolSeleccionado, setRolSeleccionado]);
 
-  // Configuración de menús por rol
+  // Guardar el estado del sidebar en localStorage cuando cambie
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
+      console.log('Sidebar state saved:', sidebarCollapsed);
+    }
+  }, [sidebarCollapsed]);
+
+  // Configuración de menús principales por rol
   const menuConfig = {
     administrador: [
+      { label: 'Dashboard', href: '/dashboard', icon: <DashboardIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
-      { 
-        label: 'Configuraciones', 
-        href: '/configuraciones', 
-        icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" />,
-        subMenu: [
-          { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-muted-foreground" /> }
-        ]
-      },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     investigador: [
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
@@ -70,16 +81,28 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
       { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     reclutador: [
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
-      { label: 'Configuraciones', href: '/configuraciones', icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },{ label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
   };
+
+  // Configuración de elementos de utilidad (común para todos los roles)
+  const utilityItems = [
+    { 
+      label: 'Configuraciones', 
+      href: '/configuraciones', 
+      icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" />,
+      subMenu: [
+        { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-muted-foreground" /> }
+      ]
+    },
+    { label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
+  ];
 
   // Usar el rol del contexto si existe
   const menuRol = rolSeleccionado?.toLowerCase() || rol?.toLowerCase();
@@ -162,6 +185,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
         <Sidebar
           title="Central de creadores"
           items={currentMenu}
+          utilityItems={utilityItems}
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
           user={userForMenus}
@@ -170,7 +194,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
         />
       </div>
       {/* Contenedor derecho: solo contenido principal */}
-      <div className="flex-1 flex flex-col lg:ml-20" style={{ marginLeft: sidebarCollapsed ? 80 : 256 }}>
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         {/* Contenido de la página */}
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -182,4 +206,4 @@ export const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' })
   );
 }; 
 
-export default Layout; 
+export { Layout }; 

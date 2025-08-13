@@ -5,6 +5,7 @@ interface SimpleAvatarProps {
   fallbackText?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  onClick?: () => void;
 }
 
 function getInitials(text: string): string {
@@ -46,7 +47,8 @@ const SimpleAvatar: React.FC<SimpleAvatarProps> = ({
   src, 
   fallbackText = 'Usuario',
   size = 'md',
-  className = ''
+  className = '',
+  onClick
 }) => {
   const [hasError, setHasError] = React.useState(false);
   const [isLoaded, setIsLoaded] = React.useState(false);
@@ -108,7 +110,7 @@ const SimpleAvatar: React.FC<SimpleAvatarProps> = ({
   `.trim(), [size, className]);
 
   return (
-    <div className={classes}>
+    <div className={classes} onClick={onClick}>
       {shouldShowImage ? (
         <>
           {/* Avatar con iniciales como fallback */}

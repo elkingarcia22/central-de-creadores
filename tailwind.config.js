@@ -46,6 +46,57 @@ module.exports = {
           foreground: 'rgb(var(--warning-foreground))',
         },
         
+        info: {
+          DEFAULT: 'rgb(var(--info))',
+          foreground: 'rgb(var(--info-foreground))',
+        },
+        
+        'accent-blue': {
+          DEFAULT: 'rgb(var(--accent-blue))',
+          foreground: 'rgb(var(--accent-blue-foreground))',
+        },
+        
+        'accent-purple': {
+          DEFAULT: 'rgb(var(--accent-purple))',
+          foreground: 'rgb(var(--accent-purple-foreground))',
+        },
+        
+        'accent-orange': {
+          DEFAULT: 'rgb(var(--accent-orange))',
+          foreground: 'rgb(var(--accent-orange-foreground))',
+        },
+        
+        'accent-teal': {
+          DEFAULT: 'rgb(var(--accent-teal))',
+          foreground: 'rgb(var(--accent-teal-foreground))',
+        },
+        
+        'accent-indigo': {
+          DEFAULT: 'rgb(var(--accent-indigo))',
+          foreground: 'rgb(var(--accent-indigo-foreground))',
+        },
+        
+        'accent-pink': {
+          DEFAULT: 'rgb(var(--accent-pink))',
+          foreground: 'rgb(var(--accent-pink-foreground))',
+        },
+        
+        'accent-cyan': {
+          DEFAULT: 'rgb(var(--accent-cyan))',
+          foreground: 'rgb(var(--accent-cyan-foreground))',
+        },
+        
+        'accent-emerald': {
+          DEFAULT: 'rgb(var(--accent-emerald))',
+          foreground: 'rgb(var(--accent-emerald-foreground))',
+        },
+        
+        'accent-violet': {
+          DEFAULT: 'rgb(var(--accent-violet))',
+          foreground: 'rgb(var(--accent-violet-foreground))',
+        },
+        
+        ring: 'rgb(var(--ring))',
         input: 'rgb(var(--input))',
         'input-solid': 'rgb(var(--input-solid))',
         border: 'rgb(var(--border))',

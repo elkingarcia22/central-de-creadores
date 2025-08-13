@@ -105,7 +105,7 @@ const InvestigacionesPage: NextPage = () => {
               <Button
                 onClick={() => router.push('/investigaciones/crear-new')}
                 variant="primary"
-                size="lg"
+                size="md"
                 className="flex items-center gap-2"
               >
                 <span>+</span>
@@ -294,7 +294,7 @@ const InvestigacionesPage: NextPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end gap-2">
                             <Button
-                              variant="secondary"
+                              variant="outline"
                               size="sm"
                               onClick={() => router.push(`/investigaciones/${investigacion.id}`)}
                             >

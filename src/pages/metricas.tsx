@@ -13,6 +13,7 @@ import {
   InvestigacionesIcon,
   SesionesIcon
 } from '../components/icons';
+import { getEstadoMetricaVariant, getEstadoMetricaText } from '../utils/estadoUtils';
 
 export default function MetricasPage() {
   const { rolSeleccionado } = useRol();
@@ -88,23 +89,7 @@ export default function MetricasPage() {
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'generado': return 'success';
-      case 'en_proceso': return 'warning';
-      case 'error': return 'danger';
-      default: return 'default';
-    }
-  };
 
-  const getEstadoText = (estado: string) => {
-    switch (estado) {
-      case 'generado': return 'Generado';
-      case 'en_proceso': return 'En Proceso';
-      case 'error': return 'Error';
-      default: return estado;
-    }
-  };
 
   const progresoPresupuesto = (metricas.presupuestoUtilizado / metricas.presupuestoTotal) * 100;
 
@@ -130,7 +115,7 @@ export default function MetricasPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={() => router.push('/metricas/nuevo-reporte')}
               >
                 Nuevo Reporte
@@ -336,12 +321,12 @@ export default function MetricasPage() {
                         >
                           {reporte.tipo}
                         </Chip>
-                        <Chip 
-                          variant={getEstadoColor(reporte.estado)}
-                          size="sm"
-                        >
-                          {getEstadoText(reporte.estado)}
-                        </Chip>
+                                            <Chip 
+                      variant={getEstadoMetricaVariant(reporte.estado)}
+                      size="sm"
+                    >
+                      {getEstadoMetricaText(reporte.estado)}
+                    </Chip>
                       </div>
                       <Typography variant="body1" color="secondary" className="mb-3">
                         {reporte.descripcion}
@@ -379,7 +364,7 @@ export default function MetricasPage() {
                       </Button>
                     )}
                     <Button
-                      variant="secondary"
+                      variant="outline"
                       size="sm"
                       onClick={() => router.push(`/metricas/reporte/${reporte.id}`)}
                     >
@@ -400,21 +385,21 @@ export default function MetricasPage() {
           <div className="flex flex-wrap gap-4">
             <Button
               variant="primary"
-              size="lg"
+              size="md"
               onClick={() => router.push('/metricas/generar-reporte')}
             >
               Generar Reporte Personalizado
             </Button>
             <Button
               variant="success"
-              size="lg"
+              size="md"
               onClick={() => router.push('/metricas/exportar-datos')}
             >
               Exportar Datos
             </Button>
             <Button
-              variant="secondary"
-              size="lg"
+              variant="outline"
+              size="md"
               onClick={() => router.push('/metricas/configuracion')}
             >
               Configurar Alertas

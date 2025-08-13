@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
-import Layout from '../components/ui/Layout';
+import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -20,7 +20,7 @@ import GroupedActions from '../components/ui/GroupedActions';
 import { InlineSelect, InlineDate } from '../components/ui/InlineEdit';
 import InlineUserSelect from '../components/ui/InlineUserSelect';
 import SeguimientoSideModal from '../components/ui/SeguimientoSideModal';
-import { SearchIcon, PlusIcon, MoreVerticalIcon, EditIcon, CopyIcon, FileTextIcon, LinkIcon, BarChartIcon, TrashIcon, EyeIcon, FilterIcon, UserIcon, InvestigacionesIcon, AlertTriangleIcon, CheckCircleIcon, ClipboardListIcon } from '../components/icons';
+import { SearchIcon, PlusIcon, MoreVerticalIcon, EditIcon, CopyIcon, FileTextIcon, LinkIcon, BarChartIcon, TrashIcon, EyeIcon, FilterIcon, UserIcon, InvestigacionesIcon, AlertTriangleIcon, CheckCircleIcon, ClipboardListIcon, InfoIcon } from '../components/icons';
 import { 
   obtenerInvestigaciones, 
   actualizarInvestigacion, 
@@ -43,6 +43,8 @@ import {
 } from '../api/supabase-libretos';
 import { obtenerSeguimientosPorInvestigacion, crearSeguimiento } from '../api/supabase-seguimientos';
 import { formatearFecha } from '../utils/fechas';
+import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText, getRiesgoDescripcion, getRiesgoPrioridad } from '../utils/riesgoUtils';
+import { getEstadoInvestigacionVariant, getEstadoInvestigacionText } from '../utils/estadoUtils';
 import type { Investigacion as InvestigacionSupabase, Usuario as UsuarioSupabase, Periodo as PeriodoSupabase } from '../types/supabase-investigaciones';
 import type { LibretoInvestigacion, LibretoFormData } from '../types/libretos';
 import type { SeguimientoFormData } from '../types/seguimientos';
@@ -89,17 +91,7 @@ interface Periodo {
   nombre: string;
 }
 
-const getBadgeVariant = (estado: string) => {
-  switch (estado) {
-    case 'en_borrador': return 'default';
-    case 'por_agendar': return 'info';
-    case 'en_progreso': return 'warning';
-    case 'finalizado': return 'success';
-    case 'pausado': return 'secondary';
-    case 'cancelado': return 'danger';
-    default: return 'default';
-  }
-};
+
 
 // Función para calcular el nivel de riesgo automáticamente
 const calcularNivelRiesgo = (investigacion: any): {
@@ -193,75 +185,7 @@ const calcularNivelRiesgo = (investigacion: any): {
   }
 };
 
-// Función para obtener el color del badge de riesgo
-const getRiesgoBadgeVariant = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': return 'danger';
-    case 'medio': return 'warning';
-    case 'bajo': return 'success';
-    case 'completado': return 'info';
-    case 'sin_fecha': return 'secondary';
-    default: return 'default';
-  }
-};
 
-// Función para obtener el icono del nivel de riesgo
-const getRiesgoIcon = (nivel: string) => {
-  switch (nivel) {
-    case 'alto': 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-        </svg>
-      );
-    case 'medio': 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    case 'bajo': 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    case 'completado': 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-      );
-    case 'sin_fecha': 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    default: 
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-  }
-};
-
-// Función para obtener el label visual del nivel de riesgo
-const getTituloAlerta = (nivel: string) => {
-  switch (nivel) {
-    case 'alto':
-      return 'Alerta Alta';
-    case 'medio':
-      return 'Atención';
-    case 'bajo':
-      return 'En Tiempo';
-    case 'sin_fecha':
-      return 'Sin Fecha';
-    default:
-      return 'Sin Riesgo';
-  }
-};
 
 export default function InvestigacionesPage() {
   const { rolSeleccionado, loading: rolLoading } = useRol();
@@ -974,6 +898,9 @@ export default function InvestigacionesPage() {
             value={row.estado}
             options={estadosInvestigacion}
             onSave={(newValue) => handleInlineUpdate(row.id, 'estado', newValue)}
+            useChip={true}
+            getChipVariant={getEstadoInvestigacionVariant}
+            getChipText={getEstadoInvestigacionText}
           />
         );
       }
@@ -1044,23 +971,17 @@ export default function InvestigacionesPage() {
           return null;
         }
         const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
-        const icon = getRiesgoIcon(riesgoInfo.nivel);
-        
-        // Obtener título de la alerta basado en el nivel
-        const getTituloAlertaLocal = (nivel: string) => {
-          switch (nivel) {
-            case 'alto':
-              return 'Alerta Alta';
-            case 'medio':
-              return 'Atención';
-            case 'bajo':
-              return 'En Tiempo';
-            case 'sin_fecha':
-              return 'Sin Fecha';
-            default:
-              return 'Sin Riesgo';
-          }
+        const iconName = getRiesgoIconName(riesgoInfo.nivel);
+
+        // Mapeo de iconos por nombre
+        const iconMap: { [key: string]: any } = {
+          AlertTriangleIcon: <AlertTriangleIcon className="w-4 h-4" />,
+          ExclamationTriangleIcon: <InfoIcon className="w-4 h-4" />,
+          CheckCircleIcon: <CheckCircleIcon className="w-4 h-4" />,
+          QuestionMarkCircleIcon: <InfoIcon className="w-4 h-4" />
         };
+
+        const icon = iconMap[iconName] || <InfoIcon className="w-4 h-4" />;
 
         return (
           <div 
@@ -1073,7 +994,7 @@ export default function InvestigacionesPage() {
               icon={icon}
               className="whitespace-nowrap group-hover:opacity-80 transition-opacity"
             >
-              {getTituloAlertaLocal(riesgoInfo.nivel)}
+              {getRiesgoText(riesgoInfo.nivel)}
             </Chip>
             {/* Tooltip personalizado */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -1088,20 +1009,8 @@ export default function InvestigacionesPage() {
         const riesgoA = calcularNivelRiesgo(a);
         const riesgoB = calcularNivelRiesgo(b);
         
-        // Prioridad numérica: alto=3, medio=2, bajo=1, sin_fecha=0, completado=-1
-        const getPrioridadRiesgo = (nivel: string) => {
-          switch (nivel) {
-            case 'alto': return 3;
-            case 'medio': return 2;
-            case 'bajo': return 1;
-            case 'sin_fecha': return 0;
-            case 'completado': return -1;
-            default: return 0;
-          }
-        };
-        
-        const prioridadA = getPrioridadRiesgo(riesgoA.nivel);
-        const prioridadB = getPrioridadRiesgo(riesgoB.nivel);
+        const prioridadA = getRiesgoPrioridad(riesgoA.nivel);
+        const prioridadB = getRiesgoPrioridad(riesgoB.nivel);
         
         // Ordenar por prioridad (mayor a menor) y luego por días restantes
         if (prioridadA !== prioridadB) {
@@ -1201,7 +1110,7 @@ export default function InvestigacionesPage() {
               </div>
               <Button
                 variant="primary"
-                size="lg"
+                size="md"
                 onClick={handleCrearInvestigacion}
               >
                 Nueva Investigación

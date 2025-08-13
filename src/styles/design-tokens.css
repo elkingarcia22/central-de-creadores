@@ -17,9 +17,27 @@
   --success: 22 163 74; /* green-600 */
   --success-foreground: 255 255 255; /* white */
   --warning: 251 191 36; /* yellow-500 */
-  --warning-foreground: 15 23 42; /* slate-900 */
+  --warning-foreground: 0 0 0; /* black - Máximo contraste en modo claro */
   --info: 96 165 250; /* blue-400 */
   --info-foreground: 255 255 255; /* white */
+  --accent-blue: 59 130 246; /* blue-500 - Para estados agendados */
+  --accent-blue-foreground: 255 255 255; /* white */
+  --accent-purple: 147 51 234; /* purple-600 - Para estados especiales */
+  --accent-purple-foreground: 255 255 255; /* white */
+  --accent-orange: 249 115 22; /* orange-500 - Para estados por agendar */
+  --accent-orange-foreground: 255 255 255; /* white */
+  --accent-teal: 20 184 166; /* teal-500 - Para estados en borrador */
+  --accent-teal-foreground: 255 255 255; /* white */
+  --accent-indigo: 99 102 241; /* indigo-500 - Para estados por iniciar */
+  --accent-indigo-foreground: 255 255 255; /* white */
+  --accent-pink: 236 72 153; /* pink-500 - Para estados especiales */
+  --accent-pink-foreground: 255 255 255; /* white */
+  --accent-cyan: 6 182 212; /* cyan-500 - Para participantes externos */
+  --accent-cyan-foreground: 255 255 255; /* white */
+  --accent-emerald: 16 185 129; /* emerald-500 - Para participantes internos */
+  --accent-emerald-foreground: 255 255 255; /* white */
+  --accent-violet: 139 92 246; /* violet-500 - Para friend & family */
+  --accent-violet-foreground: 255 255 255; /* white */
   --input: 255 255 255; /* white */
   --input-solid: 255 255 255; /* white */
   --border: 226 232 240; /* slate-200 */
@@ -51,9 +69,27 @@
   --success: 34 197 94; /* green-500 */
   --success-foreground: 255 255 255; /* white */
   --warning: 251 191 36; /* yellow-500 */
-  --warning-foreground: 10 10 10; /* zinc-950 */
+  --warning-foreground: 255 255 255; /* white - Mejor contraste en modo oscuro */
   --info: 96 165 250; /* blue-400 */
   --info-foreground: 255 255 255; /* white */
+  --accent-blue: 59 130 246; /* blue-500 - Para estados agendados */
+  --accent-blue-foreground: 255 255 255; /* white */
+  --accent-purple: 147 51 234; /* purple-600 - Para estados especiales */
+  --accent-purple-foreground: 255 255 255; /* white */
+  --accent-orange: 249 115 22; /* orange-500 - Para estados por agendar */
+  --accent-orange-foreground: 255 255 255; /* white */
+  --accent-teal: 20 184 166; /* teal-500 - Para estados en borrador */
+  --accent-teal-foreground: 255 255 255; /* white */
+  --accent-indigo: 99 102 241; /* indigo-500 - Para estados por iniciar */
+  --accent-indigo-foreground: 255 255 255; /* white */
+  --accent-pink: 236 72 153; /* pink-500 - Para estados especiales */
+  --accent-pink-foreground: 255 255 255; /* white */
+  --accent-cyan: 6 182 212; /* cyan-500 - Para participantes externos */
+  --accent-cyan-foreground: 255 255 255; /* white */
+  --accent-emerald: 16 185 129; /* emerald-500 - Para participantes internos */
+  --accent-emerald-foreground: 255 255 255; /* white */
+  --accent-violet: 139 92 246; /* violet-500 - Para friend & family */
+  --accent-violet-foreground: 255 255 255; /* white */
   --input: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
   --input-solid: 39 39 42; /* zinc-800 - Más claro para mejor contraste */
   --border: 161 161 170; /* zinc-500 - Más claro para que se vea en modo oscuro */

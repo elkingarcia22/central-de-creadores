@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Select from './Select';
 import Input from './Input';
+import Chip from './Chip';
 import { CheckIcon, CloseIcon } from '../icons';
 
 interface InlineEditProps {
@@ -14,6 +15,9 @@ interface InlineEditProps {
 interface InlineSelectProps extends InlineEditProps {
   options: Array<{ value: any; label: string }>;
   placeholder?: string;
+  useChip?: boolean;
+  getChipVariant?: (value: any) => string;
+  getChipText?: (value: any) => string;
 }
 
 interface InlineDateProps extends InlineEditProps {
@@ -82,7 +86,10 @@ export const InlineSelect: React.FC<InlineSelectProps> = ({
   onSave, 
   onCancel,
   placeholder = 'Seleccionar...',
-  className = ''
+  className = '',
+  useChip = false,
+  getChipVariant,
+  getChipText
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(value);
@@ -110,11 +117,23 @@ export const InlineSelect: React.FC<InlineSelectProps> = ({
       onSave={handleSave}
       onCancel={handleCancel}
       className={className}
-      renderDisplay={() => (
-        <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}>
-          {getDisplayText()}
-        </span>
-      )}
+      renderDisplay={() => {
+        if (useChip && value && getChipVariant && getChipText) {
+          return (
+            <Chip 
+              variant={getChipVariant(value) as any}
+              size="sm"
+            >
+              {getChipText(value)}
+            </Chip>
+          );
+        }
+        return (
+          <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500'}>
+            {getDisplayText()}
+          </span>
+        );
+      }}
       renderEdit={() => (
         <Select
           options={options}

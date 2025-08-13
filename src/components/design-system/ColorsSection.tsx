@@ -23,7 +23,7 @@ const ColorsSection: React.FC = () => {
       name: 'success', 
       light: 'rgb(22 163 74)', 
       dark: 'rgb(120 220 150)', 
-      description: 'Estados de éxito',
+      description: 'Estados de éxito (Finalizado, Agendada)',
       lightBg: 'rgb(248 250 252)',
       darkBg: 'rgb(10 10 10)'
     },
@@ -31,15 +31,15 @@ const ColorsSection: React.FC = () => {
       name: 'warning', 
       light: 'rgb(234 179 8)', 
       dark: 'rgb(255 210 100)', 
-      description: 'Estados de advertencia',
+      description: 'Estados de advertencia (Pendiente)',
       lightBg: 'rgb(248 250 252)',
       darkBg: 'rgb(10 10 10)'
     },
     { 
-      name: 'destructive', 
+      name: 'danger', 
       light: 'rgb(220 38 38)', 
       dark: 'rgb(255 140 140)', 
-      description: 'Estados de error',
+      description: 'Estados de error (Cancelado)',
       lightBg: 'rgb(248 250 252)',
       darkBg: 'rgb(10 10 10)'
     },
@@ -47,7 +47,71 @@ const ColorsSection: React.FC = () => {
       name: 'info', 
       light: 'rgb(96 165 250)', 
       dark: 'rgb(96 165 250)', 
-      description: 'Información',
+      description: 'Información (En Progreso - Investigación)',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-purple', 
+      light: 'rgb(147 51 234)', 
+      dark: 'rgb(147 51 234)', 
+      description: 'En Progreso - Reclutamiento',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-orange', 
+      light: 'rgb(249 115 22)', 
+      dark: 'rgb(249 115 22)', 
+      description: 'Por Agendar - Investigación',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-indigo', 
+      light: 'rgb(99 102 241)', 
+      dark: 'rgb(99 102 241)', 
+      description: 'Por Agendar - Reclutamiento',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-teal', 
+      light: 'rgb(20 184 166)', 
+      dark: 'rgb(20 184 166)', 
+      description: 'En Borrador - Investigación',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-pink', 
+      light: 'rgb(236 72 153)', 
+      dark: 'rgb(236 72 153)', 
+      description: 'Pausado - Reclutamiento',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-cyan', 
+      light: 'rgb(6 182 212)', 
+      dark: 'rgb(6 182 212)', 
+      description: 'Participantes Externos',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-emerald', 
+      light: 'rgb(16 185 129)', 
+      dark: 'rgb(16 185 129)', 
+      description: 'Participantes Internos',
+      lightBg: 'rgb(248 250 252)',
+      darkBg: 'rgb(10 10 10)'
+    },
+    { 
+      name: 'accent-violet', 
+      light: 'rgb(139 92 246)', 
+      dark: 'rgb(139 92 246)', 
+      description: 'Participantes Friend & Family',
       lightBg: 'rgb(248 250 252)',
       darkBg: 'rgb(10 10 10)'
     },
