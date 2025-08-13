@@ -89,6 +89,13 @@ export const usePermisos = () => {
     esAdministrador,
     usuarioId: userProfile?.id,
     rol: rolSeleccionado,
+    // Nuevas funciones para permisos específicos
+    tienePermisoSobreElemento: (elemento: any, modulo: ModuloPermiso, permiso: TipoPermiso) => 
+      tienePermisoSobreElemento(elemento, modulo, permiso, userProfile?.id || '', esAdministrador()),
+    usuarioEsCreador: (elemento: any, modulo: ModuloPermiso) => 
+      usuarioEsCreador(elemento, modulo, userProfile?.id || ''),
+    elementoPerteneceAUsuario: (elemento: any, modulo: ModuloPermiso) => 
+      elementoPerteneceAUsuario(elemento, modulo, userProfile?.id || '', esAdministrador()),
   };
 };
 
@@ -207,6 +214,73 @@ export const elementoPerteneceAUsuario = (
         elemento.moderador_id === usuarioId ||
         elemento.investigacion_id === usuarioId
       );
+    
+    default:
+      return false;
+  }
+};
+
+// Función para verificar si el usuario es el creador del elemento
+export const usuarioEsCreador = (
+  elemento: any, 
+  modulo: ModuloPermiso, 
+  usuarioId: string
+): boolean => {
+  switch (modulo) {
+    case 'investigaciones':
+      return elemento.creado_por === usuarioId;
+    
+    case 'reclutamientos':
+      return elemento.creado_por === usuarioId;
+    
+    case 'participantes':
+      return elemento.creado_por === usuarioId;
+    
+    case 'empresas':
+      return elemento.creado_por === usuarioId;
+    
+    case 'sesiones':
+      return elemento.creado_por === usuarioId;
+    
+    default:
+      return false;
+  }
+};
+
+// Función para verificar permisos específicos sobre un elemento
+export const tienePermisoSobreElemento = (
+  elemento: any,
+  modulo: ModuloPermiso,
+  permiso: TipoPermiso,
+  usuarioId: string,
+  esAdmin: boolean
+): boolean => {
+  // Administradores tienen todos los permisos
+  if (esAdmin) return true;
+  
+  // Si el usuario es el creador, tiene permisos completos
+  if (usuarioEsCreador(elemento, modulo, usuarioId)) {
+    return true;
+  }
+  
+  // Para otros casos, verificar según el rol y la asignación
+  const elementoPertenece = elementoPerteneceAUsuario(elemento, modulo, usuarioId, esAdmin);
+  
+  switch (permiso) {
+    case 'ver':
+      return elementoPertenece;
+    
+    case 'crear':
+      // Permitir crear si tiene acceso al módulo
+      return true;
+    
+    case 'editar':
+      // Permitir editar si el elemento le pertenece
+      return elementoPertenece;
+    
+    case 'eliminar':
+      // Solo el creador o administrador puede eliminar
+      return usuarioEsCreador(elemento, modulo, usuarioId);
     
     default:
       return false;

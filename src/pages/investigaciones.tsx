@@ -194,7 +194,7 @@ export default function InvestigacionesPage() {
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
   const { userProfile } = useUser();
-  const { tienePermiso, esAdministrador, usuarioId } = usePermisos();
+  const { tienePermiso, esAdministrador, usuarioId, tienePermisoSobreElemento, usuarioEsCreador } = usePermisos();
   const router = useRouter();
 
   // TODOS LOS ESTADOS JUNTOS AL INICIO
@@ -636,6 +636,12 @@ export default function InvestigacionesPage() {
   };
 
   const handleDelete = async (investigacion: Investigacion) => {
+    // Verificar permisos antes de eliminar
+    if (!tienePermisoSobreElemento(investigacion, 'investigaciones', 'eliminar')) {
+      showError('No tienes permisos para eliminar esta investigación');
+      return;
+    }
+    
     setInvestigacionToDelete(investigacion);
     setShowDeleteModal(true);
   };
@@ -1062,26 +1068,38 @@ export default function InvestigacionesPage() {
               }
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
-          },
-          {
+          }
+        ];
+
+        // Agregar acción de editar solo si tiene permisos
+        if (tienePermisoSobreElemento(row, 'investigaciones', 'editar')) {
+          actions.push({
             label: 'Editar',
             icon: <EditIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/editar/${row.id}`),
             className: 'text-popover-foreground hover:text-popover-foreground/80'
-          },
-          {
+          });
+        }
+
+        // Agregar acción de duplicar solo si tiene permisos de ver
+        if (tienePermisoSobreElemento(row, 'investigaciones', 'ver')) {
+          actions.push({
             label: 'Duplicar',
             icon: <CopyIcon className="w-4 h-4" />,
             onClick: () => router.push(`/investigaciones/crear?duplicate=${row.id}`),
             className: 'text-popover-foreground hover:text-popover-foreground/80'
-          },
-          {
+          });
+        }
+
+        // Agregar acción de eliminar solo si tiene permisos
+        if (tienePermisoSobreElemento(row, 'investigaciones', 'eliminar')) {
+          actions.push({
             label: 'Eliminar',
             icon: <TrashIcon className="w-4 h-4" />,
             onClick: () => handleDelete(row),
             className: 'text-destructive hover:text-destructive/80'
-          }
-        ];
+          });
+        }
 
         // Agregar acción de crear seguimiento si está en progreso
         if (row.estado === 'en_progreso') {

@@ -93,7 +93,7 @@ export default function ReclutamientoPage() {
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
   const { userProfile } = useUser();
-  const { tienePermiso, esAdministrador, usuarioId } = usePermisos();
+  const { tienePermiso, esAdministrador, usuarioId, tienePermisoSobreElemento, usuarioEsCreador } = usePermisos();
   const router = useRouter();
 
   // Estados
