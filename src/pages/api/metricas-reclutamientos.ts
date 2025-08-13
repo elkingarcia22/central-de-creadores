@@ -39,10 +39,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { usuarioId, esAdmin } = req.query;
+    const { usuarioId, esAdmin, rol } = req.query;
     
     console.log('🔍 Obteniendo métricas de reclutamientos...');
-    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin);
+    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin, 'Rol:', rol);
 
     // Construir consulta base para investigaciones
     let queryInvestigaciones = supabase
@@ -67,8 +67,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Aplicar filtros de asignación si no es administrador
     if (esAdmin !== 'true' && usuarioId) {
-      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
-      queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId, 'con rol:', rol);
+      
+      // Para el rol agendador, no filtrar por investigaciones ya que verá todos los reclutamientos
+      // donde es responsable del agendamiento (se filtrará después)
+      if (rol !== 'agendador') {
+        queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+      }
     }
 
     const { data: investigacionesPorAgendar, error: errorPorAgendar } = await queryInvestigaciones;
@@ -107,10 +112,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const tiposMap = new Map((tiposInvestigacion || []).map(t => [t.id, t]));
     const estadosMap = new Map((estados || []).map(e => [e.id, e]));
 
-    // Obtener todos los reclutamientos y agrupar por investigacion_id
-    const { data: reclutamientos, error: errorReclutamientos } = await supabase
+    // Obtener reclutamientos y agrupar por investigacion_id
+    let queryReclutamientos = supabase
       .from('reclutamientos')
-      .select('id, investigacion_id, estado_agendamiento');
+      .select('id, investigacion_id, estado_agendamiento, responsable_agendamiento');
+    
+    // Para el rol agendador, filtrar por responsable_agendamiento
+    if (rol === 'agendador' && usuarioId) {
+      console.log('📅 Filtrando reclutamientos por responsable_agendamiento para agendador');
+      queryReclutamientos = queryReclutamientos.eq('responsable_agendamiento', usuarioId);
+    }
+    
+    const { data: reclutamientos, error: errorReclutamientos } = await queryReclutamientos;
 
     if (errorReclutamientos) {
       console.error('Error obteniendo reclutamientos:', errorReclutamientos);

@@ -188,7 +188,7 @@ export default function ReclutamientoPage() {
         return;
       }
       
-      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${esAdministrador()}`;
+      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${esAdministrador()}&rol=${rolSeleccionado}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();

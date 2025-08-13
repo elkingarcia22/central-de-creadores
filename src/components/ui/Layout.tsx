@@ -90,6 +90,12 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
+    agendador: [
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
+    ],
   };
 
   // Configuración de elementos de utilidad (común para todos los roles)

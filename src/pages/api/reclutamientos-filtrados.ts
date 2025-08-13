@@ -8,10 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { usuarioId, esAdmin } = req.query;
+    const { usuarioId, esAdmin, rol } = req.query;
 
     console.log('🔍 Obteniendo reclutamientos con filtros de asignación...');
-    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin);
+    console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin, 'Rol:', rol);
 
     // Construir consulta base
     let query = supabase
@@ -43,22 +43,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Aplicar filtros de asignación si no es administrador
     if (esAdmin !== 'true' && usuarioId) {
-      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
+      console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId, 'con rol:', rol);
       
-      // Obtener investigaciones asignadas al usuario
-      const { data: investigacionesAsignadas } = await supabase
-        .from('investigaciones')
-        .select('id')
-        .or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
-
-      const idsInvestigaciones = investigacionesAsignadas?.map(inv => inv.id) || [];
-      
-      if (idsInvestigaciones.length > 0) {
-        query = query.in('investigacion_id', idsInvestigaciones);
+      // Para el rol agendador, filtrar por responsable_agendamiento
+      if (rol === 'agendador') {
+        console.log('📅 Aplicando filtro de agendador por responsable_agendamiento');
+        query = query.eq('responsable_agendamiento', usuarioId);
       } else {
-        // Si no tiene investigaciones asignadas, devolver array vacío
-        console.log('⚠️ Usuario no tiene investigaciones asignadas');
-        return res.status(200).json([]);
+        // Para otros roles, filtrar por investigaciones asignadas
+        console.log('🔬 Aplicando filtro por investigaciones asignadas');
+        
+        // Obtener investigaciones asignadas al usuario
+        const { data: investigacionesAsignadas } = await supabase
+          .from('investigaciones')
+          .select('id')
+          .or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+
+        const idsInvestigaciones = investigacionesAsignadas?.map(inv => inv.id) || [];
+        
+        if (idsInvestigaciones.length > 0) {
+          query = query.in('investigacion_id', idsInvestigaciones);
+        } else {
+          // Si no tiene investigaciones asignadas, devolver array vacío
+          console.log('⚠️ Usuario no tiene investigaciones asignadas');
+          return res.status(200).json([]);
+        }
       }
     }
 

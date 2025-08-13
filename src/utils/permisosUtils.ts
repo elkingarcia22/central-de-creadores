@@ -48,6 +48,15 @@ const CONFIGURACION_PERMISOS: ConfiguracionPermisos = {
     metricas: { permisos: ['ver'], filtroAsignacion: true },
     conocimiento: { permisos: ['ver'], filtroAsignacion: false },
   },
+  agendador: {
+    investigaciones: { permisos: ['ver'], filtroAsignacion: false },
+    reclutamientos: { permisos: ['ver', 'editar'], filtroAsignacion: true },
+    participantes: { permisos: ['ver'], filtroAsignacion: false },
+    empresas: { permisos: ['ver'], filtroAsignacion: false },
+    sesiones: { permisos: ['ver'], filtroAsignacion: false },
+    metricas: { permisos: ['ver'], filtroAsignacion: true },
+    conocimiento: { permisos: ['ver'], filtroAsignacion: false },
+  },
 };
 
 // Hook para verificar permisos
@@ -91,11 +100,11 @@ export const usePermisos = () => {
     rol: rolSeleccionado,
     // Nuevas funciones para permisos específicos
     tienePermisoSobreElemento: (elemento: any, modulo: ModuloPermiso, permiso: TipoPermiso) => 
-      tienePermisoSobreElemento(elemento, modulo, permiso, userProfile?.id || '', esAdministrador()),
+      tienePermisoSobreElemento(elemento, modulo, permiso, userProfile?.id || '', esAdministrador(), rolSeleccionado),
     usuarioEsCreador: (elemento: any, modulo: ModuloPermiso) => 
       usuarioEsCreador(elemento, modulo, userProfile?.id || ''),
     elementoPerteneceAUsuario: (elemento: any, modulo: ModuloPermiso) => 
-      elementoPerteneceAUsuario(elemento, modulo, userProfile?.id || '', esAdministrador()),
+      elementoPerteneceAUsuario(elemento, modulo, userProfile?.id || '', esAdministrador(), rolSeleccionado),
   };
 };
 
@@ -112,8 +121,15 @@ export const construirFiltroInvestigaciones = (usuarioId: string, esAdmin: boole
   };
 };
 
-export const construirFiltroReclutamientos = (usuarioId: string, esAdmin: boolean) => {
+export const construirFiltroReclutamientos = (usuarioId: string, esAdmin: boolean, rol?: string) => {
   if (esAdmin) return {};
+  
+  // Para el rol agendador, solo ver reclutamientos donde es responsable del agendamiento
+  if (rol === 'agendador') {
+    return {
+      responsable_agendamiento: { eq: usuarioId }
+    };
+  }
   
   return {
     or: [
@@ -157,12 +173,12 @@ export const construirFiltroSesiones = (usuarioId: string, esAdmin: boolean) => 
 };
 
 // Función para obtener el filtro apropiado según el módulo
-export const obtenerFiltroAsignacion = (modulo: ModuloPermiso, usuarioId: string, esAdmin: boolean) => {
+export const obtenerFiltroAsignacion = (modulo: ModuloPermiso, usuarioId: string, esAdmin: boolean, rol?: string) => {
   switch (modulo) {
     case 'investigaciones':
       return construirFiltroInvestigaciones(usuarioId, esAdmin);
     case 'reclutamientos':
-      return construirFiltroReclutamientos(usuarioId, esAdmin);
+      return construirFiltroReclutamientos(usuarioId, esAdmin, rol);
     case 'participantes':
       return construirFiltroParticipantes(usuarioId, esAdmin);
     case 'empresas':
@@ -179,7 +195,8 @@ export const elementoPerteneceAUsuario = (
   elemento: any, 
   modulo: ModuloPermiso, 
   usuarioId: string, 
-  esAdmin: boolean
+  esAdmin: boolean,
+  rol?: string
 ): boolean => {
   if (esAdmin) return true;
   
@@ -192,6 +209,10 @@ export const elementoPerteneceAUsuario = (
       );
     
     case 'reclutamientos':
+      // Para el rol agendador, solo verificar si es responsable del agendamiento
+      if (rol === 'agendador') {
+        return elemento.responsable_agendamiento?.id === usuarioId;
+      }
       return (
         elemento.responsable_id === usuarioId ||
         elemento.responsable_agendamiento?.id === usuarioId
@@ -253,7 +274,8 @@ export const tienePermisoSobreElemento = (
   modulo: ModuloPermiso,
   permiso: TipoPermiso,
   usuarioId: string,
-  esAdmin: boolean
+  esAdmin: boolean,
+  rol?: string
 ): boolean => {
   // Administradores tienen todos los permisos
   if (esAdmin) return true;
@@ -264,7 +286,7 @@ export const tienePermisoSobreElemento = (
   }
   
   // Para otros casos, verificar según el rol y la asignación
-  const elementoPertenece = elementoPerteneceAUsuario(elemento, modulo, usuarioId, esAdmin);
+  const elementoPertenece = elementoPerteneceAUsuario(elemento, modulo, usuarioId, esAdmin, rol);
   
   switch (permiso) {
     case 'ver':
