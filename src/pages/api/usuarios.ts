@@ -7,8 +7,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la tabla usuarios directamente para evitar inconsistencias con la vista
-    console.log('🔍 Iniciando consulta a tabla usuarios...');
+    // Usar la tabla usuarios como fuente única de verdad
+    console.log('🔍 Iniciando consulta a tabla usuarios (fuente única)...');
     
     let { data: usuarios, error } = await supabase
       .from('usuarios')
@@ -29,6 +29,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: error.message });
     }
 
+    // Verificar inconsistencias con profiles (solo para reporte)
+    if (usuarios && usuarios.length > 0) {
+      const { data: profilesCheck, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', usuarios.map(u => u.id));
+      
+      if (!profilesError && profilesCheck) {
+        const inconsistencias = usuarios.filter(u => {
+          const profile = profilesCheck.find(p => p.id === u.id);
+          return !profile || profile.full_name !== u.nombre || profile.email !== u.correo;
+        });
+        
+        if (inconsistencias.length > 0) {
+          console.warn('⚠️ Inconsistencias detectadas entre usuarios y profiles:', inconsistencias.length);
+        }
+      }
+    }
+
     // Convertir datos de usuarios al formato esperado por el componente
     const usuariosFormateados = usuarios?.map(user => ({
       id: user.id,
@@ -42,7 +61,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Formatear la respuesta como espera el componente
     return res.status(200).json({
       usuarios: usuariosFormateados || [],
-      total: usuariosFormateados?.length || 0
+      total: usuariosFormateados?.length || 0,
+      fuente: 'usuarios',
+      mensaje: 'Usando tabla usuarios como fuente única de verdad'
     });
 
   } catch (error) {
