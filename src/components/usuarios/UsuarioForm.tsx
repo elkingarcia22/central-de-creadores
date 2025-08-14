@@ -457,8 +457,8 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
               type="submit"
               variant="primary"
               loading={submitting}
-              disabled={submitting || rolesLoading}
-              onClick={() => console.log('🔘 Botón submit clickeado - rolesLoading:', rolesLoading, 'submitting:', submitting)}
+              disabled={submitting || rolesLoading || !formData.full_name || !formData.email || formData.roles.length === 0}
+              onClick={() => console.log('🔘 Botón submit clickeado - rolesLoading:', rolesLoading, 'submitting:', submitting, 'roles:', formData.roles.length)}
             >
               {submitting 
                 ? (isEditing ? 'Guardando...' : 'Creando...') 
