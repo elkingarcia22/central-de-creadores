@@ -28,14 +28,11 @@ export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = 
   }, [isOpen]);
 
   const handleFormSubmit = async (data: Usuario) => {
-    setSubmitting(true);
-    try {
-      await onSave(data);
-    } catch (error) {
-      console.error('Error en handleFormSubmit:', error);
-    } finally {
-      setSubmitting(false);
-    }
+    // En modo creación, el UsuarioForm ya maneja la creación completa
+    // Solo necesitamos cerrar el modal y recargar la tabla
+    console.log('UsuarioCreateModal: Usuario creado exitosamente, cerrando modal...');
+    setSubmitting(false);
+    onClose();
   };
 
   return (
