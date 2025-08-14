@@ -41,6 +41,30 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(usuario?.avatar_url || null);
 
+  // Función para mapear UUIDs de roles a valores de opciones
+  const mapearRolesUUIDaValores = (rolesUUID: string[]): string[] => {
+    const mapeoRoles = {
+      'bcc17f6a-d751-4c39-a479-412abddde0fa': 'Administrador',
+      'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7': 'Investigador',
+      'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c': 'Reclutador',
+      '7e329b4c-3716-4781-919e-54106b51ca99': 'Agendador'
+    };
+    
+    return rolesUUID.map(uuid => mapeoRoles[uuid as keyof typeof mapeoRoles] || uuid);
+  };
+
+  // Función para mapear valores de opciones a UUIDs de roles
+  const mapearValoresaRolesUUID = (valores: string[]): string[] => {
+    const mapeoRoles = {
+      'Administrador': 'bcc17f6a-d751-4c39-a479-412abddde0fa',
+      'Investigador': 'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7',
+      'Reclutador': 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c',
+      'Agendador': '7e329b4c-3716-4781-919e-54106b51ca99'
+    };
+    
+    return valores.map(valor => mapeoRoles[valor as keyof typeof mapeoRoles] || valor);
+  };
+
   // Actualizar formulario cuando cambie el usuario (para modo edición)
   useEffect(() => {
     console.log('🔄 UsuarioForm: Usuario recibido:', usuario);
@@ -49,12 +73,19 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         full_name: usuario.full_name,
         email: usuario.email,
         roles: usuario.roles,
+        rolesType: typeof usuario.roles,
+        rolesLength: usuario.roles?.length,
         avatar_url: usuario.avatar_url
       });
+      
+      // Mapear roles UUID a valores de opciones
+      const rolesMapeados = mapearRolesUUIDaValores(usuario.roles || []);
+      console.log('🔄 Roles mapeados:', rolesMapeados);
+      
       setFormData({
         full_name: usuario.full_name || '',
         email: usuario.email || '',
-        roles: usuario.roles || []
+        roles: rolesMapeados
       });
       setCurrentAvatarUrl(usuario.avatar_url || null);
       setAvatarFile(null); // Limpiar archivo seleccionado cuando cambie el usuario
@@ -68,7 +99,7 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         // Primero intentar usar cache
         const rolesEnCache = obtenerRolesDesdeCache();
         if (rolesEnCache) {
-          console.log('UsuarioForm: Usando roles desde cache');
+          console.log('UsuarioForm: Usando roles desde cache:', rolesEnCache);
           setRolesDisponibles(rolesEnCache);
           return;
         }
@@ -109,12 +140,21 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
       return;
     }
 
+    // Mapear valores de vuelta a UUIDs para guardar
+    const rolesParaGuardar = mapearValoresaRolesUUID(formData.roles);
+    console.log('💾 Roles para guardar (UUIDs):', rolesParaGuardar);
+    
+    const datosParaGuardar = {
+      ...formData,
+      roles: rolesParaGuardar
+    };
+
     setSubmitting(true);
 
     try {
       if (isEditing) {
         // Modo edición
-        console.log('Editando usuario:', formData);
+        console.log('Editando usuario:', datosParaGuardar);
         
         let finalAvatarUrl = currentAvatarUrl; // Por defecto mantener el avatar actual
         
