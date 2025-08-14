@@ -205,6 +205,7 @@ export default function ReclutamientoPage() {
         console.log('📊 Investigaciones recibidas:', data.investigaciones?.length || 0);
         if (data.investigaciones && data.investigaciones.length > 0) {
           console.log('📊 Primera investigación:', data.investigaciones[0]);
+          console.log('📊 Campo libreto_numero_participantes:', data.investigaciones[0].libreto_numero_participantes);
         }
         setMetricas(data);
         setInvestigaciones(data.investigaciones);
@@ -579,16 +580,20 @@ export default function ReclutamientoPage() {
       width: 'min-w-[100px]',
       sortFn: (a: InvestigacionReclutamiento, b: InvestigacionReclutamiento) => 
         (a.libreto_numero_participantes || 0) - (b.libreto_numero_participantes || 0),
-      render: (value: any, row: InvestigacionReclutamiento) => (
-        <div className="text-center">
-          <div className="font-semibold text-gray-900 dark:text-gray-100">
-            {row.libreto_numero_participantes || 0}
+      render: (value: any, row: InvestigacionReclutamiento) => {
+        console.log('🔍 Renderizando tab participantes para:', row.investigacion_nombre);
+        console.log('🔍 libreto_numero_participantes:', row.libreto_numero_participantes);
+        return (
+          <div className="text-center">
+            <div className="font-semibold text-gray-900 dark:text-gray-100">
+              {row.libreto_numero_participantes || 0}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              participantes
+            </div>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            participantes
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
       key: 'riesgo',
