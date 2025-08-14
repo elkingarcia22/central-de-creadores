@@ -153,7 +153,7 @@ const SideModal: React.FC<SideModalProps> = ({
       </div>
 
       {/* Animaciones CSS */}
-      <style jsx>{`
+      <style>{`
         .animate-slide-in-right {
           animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
