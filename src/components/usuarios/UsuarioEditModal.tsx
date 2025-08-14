@@ -27,9 +27,15 @@ export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loa
     }
   }, [isOpen]);
 
-  const handleFormSubmit = (data: Usuario) => {
+  const handleFormSubmit = async (data: Usuario) => {
     setSubmitting(true);
-    onSave(data);
+    try {
+      await onSave(data);
+    } catch (error) {
+      console.error('Error en handleFormSubmit:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

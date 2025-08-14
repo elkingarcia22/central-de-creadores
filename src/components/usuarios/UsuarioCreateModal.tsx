@@ -27,9 +27,15 @@ export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = 
     }
   }, [isOpen]);
 
-  const handleFormSubmit = (data: Usuario) => {
+  const handleFormSubmit = async (data: Usuario) => {
     setSubmitting(true);
-    onSave(data);
+    try {
+      await onSave(data);
+    } catch (error) {
+      console.error('Error en handleFormSubmit:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
