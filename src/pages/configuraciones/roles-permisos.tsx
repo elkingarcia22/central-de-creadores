@@ -221,6 +221,37 @@ export default function RolesPermisosPage() {
     }
   };
 
+  const handleAsignarPermisosPorDefecto = async () => {
+    if (!confirm('¿Estás seguro de que quieres asignar permisos por defecto a todos los roles del sistema? Esto sobrescribirá los permisos existentes.')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/asignar-permisos-por-defecto', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error asignando permisos por defecto');
+      }
+
+      const result = await response.json();
+      console.log('Permisos asignados:', result);
+      
+      // Recargar datos
+      await cargarDatos();
+      
+      alert('Permisos por defecto asignados exitosamente');
+    } catch (error) {
+      console.error('Error asignando permisos por defecto:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getFuncionalidadesPorModulo = (moduloId: string) => {
     return funcionalidades.filter(f => f.modulo_id === moduloId);
   };
