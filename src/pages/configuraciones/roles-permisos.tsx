@@ -66,7 +66,12 @@ export default function RolesPermisosPage() {
   const [showPermisosModal, setShowPermisosModal] = useState(false);
   const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
 
-  // Verificar acceso - solo administradores
+  // Cargar datos
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  // Verificar acceso - solo administradores (después de todos los hooks)
   if (rolSeleccionado?.toLowerCase() !== 'administrador') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -87,11 +92,6 @@ export default function RolesPermisosPage() {
       </div>
     );
   }
-
-  // Cargar datos
-  useEffect(() => {
-    cargarDatos();
-  }, []);
 
   const cargarDatos = async () => {
     setLoading(true);
