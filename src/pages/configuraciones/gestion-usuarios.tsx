@@ -336,53 +336,28 @@ export default function GestionUsuariosPage() {
     try {
       console.log('🚀 Creando usuario:', data);
       
-      // Crear el usuario en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: data.email,
-        password: 'tempPassword123!', // Contraseña temporal
-        email_confirm: true,
-        user_metadata: {
-          full_name: data.full_name
-        }
+      // Llamar a la API para crear usuario
+      const response = await fetch('/api/crear-usuario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          full_name: data.full_name,
+          avatar_url: data.avatar_url,
+          roles: data.roles
+        }),
       });
-      
-      if (authError) {
-        console.error('Error creando usuario en Auth:', authError);
-        throw new Error('Error creando usuario: ' + authError.message);
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Error creando usuario:', result);
+        throw new Error(result.error || 'Error desconocido al crear usuario');
       }
-      
-      if (!authData.user) {
-        throw new Error('No se pudo crear el usuario');
-      }
-      
-      // Actualizar el perfil con la información adicional
-      const { error: profileError } = await supabase.from('profiles').update({
-        full_name: data.full_name,
-        avatar_url: data.avatar_url
-      }).eq('id', authData.user.id);
-      
-      if (profileError) {
-        console.error('Error actualizando perfil:', profileError);
-        throw new Error('Error actualizando perfil: ' + profileError.message);
-      }
-      
-      // Asignar roles al usuario
-      if (data.roles && data.roles.length > 0) {
-        const rolesToInsert = data.roles.map((rolId: string) => ({
-          user_id: authData.user.id,
-          role: rolId,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }));
-        
-        const { error: insertRolesError } = await supabase.from('user_roles').insert(rolesToInsert);
-        if (insertRolesError) {
-          console.error('Error insertando roles:', insertRolesError);
-          throw new Error('Error insertando roles: ' + insertRolesError.message);
-        }
-      }
-      
-      console.log('✅ Usuario creado exitosamente');
+
+      console.log('✅ Usuario creado exitosamente:', result);
       setShowModal(false);
       
       // Recargar usuarios
