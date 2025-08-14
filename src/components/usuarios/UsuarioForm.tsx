@@ -248,10 +248,10 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            nombre: formData.full_name,
+            full_name: formData.full_name,
             email: formData.email,
             roles: formData.roles,
-            avatarBase64: avatarBase64
+            avatar_url: avatarBase64
           }),
         });
 

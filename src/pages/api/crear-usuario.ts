@@ -12,10 +12,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('🔍 API recibió request body:', req.body);
+    console.log('🔍 API recibió headers:', req.headers);
+    
     const { email, full_name, avatar_url, roles } = req.body;
+
+    console.log('🔍 Datos extraídos:', { email, full_name, avatar_url, roles });
 
     // Validar datos requeridos
     if (!email || !full_name) {
+      console.log('❌ Validación falló:', { email: !!email, full_name: !!full_name });
       return res.status(400).json({ error: 'Email y nombre completo son requeridos' });
     }
 
