@@ -183,6 +183,11 @@ export default function ReclutamientoPage() {
       console.log('📊 Iniciando fetchMetricasReclutamientos...');
       
       // Verificar permisos antes de cargar
+      console.log('🔍 Verificando permisos de reclutamiento...');
+      console.log('👤 Usuario ID:', usuarioId);
+      console.log('🎭 Rol Seleccionado:', rolSeleccionado);
+      console.log('🔐 Tiene permiso ver reclutamientos:', tienePermiso('reclutamientos', 'ver'));
+      
       if (!tienePermiso('reclutamientos', 'ver')) {
         console.log('❌ Usuario no tiene permisos para ver reclutamientos');
         setInvestigaciones([]);

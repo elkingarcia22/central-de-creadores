@@ -211,7 +211,7 @@ export const obtenerEstadosReclutamiento = async (): Promise<RespuestaAPI<Array<
       .from('estado_agendamiento_cat')
       .select('id, nombre, activo')
       .eq('activo', true)
-      .order('orden', { ascending: true });
+      .order('nombre', { ascending: true });
 
     if (error) {
       console.log('⚠️ Error obteniendo estados de reclutamiento:', error.message);
