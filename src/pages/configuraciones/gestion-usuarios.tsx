@@ -334,7 +334,12 @@ export default function GestionUsuariosPage() {
   // Handler para crear usuario
   const handleFormSubmit = async (data: any) => {
     try {
-      console.log('🚀 Creando usuario:', data);
+      console.log('🚀 Creando usuario en handleFormSubmit:', data);
+      
+      if (!data) {
+        console.error('❌ Data es undefined en handleFormSubmit');
+        throw new Error('Datos del formulario no recibidos');
+      }
       
       // Llamar a la API para crear usuario
       const response = await fetch('/api/crear-usuario', {
@@ -357,7 +362,7 @@ export default function GestionUsuariosPage() {
         throw new Error(result.error || 'Error desconocido al crear usuario');
       }
 
-      console.log('✅ Usuario creado exitosamente:', result);
+      console.log('✅ Usuario creado exitosamente en handleFormSubmit:', result);
       setShowModal(false);
       
       // Recargar usuarios
@@ -365,7 +370,7 @@ export default function GestionUsuariosPage() {
       fetchUsuarios();
       
     } catch (error) {
-      console.error('Error creando usuario:', error);
+      console.error('Error creando usuario en handleFormSubmit:', error);
       alert('Error creando usuario: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
