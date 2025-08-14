@@ -331,18 +331,68 @@ export default function GestionUsuariosPage() {
     setUsuarioDelete(usuario);
   }
 
-  // Handler para el formulario
-  const handleFormSubmit = () => {
-    console.log('🚀 Usuario creado, recargando tabla...');
-    setShowModal(false);
-    
-    // Recargar inmediatamente sin delay
-    console.log('🔄 Ejecutando fetchUsuarios inmediatamente...');
-    fetchUsuarios().then(() => {
-      console.log('✅ fetchUsuarios completado en handleFormSubmit');
-    }).catch((error) => {
-      console.error('❌ Error en fetchUsuarios desde handleFormSubmit:', error);
-    });
+  // Handler para crear usuario
+  const handleFormSubmit = async (data: any) => {
+    try {
+      console.log('🚀 Creando usuario:', data);
+      
+      // Crear el usuario en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: data.email,
+        password: 'tempPassword123!', // Contraseña temporal
+        email_confirm: true,
+        user_metadata: {
+          full_name: data.full_name
+        }
+      });
+      
+      if (authError) {
+        console.error('Error creando usuario en Auth:', authError);
+        throw new Error('Error creando usuario: ' + authError.message);
+      }
+      
+      if (!authData.user) {
+        throw new Error('No se pudo crear el usuario');
+      }
+      
+      // Actualizar el perfil con la información adicional
+      const { error: profileError } = await supabase.from('profiles').update({
+        full_name: data.full_name,
+        avatar_url: data.avatar_url
+      }).eq('id', authData.user.id);
+      
+      if (profileError) {
+        console.error('Error actualizando perfil:', profileError);
+        throw new Error('Error actualizando perfil: ' + profileError.message);
+      }
+      
+      // Asignar roles al usuario
+      if (data.roles && data.roles.length > 0) {
+        const rolesToInsert = data.roles.map((rolId: string) => ({
+          user_id: authData.user.id,
+          role: rolId,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }));
+        
+        const { error: insertRolesError } = await supabase.from('user_roles').insert(rolesToInsert);
+        if (insertRolesError) {
+          console.error('Error insertando roles:', insertRolesError);
+          throw new Error('Error insertando roles: ' + insertRolesError.message);
+        }
+      }
+      
+      console.log('✅ Usuario creado exitosamente');
+      setShowModal(false);
+      
+      // Recargar usuarios
+      console.log('🔄 Recargando tabla después de crear usuario...');
+      fetchUsuarios();
+      
+    } catch (error) {
+      console.error('Error creando usuario:', error);
+      alert('Error creando usuario: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+    }
   };
 
   // Guardar cambios de edición
@@ -352,25 +402,30 @@ export default function GestionUsuariosPage() {
     try {
       console.log('Guardando cambios de edición:', data);
       
-      // Siempre actualizar todos los campos del perfil
-      const { error: profileError } = await supabase.from('profiles').update({
-        full_name: data.full_name,
-        email: data.email,
-        avatar_url: data.avatar_url // Siempre actualizar el avatar_url
-      }).eq('id', usuarioEdit.id);
+      // Ejecutar actualizaciones en paralelo para mayor velocidad
+      const [profileResult, deleteRolesResult] = await Promise.all([
+        // Actualizar perfil
+        supabase.from('profiles').update({
+          full_name: data.full_name,
+          email: data.email,
+          avatar_url: data.avatar_url
+        }).eq('id', usuarioEdit.id),
+        
+        // Eliminar roles existentes
+        supabase.from('user_roles').delete().eq('user_id', usuarioEdit.id)
+      ]);
       
-      if (profileError) {
-        console.error('Error actualizando perfil:', profileError);
-        throw new Error('Error actualizando perfil: ' + profileError.message);
+      if (profileResult.error) {
+        console.error('Error actualizando perfil:', profileResult.error);
+        throw new Error('Error actualizando perfil: ' + profileResult.error.message);
       }
       
-      // Actualizar roles: eliminar todos y volver a insertar
-      const { error: deleteRolesError } = await supabase.from('user_roles').delete().eq('user_id', usuarioEdit.id);
-      if (deleteRolesError) {
-        console.error('Error eliminando roles:', deleteRolesError);
-        throw new Error('Error eliminando roles: ' + deleteRolesError.message);
+      if (deleteRolesResult.error) {
+        console.error('Error eliminando roles:', deleteRolesResult.error);
+        throw new Error('Error eliminando roles: ' + deleteRolesResult.error.message);
       }
       
+      // Insertar nuevos roles si existen
       if (data.roles && data.roles.length > 0) {
         const rolesToInsert = data.roles.map((rolId: string) => ({
           user_id: usuarioEdit.id,
@@ -386,10 +441,10 @@ export default function GestionUsuariosPage() {
         }
       }
       
-      console.log('Cambios guardados exitosamente');
+      console.log('✅ Cambios guardados exitosamente');
       setUsuarioEdit(null);
       
-      // Recargar usuarios inmediatamente y forzar actualización de avatares
+      // Recargar usuarios
       console.log('🔄 Recargando tabla después de editar usuario...');
       fetchUsuarios();
       
