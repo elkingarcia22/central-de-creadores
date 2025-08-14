@@ -263,6 +263,9 @@ export default function Login() {
     router.replace(mainModule);
   }
 
+  // Debug: Log del renderizado
+  console.log('🎨 Renderizando login - error:', error, 'loading:', loading);
+
   return (
     <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background`}>
       <div className="max-w-md w-full space-y-8">
@@ -277,8 +280,13 @@ export default function Login() {
 
         <Card variant="elevated" padding="lg">
           <form onSubmit={handleLogin} className="space-y-6">
+            {/* Debug: Mostrar el valor del error */}
+            <div className="text-xs text-gray-500">
+              Debug - Error state: "{error}" (length: {error.length})
+            </div>
+            
             {error && (
-              <div className="p-3 rounded-lg bg-destructive-hover text-destructive">
+              <div className="p-3 rounded-lg bg-red-100 border border-red-400 text-red-700">
                 <Typography variant="body2">
                   {error}
                 </Typography>
