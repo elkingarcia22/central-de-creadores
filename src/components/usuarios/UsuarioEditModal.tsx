@@ -18,19 +18,11 @@ interface UsuarioEditModalProps {
 }
 
 export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loading = false }: UsuarioEditModalProps) {
-  const [formData, setFormData] = useState<Usuario | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const handleFormSubmit = (data: Usuario) => {
-    setFormData(data);
     setSubmitting(true);
     onSave(data);
-  };
-
-  const handleButtonSubmit = () => {
-    if (formData) {
-      onSave(formData);
-    }
   };
 
   return (
@@ -49,8 +41,14 @@ export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loa
             Cancelar
           </Button>
           <Button
-            onClick={handleButtonSubmit}
-            disabled={submitting || !formData}
+            onClick={() => {
+              // Trigger submit del formulario
+              const form = document.querySelector('form');
+              if (form) {
+                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+              }
+            }}
+            disabled={submitting}
             loading={submitting}
           >
             Guardar Cambios
