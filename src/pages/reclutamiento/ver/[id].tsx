@@ -460,16 +460,17 @@ const VerReclutamiento: NextPage = () => {
     console.log('🔍 Fecha sesión:', participante.fecha_sesion);
     
     if (esPendienteDeAgendamiento) {
-      // Para "Agendamiento Pendiente", permitir edición completa usando el flujo normal
-      console.log('🔍 Participante en estado Pendiente de agendamiento - permitiendo edición completa');
+      // Para "Agendamiento Pendiente", usar AsignarAgendamientoModal para editar solo el responsable
+      console.log('🔍 Abriendo AsignarAgendamientoModal para editar responsable');
       console.log('🔍 Participante completo:', participante);
       console.log('🔍 reclutador_id:', participante.reclutador_id);
       console.log('🔍 reclutador:', participante.reclutador);
       console.log('🔍 reclutador_nombre:', participante.reclutador_nombre);
       console.log('🔍 reclutamiento_id:', participante.reclutamiento_id);
       console.log('🔍 Todos los campos del participante:', Object.keys(participante));
-      
-      // Continuar con el flujo normal de edición
+      setParticipanteToEditAgendamiento(participante);
+      setShowAsignarAgendamientoModal(true);
+      return;
     }
     
     // Para participantes normales, usar el flujo existente
@@ -2523,7 +2524,7 @@ const VerReclutamiento: NextPage = () => {
         investigacionNombre={reclutamiento?.investigacion_nombre || ''}
         isEditMode={participanteToEditAgendamiento ? true : false}
         reclutamientoId={participanteToEditAgendamiento?.reclutamiento_id || null}
-        responsableActual={participanteToEditAgendamiento?.reclutador?.id || participanteToEditAgendamiento?.reclutador_id || null}
+        responsableActual={participanteToEditAgendamiento?.reclutador_id || null}
       />
 
       {/* Modal para agregar participante desde "Agendamiento Pendiente" */}
