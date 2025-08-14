@@ -31,6 +31,11 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
 
   const [rolesDisponibles, setRolesDisponibles] = useState<{ value: string; label: string }[]>(ROLES_DEFAULT);
   const [rolesLoading, setRolesLoading] = useState(false);
+  
+  // Log cuando cambie rolesLoading
+  useEffect(() => {
+    console.log('🔄 rolesLoading cambió a:', rolesLoading);
+  }, [rolesLoading]);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -88,8 +93,18 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    console.log('🚀 handleSubmit llamado con formData:', formData);
 
+    console.log('🔍 Validando formulario:', {
+      full_name: formData.full_name,
+      email: formData.email,
+      roles: formData.roles,
+      rolesLength: formData.roles.length
+    });
+    
     if (!formData.full_name || !formData.email || formData.roles.length === 0) {
+      console.log('❌ Validación fallida - campos faltantes');
       setError('Todos los campos son obligatorios y debe seleccionar al menos un rol');
       return;
     }
@@ -233,10 +248,15 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   };
 
   const handleInputChange = (field: keyof Usuario, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log('📝 handleInputChange:', field, value);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      console.log('📊 Nuevo formData:', newData);
+      return newData;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,6 +401,7 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
               variant="primary"
               loading={submitting}
               disabled={submitting || rolesLoading}
+              onClick={() => console.log('🔘 Botón submit clickeado - rolesLoading:', rolesLoading, 'submitting:', submitting)}
             >
               {submitting 
                 ? (isEditing ? 'Guardando...' : 'Creando...') 
