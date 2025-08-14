@@ -41,10 +41,33 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(usuario?.avatar_url || null);
 
+  // Función para mapear nombres de roles a UUIDs (para cuando la vista devuelve nombres)
+  const mapearNombresaRolesUUID = (rolesNombres: string[]): string[] => {
+    const mapeoRoles = {
+      'Administrador': 'bcc17f6a-d751-4c39-a479-412abddde0fa',
+      'Investigador': 'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7',
+      'Reclutador': 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c',
+      'Agendador': '7e329b4c-3716-4781-919e-54106b51ca99'
+    };
+    
+    const rolesUUID = rolesNombres.map(nombre => mapeoRoles[nombre as keyof typeof mapeoRoles] || nombre);
+    console.log('🔄 Mapeando nombres de roles a UUIDs:', { nombres: rolesNombres, uuids: rolesUUID });
+    return rolesUUID;
+  };
+
   // Función para mapear UUIDs de roles a valores de opciones (mantener UUIDs)
   const mapearRolesUUIDaValores = (rolesUUID: string[]): string[] => {
-    // No mapear, mantener los UUIDs como valores
-    console.log('🔄 Mapeando roles UUID a valores (manteniendo UUIDs):', rolesUUID);
+    // Verificar si son UUIDs o nombres
+    const esUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+    
+    if (rolesUUID.length > 0 && !esUUID(rolesUUID[0])) {
+      // Si no son UUIDs, convertirlos
+      console.log('🔄 Detectados nombres de roles, convirtiendo a UUIDs:', rolesUUID);
+      return mapearNombresaRolesUUID(rolesUUID);
+    }
+    
+    // Si ya son UUIDs, mantenerlos
+    console.log('🔄 Roles ya son UUIDs, manteniendo:', rolesUUID);
     return rolesUUID;
   };
 

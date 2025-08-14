@@ -70,3 +70,4 @@ SELECT * FROM roles_plataforma ORDER BY nombre;
 
 -- 5. Datos de ejemplo de usuarios_con_roles
 SELECT * FROM usuarios_con_roles LIMIT 5;
+SELECT * FROM usuarios_con_roles WHERE id = '9b1ef1eb-fdb4-410f-ab22-bfedc68294d6';
