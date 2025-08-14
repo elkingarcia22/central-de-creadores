@@ -9,6 +9,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('🚀 Iniciando asignación de permisos por defecto...');
 
+    // Obtener todas las funcionalidades con módulos al inicio
+    const { data: funcionalidadesConModulos, error: funcModError } = await supabaseService
+      .from('funcionalidades')
+      .select(`
+        id,
+        nombre,
+        modulos (
+          id,
+          nombre
+        )
+      `);
+
+    if (funcModError) {
+      console.error('Error obteniendo funcionalidades con módulos:', funcModError);
+      return res.status(500).json({ error: 'Error obteniendo funcionalidades' });
+    }
+
+    if (!funcionalidadesConModulos || funcionalidadesConModulos.length === 0) {
+      return res.status(500).json({ error: 'No se encontraron funcionalidades' });
+    }
+
     // 1. PERMISOS PARA ADMINISTRADOR (TODO PERMITIDO)
     console.log('📋 Asignando permisos para Administrador...');
     const { data: adminRol, error: adminRolError } = await supabaseService
@@ -22,17 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Error obteniendo rol Administrador' });
     }
 
-    const { data: funcionalidades, error: funcError } = await supabaseService
-      .from('funcionalidades')
-      .select('id');
-
-    if (funcError) {
-      console.error('Error obteniendo funcionalidades:', funcError);
-      return res.status(500).json({ error: 'Error obteniendo funcionalidades' });
-    }
-
     // Insertar permisos para administrador
-    const permisosAdmin = funcionalidades.map(f => ({
+    const permisosAdmin = funcionalidadesConModulos.map(f => ({
       rol_id: adminRol.id,
       funcionalidad_id: f.id,
       permitido: true
@@ -56,49 +68,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .single();
 
     if (!investigadorRolError && investigadorRol) {
-      const { data: funcionalidadesConModulos, error: funcModError } = await supabaseService
-        .from('funcionalidades')
-        .select(`
-          id,
-          nombre,
-          modulos (
-            id,
-            nombre
-          )
-        `);
+      const permisosInvestigador = funcionalidadesConModulos.map(f => {
+        const modulo = f.modulos as any;
+        let permitido = false;
 
-      if (!funcModError && funcionalidadesConModulos) {
-        const permisosInvestigador = funcionalidadesConModulos.map(f => {
-          const modulo = f.modulos as any;
-          let permitido = false;
+        // Módulo: Investigaciones (todo permitido)
+        if (modulo.nombre === 'investigaciones') permitido = true;
+        // Módulo: Libretos (todo permitido)
+        else if (modulo.nombre === 'libretos') permitido = true;
+        // Módulo: Reclutamiento (solo lectura y ver información)
+        else if (modulo.nombre === 'reclutamiento' && ['leer_reclutamiento', 'ver_informacion_investigacion', 'ver_libretos'].includes(f.nombre)) permitido = true;
+        // Módulo: Seguimientos (solo lectura y métricas)
+        else if (modulo.nombre === 'seguimientos' && ['leer_seguimientos', 'ver_metricas'].includes(f.nombre)) permitido = true;
+        // Módulo: Usuarios (solo lectura)
+        else if (modulo.nombre === 'usuarios' && ['leer_usuarios', 'ver_actividad'].includes(f.nombre)) permitido = true;
+        // Módulo: Sistema (solo sistema de diseño)
+        else if (modulo.nombre === 'sistema' && f.nombre === 'sistema_diseno') permitido = true;
 
-          // Módulo: Investigaciones (todo permitido)
-          if (modulo.nombre === 'investigaciones') permitido = true;
-          // Módulo: Libretos (todo permitido)
-          else if (modulo.nombre === 'libretos') permitido = true;
-          // Módulo: Reclutamiento (solo lectura y ver información)
-          else if (modulo.nombre === 'reclutamiento' && ['leer_reclutamiento', 'ver_informacion_investigacion', 'ver_libretos'].includes(f.nombre)) permitido = true;
-          // Módulo: Seguimientos (solo lectura y métricas)
-          else if (modulo.nombre === 'seguimientos' && ['leer_seguimientos', 'ver_metricas'].includes(f.nombre)) permitido = true;
-          // Módulo: Usuarios (solo lectura)
-          else if (modulo.nombre === 'usuarios' && ['leer_usuarios', 'ver_actividad'].includes(f.nombre)) permitido = true;
-          // Módulo: Sistema (solo sistema de diseño)
-          else if (modulo.nombre === 'sistema' && f.nombre === 'sistema_diseno') permitido = true;
+        return {
+          rol_id: investigadorRol.id,
+          funcionalidad_id: f.id,
+          permitido
+        };
+      });
 
-          return {
-            rol_id: investigadorRol.id,
-            funcionalidad_id: f.id,
-            permitido
-          };
-        });
+      const { error: investigadorPermisosError } = await supabaseService
+        .from('permisos_roles')
+        .upsert(permisosInvestigador, { onConflict: 'rol_id,funcionalidad_id' });
 
-        const { error: investigadorPermisosError } = await supabaseService
-          .from('permisos_roles')
-          .upsert(permisosInvestigador, { onConflict: 'rol_id,funcionalidad_id' });
-
-        if (investigadorPermisosError) {
-          console.error('Error asignando permisos a Investigador:', investigadorPermisosError);
-        }
+      if (investigadorPermisosError) {
+        console.error('Error asignando permisos a Investigador:', investigadorPermisosError);
       }
     }
 
@@ -110,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('nombre', 'Reclutador')
       .single();
 
-    if (!reclutadorRolError && reclutadorRol && funcionalidadesConModulos) {
+    if (!reclutadorRolError && reclutadorRol) {
       const permisosReclutador = funcionalidadesConModulos.map(f => {
         const modulo = f.modulos as any;
         let permitido = false;
@@ -148,7 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('nombre', 'Agendador')
       .single();
 
-    if (!agendadorRolError && agendadorRol && funcionalidadesConModulos) {
+    if (!agendadorRolError && agendadorRol) {
       const permisosAgendador = funcionalidadesConModulos.map(f => {
         const modulo = f.modulos as any;
         let permitido = false;
@@ -190,42 +189,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           modulos (
             nombre
           )
-        ),
-        permitido
+        )
       `);
 
     if (resumenError) {
       console.error('Error obteniendo resumen:', resumenError);
     }
 
-    const permisosHabilitados = resumen?.filter(p => p.permitido) || [];
-    const totalPermisos = resumen?.length || 0;
+    // Contar permisos por rol
+    const permisosPorRol: Record<string, number> = {};
+    if (resumen) {
+      resumen.forEach(permiso => {
+        const rolNombre = (permiso.roles_plataforma as any).nombre;
+        permisosPorRol[rolNombre] = (permisosPorRol[rolNombre] || 0) + 1;
+      });
+    }
 
-    return res.status(200).json({
+    const summary = Object.entries(permisosPorRol)
+      .map(([rol, count]) => `${rol}: ${count} permisos`)
+      .join('\n');
+
+    res.status(200).json({
       success: true,
       message: 'Permisos por defecto asignados exitosamente',
-      resumen: {
-        total_permisos: totalPermisos,
-        permisos_habilitados: permisosHabilitados.length,
-        porcentaje_habilitado: totalPermisos > 0 ? Math.round((permisosHabilitados.length * 100) / totalPermisos) : 0
-      },
-      permisos_por_rol: permisosHabilitados.reduce((acc, p) => {
-        const rolNombre = (p.roles_plataforma as any).nombre;
-        const moduloNombre = (p.funcionalidades as any).modulos.nombre;
-        const funcionalidadNombre = (p.funcionalidades as any).nombre;
-        
-        if (!acc[rolNombre]) acc[rolNombre] = {};
-        if (!acc[rolNombre][moduloNombre]) acc[rolNombre][moduloNombre] = [];
-        acc[rolNombre][moduloNombre].push(funcionalidadNombre);
-        
-        return acc;
-      }, {} as Record<string, Record<string, string[]>>)
+      summary
     });
 
   } catch (error) {
     console.error('Error ejecutando script de permisos por defecto:', error);
-    return res.status(500).json({ 
-      error: 'Error ejecutando script de permisos por defecto',
+    res.status(500).json({
+      error: 'Error interno del servidor',
       details: error instanceof Error ? error.message : 'Error desconocido'
     });
   }
