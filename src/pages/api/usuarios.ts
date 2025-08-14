@@ -7,46 +7,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la tabla usuarios (tabla de negocio) - CORRECTO
-    console.log('🔍 Iniciando consulta a tabla usuarios...');
+    // Usar la vista usuarios_con_roles (misma que gestión de usuarios) - CORRECTO
+    console.log('🔍 Iniciando consulta a vista usuarios_con_roles...');
     
     let { data: usuarios, error } = await supabase
-      .from('usuarios')
+      .from('usuarios_con_roles')
       .select(`
         id, 
-        nombre, 
-        correo, 
-        foto_url,
-        activo,
-        rol_plataforma
+        full_name, 
+        email, 
+        avatar_url,
+        roles,
+        created_at
       `)
-      .order('nombre');
+      .order('full_name');
     
     console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0, error });
-    
-    // Si no hay usuarios activos, mostrar todos
-    if (!usuarios || usuarios.length === 0) {
-      console.log('⚠️ No se encontraron usuarios, intentando sin filtro de activo...');
-      
-      const { data: todosUsuarios, error: errorTodos } = await supabase
-        .from('usuarios')
-        .select(`
-          id, 
-          nombre, 
-          correo, 
-          foto_url,
-          activo,
-          rol_plataforma
-        `)
-        .order('nombre');
-      
-      console.log('🔍 Usuarios sin filtro:', { usuarios: todosUsuarios?.length || 0, error: errorTodos });
-      
-      if (todosUsuarios && todosUsuarios.length > 0) {
-        usuarios = todosUsuarios;
-        error = null;
-      }
-    }
 
     if (error) {
       console.error('Error obteniendo usuarios:', error);
@@ -56,11 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Convertir datos de usuarios al formato esperado por el componente
     const usuariosFormateados = usuarios?.map(user => ({
       id: user.id,
-      full_name: user.nombre || 'Sin nombre',
-      email: user.correo,
-      avatar_url: user.foto_url,
-      roles: user.rol_plataforma ? [user.rol_plataforma] : [],
-      created_at: new Date().toISOString() // Usar fecha actual como fallback
+      full_name: user.full_name || 'Sin nombre',
+      email: user.email,
+      avatar_url: user.avatar_url,
+      roles: user.roles || [],
+      created_at: user.created_at || new Date().toISOString()
     })) || [];
 
     // Formatear la respuesta como espera el componente
