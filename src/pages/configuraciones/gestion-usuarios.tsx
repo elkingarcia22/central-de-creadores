@@ -9,7 +9,7 @@ import UsuarioEditModal from '../../components/usuarios/UsuarioEditModal';
 import UsuarioDeleteModal from '../../components/usuarios/UsuarioDeleteModal';
 import { supabase } from '../../api/supabase';
 import { obtenerRolesParaSelect } from '../../api/roles';
-import { obtenerUsuarios } from '../../api/supabase-investigaciones';
+// import { obtenerUsuarios } from '../../api/supabase-investigaciones';
 import { PlusIcon, UserIcon, EditIcon, DeleteIcon } from '../../components/icons';
 
 const rolesPermitidos = ['administrador'];
@@ -289,12 +289,28 @@ export default function GestionUsuariosPage() {
   const fetchUsuarios = async () => {
     try {
       setLoadingUsuarios(true);
-      const response = await obtenerUsuarios();
-      console.log('📊 Usuarios cargados:', response.data);
-      if (response.data && response.data.length > 0) {
-        console.log('👤 Primer usuario:', response.data[0]);
+      console.log('🔍 Cargando usuarios desde API /api/usuarios...');
+      
+      const response = await fetch('/api/usuarios');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      setUsuarios(response.data || []);
+      
+      const result = await response.json();
+      console.log('📊 Usuarios cargados desde API:', result.usuarios);
+      
+      if (result.usuarios && result.usuarios.length > 0) {
+        console.log('👤 Primer usuario:', result.usuarios[0]);
+        // Buscar específicamente a Elkin Garcia
+        const elkin = result.usuarios.find((u: any) => u.email === 'oficialchacal@gmail.com');
+        if (elkin) {
+          console.log('✅ Elkin Garcia encontrado en la lista:', elkin);
+        } else {
+          console.log('❌ Elkin Garcia NO encontrado en la lista');
+        }
+      }
+      
+      setUsuarios(result.usuarios || []);
     } catch (error) {
       console.error('❌ Error cargando usuarios:', error);
       setUsuarios([]);
