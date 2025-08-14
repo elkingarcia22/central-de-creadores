@@ -280,30 +280,93 @@ export default function RolesPermisosPage() {
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-3">
-            <ShieldIcon className="w-8 h-8 text-purple-600" />
-            <div>
-              <Typography variant="h1" weight="bold" className="text-gray-900">
-                Roles y Permisos
-              </Typography>
-              <Typography variant="body1" color="secondary">
-                Sistema de permisos granular por módulos y funcionalidades
-              </Typography>
+    <Layout rol="administrador">
+      <div className="py-10 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header modernizado */}
+          <div className="mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+              <div>
+                <Typography variant="h2" color="title" weight="bold">
+                  Sistema de Roles y Permisos
+                </Typography>
+                <Typography variant="subtitle1" color="secondary">
+                  Gestiona roles, permisos y funcionalidades del sistema
+                </Typography>
+              </div>
             </div>
           </div>
-          <Button
-            variant="primary"
-            onClick={() => router.push('/configuraciones')}
-            className="flex items-center space-x-2"
-          >
-            <ConfiguracionesIcon className="w-4 h-4" />
-            <span>Volver a Configuraciones</span>
-          </Button>
-        </div>
+
+          {/* Estadísticas del Dashboard */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Total Roles */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className="text-gray-900">
+                    {roles.length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Total Roles
+                  </Typography>
+                </div>
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <ShieldIcon className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Roles del Sistema */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className="text-gray-900">
+                    {roles.filter(rol => rol.es_sistema).length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Roles del Sistema
+                  </Typography>
+                </div>
+                <div className="p-3 rounded-lg bg-warning/10">
+                  <ShieldIcon className="w-6 h-6 text-warning" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Total Permisos */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className="text-gray-900">
+                    {permisosRoles.length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Total Permisos
+                  </Typography>
+                </div>
+                <div className="p-3 rounded-lg bg-secondary/10">
+                  <ShieldIcon className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Módulos Activos */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className="text-gray-900">
+                    {modulos.filter(modulo => modulo.activo).length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Módulos Activos
+                  </Typography>
+                </div>
+                <div className="p-3 rounded-lg bg-success/10">
+                  <ShieldIcon className="w-6 h-6 text-success" />
+                </div>
+              </div>
+            </Card>
+          </div>
 
         {/* Tabs usando componente del sistema de diseño */}
         <div className="mb-6">
@@ -335,18 +398,29 @@ export default function RolesPermisosPage() {
         {/* Contenido de tabs */}
         {activeTab === 'roles' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center justify-between mb-6">
               <Typography variant="h2" weight="semibold">
                 Gestión de Roles
               </Typography>
-              <Button
-                variant="primary"
-                onClick={handleCrearRol}
-                className="flex items-center space-x-2"
-              >
-                <PlusIcon className="w-4 h-4" />
-                <span>Crear Nuevo Rol</span>
-              </Button>
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleAsignarPermisosPorDefecto}
+                  disabled={loading}
+                  className="flex items-center space-x-2"
+                >
+                  <ShieldIcon className="w-4 h-4" />
+                  <span>Asignar Permisos por Defecto</span>
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleCrearRol}
+                  className="flex items-center space-x-2"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  <span>Crear Nuevo Rol</span>
+                </Button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
