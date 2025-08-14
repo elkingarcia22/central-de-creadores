@@ -21,8 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         correo, 
         foto_url,
         activo,
-        rol_plataforma,
-        created_at
+        rol_plataforma
       `)
       .eq('activo', true)
       .order('nombre');
@@ -39,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       email: user.correo,
       avatar_url: user.foto_url,
       roles: user.rol_plataforma ? [user.rol_plataforma] : [],
-      created_at: user.created_at
+      created_at: new Date().toISOString() // Usar fecha actual como fallback
     })) || [];
 
     // Formatear la respuesta como espera el componente
