@@ -24,9 +24,9 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   const { showSuccess, showError, showWarning } = useToast();
   
   const [formData, setFormData] = useState<Usuario>({
-    full_name: usuario?.full_name || '',
-    email: usuario?.email || '',
-    roles: usuario?.roles || []
+    full_name: '',
+    email: '',
+    roles: []
   });
 
   const [rolesDisponibles, setRolesDisponibles] = useState<{ value: string; label: string }[]>(ROLES_DEFAULT);
@@ -327,6 +327,16 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
     }
     return 'U';
   }
+
+  // Log del estado actual para debug
+  console.log('🎨 UsuarioForm renderizando con:', {
+    formData,
+    rolesLoading,
+    submitting,
+    rolesDisponibles: rolesDisponibles.length,
+    botonHabilitado: !rolesLoading && !submitting,
+    validacion: formData.full_name && formData.email && formData.roles.length > 0
+  });
 
   return (
     <div className="p-6 space-y-6">
