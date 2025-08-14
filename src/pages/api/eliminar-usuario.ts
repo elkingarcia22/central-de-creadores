@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseService = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY! // Esta clave debe estar en .env.local y nunca en el frontend
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Esta clave debe estar en .env.local y nunca en el frontend
 );
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

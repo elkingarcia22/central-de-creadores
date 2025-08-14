@@ -331,47 +331,16 @@ export default function GestionUsuariosPage() {
     setUsuarioDelete(usuario);
   }
 
-  // Handler para crear usuario
+  // Handler para crear usuario (solo recarga la tabla, la creación se hace en UsuarioForm)
   const handleFormSubmit = async (data: any) => {
     try {
-      console.log('🚀 Creando usuario en handleFormSubmit:', data);
-      
-      if (!data) {
-        console.error('❌ Data es undefined en handleFormSubmit');
-        throw new Error('Datos del formulario no recibidos');
-      }
-      
-      // Llamar a la API para crear usuario
-      const response = await fetch('/api/crear-usuario', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          full_name: data.full_name,
-          avatar_url: data.avatar_url,
-          roles: data.roles
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error('Error creando usuario:', result);
-        throw new Error(result.error || 'Error desconocido al crear usuario');
-      }
-
-      console.log('✅ Usuario creado exitosamente en handleFormSubmit:', result);
-      setShowModal(false);
-      
-      // Recargar usuarios
       console.log('🔄 Recargando tabla después de crear usuario...');
+      
+      // Solo recargar la tabla, la creación ya se hizo en UsuarioForm
       fetchUsuarios();
       
     } catch (error) {
-      console.error('Error creando usuario en handleFormSubmit:', error);
-      alert('Error creando usuario: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      console.error('Error recargando tabla:', error);
     }
   };
 
