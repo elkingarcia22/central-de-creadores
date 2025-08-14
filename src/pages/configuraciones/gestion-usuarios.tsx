@@ -139,7 +139,11 @@ export default function GestionUsuariosPage() {
                   src={avatarUrl}
                   alt={displayName}
                   className="absolute top-0 left-0 w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-sm z-20"
-                  style={{ display: 'block' }}
+                  style={{ 
+                    display: 'block',
+                    opacity: 1,
+                    visibility: 'visible'
+                  }}
                   onError={e => { 
                     // Si falla la imagen, simplemente ocultarla para mostrar el avatar con iniciales
                     const target = e.target as HTMLImageElement;
@@ -150,6 +154,8 @@ export default function GestionUsuariosPage() {
                     // Cuando la imagen carga exitosamente, asegurar que sea visible
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'block';
+                    target.style.opacity = '1';
+                    target.style.visibility = 'visible';
                     console.log('✅ Avatar cargado exitosamente para:', displayName, 'URL:', avatarUrl);
                   }}
                   onAbort={e => {
