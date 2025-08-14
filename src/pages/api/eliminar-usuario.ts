@@ -48,7 +48,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 3. Eliminar usuario de Auth
+    // 3. Eliminar usuario de la tabla usuarios
+    const { error: errorUsuario } = await supabaseService
+      .from('usuarios')
+      .delete()
+      .eq('id', userId);
+
+    if (errorUsuario) {
+      console.error('Error eliminando usuario de tabla usuarios:', errorUsuario);
+      return res.status(400).json({ 
+        error: 'Error eliminando usuario de tabla usuarios', 
+        detail: errorUsuario.message 
+      });
+    }
+
+    // 4. Eliminar usuario de Auth
     const { error: errorAuth } = await supabaseService.auth.admin.deleteUser(userId);
 
     if (errorAuth) {
@@ -57,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Solo logueamos el error para debugging
     }
 
-    // 4. Eliminar avatar si existe
+    // 5. Eliminar avatar si existe
     try {
       const { data: avatarFiles, error: listError } = await supabaseService.storage
         .from('avatars')
