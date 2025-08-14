@@ -5,6 +5,7 @@ import { Typography, Card, Button } from '../../components/ui';
 import { Layout } from '../../components/ui/Layout';
 import { ShieldIcon, PlusIcon, SettingsIcon } from '../../components/icons';
 import RolModal from '../../components/roles/RolModal';
+import PermisosModal from '../../components/roles/PermisosModal';
 
 interface Rol {
   id: string;
@@ -12,6 +13,13 @@ interface Rol {
   descripcion: string;
   activo: boolean;
   es_sistema: boolean;
+}
+
+interface PermisoRol {
+  id: string;
+  rol_id: string;
+  funcionalidad_id: string;
+  permitido: boolean;
 }
 
 export default function RolesPermisosPage() {
@@ -24,6 +32,10 @@ export default function RolesPermisosPage() {
   // Estados para el modal de roles
   const [showRolModal, setShowRolModal] = useState(false);
   const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
+  
+  // Estados para el modal de permisos
+  const [showPermisosModal, setShowPermisosModal] = useState(false);
+  const [selectedRolForPermisos, setSelectedRolForPermisos] = useState<Rol | null>(null);
 
   const cargarRoles = async () => {
     setLoading(true);
@@ -99,8 +111,42 @@ export default function RolesPermisosPage() {
   };
 
   const handleVerPermisos = (rol: Rol) => {
-    // TODO: Implementar modal de visualización de permisos
-    alert(`Ver permisos del rol: ${rol.nombre}`);
+    setSelectedRolForPermisos(rol);
+    setShowPermisosModal(true);
+  };
+
+  const handleSavePermisos = async (permisos: PermisoRol[]) => {
+    try {
+      // Eliminar permisos existentes del rol
+      const deleteResponse = await fetch(`/api/permisos-roles?rol_id=${selectedRolForPermisos?.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!deleteResponse.ok) {
+        throw new Error('Error eliminando permisos existentes');
+      }
+
+      // Crear nuevos permisos
+      const permisosParaCrear = permisos.filter(p => p.permitido);
+      
+      if (permisosParaCrear.length > 0) {
+        const createResponse = await fetch('/api/permisos-roles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ permisos: permisosParaCrear }),
+        });
+
+        if (!createResponse.ok) {
+          const error = await createResponse.json();
+          throw new Error(error.error || 'Error creando permisos');
+        }
+      }
+
+      alert(`✅ Permisos del rol "${selectedRolForPermisos?.nombre}" actualizados exitosamente`);
+    } catch (error) {
+      console.error('Error guardando permisos:', error);
+      throw error;
+    }
   };
 
   const handleEliminarRol = async (rol: Rol) => {
@@ -392,6 +438,14 @@ export default function RolesPermisosPage() {
         onClose={() => setShowRolModal(false)}
         rol={selectedRol}
         onSave={handleSaveRol}
+      />
+
+      {/* Modal para gestionar permisos */}
+      <PermisosModal
+        isOpen={showPermisosModal}
+        onClose={() => setShowPermisosModal(false)}
+        rol={selectedRolForPermisos}
+        onSave={handleSavePermisos}
       />
     </Layout>
   );
