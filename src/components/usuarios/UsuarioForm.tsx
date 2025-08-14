@@ -269,6 +269,9 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
           `El usuario ${formData.full_name} ha sido agregado al sistema`
         );
         
+        // Guardar los datos antes de limpiar el formulario
+        const datosCreados = { ...formData };
+        
         // Limpiar formulario solo en modo creación
         setFormData({
           full_name: '',
@@ -280,8 +283,8 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         // Esperar un poco para que el usuario vea el toast antes de cerrar el modal
         setTimeout(() => {
           console.log('📞 Llamando onSubmit para recargar tabla...');
-          onSubmit(formData); // Pasar los datos del formulario
-          console.log('📞 onSubmit ejecutado con datos:', formData);
+          onSubmit(datosCreados); // Pasar los datos originales del formulario
+          console.log('📞 onSubmit ejecutado con datos:', datosCreados);
         }, 1500); // 1.5 segundos para ver el toast
       }
       
