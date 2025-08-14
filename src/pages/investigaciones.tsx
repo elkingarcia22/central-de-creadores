@@ -252,8 +252,10 @@ export default function InvestigacionesPage() {
     investigacionesRef.current = investigaciones;
   }, [investigaciones]);
 
-  // Cargar datos iniciales
+  // Cargar datos iniciales y cuando cambie el rol
   useEffect(() => {
+    console.log('🚀 useEffect ejecutándose - cargando datos iniciales');
+    console.log('🎭 Rol actual:', rolSeleccionado);
     Promise.all([
       fetchInvestigaciones(),
       fetchUsuarios(),
@@ -263,7 +265,7 @@ export default function InvestigacionesPage() {
       fetchTiposInvestigacion(),
       fetchMetricasSeguimientos()
     ]);
-  }, []);
+  }, [rolSeleccionado]); // Se ejecuta cuando cambia el rol
 
   // ====================================
   // FUNCIÓN PARA OBTENER MÉTRICAS DE SEGUIMIENTOS

@@ -151,11 +151,12 @@ export default function ReclutamientoPage() {
     { value: 'completado', label: 'Completado' },
   ];
   
-  // Cargar datos iniciales
+  // Cargar datos iniciales y cuando cambie el rol
   useEffect(() => {
     console.log('🚀 useEffect ejecutándose - cargando datos iniciales');
+    console.log('🎭 Rol actual:', rolSeleccionado);
     cargarDatos();
-  }, []);
+  }, [rolSeleccionado]); // Se ejecuta cuando cambia el rol
 
   // Cargar datos
   const cargarDatos = async () => {
