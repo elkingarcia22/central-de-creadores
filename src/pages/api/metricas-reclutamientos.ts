@@ -72,7 +72,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Para el rol agendador, no filtrar por investigaciones ya que verá todos los reclutamientos
       // donde es responsable del agendamiento (se filtrará después)
       if (rol !== 'agendador') {
-        queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+        // Los investigadores solo ven investigaciones donde son responsables o implementadores, NO como creadores
+        queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
       }
     }
 
@@ -81,6 +82,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (errorPorAgendar) {
       console.error('Error obteniendo investigaciones por agendar:', errorPorAgendar);
       return res.status(500).json({ error: 'Error obteniendo investigaciones por agendar' });
+    }
+
+    console.log('✅ Investigaciones por agendar obtenidas:', investigacionesPorAgendar?.length || 0);
+    if (investigacionesPorAgendar && investigacionesPorAgendar.length > 0) {
+      console.log('🔍 Detalles de investigaciones por agendar:');
+      investigacionesPorAgendar.forEach((inv, index) => {
+        console.log(`  ${index + 1}. ${inv.nombre} (ID: ${inv.id})`);
+        console.log(`     - Responsable: ${inv.responsable_id}`);
+        console.log(`     - Implementador: ${inv.implementador_id}`);
+        console.log(`     - Creado por: ${inv.creado_por}`);
+      });
     }
 
     // Obtener datos adicionales necesarios
