@@ -100,6 +100,7 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         const rolesEnCache = obtenerRolesDesdeCache();
         if (rolesEnCache) {
           console.log('UsuarioForm: Usando roles desde cache:', rolesEnCache);
+          console.log('🔍 Formato de opciones de roles:', rolesEnCache.map(r => ({ value: r.value, label: r.label })));
           setRolesDisponibles(rolesEnCache);
           return;
         }
@@ -416,6 +417,11 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
           required
           disabled={rolesLoading || submitting}
         />
+        {/* Debug info */}
+        <div className="text-xs text-gray-500">
+          <div>Roles en formData: {JSON.stringify(formData.roles)}</div>
+          <div>Opciones disponibles: {rolesDisponibles.length}</div>
+        </div>
 
         {/* Error */}
         {error && (
