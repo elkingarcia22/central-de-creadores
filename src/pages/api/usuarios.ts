@@ -12,55 +12,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Intentar usar la vista usuarios_con_roles primero
+    // Usar la tabla usuarios directamente (no profiles)
     let { data: usuarios, error } = await supabase
-      .from('usuarios_con_roles')
+      .from('usuarios')
       .select(`
         id, 
-        full_name, 
-        email, 
-        avatar_url,
-        roles,
+        nombre, 
+        correo, 
+        foto_url,
+        activo,
+        rol_plataforma,
         created_at
       `)
-      .order('full_name');
+      .eq('activo', true)
+      .order('nombre');
 
-    // Si la vista no existe, usar la tabla profiles directamente
-    if (error && error.message.includes('does not exist')) {
-      console.log('Vista usuarios_con_roles no existe, usando tabla profiles');
-      
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
-          id, 
-          full_name, 
-          email, 
-          avatar_url,
-          rol_text,
-          role,
-          created_at
-        `)
-        .order('full_name');
-
-      if (profilesError) {
-        console.error('Error obteniendo usuarios de profiles:', profilesError);
-        return res.status(500).json({ error: profilesError.message });
-      }
-
-      // Convertir datos de profiles al formato esperado
-      usuarios = profilesData?.map(user => ({
-        ...user,
-        roles: user.role ? [user.role] : (user.rol_text ? [user.rol_text] : [])
-      })) || [];
-    } else if (error) {
+    if (error) {
       console.error('Error obteniendo usuarios:', error);
       return res.status(500).json({ error: error.message });
     }
 
+    // Convertir datos de usuarios al formato esperado por el componente
+    const usuariosFormateados = usuarios?.map(user => ({
+      id: user.id,
+      full_name: user.nombre || 'Sin nombre',
+      email: user.correo,
+      avatar_url: user.foto_url,
+      roles: user.rol_plataforma ? [user.rol_plataforma] : [],
+      created_at: user.created_at
+    })) || [];
+
     // Formatear la respuesta como espera el componente
     return res.status(200).json({
-      usuarios: usuarios || [],
-      total: usuarios?.length || 0
+      usuarios: usuariosFormateados || [],
+      total: usuariosFormateados?.length || 0
     });
 
   } catch (error) {
