@@ -12,19 +12,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la tabla usuarios directamente (no profiles)
+    // Usar la tabla profiles (Supabase Auth) con roles
     let { data: usuarios, error } = await supabase
-      .from('usuarios')
+      .from('profiles')
       .select(`
         id, 
-        nombre, 
-        correo, 
-        foto_url,
-        activo,
-        rol_plataforma
+        full_name, 
+        email, 
+        avatar_url,
+        created_at
       `)
-      .eq('activo', true)
-      .order('nombre');
+      .order('full_name');
 
     if (error) {
       console.error('Error obteniendo usuarios:', error);
@@ -34,11 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Convertir datos de usuarios al formato esperado por el componente
     const usuariosFormateados = usuarios?.map(user => ({
       id: user.id,
-      full_name: user.nombre || 'Sin nombre',
-      email: user.correo,
-      avatar_url: user.foto_url,
-      roles: user.rol_plataforma ? [user.rol_plataforma] : [],
-      created_at: new Date().toISOString() // Usar fecha actual como fallback
+      full_name: user.full_name || 'Sin nombre',
+      email: user.email,
+      avatar_url: user.avatar_url,
+      roles: [], // Por ahora sin roles, se pueden agregar después si es necesario
+      created_at: user.created_at
     })) || [];
 
     // Formatear la respuesta como espera el componente
