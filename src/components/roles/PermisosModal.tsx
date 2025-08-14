@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Switch, Card } from '../ui';
+import { Typography, Button, Switch, Card, Modal } from '../ui';
 
 interface Modulo {
   id: string;
@@ -138,27 +138,35 @@ export default function PermisosModal({
   if (!isOpen || !rol) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <Typography variant="h2" weight="semibold" className="text-gray-900">
-                Permisos del Rol: {rol.nombre}
-              </Typography>
-              <Typography variant="body2" color="secondary" className="mt-1">
-                Configura los permisos específicos para este rol
-              </Typography>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Permisos del Rol: ${rol.nombre}`}
+      size="xl"
+      footer={
+        <div className="flex items-center justify-end space-x-3">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            disabled={loading}
+            loading={loading}
+          >
+            Guardar Permisos
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-6">
+        <Typography variant="body2" color="secondary">
+          Configura los permisos específicos para este rol
+        </Typography>
 
           {/* Controles globales */}
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -263,29 +271,7 @@ export default function PermisosModal({
               })}
           </div>
 
-          {/* Botones */}
-          <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={loading}
-              className="flex items-center space-x-2"
-            >
-              {loading && (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              )}
-              <span>Guardar Permisos</span>
-            </Button>
-          </div>
-        </div>
       </div>
-    </div>
+    </Modal>
   );
 }

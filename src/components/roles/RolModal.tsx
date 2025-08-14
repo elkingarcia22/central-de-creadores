@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Input, Textarea, Switch } from '../ui';
+import { Typography, Button, Input, Textarea, Switch, Modal } from '../ui';
 
 interface Rol {
   id: string;
@@ -87,17 +87,33 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <Typography variant="h2" weight="semibold" className="text-gray-900">
-              {rol ? 'Editar Rol' : 'Crear Nuevo Rol'}
-            </Typography>
-            <button
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={rol ? 'Editar Rol' : 'Crear Nuevo Rol'}
+      size="md"
+      footer={
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={loading}
+            loading={loading}
+          >
+            {rol ? 'Actualizar' : 'Crear'} Rol
+          </Button>
+        </div>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
@@ -180,31 +196,7 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
               />
             </div>
 
-            {/* Botones */}
-            <div className="flex items-center justify-end space-x-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={loading}
-                className="flex items-center space-x-2"
-              >
-                {loading && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                )}
-                <span>{rol ? 'Actualizar Rol' : 'Crear Rol'}</span>
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }

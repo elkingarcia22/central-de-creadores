@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
-import { Layout, Typography, Card, Button } from '../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Badge } from '../../components/ui';
 import { 
   UsuariosIcon, 
   ConfiguracionesIcon,
@@ -274,42 +274,31 @@ export default function RolesPermisosPage() {
           </Button>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs usando componente del sistema de diseño */}
         <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('roles')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'roles'
-                    ? 'border-purple-500 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Roles ({roles.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('permisos')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'permisos'
-                    ? 'border-purple-500 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Permisos ({permisosRoles.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('modulos')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'modulos'
-                    ? 'border-purple-500 text-purple-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Módulos y Funcionalidades ({modulos.length})
-              </button>
-            </nav>
-          </div>
+          <Tabs
+            tabs={[
+              {
+                id: 'roles',
+                label: `Roles (${roles.length})`,
+                content: null // El contenido se renderiza abajo
+              },
+              {
+                id: 'permisos',
+                label: `Permisos (${permisosRoles.length})`,
+                content: null
+              },
+              {
+                id: 'modulos',
+                label: `Módulos y Funcionalidades (${modulos.length})`,
+                content: null
+              }
+            ]}
+            activeTab={activeTab}
+            onTabChange={(tabId) => setActiveTab(tabId as 'roles' | 'permisos' | 'modulos')}
+            variant="underline"
+            size="md"
+          />
         </div>
 
         {/* Contenido de tabs */}
@@ -342,9 +331,9 @@ export default function RolesPermisosPage() {
                           {rol.nombre}
                         </Typography>
                         {rol.es_sistema && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <Badge variant="primary" size="sm">
                             Sistema
-                          </span>
+                          </Badge>
                         )}
                       </div>
                     </div>
@@ -381,10 +370,12 @@ export default function RolesPermisosPage() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${rol.activo ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                      <Typography variant="body2" color="secondary">
+                      <Badge 
+                        variant={rol.activo ? "success" : "destructive"} 
+                        size="sm"
+                      >
                         {rol.activo ? 'Activo' : 'Inactivo'}
-                      </Typography>
+                      </Badge>
                     </div>
                     <Typography variant="body2" color="secondary">
                       {getPermisosPorRol(rol.id).length} permisos
