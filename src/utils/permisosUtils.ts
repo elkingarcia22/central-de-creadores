@@ -115,8 +115,8 @@ export const construirFiltroInvestigaciones = (usuarioId: string, esAdmin: boole
   return {
     or: [
       { responsable_id: { eq: usuarioId } },
-      { implementador_id: { eq: usuarioId } },
-      { creado_por: { eq: usuarioId } }
+      { implementador_id: { eq: usuarioId } }
+      // Los investigadores NO ven investigaciones donde solo son creadores
     ]
   };
 };
@@ -204,8 +204,8 @@ export const elementoPerteneceAUsuario = (
     case 'investigaciones':
       return (
         elemento.responsable_id === usuarioId ||
-        elemento.implementador_id === usuarioId ||
-        elemento.creado_por === usuarioId
+        elemento.implementador_id === usuarioId
+        // Los investigadores NO tienen acceso a investigaciones donde solo son creadores
       );
     
     case 'reclutamientos':

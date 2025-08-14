@@ -283,8 +283,9 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     // Aplicar filtros de asignación si no es administrador
     if (!esAdmin && usuarioId) {
       console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
-      console.log('🔍 Filtro SQL:', `responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
-      query = query.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+      console.log('🔍 Filtro SQL:', `responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
+      // Los investigadores solo ven investigaciones donde son responsables o implementadores, NO como creadores
+      query = query.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
     } else {
       console.log('🔓 Sin filtros de asignación - Es admin o no hay usuarioId');
     }
