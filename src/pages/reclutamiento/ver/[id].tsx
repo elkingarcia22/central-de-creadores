@@ -174,16 +174,12 @@ const VerReclutamiento: NextPage = () => {
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
     try {
-      console.log('🔄 Cargando participantes...');
-      console.log('🔍 ID usado para cargar:', id);
-      
       // Verificar que el ID esté disponible
       if (!id) {
-        console.log('⚠️ ID no disponible aún, esperando...');
         return;
       }
       
-      // Primero obtener todos los reclutamientos de la investigación
+      // Obtener todos los reclutamientos de la investigación
       const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${id}`, {
         headers: {
           'Cache-Control': 'no-cache',
@@ -193,40 +189,7 @@ const VerReclutamiento: NextPage = () => {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('📊 Participantes cargados:', data);
-        console.log('🔍 Número de participantes:', data.participantes?.length || data.length);
-        
-        // Log específico para ver los valores de hora_sesion
-        if (data.participantes) {
-          data.participantes.forEach((participante: any, index: number) => {
-            console.log(`🔍 Participante ${index + 1} - ${participante.nombre}:`, {
-              id: participante.id,
-              nombre: participante.nombre,
-              hora_sesion: participante.hora_sesion,
-              reclutamiento_id: participante.reclutamiento_id
-            });
-            
-            // Log específico para el participante que estamos editando
-            if (participante.nombre === 'prueba 12344') {
-              console.log('🎯 PARTICIPANTE ESPECÍFICO - prueba 12344:', {
-                hora_sesion: participante.hora_sesion,
-                hora_sesion_tipo: typeof participante.hora_sesion,
-                hora_sesion_es_null: participante.hora_sesion === null,
-                hora_sesion_es_undefined: participante.hora_sesion === undefined
-              });
-            }
-          });
-        }
-        
         setParticipantes(data.participantes || data);
-        
-        // Forzar la actualización del estado
-        console.log('🔄 Estado actualizado con participantes:', data.participantes?.length || data.length);
-        
-        // Log específico para ver el estado actual
-        setTimeout(() => {
-          console.log('🔍 Estado actual después de setParticipantes:', participantes);
-        }, 100);
       } else {
         console.error('❌ Error cargando participantes:', response.statusText);
         setParticipantes([]);
@@ -240,22 +203,9 @@ const VerReclutamiento: NextPage = () => {
   // Cargar participantes cuando el ID esté disponible
   useEffect(() => {
     if (id) {
-      console.log('🔄 ID disponible, cargando participantes:', id);
       cargarParticipantes();
     }
   }, [id]);
-
-  // Monitorear cambios en el estado de participantes
-  useEffect(() => {
-    console.log('🔄 Estado de participantes cambiado:', participantes.length, 'participantes');
-    participantes.forEach((participante, index) => {
-      console.log(`🔍 Participante ${index + 1}:`, {
-        id: participante.id,
-        nombre: participante.nombre,
-        hora_sesion: participante.hora_sesion
-      });
-    });
-  }, [participantes]);
 
   const recargarDatosCompletos = async () => {
     try {

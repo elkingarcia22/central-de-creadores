@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       id: user.id,
       full_name: user.full_name || 'Sin nombre',
       email: user.email,
-      avatar_url: user.avatar_url,
+      avatar_url: user.avatar_url || null,
       roles: user.roles || [],
       created_at: new Date().toISOString()
     })) || [];

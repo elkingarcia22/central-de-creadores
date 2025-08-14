@@ -71,6 +71,16 @@ export default function AsignarAgendamientoModal({
     if (isOpen && isEditMode && responsableActual && responsables.length > 0) {
       console.log('🔍 Precargando responsable:', responsableActual);
       setResponsableId(responsableActual);
+    } else if (isOpen && isEditMode && responsableActual && responsables.length === 0) {
+      console.log('🔍 Esperando a que se carguen los responsables para precargar:', responsableActual);
+      // Esperar a que se carguen los responsables
+      const timer = setTimeout(() => {
+        if (responsables.length > 0) {
+          console.log('🔍 Precargando responsable después de carga:', responsableActual);
+          setResponsableId(responsableActual);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     } else {
       console.log('🔍 No se precarga responsable:', { isOpen, isEditMode, responsableActual, responsablesLength: responsables.length });
     }
@@ -257,7 +267,7 @@ export default function AsignarAgendamientoModal({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        type="submit"
         loading={loading}
         disabled={loading || !responsableId || (!isEditMode && !investigacionId && !investigacionSeleccionada)}
         className="flex items-center gap-2"
