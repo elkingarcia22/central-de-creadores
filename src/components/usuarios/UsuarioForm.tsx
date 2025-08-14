@@ -41,28 +41,18 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(usuario?.avatar_url || null);
 
-  // Función para mapear UUIDs de roles a valores de opciones
+  // Función para mapear UUIDs de roles a valores de opciones (mantener UUIDs)
   const mapearRolesUUIDaValores = (rolesUUID: string[]): string[] => {
-    const mapeoRoles = {
-      'bcc17f6a-d751-4c39-a479-412abddde0fa': 'Administrador',
-      'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7': 'Investigador',
-      'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c': 'Reclutador',
-      '7e329b4c-3716-4781-919e-54106b51ca99': 'Agendador'
-    };
-    
-    return rolesUUID.map(uuid => mapeoRoles[uuid as keyof typeof mapeoRoles] || uuid);
+    // No mapear, mantener los UUIDs como valores
+    console.log('🔄 Mapeando roles UUID a valores (manteniendo UUIDs):', rolesUUID);
+    return rolesUUID;
   };
 
-  // Función para mapear valores de opciones a UUIDs de roles
+  // Función para mapear valores de opciones a UUIDs de roles (mantener UUIDs)
   const mapearValoresaRolesUUID = (valores: string[]): string[] => {
-    const mapeoRoles = {
-      'Administrador': 'bcc17f6a-d751-4c39-a479-412abddde0fa',
-      'Investigador': 'e1fb53e3-3d1c-4ff5-bdac-9a1285dd99d7',
-      'Reclutador': 'fcf6ffc7-e8d3-407b-8c72-b4a7e8db6c9c',
-      'Agendador': '7e329b4c-3716-4781-919e-54106b51ca99'
-    };
-    
-    return valores.map(valor => mapeoRoles[valor as keyof typeof mapeoRoles] || valor);
+    // No mapear, mantener los UUIDs como valores
+    console.log('🔄 Mapeando valores a roles UUID (manteniendo UUIDs):', valores);
+    return valores;
   };
 
   // Actualizar formulario cuando cambie el usuario (para modo edición)
