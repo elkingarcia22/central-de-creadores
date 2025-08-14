@@ -52,6 +52,14 @@ export default function ConfiguracionesPage() {
       features: ['Crear usuarios', 'Asignar roles', 'Gestionar permisos', 'Activar/desactivar cuentas']
     },
     {
+      title: 'Roles y Permisos',
+      description: 'Sistema de permisos granular por módulos y funcionalidades',
+      icon: <UsuariosIcon className="w-8 h-8" />,
+      href: '/ejecutar-script-permisos',
+      color: 'purple',
+      features: ['Configurar permisos granulares', 'Gestionar roles del sistema', 'Definir funcionalidades por módulo']
+    },
+    {
       title: 'Configuración de Empresas',
       description: 'Gestionar información de empresas y organizaciones',
       icon: <EmpresasIcon className="w-8 h-8" />,
