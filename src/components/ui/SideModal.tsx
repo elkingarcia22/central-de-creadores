@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Button, Typography } from './index';
+import Button from './Button';
+import Typography from './Typography';
 import { CloseIcon } from '../icons';
 
 export interface SideModalProps {
