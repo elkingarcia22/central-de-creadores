@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
-import { Layout, Typography, Card, Button, Tabs, Badge } from '../../components/ui';
+import { Typography, Card, Button, Tabs, Badge } from '../../components/ui';
+import { Layout } from '../../components/ui/Layout';
 import { 
   UsuariosIcon, 
   ConfiguracionesIcon,
@@ -101,7 +102,7 @@ export default function RolesPermisosPage() {
     cargarDatos();
   }, []);
 
-  // Verificar acceso - solo administradores (después de todos los hooks)
+  // Verificar acceso - solo administradores
   if (rolSeleccionado?.toLowerCase() !== 'administrador') {
     return (
       <Layout>
@@ -124,147 +125,6 @@ export default function RolesPermisosPage() {
       </Layout>
     );
   }
-
-  const handleCrearRol = () => {
-    setSelectedRol(null);
-    setShowRolModal(true);
-  };
-
-  const handleEditarRol = (rol: Rol) => {
-    setSelectedRol(rol);
-    setShowRolModal(true);
-  };
-
-  const handleGestionarPermisos = (rol: Rol) => {
-    setSelectedRol(rol);
-    setShowPermisosModal(true);
-  };
-
-  const handleEliminarRol = async (rol: Rol) => {
-    if (!confirm(`¿Estás seguro de que quieres eliminar el rol "${rol.nombre}"?`)) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/roles?id=${rol.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        await cargarDatos();
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.error}`);
-      }
-    } catch (error) {
-      console.error('Error eliminando rol:', error);
-      alert('Error eliminando el rol');
-    }
-  };
-
-  const handleSaveRol = async (rolData: Partial<Rol>) => {
-    try {
-      const method = selectedRol ? 'PUT' : 'POST';
-      const body = selectedRol ? { ...rolData, id: selectedRol.id } : rolData;
-
-      const response = await fetch('/api/roles', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Error guardando rol');
-      }
-
-      await cargarDatos();
-    } catch (error) {
-      console.error('Error guardando rol:', error);
-      throw error;
-    }
-  };
-
-  const handleSavePermisos = async (permisos: any[]) => {
-    if (!selectedRol) return;
-
-    try {
-      // Eliminar permisos existentes del rol
-      await fetch(`/api/permisos-roles?rol_id=${selectedRol.id}`, {
-        method: 'DELETE',
-      });
-
-      // Crear nuevos permisos
-      const permisosToCreate = permisos
-        .filter(p => p.permitido)
-        .map(p => ({
-          rol_id: selectedRol.id,
-          funcionalidad_id: p.funcionalidad_id,
-          permitido: true
-        }));
-
-      if (permisosToCreate.length > 0) {
-        const response = await fetch('/api/permisos-roles', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ permisos: permisosToCreate }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Error guardando permisos');
-        }
-      }
-
-      await cargarDatos();
-    } catch (error) {
-      console.error('Error guardando permisos:', error);
-      throw error;
-    }
-  };
-
-  const handleAsignarPermisosPorDefecto = async () => {
-    if (!confirm('¿Estás seguro de que quieres asignar permisos por defecto a todos los roles del sistema? Esto sobrescribirá los permisos existentes.')) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch('/api/asignar-permisos-por-defecto', {
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Error asignando permisos por defecto');
-      }
-
-      const result = await response.json();
-      console.log('Permisos asignados:', result);
-      
-      // Recargar datos
-      await cargarDatos();
-      
-      alert('Permisos por defecto asignados exitosamente');
-    } catch (error) {
-      console.error('Error asignando permisos por defecto:', error);
-      alert(`Error: ${error instanceof Error ? error.message : 'Error desconocido'}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getFuncionalidadesPorModulo = (moduloId: string) => {
-    return funcionalidades.filter(f => f.modulo_id === moduloId);
-  };
-
-  const getPermisosPorRol = (rolId: string) => {
-    return permisosRoles.filter(p => p.rol_id === rolId);
-  };
-
-  const getPermisoRol = (rolId: string, funcionalidadId: string) => {
-    return permisosRoles.find(p => p.rol_id === rolId && p.funcionalidad_id === funcionalidadId);
-  };
 
   if (loading) {
     return (
@@ -370,260 +230,19 @@ export default function RolesPermisosPage() {
             </Card>
           </div>
 
-        {/* Tabs usando componente del sistema de diseño */}
-        <div className="mb-6">
-          <Tabs
-            tabs={[
-              {
-                id: 'roles',
-                label: `Roles (${roles.length})`,
-                content: null // El contenido se renderiza abajo
-              },
-              {
-                id: 'permisos',
-                label: `Permisos (${permisosRoles.length})`,
-                content: null
-              },
-              {
-                id: 'modulos',
-                label: `Módulos y Funcionalidades (${modulos.length})`,
-                content: null
-              }
-            ]}
-            activeTab={activeTab}
-            onTabChange={(tabId) => setActiveTab(tabId as 'roles' | 'permisos' | 'modulos')}
-            variant="underline"
-            size="md"
-          />
-        </div>
-
-        {/* Contenido de tabs */}
-        {activeTab === 'roles' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <Typography variant="h2" weight="semibold">
-                Gestión de Roles
+          {/* Contenido principal */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div className="p-6">
+              <Typography variant="h3" weight="semibold" className="mb-4">
+                Contenido de la página
               </Typography>
-              <div className="flex items-center space-x-3">
-                <Button 
-                  variant="outline" 
-                  onClick={handleAsignarPermisosPorDefecto}
-                  disabled={loading}
-                  className="flex items-center space-x-2"
-                >
-                  <ShieldIcon className="w-4 h-4" />
-                  <span>Asignar Permisos por Defecto</span>
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleCrearRol}
-                  className="flex items-center space-x-2"
-                >
-                  <PlusIcon className="w-4 h-4" />
-                  <span>Crear Nuevo Rol</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {roles.map((rol) => (
-                <Card key={rol.id} className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <ShieldIcon className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <Typography variant="h3" weight="semibold" className="text-gray-900">
-                          {rol.nombre}
-                        </Typography>
-                        {rol.es_sistema && (
-                          <Badge variant="primary" size="sm">
-                            Sistema
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleGestionarPermisos(rol)}
-                        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        title="Gestionar permisos"
-                      >
-                        <EyeIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEditarRol(rol)}
-                        className="p-2 text-gray-400 hover:text-green-600 transition-colors"
-                        title="Editar rol"
-                      >
-                        <EditIcon className="w-4 h-4" />
-                      </button>
-                      {!rol.es_sistema && (
-                        <button
-                          onClick={() => handleEliminarRol(rol)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                          title="Eliminar rol"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Typography variant="body2" color="secondary" className="mb-4">
-                    {rol.descripcion || 'Sin descripción'}
-                  </Typography>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant={rol.activo ? "success" : "destructive"} 
-                        size="sm"
-                      >
-                        {rol.activo ? 'Activo' : 'Inactivo'}
-                      </Badge>
-                    </div>
-                    <Typography variant="body2" color="secondary">
-                      {getPermisosPorRol(rol.id).length} permisos
-                    </Typography>
-                  </div>
-                </Card>
-              ))}
+              <Typography variant="body1" color="secondary">
+                Esta es una versión simplificada de la página de Roles y Permisos.
+              </Typography>
             </div>
           </div>
-        )}
-
-        {activeTab === 'permisos' && (
-          <div>
-            <Typography variant="h2" weight="semibold" className="mb-6">
-              Permisos por Rol
-            </Typography>
-            
-            <div className="space-y-6">
-              {roles.map((rol) => (
-                <Card key={rol.id} className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Typography variant="h3" weight="semibold" className="text-gray-900">
-                      {rol.nombre}
-                    </Typography>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleGestionarPermisos(rol)}
-                    >
-                      Gestionar Permisos
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {modulos.map((modulo) => {
-                      const funcionalidadesModulo = getFuncionalidadesPorModulo(modulo.id);
-                      const permisosModulo = funcionalidadesModulo.filter(f => 
-                        getPermisoRol(rol.id, f.id)?.permitido
-                      );
-
-                      return (
-                        <div key={modulo.id} className="border border-gray-200 rounded-lg p-4">
-                          <Typography variant="h4" weight="medium" className="text-gray-900 mb-2">
-                            {modulo.nombre}
-                          </Typography>
-                          <Typography variant="body2" color="secondary" className="mb-3">
-                            {permisosModulo.length} de {funcionalidadesModulo.length} funcionalidades
-                          </Typography>
-                          <div className="space-y-1">
-                            {funcionalidadesModulo.slice(0, 3).map((func) => {
-                              const permiso = getPermisoRol(rol.id, func.id);
-                              return (
-                                <div key={func.id} className="flex items-center space-x-2">
-                                  <div className={`w-2 h-2 rounded-full ${permiso?.permitido ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                                  <Typography variant="body2" className="text-gray-700">
-                                    {func.nombre}
-                                  </Typography>
-                                </div>
-                              );
-                            })}
-                            {funcionalidadesModulo.length > 3 && (
-                              <Typography variant="body2" color="secondary">
-                                +{funcionalidadesModulo.length - 3} más...
-                              </Typography>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'modulos' && (
-          <div>
-            <Typography variant="h2" weight="semibold" className="mb-6">
-              Módulos y Funcionalidades
-            </Typography>
-            
-            <div className="space-y-6">
-              {modulos.map((modulo) => (
-                <Card key={modulo.id} className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <Typography variant="h3" weight="semibold" className="text-gray-900">
-                        {modulo.nombre}
-                      </Typography>
-                      <Typography variant="body2" color="secondary">
-                        {modulo.descripcion}
-                      </Typography>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${modulo.activo ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                      <Typography variant="body2" color="secondary">
-                        {modulo.activo ? 'Activo' : 'Inactivo'}
-                      </Typography>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {getFuncionalidadesPorModulo(modulo.id).map((func) => (
-                      <div key={func.id} className="border border-gray-200 rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <Typography variant="body1" weight="medium" className="text-gray-900">
-                            {func.nombre}
-                          </Typography>
-                          <div className={`w-2 h-2 rounded-full ${func.activo ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                        </div>
-                        <Typography variant="body2" color="secondary">
-                          {func.descripcion}
-                        </Typography>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
-
-      {/* Modales */}
-      <RolModal
-        isOpen={showRolModal}
-        onClose={() => setShowRolModal(false)}
-        onSave={handleSaveRol}
-        rol={selectedRol}
-      />
-
-      <PermisosModal
-        isOpen={showPermisosModal}
-        onClose={() => setShowPermisosModal(false)}
-        rol={selectedRol}
-        modulos={modulos}
-        funcionalidades={funcionalidades}
-        permisosActuales={selectedRol ? getPermisosPorRol(selectedRol.id) : []}
-        onSavePermisos={handleSavePermisos}
-      />
     </Layout>
   );
 }
