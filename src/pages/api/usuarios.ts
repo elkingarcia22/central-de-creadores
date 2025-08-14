@@ -7,20 +7,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la vista usuarios_con_roles (misma que gestión de usuarios) - CORRECTO
-    console.log('🔍 Iniciando consulta a vista usuarios_con_roles...');
+    // Usar la tabla usuarios directamente para evitar inconsistencias con la vista
+    console.log('🔍 Iniciando consulta a tabla usuarios...');
     
     let { data: usuarios, error } = await supabase
-      .from('usuarios_con_roles')
+      .from('usuarios')
       .select(`
         id, 
-        full_name, 
-        email, 
-        avatar_url,
-        roles,
-        created_at
+        nombre, 
+        correo, 
+        foto_url,
+        rol_plataforma
       `)
-      .order('full_name');
+      .eq('activo', true)
+      .order('nombre');
     
     console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0, error });
 
@@ -32,11 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Convertir datos de usuarios al formato esperado por el componente
     const usuariosFormateados = usuarios?.map(user => ({
       id: user.id,
-      full_name: user.full_name || 'Sin nombre',
-      email: user.email,
-      avatar_url: user.avatar_url,
-      roles: user.roles || [],
-      created_at: user.created_at || new Date().toISOString()
+      full_name: user.nombre || 'Sin nombre',
+      email: user.correo,
+      avatar_url: user.foto_url,
+      roles: user.rol_plataforma || [],
+      created_at: new Date().toISOString()
     })) || [];
 
     // Formatear la respuesta como espera el componente
