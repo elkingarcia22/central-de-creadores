@@ -280,8 +280,8 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         // Esperar un poco para que el usuario vea el toast antes de cerrar el modal
         setTimeout(() => {
           console.log('📞 Llamando onSubmit para recargar tabla...');
-          onSubmit();
-          console.log('📞 onSubmit ejecutado');
+          onSubmit(formData); // Pasar los datos del formulario
+          console.log('📞 onSubmit ejecutado con datos:', formData);
         }, 1500); // 1.5 segundos para ver el toast
       }
       
