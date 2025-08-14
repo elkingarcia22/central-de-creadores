@@ -459,11 +459,16 @@ export default function GestionUsuariosPage() {
   const handleBulkDelete = async () => {
     if (bulkDeleteUsers.length === 0) return;
 
-    try {
-      console.log('Eliminando usuarios:', bulkDeleteUsers);
-      
-      // Eliminar usuarios uno por uno
-      const deletePromises = bulkDeleteUsers.map(async (userId) => {
+    console.log('Eliminando usuarios:', bulkDeleteUsers);
+    
+    const resultados = {
+      exitosos: [] as string[],
+      fallidos: [] as { userId: string; error: string }[]
+    };
+    
+    // Eliminar usuarios uno por uno y manejar errores individualmente
+    for (const userId of bulkDeleteUsers) {
+      try {
         const response = await fetch(`/api/eliminar-usuario?userId=${userId}`, {
           method: 'DELETE',
           headers: {
@@ -473,47 +478,53 @@ export default function GestionUsuariosPage() {
 
         if (!response.ok) {
           const result = await response.json();
-          throw new Error(`Error eliminando usuario ${userId}: ${result.error || 'Error desconocido'}`);
+          const errorMessage = result.detail || result.error || 'Error desconocido';
+          resultados.fallidos.push({ userId, error: errorMessage });
+          console.error(`Error eliminando usuario ${userId}:`, errorMessage);
+        } else {
+          resultados.exitosos.push(userId);
+          console.log(`Usuario ${userId} eliminado exitosamente`);
         }
-
-        return response.json();
-      });
-
-      await Promise.all(deletePromises);
-      
-      console.log('Usuarios eliminados exitosamente');
-      
-      // Mostrar toast de éxito
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        resultados.fallidos.push({ userId, error: errorMessage });
+        console.error(`Error eliminando usuario ${userId}:`, errorMessage);
+      }
+    }
+    
+    // Mostrar resultados
+    if (resultados.exitosos.length > 0) {
       showSuccess(
         'Usuarios eliminados',
-        `Se han eliminado ${bulkDeleteUsers.length} usuario${bulkDeleteUsers.length > 1 ? 's' : ''} correctamente`
-      );
-      
-      console.log('=== INICIANDO LIMPIEZA Y RECARGA ===');
-      
-      // Limpiar estados inmediatamente
-      setBulkDeleteUsers([]);
-      setSelectedUsers([]);
-      setClearTableSelection(true);
-      console.log('Estados limpiados');
-      
-      // Recargar usuarios
-      console.log('Llamando fetchUsuarios...');
-      fetchUsuarios();
-      
-      // Limpiar flag de selección después de un momento
-      setTimeout(() => {
-        console.log('Limpiando clearTableSelection');
-        setClearTableSelection(false);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Error en eliminación masiva:', error);
-      showError(
-        'Error en eliminación masiva',
-        'Error eliminando algunos usuarios: ' + (error instanceof Error ? error.message : 'Error desconocido')
+        `Se han eliminado ${resultados.exitosos.length} usuario${resultados.exitosos.length > 1 ? 's' : ''} correctamente`
       );
     }
+    
+    if (resultados.fallidos.length > 0) {
+      const errores = resultados.fallidos.map(f => f.error).join(', ');
+      showWarning(
+        'Algunos usuarios no se pudieron eliminar',
+        `No se pudieron eliminar ${resultados.fallidos.length} usuario${resultados.fallidos.length > 1 ? 's' : ''}: ${errores}`
+      );
+    }
+    
+    console.log('=== INICIANDO LIMPIEZA Y RECARGA ===');
+    
+    // Limpiar estados inmediatamente
+    setBulkDeleteUsers([]);
+    setSelectedUsers([]);
+    setClearTableSelection(true);
+    console.log('Estados limpiados');
+    
+    // Recargar usuarios
+    console.log('Llamando fetchUsuarios...');
+    fetchUsuarios();
+    
+    // Limpiar flag de selección después de un momento
+    setTimeout(() => {
+      console.log('Limpiando clearTableSelection');
+      setClearTableSelection(false);
+    }, 100);
   };
 
   return (
