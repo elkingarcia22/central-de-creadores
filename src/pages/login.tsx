@@ -150,6 +150,7 @@ export default function Login() {
         console.error('❌ Error de autenticación:', error);
         console.log('🔍 Estableciendo error en estado:', error.message);
         setError(error.message);
+        console.log('🔍 Error establecido, estado actual:', error);
         return;
       }
 
