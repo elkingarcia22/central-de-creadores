@@ -48,6 +48,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('✅ Usuario creado en Auth:', authData.user.id);
 
+    // Esperar un momento para que el perfil se cree automáticamente
+    console.log('⏳ Esperando que se cree el perfil automáticamente...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Verificar que el perfil existe antes de actualizarlo
+    const { data: existingProfile, error: profileCheckError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (profileCheckError || !existingProfile) {
+      console.error('Error verificando perfil:', profileCheckError);
+      return res.status(400).json({ error: 'Error verificando perfil: ' + (profileCheckError?.message || 'Perfil no encontrado') });
+    }
+
+    console.log('✅ Perfil encontrado, actualizando...');
+
     // Actualizar el perfil con la información adicional
     const { error: profileError } = await supabase.from('profiles').update({
       full_name,
@@ -63,6 +81,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Asignar roles al usuario
     if (roles && roles.length > 0) {
+      console.log('🔐 Asignando roles:', roles);
+      
       const rolesToInsert = roles.map((rolId: string) => ({
         user_id: authData.user.id,
         role: rolId,
