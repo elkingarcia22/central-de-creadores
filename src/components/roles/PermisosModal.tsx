@@ -1,22 +1,27 @@
-import { useState, useEffect } from 'react';
-import { Typography, Button, Switch, Card } from '../ui';
+import React, { useState, useEffect } from 'react';
+import { Typography, Button, Card, Switch } from '../ui';
 import SideModal from '../ui/SideModal';
 
 interface Modulo {
   id: string;
   nombre: string;
   descripcion: string;
-  orden: number;
-  activo: boolean;
 }
 
 interface Funcionalidad {
   id: string;
-  modulo_id: string;
   nombre: string;
   descripcion: string;
-  orden: number;
-  activo: boolean;
+  modulo_id: string;
+  modulo?: Modulo;
+}
+
+interface PermisoRol {
+  id: string;
+  rol_id: string;
+  funcionalidad_id: string;
+  permitido: boolean;
+  funcionalidad?: Funcionalidad;
 }
 
 interface Rol {
@@ -27,112 +32,120 @@ interface Rol {
   es_sistema: boolean;
 }
 
-interface PermisoRol {
-  id: string;
-  rol_id: string;
-  funcionalidad_id: string;
-  permitido: boolean;
-}
-
 interface PermisosModalProps {
   isOpen: boolean;
   onClose: () => void;
   rol: Rol | null;
-  modulos: Modulo[];
-  funcionalidades: Funcionalidad[];
-  permisosActuales: PermisoRol[];
-  onSavePermisos: (permisos: PermisoRol[]) => Promise<void>;
+  onSave: (permisos: PermisoRol[]) => Promise<void>;
 }
 
-export default function PermisosModal({ 
-  isOpen, 
-  onClose, 
-  rol, 
-  modulos, 
-  funcionalidades, 
-  permisosActuales,
-  onSavePermisos 
-}: PermisosModalProps) {
-  const [permisos, setPermisos] = useState<Record<string, boolean>>({});
+const PermisosModal: React.FC<PermisosModalProps> = ({ isOpen, onClose, rol, onSave }) => {
+  const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [funcionalidades, setFuncionalidades] = useState<Funcionalidad[]>([]);
+  const [permisosActuales, setPermisosActuales] = useState<PermisoRol[]>([]);
+  const [permisosEditados, setPermisosEditados] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
-  const [expandedModulos, setExpandedModulos] = useState<Record<string, boolean>>({});
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (rol && permisosActuales) {
-      const permisosMap: Record<string, boolean> = {};
-      permisosActuales.forEach(permiso => {
-        permisosMap[permiso.funcionalidad_id] = permiso.permitido;
-      });
-      setPermisos(permisosMap);
-    }
-  }, [rol, permisosActuales]);
-
-  const handlePermisoChange = (funcionalidadId: string, permitido: boolean) => {
-    setPermisos(prev => ({
-      ...prev,
-      [funcionalidadId]: permitido
-    }));
-  };
-
-  const handleModuloToggle = (moduloId: string) => {
-    setExpandedModulos(prev => ({
-      ...prev,
-      [moduloId]: !prev[moduloId]
-    }));
-  };
-
-  const handleSelectAllModulo = (moduloId: string, select: boolean) => {
-    const funcionalidadesModulo = funcionalidades.filter(f => f.modulo_id === moduloId);
-    const newPermisos = { ...permisos };
-    
-    funcionalidadesModulo.forEach(func => {
-      newPermisos[func.id] = select;
-    });
-    
-    setPermisos(newPermisos);
-  };
-
-  const handleSelectAll = (select: boolean) => {
-    const newPermisos: Record<string, boolean> = {};
-    funcionalidades.forEach(func => {
-      newPermisos[func.id] = select;
-    });
-    setPermisos(newPermisos);
-  };
-
-  const handleSave = async () => {
-    if (!rol) return;
-
+  // Cargar módulos y funcionalidades
+  const cargarDatos = async () => {
     setLoading(true);
     try {
-      const permisosArray: PermisoRol[] = funcionalidades.map(func => ({
-        id: permisosActuales.find(p => p.funcionalidad_id === func.id)?.id || '',
-        rol_id: rol.id,
-        funcionalidad_id: func.id,
-        permitido: permisos[func.id] || false
-      }));
+      // Cargar módulos
+      const modulosResponse = await fetch('/api/modulos');
+      const modulosData = await modulosResponse.json();
+      setModulos(modulosData.modulos || []);
 
-      await onSavePermisos(permisosArray);
-      onClose();
+      // Cargar funcionalidades
+      const funcionalidadesResponse = await fetch('/api/funcionalidades');
+      const funcionalidadesData = await funcionalidadesResponse.json();
+      setFuncionalidades(funcionalidadesData.funcionalidades || []);
+
+      // Cargar permisos actuales del rol
+      if (rol) {
+        const permisosResponse = await fetch(`/api/permisos-roles?rol_id=${rol.id}`);
+        const permisosData = await permisosResponse.json();
+        setPermisosActuales(permisosData.permisos || []);
+        
+        // Inicializar permisos editados con los valores actuales
+        const permisosIniciales: Record<string, boolean> = {};
+        permisosData.permisos?.forEach((permiso: PermisoRol) => {
+          permisosIniciales[permiso.funcionalidad_id] = permiso.permitido;
+        });
+        setPermisosEditados(permisosIniciales);
+      }
     } catch (error) {
-      console.error('Error guardando permisos:', error);
+      console.error('Error cargando datos:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getFuncionalidadesPorModulo = (moduloId: string) => {
-    return funcionalidades
-      .filter(f => f.modulo_id === moduloId)
-      .sort((a, b) => a.orden - b.orden);
+  // Cargar datos cuando se abre el modal
+  useEffect(() => {
+    if (isOpen && rol) {
+      cargarDatos();
+    }
+  }, [isOpen, rol]);
+
+  const handlePermisoChange = (funcionalidadId: string, permitido: boolean) => {
+    setPermisosEditados(prev => ({
+      ...prev,
+      [funcionalidadId]: permitido
+    }));
   };
 
-  const getPermisosModulo = (moduloId: string) => {
-    const funcionalidadesModulo = getFuncionalidadesPorModulo(moduloId);
-    const permisosHabilitados = funcionalidadesModulo.filter(f => permisos[f.id]);
+  const handleSave = async () => {
+    if (!rol) return;
+
+    setSaving(true);
+    try {
+      // Preparar permisos para guardar
+      const permisosParaGuardar = Object.entries(permisosEditados).map(([funcionalidadId, permitido]) => ({
+        rol_id: rol.id,
+        funcionalidad_id: funcionalidadId,
+        permitido
+      }));
+
+      await onSave(permisosParaGuardar);
+      onClose();
+    } catch (error) {
+      console.error('Error guardando permisos:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSelectAllModule = (moduloId: string, permitido: boolean) => {
+    const funcionalidadesDelModulo = funcionalidades.filter(f => f.modulo_id === moduloId);
+    const nuevosPermisos = { ...permisosEditados };
+    
+    funcionalidadesDelModulo.forEach(funcionalidad => {
+      nuevosPermisos[funcionalidad.id] = permitido;
+    });
+    
+    setPermisosEditados(nuevosPermisos);
+  };
+
+  const getFuncionalidadesPorModulo = (moduloId: string) => {
+    return funcionalidades.filter(f => f.modulo_id === moduloId);
+  };
+
+  const getPermisoActual = (funcionalidadId: string) => {
+    return permisosEditados[funcionalidadId] || false;
+  };
+
+  const getModuloPermisos = (moduloId: string) => {
+    const funcionalidadesDelModulo = getFuncionalidadesPorModulo(moduloId);
+    const permisosHabilitados = funcionalidadesDelModulo.filter(f => 
+      getPermisoActual(f.id)
+    ).length;
+    
     return {
-      total: funcionalidadesModulo.length,
-      habilitados: permisosHabilitados.length
+      total: funcionalidadesDelModulo.length,
+      habilitados: permisosHabilitados,
+      todosHabilitados: permisosHabilitados === funcionalidadesDelModulo.length,
+      algunosHabilitados: permisosHabilitados > 0 && permisosHabilitados < funcionalidadesDelModulo.length
     };
   };
 
@@ -148,132 +161,125 @@ export default function PermisosModal({
       footer={
         <div className="flex items-center justify-end space-x-3">
           <Button
-            variant="secondary"
+            variant="outline"
             onClick={onClose}
-            disabled={loading}
+            disabled={saving}
           >
             Cancelar
           </Button>
           <Button
             variant="primary"
             onClick={handleSave}
-            disabled={loading}
-            loading={loading}
+            disabled={saving}
           >
-            Guardar Permisos
+            {saving ? 'Guardando...' : 'Guardar Permisos'}
           </Button>
         </div>
       }
     >
       <div className="space-y-6">
-        <Typography variant="body2" color="secondary">
-          Configura los permisos específicos para este rol
-        </Typography>
+        {/* Información del rol */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <Typography variant="body2" weight="semibold" className="text-blue-800 mb-2">
+            Configurando Permisos
+          </Typography>
+          <Typography variant="caption" color="secondary" className="text-blue-700">
+            Activa o desactiva los permisos específicos para este rol. Los permisos determinan qué funcionalidades 
+            podrán usar los usuarios con este rol asignado.
+          </Typography>
+        </div>
 
-          {/* Controles globales */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-between">
-              <Typography variant="h3" weight="medium" className="text-gray-900">
-                Controles Globales
-              </Typography>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSelectAll(true)}
-                >
-                  Seleccionar Todo
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSelectAll(false)}
-                >
-                  Deseleccionar Todo
-                </Button>
-              </div>
-            </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <Typography variant="body2" color="secondary" className="ml-3">
+              Cargando permisos...
+            </Typography>
           </div>
+        ) : (
+          <div className="space-y-6">
+            {modulos.map((modulo) => {
+              const moduloPermisos = getModuloPermisos(modulo.id);
+              const funcionalidadesDelModulo = getFuncionalidadesPorModulo(modulo.id);
 
-          {/* Lista de módulos */}
-          <div className="space-y-4">
-            {modulos
-              .sort((a, b) => a.orden - b.orden)
-              .map((modulo) => {
-                const funcionalidadesModulo = getFuncionalidadesPorModulo(modulo.id);
-                const permisosModulo = getPermisosModulo(modulo.id);
-                const isExpanded = expandedModulos[modulo.id];
+              return (
+                <Card key={modulo.id} variant="elevated" padding="md">
+                  {/* Header del módulo */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <Typography variant="h4" weight="semibold" className="capitalize">
+                        {modulo.nombre}
+                      </Typography>
+                      <Typography variant="body2" color="secondary">
+                        {moduloPermisos.habilitados} de {moduloPermisos.total} permisos habilitados
+                      </Typography>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSelectAllModule(modulo.id, true)}
+                        disabled={moduloPermisos.todosHabilitados}
+                      >
+                        Habilitar Todo
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSelectAllModule(modulo.id, false)}
+                        disabled={moduloPermisos.habilitados === 0}
+                      >
+                        Deshabilitar Todo
+                      </Button>
+                    </div>
+                  </div>
 
-                return (
-                  <Card key={modulo.id} className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => handleModuloToggle(modulo.id)}
-                          className="text-gray-500 hover:text-gray-700 transition-colors"
-                        >
-                          <svg 
-                            className={`w-5 h-5 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                        <div>
-                          <Typography variant="h4" weight="medium" className="text-gray-900">
-                            {modulo.nombre}
+                  {/* Funcionalidades del módulo */}
+                  <div className="space-y-3">
+                    {funcionalidadesDelModulo.map((funcionalidad) => (
+                      <div
+                        key={funcionalidad.id}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
+                        <div className="flex-1">
+                          <Typography variant="body2" weight="medium">
+                            {funcionalidad.nombre.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </Typography>
-                          <Typography variant="body2" color="secondary">
-                            {permisosModulo.habilitados} de {permisosModulo.total} funcionalidades habilitadas
+                          <Typography variant="caption" color="secondary">
+                            {funcionalidad.descripcion}
                           </Typography>
                         </div>
+                        <Switch
+                          checked={getPermisoActual(funcionalidad.id)}
+                          onChange={(checked) => handlePermisoChange(funcionalidad.id, checked)}
+                        />
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSelectAllModulo(modulo.id, true)}
-                        >
-                          Todo
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSelectAllModulo(modulo.id, false)}
-                        >
-                          Ninguno
-                        </Button>
-                      </div>
+                    ))}
+                  </div>
+
+                  {funcionalidadesDelModulo.length === 0 && (
+                    <div className="text-center py-4">
+                      <Typography variant="body2" color="secondary">
+                        No hay funcionalidades configuradas para este módulo
+                      </Typography>
                     </div>
+                  )}
+                </Card>
+              );
+            })}
 
-                    {isExpanded && (
-                      <div className="ml-8 space-y-3">
-                        {funcionalidadesModulo.map((func) => (
-                          <div key={func.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                            <div className="flex-1">
-                              <Typography variant="body1" weight="medium" className="text-gray-900">
-                                {func.nombre}
-                              </Typography>
-                              <Typography variant="body2" color="secondary">
-                                {func.descripcion}
-                              </Typography>
-                            </div>
-                            <Switch
-                              checked={permisos[func.id] || false}
-                              onCheckedChange={(checked) => handlePermisoChange(func.id, checked)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
+            {modulos.length === 0 && (
+              <div className="text-center py-8">
+                <Typography variant="body1" color="secondary">
+                  No hay módulos configurados en el sistema
+                </Typography>
+              </div>
+            )}
           </div>
-
+        )}
       </div>
     </SideModal>
   );
-}
+};
+
+export default PermisosModal;
