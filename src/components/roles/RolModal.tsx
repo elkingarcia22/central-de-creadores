@@ -114,88 +114,77 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
       }
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        {/* Nombre */}
+        <div>
+          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+            Nombre del Rol *
+          </label>
+          <Input
+            id="nombre"
+            type="text"
+            value={formData.nombre}
+            onChange={(e) => handleInputChange('nombre', e.target.value)}
+            placeholder="Ej: Analista de Datos"
+            error={errors.nombre}
+            disabled={rol?.es_sistema}
+          />
+          {rol?.es_sistema && (
+            <p className="mt-1 text-sm text-blue-600">
+              Los roles del sistema no pueden cambiar su nombre
+            </p>
+          )}
+        </div>
+
+        {/* Descripción */}
+        <div>
+          <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
+            Descripción
+          </label>
+          <Textarea
+            id="descripcion"
+            value={formData.descripcion}
+            onChange={(e) => handleInputChange('descripcion', e.target.value)}
+            placeholder="Describe las responsabilidades y permisos de este rol..."
+            rows={3}
+            error={errors.descripcion}
+          />
+        </div>
+
+        {/* Estado Activo */}
+        <div className="flex items-center justify-between">
+          <div>
+            <label htmlFor="activo" className="block text-sm font-medium text-gray-700">
+              Rol Activo
+            </label>
+            <p className="text-sm text-gray-500">
+              Los roles inactivos no pueden ser asignados a usuarios
+            </p>
           </div>
+          <Switch
+            id="activo"
+            checked={formData.activo}
+            onChange={(checked) => handleInputChange('activo', checked)}
+            disabled={rol?.es_sistema}
+          />
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nombre */}
-            <div>
-              <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
-                Nombre del Rol *
-              </label>
-              <Input
-                id="nombre"
-                type="text"
-                value={formData.nombre}
-                onChange={(e) => handleInputChange('nombre', e.target.value)}
-                placeholder="Ej: Analista de Datos"
-                error={errors.nombre}
-                disabled={rol?.es_sistema}
-              />
-              {rol?.es_sistema && (
-                <p className="mt-1 text-sm text-blue-600">
-                  Los roles del sistema no pueden cambiar su nombre
-                </p>
-              )}
-            </div>
-
-            {/* Descripción */}
-            <div>
-              <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
-                Descripción
-              </label>
-              <Textarea
-                id="descripcion"
-                value={formData.descripcion}
-                onChange={(e) => handleInputChange('descripcion', e.target.value)}
-                placeholder="Describe las responsabilidades y permisos de este rol..."
-                rows={3}
-                error={errors.descripcion}
-              />
-            </div>
-
-            {/* Estado Activo */}
-            <div className="flex items-center justify-between">
-              <div>
-                <label htmlFor="activo" className="block text-sm font-medium text-gray-700">
-                  Rol Activo
-                </label>
-                <p className="text-sm text-gray-500">
-                  Los roles inactivos no pueden ser asignados a usuarios
-                </p>
-              </div>
-              <Switch
-                id="activo"
-                checked={formData.activo}
-                onCheckedChange={(checked) => handleInputChange('activo', checked)}
-                disabled={rol?.es_sistema}
-              />
-            </div>
-
-            {/* Es Sistema */}
-            <div className="flex items-center justify-between">
-              <div>
-                <label htmlFor="es_sistema" className="block text-sm font-medium text-gray-700">
-                  Rol del Sistema
-                </label>
-                <p className="text-sm text-gray-500">
-                  Los roles del sistema no pueden ser eliminados
-                </p>
-              </div>
-              <Switch
-                id="es_sistema"
-                checked={formData.es_sistema}
-                onCheckedChange={(checked) => handleInputChange('es_sistema', checked)}
-                disabled={rol?.es_sistema}
-              />
-            </div>
-
+        {/* Es Sistema */}
+        <div className="flex items-center justify-between">
+          <div>
+            <label htmlFor="es_sistema" className="block text-sm font-medium text-gray-700">
+              Rol del Sistema
+            </label>
+            <p className="text-sm text-gray-500">
+              Los roles del sistema no pueden ser eliminados
+            </p>
+          </div>
+          <Switch
+            id="es_sistema"
+            checked={formData.es_sistema}
+            onChange={(checked) => handleInputChange('es_sistema', checked)}
+            disabled={rol?.es_sistema}
+          />
+        </div>
       </form>
     </Modal>
   );
