@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Switch, Card, Modal } from '../ui';
+import { Typography, Button, Switch, Card } from '../ui';
+import { Modal } from '../ui/Modal';
 
 interface Modulo {
   id: string;

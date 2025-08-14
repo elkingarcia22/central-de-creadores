@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Input, Textarea, Switch, Modal } from '../ui';
+import { Typography, Button, Input, Textarea, Switch } from '../ui';
+import { Modal } from '../ui/Modal';
 
 interface Rol {
   id: string;
