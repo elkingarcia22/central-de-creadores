@@ -13,6 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Usar la tabla usuarios (tabla de negocio) - CORRECTO
+    console.log('🔍 Iniciando consulta a tabla usuarios...');
+    
     let { data: usuarios, error } = await supabase
       .from('usuarios')
       .select(`
@@ -23,8 +25,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         activo,
         rol_plataforma
       `)
-      .eq('activo', true)
       .order('nombre');
+    
+    console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0, error });
+    
+    // Si no hay usuarios activos, mostrar todos
+    if (!usuarios || usuarios.length === 0) {
+      console.log('⚠️ No se encontraron usuarios, intentando sin filtro de activo...');
+      
+      const { data: todosUsuarios, error: errorTodos } = await supabase
+        .from('usuarios')
+        .select(`
+          id, 
+          nombre, 
+          correo, 
+          foto_url,
+          activo,
+          rol_plataforma
+        `)
+        .order('nombre');
+      
+      console.log('🔍 Usuarios sin filtro:', { usuarios: todosUsuarios?.length || 0, error: errorTodos });
+      
+      if (todosUsuarios && todosUsuarios.length > 0) {
+        usuarios = todosUsuarios;
+        error = null;
+      }
+    }
 
     if (error) {
       console.error('Error obteniendo usuarios:', error);
