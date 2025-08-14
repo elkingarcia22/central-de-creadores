@@ -463,13 +463,36 @@ const VerReclutamiento: NextPage = () => {
       // Para "Agendamiento Pendiente", usar AsignarAgendamientoModal para editar solo el responsable
       console.log('🔍 Abriendo AsignarAgendamientoModal para editar responsable');
       console.log('🔍 Participante completo:', participante);
-      console.log('🔍 reclutador_id:', participante.reclutador_id);
-      console.log('🔍 reclutador:', participante.reclutador);
-      console.log('🔍 reclutador_nombre:', participante.reclutador_nombre);
       console.log('🔍 reclutamiento_id:', participante.reclutamiento_id);
       console.log('🔍 Todos los campos del participante:', Object.keys(participante));
-      setParticipanteToEditAgendamiento(participante);
-      setShowAsignarAgendamientoModal(true);
+      
+      // Obtener el reclutador_id del reclutamiento
+      const reclutamientoId = participante.reclutamiento_id || participante.id;
+      console.log('🔍 Obteniendo datos del reclutamiento:', reclutamientoId);
+      
+      try {
+        const response = await fetch(`/api/reclutamientos/${reclutamientoId}`);
+        if (response.ok) {
+          const reclutamientoData = await response.json();
+          console.log('🔍 Datos del reclutamiento obtenidos:', reclutamientoData);
+          
+          // Crear participante con reclutador_id del reclutamiento
+          const participanteConReclutador = {
+            ...participante,
+            reclutador_id: reclutamientoData.reclutador_id
+          };
+          
+          console.log('🔍 Participante con reclutador_id:', participanteConReclutador);
+          setParticipanteToEditAgendamiento(participanteConReclutador);
+          setShowAsignarAgendamientoModal(true);
+        } else {
+          console.error('❌ Error obteniendo datos del reclutamiento');
+          showError('Error obteniendo datos del reclutamiento');
+        }
+      } catch (error) {
+        console.error('❌ Error obteniendo datos del reclutamiento:', error);
+        showError('Error obteniendo datos del reclutamiento');
+      }
       return;
     }
     
