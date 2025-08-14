@@ -66,33 +66,6 @@ export default function RolesPermisosPage() {
   const [showPermisosModal, setShowPermisosModal] = useState(false);
   const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
 
-  // Cargar datos
-  useEffect(() => {
-    cargarDatos();
-  }, []);
-
-  // Verificar acceso - solo administradores (después de todos los hooks)
-  if (rolSeleccionado?.toLowerCase() !== 'administrador') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <Typography variant="h2" color="danger" weight="bold" className="mb-4">
-            Acceso Denegado
-          </Typography>
-          <Typography variant="body1" color="secondary" className="mb-6">
-            Solo los administradores pueden acceder a esta sección.
-          </Typography>
-          <Button
-            variant="primary"
-            onClick={() => router.push('/dashboard')}
-          >
-            Volver al Dashboard
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const cargarDatos = async () => {
     setLoading(true);
     try {
@@ -122,6 +95,33 @@ export default function RolesPermisosPage() {
       setLoading(false);
     }
   };
+
+  // Cargar datos
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  // Verificar acceso - solo administradores (después de todos los hooks)
+  if (rolSeleccionado?.toLowerCase() !== 'administrador') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <Typography variant="h2" color="danger" weight="bold" className="mb-4">
+            Acceso Denegado
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Solo los administradores pueden acceder a esta sección.
+          </Typography>
+          <Button
+            variant="primary"
+            onClick={() => router.push('/dashboard')}
+          >
+            Volver al Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleCrearRol = () => {
     setSelectedRol(null);
