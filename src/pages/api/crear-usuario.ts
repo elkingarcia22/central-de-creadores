@@ -39,6 +39,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (authError) {
       console.error('Error creando usuario en Auth:', authError);
+      
+      // Manejar caso específico de email ya existente
+      if (authError.message.includes('already been registered')) {
+        return res.status(400).json({ 
+          error: 'Ya existe un usuario con este email. Por favor, usa un email diferente.' 
+        });
+      }
+      
       return res.status(400).json({ error: 'Error creando usuario: ' + authError.message });
     }
 
