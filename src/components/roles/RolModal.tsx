@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Input, Textarea, Switch } from '../ui';
-import { SideModal } from '../ui/SideModal';
+import { Typography, Button, Input, Textarea, Switch, SideModal } from '../ui';
 
 interface Rol {
   id: string;

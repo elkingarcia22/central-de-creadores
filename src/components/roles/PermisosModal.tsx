@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography, Button, Switch, Card } from '../ui';
-import { SideModal } from '../ui/SideModal';
+import { Typography, Button, Switch, Card, SideModal } from '../ui';
 
 interface Modulo {
   id: string;
