@@ -68,6 +68,9 @@ export { default as EmptyState } from './EmptyState';
 // Componente de slider
 export { default as Slider } from './Slider';
 
+// Componente de switch
+export { default as Switch } from './Switch';
+
 // Componente de selector de departamentos
 export { default as DepartamentoSelect } from './DepartamentoSelect';
 
