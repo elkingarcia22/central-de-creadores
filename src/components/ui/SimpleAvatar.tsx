@@ -63,15 +63,34 @@ const SimpleAvatar: React.FC<SimpleAvatarProps> = ({
       const trimmedSrc = src.trim();
       setImageSrc(trimmedSrc);
       
+      // Debug: Log para Elkin Garcia
+      if (fallbackText.includes('Elkin')) {
+        console.log('🔍 SimpleAvatar para Elkin:', {
+          src,
+          trimmedSrc,
+          fallbackText
+        });
+      }
+      
       // Verificar si la imagen ya está en cache global
       const cachedEntry = globalImageCache.get(trimmedSrc);
       if (cachedEntry) {
         setIsLoaded(cachedEntry.isLoaded);
         setHasError(cachedEntry.hasError);
+        
+        // Debug: Log cache
+        if (fallbackText.includes('Elkin')) {
+          console.log('📦 Cache encontrado para Elkin:', cachedEntry);
+        }
       } else {
         // Precargar la imagen
         setIsLoaded(false);
         setHasError(false);
+        
+        // Debug: Log precarga
+        if (fallbackText.includes('Elkin')) {
+          console.log('🔄 Precargando imagen para Elkin:', trimmedSrc);
+        }
         
         preloadImage(trimmedSrc)
           .then((img) => {
@@ -82,22 +101,37 @@ const SimpleAvatar: React.FC<SimpleAvatarProps> = ({
             });
             setIsLoaded(true);
             setHasError(false);
+            
+            // Debug: Log éxito
+            if (fallbackText.includes('Elkin')) {
+              console.log('✅ Imagen cargada exitosamente para Elkin');
+            }
           })
-          .catch(() => {
+          .catch((error) => {
             globalImageCache.set(trimmedSrc, {
               isLoaded: false,
               hasError: true
             });
             setHasError(true);
             setIsLoaded(false);
+            
+            // Debug: Log error
+            if (fallbackText.includes('Elkin')) {
+              console.log('❌ Error cargando imagen para Elkin:', error);
+            }
           });
       }
     } else {
       setImageSrc(null);
       setHasError(true);
       setIsLoaded(false);
+      
+      // Debug: Log sin src
+      if (fallbackText.includes('Elkin')) {
+        console.log('⚠️ Sin src para Elkin');
+      }
     }
-  }, [src]);
+  }, [src, fallbackText]);
   
   const shouldShowImage = imageSrc && !hasError;
   
