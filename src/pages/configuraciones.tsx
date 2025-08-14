@@ -55,7 +55,7 @@ export default function ConfiguracionesPage() {
       title: 'Roles y Permisos',
       description: 'Sistema de permisos granular por módulos y funcionalidades',
       icon: <UsuariosIcon className="w-8 h-8" />,
-      href: '/ejecutar-script-permisos',
+      href: '/configuraciones/roles-permisos',
       color: 'purple',
       features: ['Configurar permisos granulares', 'Gestionar roles del sistema', 'Definir funcionalidades por módulo']
     },

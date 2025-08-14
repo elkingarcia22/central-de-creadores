@@ -69,8 +69,35 @@ async function getPermisosRoles(req: NextApiRequest, res: NextApiResponse) {
 
 async function createPermisoRol(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { rol_id, funcionalidad_id, permitido } = req.body;
+    const { rol_id, funcionalidad_id, permitido, permisos } = req.body;
 
+    // Si se envía un array de permisos, crear múltiples
+    if (permisos && Array.isArray(permisos)) {
+      if (permisos.length === 0) {
+        return res.status(201).json({ permisos: [] });
+      }
+
+      // Verificar que todos los permisos tengan los campos requeridos
+      const invalidPermisos = permisos.filter(p => !p.rol_id || !p.funcionalidad_id);
+      if (invalidPermisos.length > 0) {
+        return res.status(400).json({ error: 'Todos los permisos deben tener rol_id y funcionalidad_id' });
+      }
+
+      const { data: newPermisos, error } = await supabase
+        .from('permisos_roles')
+        .insert(permisos)
+        .select();
+
+      if (error) {
+        console.error('❌ Error creando permisos:', error);
+        return res.status(500).json({ error: 'Error creando permisos' });
+      }
+
+      console.log('✅ Permisos creados:', newPermisos?.length || 0);
+      return res.status(201).json({ permisos: newPermisos || [] });
+    }
+
+    // Crear un solo permiso
     if (!rol_id || !funcionalidad_id) {
       return res.status(400).json({ error: 'Rol ID y Funcionalidad ID son requeridos' });
     }
