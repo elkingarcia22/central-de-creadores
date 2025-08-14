@@ -11,6 +11,8 @@ import { supabase } from '../../api/supabase';
 import { obtenerRolesParaSelect } from '../../api/roles';
 // import { obtenerUsuarios } from '../../api/supabase-investigaciones';
 import { PlusIcon, UserIcon, EditIcon, DeleteIcon } from '../../components/icons';
+import PermisoRender from '../../components/auth/PermisoRender';
+import PermisoGuard from '../../components/auth/PermisoGuard';
 
 const rolesPermitidos = ['administrador'];
 
@@ -232,7 +234,13 @@ export default function GestionUsuariosPage() {
         });
         setUsuarioEdit(row);
       },
-              className: 'text-primary hover:text-primary/80'
+      className: 'text-primary hover:text-primary/80',
+      // Solo mostrar si tiene permiso para editar usuarios
+      render: () => (
+        <PermisoRender funcionalidad="editar_usuario">
+          <span>Editar</span>
+        </PermisoRender>
+      )
     },
     {
       label: 'Eliminar',
@@ -240,7 +248,13 @@ export default function GestionUsuariosPage() {
       onClick: (row: any) => {
         setUsuarioDelete(row);
       },
-      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200',
+      // Solo mostrar si tiene permiso para eliminar usuarios
+      render: () => (
+        <PermisoRender funcionalidad="eliminar_usuario">
+          <span>Eliminar</span>
+        </PermisoRender>
+      )
     }
   ];
 
@@ -255,7 +269,13 @@ export default function GestionUsuariosPage() {
         }
         setBulkDeleteUsers(selectedIds);
       },
-      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200',
+      // Solo mostrar si tiene permiso para eliminar usuarios
+      render: () => (
+        <PermisoRender funcionalidad="eliminar_usuario">
+          <span>Eliminar Seleccionados</span>
+        </PermisoRender>
+      )
     }
   ];
 
@@ -581,13 +601,15 @@ export default function GestionUsuariosPage() {
                   Administra los usuarios de la plataforma
                 </Typography>
               </div>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleCrearUsuario}
-              >
-                Crear Usuario
-              </Button>
+              <PermisoRender funcionalidad="crear_usuario">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleCrearUsuario}
+                >
+                  Crear Usuario
+                </Button>
+              </PermisoRender>
             </div>
           </div>
 

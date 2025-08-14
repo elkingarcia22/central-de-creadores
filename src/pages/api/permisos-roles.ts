@@ -59,8 +59,16 @@ async function getPermisosRoles(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error obteniendo permisos' });
     }
 
-    console.log('✅ Permisos obtenidos:', permisos?.length);
-    return res.status(200).json({ permisos: permisos || [] });
+    // Procesar permisos para incluir información adicional
+    const permisosProcesados = permisos?.map(permiso => ({
+      ...permiso,
+      funcionalidad_nombre: permiso.funcionalidades?.nombre,
+      modulo_nombre: permiso.funcionalidades?.modulos?.nombre,
+      rol_nombre: permiso.roles_plataforma?.nombre
+    })) || [];
+
+    console.log('✅ Permisos obtenidos:', permisosProcesados.length);
+    return res.status(200).json({ permisos: permisosProcesados });
   } catch (error) {
     console.error('Error en getPermisosRoles:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
