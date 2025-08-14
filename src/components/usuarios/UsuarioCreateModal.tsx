@@ -18,19 +18,11 @@ interface UsuarioCreateModalProps {
 }
 
 export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = false }: UsuarioCreateModalProps) {
-  const [formData, setFormData] = useState<Usuario | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const handleFormSubmit = (data: Usuario) => {
-    setFormData(data);
     setSubmitting(true);
     onSave(data);
-  };
-
-  const handleButtonSubmit = () => {
-    if (formData) {
-      onSave(formData);
-    }
   };
 
   return (
@@ -49,8 +41,14 @@ export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = 
             Cancelar
           </Button>
           <Button
-            onClick={handleButtonSubmit}
-            disabled={submitting || !formData}
+            onClick={() => {
+              // Trigger submit del formulario usando el botón del UsuarioForm
+              const submitButton = document.querySelector('form button[type="submit"]') as HTMLButtonElement;
+              if (submitButton && !submitButton.disabled) {
+                submitButton.click();
+              }
+            }}
+            disabled={submitting}
             loading={submitting}
           >
             Crear Usuario
