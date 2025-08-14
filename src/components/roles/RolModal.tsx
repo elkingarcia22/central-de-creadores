@@ -188,6 +188,6 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
           />
         </div>
       </form>
-    </Modal>
+    </SideModal>
   );
 }

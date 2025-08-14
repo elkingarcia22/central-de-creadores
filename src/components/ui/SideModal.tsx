@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from './Button';
 import Typography from './Typography';
@@ -32,9 +32,7 @@ const SideModal: React.FC<SideModalProps> = ({
   footer
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  
-  // Solo aplicar animación cuando el modal se abre por primera vez
-  const [hasAnimated, setHasAnimated] = React.useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   // Manejar escape key
   useEffect(() => {
@@ -174,6 +172,6 @@ const SideModal: React.FC<SideModalProps> = ({
 
   // Usar Portal para renderizar fuera del DOM normal
   return createPortal(modalContent, document.body);
-}; 
+};
 
 export default SideModal; 
