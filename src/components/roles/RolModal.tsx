@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Typography, Button, Input, Textarea, Switch } from '../ui';
-import { Modal } from '../ui/Modal';
+import { SideModal } from '../ui/SideModal';
 
 interface Rol {
   id: string;
@@ -89,11 +89,12 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
   };
 
   return (
-    <Modal
+    <SideModal
       isOpen={isOpen}
       onClose={onClose}
       title={rol ? 'Editar Rol' : 'Crear Nuevo Rol'}
-      size="md"
+      width="lg"
+      position="right"
       footer={
         <div className="flex justify-end gap-3">
           <Button

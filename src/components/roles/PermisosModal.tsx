@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Typography, Button, Switch, Card } from '../ui';
-import { Modal } from '../ui/Modal';
+import { SideModal } from '../ui/SideModal';
 
 interface Modulo {
   id: string;
@@ -139,11 +139,12 @@ export default function PermisosModal({
   if (!isOpen || !rol) return null;
 
   return (
-    <Modal
+    <SideModal
       isOpen={isOpen}
       onClose={onClose}
       title={`Permisos del Rol: ${rol.nombre}`}
-      size="xl"
+      width="xl"
+      position="right"
       footer={
         <div className="flex items-center justify-end space-x-3">
           <Button
