@@ -134,7 +134,7 @@ export default function GestionUsuariosPage() {
               </div>
               
               {/* Imagen de avatar (se muestra encima si existe) */}
-              {avatarUrl ? (
+              {avatarUrl && (
                 <img
                   src={avatarUrl}
                   alt={displayName}
@@ -154,10 +154,6 @@ export default function GestionUsuariosPage() {
                   }}
                   loading="lazy"
                 />
-              ) : (
-                <div className="absolute top-0 left-0 w-12 h-12 rounded-full bg-gray-200 border-2 border-gray-300 z-10 flex items-center justify-center">
-                  <span className="text-xs text-gray-500">Sin foto</span>
-                </div>
               )}
             </div>
             
