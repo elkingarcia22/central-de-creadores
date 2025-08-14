@@ -35,7 +35,8 @@ import {
   Slider,
   DatePicker,
   TimePicker,
-  MultiSelect
+  MultiSelect,
+  Switch
 } from '../ui';
 import { 
   getEstadoReclutamientoVariant, 
@@ -129,6 +130,7 @@ const ComponentsSection: React.FC = () => {
         { id: "text-input", name: "Text Input" },
         { id: "textarea", name: "Textarea" },
         { id: "select", name: "Select" },
+        { id: "switch", name: "Switch" },
         { id: "date-picker", name: "Date Picker" },
         { id: "time-picker", name: "Time Picker" },
         { id: "multi-select", name: "Multi Select" }
@@ -929,6 +931,227 @@ const ComponentsSection: React.FC = () => {
                   size="sm"
                 />
               </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderSwitchComponent = () => {
+    return (
+      <div className="space-y-8">
+        {/* Descripción */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Switch Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente Switch se utiliza para alternar entre estados activo/inactivo en formularios y configuraciones. 
+            Proporciona feedback visual claro y es accesible por teclado.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Props disponibles:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">checked</code>
+                <span>: estado activo/inactivo</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">onChange</code>
+                <span>: función callback cuando cambia el estado</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">disabled</code>
+                <span>: boolean para estado deshabilitado</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">size</code>
+                <span>: sm, md, lg</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">label</code>
+                <span>: etiqueta opcional</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">description</code>
+                <span>: descripción opcional</span>
+              </Typography>
+            </div>
+          </div>
+        </Card>
+
+        {/* Tamaños */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Tamaños
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes tamaños para adaptarse a distintos contextos de uso.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Small */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Small
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño pequeño para formularios compactos o espacios limitados.
+              </Typography>
+              <div className="space-y-2">
+                <Switch size="sm" checked={true} onChange={() => {}} />
+                <Switch size="sm" checked={false} onChange={() => {}} />
+              </div>
+            </div>
+
+            {/* Medium */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Medium
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño estándar para la mayoría de casos de uso.
+              </Typography>
+              <div className="space-y-2">
+                <Switch size="md" checked={true} onChange={() => {}} />
+                <Switch size="md" checked={false} onChange={() => {}} />
+              </div>
+            </div>
+
+            {/* Large */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Large
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Tamaño grande para formularios prominentes o de alta prioridad.
+              </Typography>
+              <div className="space-y-2">
+                <Switch size="lg" checked={true} onChange={() => {}} />
+                <Switch size="lg" checked={false} onChange={() => {}} />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Estados */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Estados
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes estados del switch para feedback visual.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Activo/Inactivo */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Activo/Inactivo
+              </Typography>
+              <div className="space-y-2">
+                <Switch checked={true} onChange={() => {}} />
+                <Switch checked={false} onChange={() => {}} />
+              </div>
+            </div>
+
+            {/* Deshabilitado */}
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Deshabilitado
+              </Typography>
+              <div className="space-y-2">
+                <Switch checked={true} onChange={() => {}} disabled />
+                <Switch checked={false} onChange={() => {}} disabled />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Con Label y Descripción */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Con Label y Descripción
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Switch con etiqueta y descripción para mejor comprensión.
+          </Typography>
+          
+          <div className="space-y-6">
+            <Switch 
+              checked={true} 
+              onChange={() => {}} 
+              label="Notificaciones por email"
+              description="Recibe notificaciones cuando se actualice tu proyecto"
+            />
+            
+            <Switch 
+              checked={false} 
+              onChange={() => {}} 
+              label="Modo oscuro"
+              description="Cambia el tema de la aplicación"
+            />
+            
+            <Switch 
+              checked={true} 
+              onChange={() => {}} 
+              label="Sincronización automática"
+              description="Sincroniza automáticamente los cambios"
+            />
+          </div>
+        </Card>
+
+        {/* Ejemplo de Uso */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Ejemplo de Uso
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Configuración de preferencias de usuario con múltiples switches.
+          </Typography>
+          
+          <div className="space-y-4 p-6 bg-muted rounded-lg">
+            <Typography variant="h4" weight="semibold" className="mb-4">
+              Configuración de Notificaciones
+            </Typography>
+            
+            <div className="space-y-4">
+              <Switch 
+                checked={true} 
+                onChange={() => {}} 
+                label="Notificaciones push"
+                description="Recibe notificaciones en tiempo real"
+              />
+              
+              <Switch 
+                checked={false} 
+                onChange={() => {}} 
+                label="Notificaciones por email"
+                description="Recibe un resumen diario por email"
+              />
+              
+              <Switch 
+                checked={true} 
+                onChange={() => {}} 
+                label="Sonidos de notificación"
+                description="Reproduce sonidos al recibir notificaciones"
+              />
+              
+              <Switch 
+                checked={false} 
+                onChange={() => {}} 
+                label="Vibración"
+                description="Vibra el dispositivo al recibir notificaciones"
+              />
             </div>
           </div>
         </Card>
@@ -7697,6 +7920,10 @@ const ComponentsSection: React.FC = () => {
     
     if (activeComponent === 'select') {
       return renderSelectComponent();
+    }
+    
+    if (activeComponent === 'switch') {
+      return renderSwitchComponent();
     }
     
     if (activeComponent === 'tabs') {
