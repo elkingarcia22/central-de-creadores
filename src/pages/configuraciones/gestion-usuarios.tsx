@@ -331,12 +331,15 @@ export default function GestionUsuariosPage() {
     setUsuarioDelete(usuario);
   }
 
-  // Handler para crear usuario (solo recarga la tabla, la creación se hace en UsuarioForm)
+  // Handler para crear usuario (solo recarga la tabla y cierra modal, la creación se hace en UsuarioForm)
   const handleFormSubmit = async (data: any) => {
     try {
       console.log('🔄 Recargando tabla después de crear usuario...');
       
-      // Solo recargar la tabla, la creación ya se hizo en UsuarioForm
+      // Cerrar el modal
+      setShowModal(false);
+      
+      // Recargar la tabla, la creación ya se hizo en UsuarioForm
       fetchUsuarios();
       
     } catch (error) {
