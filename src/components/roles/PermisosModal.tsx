@@ -274,6 +274,6 @@ export default function PermisosModal({
           </div>
 
       </div>
-    </Modal>
+    </SideModal>
   );
 }
