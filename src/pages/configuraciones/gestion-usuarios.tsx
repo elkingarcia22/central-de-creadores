@@ -101,13 +101,13 @@ export default function GestionUsuariosPage() {
         const displayEmail = row.email || 'Sin email';
         const avatarUrl = row.avatar_url;
         
-        // Debug: Log para Elkin Garcia
-        if (displayName.includes('Elkin')) {
-          console.log('🔍 Renderizando Elkin Garcia:', {
+        // Debug: Log para usuarios con avatar
+        if (avatarUrl) {
+          console.log('🔍 Renderizando usuario con avatar:', {
             displayName,
             displayEmail,
             avatarUrl,
-            row
+            hasAvatar: !!avatarUrl
           });
         }
         
@@ -152,6 +152,10 @@ export default function GestionUsuariosPage() {
                     target.style.display = 'block';
                     console.log('✅ Avatar cargado exitosamente para:', displayName, 'URL:', avatarUrl);
                   }}
+                  onAbort={e => {
+                    console.log('⚠️ Avatar abortado para:', displayName, 'URL:', avatarUrl);
+                  }}
+                  crossOrigin="anonymous"
                   loading="lazy"
                 />
               )}
