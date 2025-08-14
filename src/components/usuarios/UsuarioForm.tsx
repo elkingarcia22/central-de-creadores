@@ -434,6 +434,10 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         <div className="text-xs text-gray-500">
           <div>Roles en formData: {JSON.stringify(formData.roles)}</div>
           <div>Opciones disponibles: {rolesDisponibles.length}</div>
+          <div>rolesLoading: {rolesLoading.toString()}</div>
+          <div>submitting: {submitting.toString()}</div>
+          <div>Botón habilitado: {(!rolesLoading && !submitting).toString()}</div>
+          <div>Validación: {formData.full_name && formData.email && formData.roles.length > 0 ? 'PASÓ' : 'FALLÓ'}</div>
         </div>
 
         {/* Error */}
