@@ -4,6 +4,7 @@ import { useRol } from '../../contexts/RolContext';
 import { Typography, Card, Button } from '../../components/ui';
 import { Layout } from '../../components/ui/Layout';
 import { ShieldIcon, PlusIcon, SettingsIcon } from '../../components/icons';
+import RolModal from '../../components/roles/RolModal';
 
 interface Rol {
   id: string;
@@ -19,6 +20,10 @@ export default function RolesPermisosPage() {
   const [loading, setLoading] = useState(true);
   const [assigningPermissions, setAssigningPermissions] = useState(false);
   const [roles, setRoles] = useState<Rol[]>([]);
+  
+  // Estados para el modal de roles
+  const [showRolModal, setShowRolModal] = useState(false);
+  const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
 
   const cargarRoles = async () => {
     setLoading(true);
@@ -60,18 +65,42 @@ export default function RolesPermisosPage() {
   };
 
   const handleCrearRol = () => {
-    // TODO: Implementar modal de creación de rol
-    alert('Funcionalidad de crear rol en desarrollo...');
+    setSelectedRol(null);
+    setShowRolModal(true);
+  };
+
+  const handleEditarRol = (rol: Rol) => {
+    setSelectedRol(rol);
+    setShowRolModal(true);
+  };
+
+  const handleSaveRol = async (rolData: Partial<Rol>) => {
+    try {
+      const method = selectedRol ? 'PUT' : 'POST';
+      const body = selectedRol ? { ...rolData, id: selectedRol.id } : rolData;
+
+      const response = await fetch('/api/roles', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Error guardando rol');
+      }
+
+      await cargarRoles();
+      alert(`✅ Rol ${selectedRol ? 'actualizado' : 'creado'} exitosamente`);
+    } catch (error) {
+      console.error('Error guardando rol:', error);
+      throw error;
+    }
   };
 
   const handleVerPermisos = (rol: Rol) => {
     // TODO: Implementar modal de visualización de permisos
     alert(`Ver permisos del rol: ${rol.nombre}`);
-  };
-
-  const handleEditarRol = (rol: Rol) => {
-    // TODO: Implementar modal de edición de rol
-    alert(`Editar rol: ${rol.nombre}`);
   };
 
   const handleEliminarRol = async (rol: Rol) => {
@@ -356,6 +385,14 @@ export default function RolesPermisosPage() {
           </Card>
         </div>
       </div>
+
+      {/* Modal para crear/editar roles */}
+      <RolModal
+        isOpen={showRolModal}
+        onClose={() => setShowRolModal(false)}
+        rol={selectedRol}
+        onSave={handleSaveRol}
+      />
     </Layout>
   );
 }
