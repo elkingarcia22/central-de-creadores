@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useUser } from '../../contexts/UserContext';
-import { usePermisos } from '../../utils/permisosUtils';
+import { usePermisos } from '../../hooks/usePermisos';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -47,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const router = useRouter();
   const { rolSeleccionado, setRolSeleccionado, rolesDisponibles, setRolesDisponibles } = useRol();
   const { userProfile, userEmail, userName, userImage, refreshUser } = useUser();
-  const { esAdministrador } = usePermisos();
+  const esAdministrador = () => rolSeleccionado?.toLowerCase() === 'administrador';
   const [editModalOpen, setEditModalOpen] = useState(false);
 
   // Sincronizar el contexto de rol con la URL
