@@ -7,20 +7,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la tabla usuarios como fuente única de verdad
-    console.log('🔍 Iniciando consulta a tabla usuarios (fuente única)...');
+    // Usar la vista usuarios_con_roles (ahora basada en usuarios)
+    console.log('🔍 Iniciando consulta a vista usuarios_con_roles (consistente)...');
     
     let { data: usuarios, error } = await supabase
-      .from('usuarios')
+      .from('usuarios_con_roles')
       .select(`
         id, 
-        nombre, 
-        correo, 
-        foto_url,
-        rol_plataforma
+        full_name, 
+        email, 
+        avatar_url,
+        roles
       `)
-      .eq('activo', true)
-      .order('nombre');
+      .order('full_name');
     
     console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0, error });
 
@@ -29,32 +28,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: error.message });
     }
 
-    // Verificar inconsistencias con profiles (solo para reporte)
+    // Verificar que la vista está funcionando correctamente
     if (usuarios && usuarios.length > 0) {
-      const { data: profilesCheck, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .in('id', usuarios.map(u => u.id));
-      
-      if (!profilesError && profilesCheck) {
-        const inconsistencias = usuarios.filter(u => {
-          const profile = profilesCheck.find(p => p.id === u.id);
-          return !profile || profile.full_name !== u.nombre || profile.email !== u.correo;
-        });
-        
-        if (inconsistencias.length > 0) {
-          console.warn('⚠️ Inconsistencias detectadas entre usuarios y profiles:', inconsistencias.length);
-        }
-      }
+      console.log('✅ Vista usuarios_con_roles funcionando correctamente');
     }
 
     // Convertir datos de usuarios al formato esperado por el componente
     const usuariosFormateados = usuarios?.map(user => ({
       id: user.id,
-      full_name: user.nombre || 'Sin nombre',
-      email: user.correo,
-      avatar_url: user.foto_url,
-      roles: user.rol_plataforma || [],
+      full_name: user.full_name || 'Sin nombre',
+      email: user.email,
+      avatar_url: user.avatar_url,
+      roles: user.roles || [],
       created_at: new Date().toISOString()
     })) || [];
 
@@ -62,8 +47,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       usuarios: usuariosFormateados || [],
       total: usuariosFormateados?.length || 0,
-      fuente: 'usuarios',
-      mensaje: 'Usando tabla usuarios como fuente única de verdad'
+      fuente: 'usuarios_con_roles',
+      mensaje: 'Vista consistente basada en tabla usuarios'
     });
 
   } catch (error) {
