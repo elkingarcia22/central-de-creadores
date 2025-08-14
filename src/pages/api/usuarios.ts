@@ -7,30 +7,56 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar la vista usuarios_con_roles (ahora basada en usuarios)
-    console.log('🔍 Iniciando consulta a vista usuarios_con_roles (consistente)...');
+    // Usar profiles y user_roles directamente para obtener datos actualizados
+    console.log('🔍 Iniciando consulta a profiles y user_roles...');
     
-    let { data: usuarios, error } = await supabase
-      .from('usuarios_con_roles')
-      .select(`
-        id, 
-        full_name, 
-        email, 
-        avatar_url,
-        roles
-      `)
+    // Obtener todos los profiles
+    let { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, full_name, email, avatar_url, created_at, updated_at')
+      .not('email', 'is', null)
       .order('full_name');
-    
-    console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0, error });
 
-    if (error) {
-      console.error('Error obteniendo usuarios:', error);
-      return res.status(500).json({ error: error.message });
+    if (profilesError) {
+      console.error('Error obteniendo profiles:', profilesError);
+      return res.status(500).json({ error: profilesError.message });
     }
 
-    // Verificar que la vista está funcionando correctamente
+    // Obtener todos los roles
+    let { data: userRoles, error: rolesError } = await supabase
+      .from('user_roles')
+      .select('user_id, role');
+
+    if (rolesError) {
+      console.error('Error obteniendo roles:', rolesError);
+      return res.status(500).json({ error: rolesError.message });
+    }
+
+    // Agrupar roles por usuario
+    const rolesByUser: { [key: string]: string[] } = {};
+    userRoles?.forEach(ur => {
+      if (!rolesByUser[ur.user_id]) {
+        rolesByUser[ur.user_id] = [];
+      }
+      rolesByUser[ur.user_id].push(ur.role);
+    });
+
+    // Combinar profiles con roles
+    const usuarios = profiles?.map(profile => ({
+      id: profile.id,
+      full_name: profile.full_name,
+      email: profile.email,
+      avatar_url: profile.avatar_url,
+      roles: rolesByUser[profile.id] || [],
+      created_at: profile.created_at,
+      updated_at: profile.updated_at
+    })) || [];
+    
+    console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0 });
+
+    // Verificar que los datos están funcionando correctamente
     if (usuarios && usuarios.length > 0) {
-      console.log('✅ Vista usuarios_con_roles funcionando correctamente');
+      console.log('✅ Profiles y roles funcionando correctamente');
     }
 
     // Convertir datos de usuarios al formato esperado por el componente
@@ -47,8 +73,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       usuarios: usuariosFormateados || [],
       total: usuariosFormateados?.length || 0,
-      fuente: 'usuarios_con_roles',
-      mensaje: 'Vista consistente basada en tabla usuarios'
+      fuente: 'profiles_y_roles',
+      mensaje: 'Datos obtenidos directamente de profiles y user_roles'
     });
 
   } catch (error) {
