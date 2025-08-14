@@ -280,11 +280,11 @@ export default function UsuarioForm({ usuario, onSubmit, onClose, loading = fals
         });
         setAvatarFile(null);
         
-        // En modo creación, no llamar onSubmit, solo cerrar el modal
-        // El componente padre ya maneja la recarga de la tabla
-        console.log('✅ Usuario creado exitosamente, cerrando modal...');
+        // Esperar un poco para que el usuario vea el toast antes de cerrar el modal
         setTimeout(() => {
-          onClose(); // Cerrar el modal directamente
+          console.log('📞 Llamando onSubmit para recargar tabla...');
+          onSubmit(datosCreados); // Pasar los datos originales del formulario
+          console.log('📞 onSubmit ejecutado con datos:', datosCreados);
         }, 1500); // 1.5 segundos para ver el toast
       }
       
