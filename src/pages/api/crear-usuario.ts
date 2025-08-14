@@ -56,29 +56,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('✅ Usuario creado en Auth:', authData.user.id);
 
-    // Esperar un momento para que el perfil se cree automáticamente
-    console.log('⏳ Esperando que se cree el perfil automáticamente...');
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Crear el perfil manualmente si no existe
+    console.log('🔧 Creando perfil manualmente...');
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: authData.user.id,
+      full_name,
+      email: authData.user.email,
+      avatar_url: avatar_url || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: 'id'
+    });
 
-    // Verificar que el perfil existe antes de actualizarlo
-    const { data: existingProfile, error: profileCheckError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', authData.user.id)
-      .single();
-
-    if (profileCheckError || !existingProfile) {
-      console.error('Error verificando perfil:', profileCheckError);
-      return res.status(400).json({ error: 'Error verificando perfil: ' + (profileCheckError?.message || 'Perfil no encontrado') });
+    if (profileError) {
+      console.error('Error creando/actualizando perfil:', profileError);
+      return res.status(400).json({ error: 'Error creando perfil: ' + profileError.message });
     }
 
-    console.log('✅ Perfil encontrado, actualizando...');
-
-    // Actualizar el perfil con la información adicional
-    const { error: profileError } = await supabase.from('profiles').update({
-      full_name,
-      avatar_url: avatar_url || null
-    }).eq('id', authData.user.id);
+    console.log('✅ Perfil creado/actualizado exitosamente');
 
     if (profileError) {
       console.error('Error actualizando perfil:', profileError);
