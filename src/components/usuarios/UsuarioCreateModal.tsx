@@ -28,10 +28,14 @@ export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = 
   }, [isOpen]);
 
   const handleFormSubmit = async (data: Usuario) => {
-    // En modo creación, el UsuarioForm ya maneja la creación
-    // Solo necesitamos manejar el cierre del modal
-    console.log('UsuarioCreateModal: Usuario creado exitosamente, cerrando modal...');
-    onClose();
+    setSubmitting(true);
+    try {
+      await onSave(data);
+    } catch (error) {
+      console.error('Error en handleFormSubmit:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
