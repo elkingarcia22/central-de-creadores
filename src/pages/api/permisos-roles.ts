@@ -27,26 +27,25 @@ async function getPermisosRoles(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { rol_id } = req.query;
 
-    let query = supabase
-      .from('permisos_roles')
-      .select(`
-        *,
-        roles_plataforma (
-          id,
-          nombre,
-          descripcion
-        ),
-        funcionalidades (
-          id,
-          nombre,
-          descripcion,
-          modulos (
-            id,
-            nombre,
-            descripcion
-          )
-        )
-      `);
+                    let query = supabase
+                  .from('permisos_roles')
+                  .select(`
+                    *,
+                    roles_plataforma (
+                      id,
+                      nombre
+                    ),
+                    funcionalidades (
+                      id,
+                      nombre,
+                      descripcion,
+                      modulos (
+                        id,
+                        nombre,
+                        descripcion
+                      )
+                    )
+                  `);
 
     if (rol_id) {
       query = query.eq('rol_id', rol_id);
@@ -143,8 +142,7 @@ async function createPermisoRol(req: NextApiRequest, res: NextApiResponse) {
         *,
         roles_plataforma (
           id,
-          nombre,
-          descripcion
+          nombre
         ),
         funcionalidades (
           id,
@@ -190,8 +188,7 @@ async function updatePermisoRol(req: NextApiRequest, res: NextApiResponse) {
         *,
         roles_plataforma (
           id,
-          nombre,
-          descripcion
+          nombre
         ),
         funcionalidades (
           id,
