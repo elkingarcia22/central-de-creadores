@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Button, Input, Textarea, Switch } from '../ui';
 import SideModal from '../ui/SideModal';
 
@@ -13,80 +13,88 @@ interface Rol {
 interface RolModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (rol: Partial<Rol>) => Promise<void>;
   rol?: Rol | null;
+  onSave: (rolData: Partial<Rol>) => Promise<void>;
 }
 
-export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps) {
+const RolModal: React.FC<RolModalProps> = ({ isOpen, onClose, rol, onSave }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     activo: true,
-    es_sistema: false
   });
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Inicializar formulario cuando cambie el rol
   useEffect(() => {
     if (rol) {
       setFormData({
         nombre: rol.nombre,
-        descripcion: rol.descripcion || '',
+        descripcion: rol.descripcion,
         activo: rol.activo,
-        es_sistema: rol.es_sistema
       });
     } else {
       setFormData({
         nombre: '',
         descripcion: '',
         activo: true,
-        es_sistema: false
       });
     }
     setErrors({});
-  }, [rol, isOpen]);
+  }, [rol]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.nombre.trim()) {
       newErrors.nombre = 'El nombre del rol es requerido';
-    } else if (formData.nombre.trim().length < 2) {
-      newErrors.nombre = 'El nombre debe tener al menos 2 caracteres';
+    } else if (formData.nombre.trim().length < 3) {
+      newErrors.nombre = 'El nombre debe tener al menos 3 caracteres';
     }
 
-    if (formData.descripcion && formData.descripcion.length > 500) {
-      newErrors.descripcion = 'La descripción no puede exceder 500 caracteres';
+    if (!formData.descripcion.trim()) {
+      newErrors.descripcion = 'La descripción es requerida';
+    } else if (formData.descripcion.trim().length < 10) {
+      newErrors.descripcion = 'La descripción debe tener al menos 10 caracteres';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
     try {
       await onSave(formData);
       onClose();
     } catch (error) {
       console.error('Error guardando rol:', error);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <SideModal
@@ -96,98 +104,106 @@ export default function RolModal({ isOpen, onClose, onSave, rol }: RolModalProps
       width="lg"
       position="right"
       footer={
-        <div className="flex justify-end gap-3">
+        <div className="flex items-center justify-end space-x-3">
           <Button
-            variant="secondary"
+            variant="outline"
             onClick={onClose}
-            disabled={loading}
+            disabled={submitting}
           >
             Cancelar
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
-            disabled={loading}
-            loading={loading}
+            disabled={submitting}
           >
-            {rol ? 'Actualizar' : 'Crear'} Rol
+            {submitting ? 'Guardando...' : (rol ? 'Actualizar' : 'Crear')}
           </Button>
         </div>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Nombre */}
+      <div className="space-y-6">
+        {/* Nombre del Rol */}
         <div>
-          <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+          <Typography variant="body2" weight="semibold" className="mb-2">
             Nombre del Rol *
-          </label>
+          </Typography>
           <Input
-            id="nombre"
-            type="text"
             value={formData.nombre}
             onChange={(e) => handleInputChange('nombre', e.target.value)}
-            placeholder="Ej: Analista de Datos"
+            placeholder="Ej: Analista Senior"
             error={errors.nombre}
             disabled={rol?.es_sistema}
           />
           {rol?.es_sistema && (
-            <p className="mt-1 text-sm text-blue-600">
-              Los roles del sistema no pueden cambiar su nombre
-            </p>
+            <Typography variant="caption" color="secondary" className="mt-1">
+              Los roles del sistema no pueden ser editados
+            </Typography>
           )}
         </div>
 
         {/* Descripción */}
         <div>
-          <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
-            Descripción
-          </label>
+          <Typography variant="body2" weight="semibold" className="mb-2">
+            Descripción *
+          </Typography>
           <Textarea
-            id="descripcion"
             value={formData.descripcion}
             onChange={(e) => handleInputChange('descripcion', e.target.value)}
             placeholder="Describe las responsabilidades y permisos de este rol..."
-            rows={3}
+            rows={4}
             error={errors.descripcion}
+            disabled={rol?.es_sistema}
           />
         </div>
 
         {/* Estado Activo */}
-        <div className="flex items-center justify-between">
-          <div>
-            <label htmlFor="activo" className="block text-sm font-medium text-gray-700">
-              Rol Activo
-            </label>
-            <p className="text-sm text-gray-500">
-              Los roles inactivos no pueden ser asignados a usuarios
-            </p>
+        <div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Typography variant="body2" weight="semibold">
+                Rol Activo
+              </Typography>
+              <Typography variant="caption" color="secondary">
+                Los roles inactivos no pueden ser asignados a usuarios
+              </Typography>
+            </div>
+            <Switch
+              checked={formData.activo}
+              onChange={(checked) => handleInputChange('activo', checked)}
+              disabled={rol?.es_sistema}
+            />
           </div>
-          <Switch
-            id="activo"
-            checked={formData.activo}
-            onChange={(checked) => handleInputChange('activo', checked)}
-            disabled={rol?.es_sistema}
-          />
         </div>
 
-        {/* Es Sistema */}
-        <div className="flex items-center justify-between">
-          <div>
-            <label htmlFor="es_sistema" className="block text-sm font-medium text-gray-700">
+        {/* Información adicional para roles del sistema */}
+        {rol?.es_sistema && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <Typography variant="body2" weight="semibold" className="text-blue-800 mb-2">
               Rol del Sistema
-            </label>
-            <p className="text-sm text-gray-500">
-              Los roles del sistema no pueden ser eliminados
-            </p>
+            </Typography>
+            <Typography variant="caption" color="secondary" className="text-blue-700">
+              Este es un rol del sistema que no puede ser modificado ni eliminado. 
+              Solo puedes gestionar sus permisos específicos.
+            </Typography>
           </div>
-          <Switch
-            id="es_sistema"
-            checked={formData.es_sistema}
-            onChange={(checked) => handleInputChange('es_sistema', checked)}
-            disabled={rol?.es_sistema}
-          />
-        </div>
-      </form>
+        )}
+
+        {/* Información para nuevos roles */}
+        {!rol && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <Typography variant="body2" weight="semibold" className="text-green-800 mb-2">
+              Nuevo Rol Personalizado
+            </Typography>
+            <Typography variant="caption" color="secondary" className="text-green-700">
+              Después de crear el rol, podrás configurar sus permisos específicos 
+              para cada módulo y funcionalidad del sistema.
+            </Typography>
+          </div>
+        )}
+      </div>
     </SideModal>
   );
-}
+};
+
+export default RolModal;
