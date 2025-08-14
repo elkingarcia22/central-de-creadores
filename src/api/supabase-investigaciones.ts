@@ -283,7 +283,10 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     // Aplicar filtros de asignación si no es administrador
     if (!esAdmin && usuarioId) {
       console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
+      console.log('🔍 Filtro SQL:', `responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
       query = query.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId},creado_por.eq.${usuarioId}`);
+    } else {
+      console.log('🔓 Sin filtros de asignación - Es admin o no hay usuarioId');
     }
     
     const { data: investigaciones, error } = await query.order('creado_el', { ascending: false });
@@ -294,6 +297,17 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     }
 
     console.log('✅ Investigaciones base obtenidas:', investigaciones?.length || 0);
+    
+    // DEBUG: Mostrar detalles de cada investigación obtenida
+    if (investigaciones && investigaciones.length > 0) {
+      console.log('🔍 Detalles de investigaciones obtenidas:');
+      investigaciones.forEach((inv, index) => {
+        console.log(`  ${index + 1}. ${inv.nombre} (ID: ${inv.id})`);
+        console.log(`     - Responsable: ${inv.responsable_id}`);
+        console.log(`     - Implementador: ${inv.implementador_id}`);
+        console.log(`     - Creado por: ${inv.creado_por}`);
+      });
+    }
 
     if (!investigaciones || investigaciones.length === 0) {
       console.log('⚠️ No se encontraron investigaciones');
