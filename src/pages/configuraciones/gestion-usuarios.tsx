@@ -101,6 +101,16 @@ export default function GestionUsuariosPage() {
         const displayEmail = row.email || 'Sin email';
         const avatarUrl = row.avatar_url;
         
+        // Debug: Log para Elkin Garcia
+        if (displayName.includes('Elkin')) {
+          console.log('🔍 Renderizando Elkin Garcia:', {
+            displayName,
+            displayEmail,
+            avatarUrl,
+            row
+          });
+        }
+        
         // Generar iniciales de forma segura
         const initials = displayName
           .split(' ')
@@ -133,11 +143,13 @@ export default function GestionUsuariosPage() {
                     // Si falla la imagen, simplemente ocultarla para mostrar el avatar con iniciales
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
+                    console.log('❌ Error cargando avatar para:', displayName, 'URL:', avatarUrl);
                   }}
                   onLoad={e => {
                     // Cuando la imagen carga exitosamente, asegurar que sea visible
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'block';
+                    console.log('✅ Avatar cargado exitosamente para:', displayName, 'URL:', avatarUrl);
                   }}
                   loading="lazy"
                 />
