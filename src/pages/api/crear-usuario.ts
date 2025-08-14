@@ -83,6 +83,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('✅ Perfil actualizado');
 
+    // Crear también en la tabla usuarios para mantener la FK de reclutamientos
+    console.log('🔧 Creando usuario en tabla usuarios para FK...');
+    const { error: usuariosError } = await supabase.from('usuarios').upsert({
+      id: authData.user.id,
+      nombre: full_name,
+      correo: authData.user.email,
+      foto_url: avatar_url || null,
+      activo: true,
+      rol_plataforma: roles && roles.length > 0 ? roles[0] : null
+    }, {
+      onConflict: 'id'
+    });
+
+    if (usuariosError) {
+      console.error('Error creando/actualizando usuario en tabla usuarios:', usuariosError);
+      // No fallar aquí, solo log del error
+      console.log('⚠️ Usuario creado en profiles pero no en usuarios (FK puede fallar)');
+    } else {
+      console.log('✅ Usuario creado en tabla usuarios');
+    }
+
     // Asignar roles al usuario
     if (roles && roles.length > 0) {
       console.log('🔐 Asignando roles:', roles);
