@@ -42,10 +42,10 @@ export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loa
           </Button>
           <Button
             onClick={() => {
-              // Trigger submit del formulario
-              const form = document.querySelector('form');
-              if (form) {
-                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+              // Trigger submit del formulario usando el botón del UsuarioForm
+              const submitButton = document.querySelector('form button[type="submit"]') as HTMLButtonElement;
+              if (submitButton && !submitButton.disabled) {
+                submitButton.click();
               }
             }}
             disabled={submitting}
