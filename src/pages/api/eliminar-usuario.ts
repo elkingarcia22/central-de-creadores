@@ -48,7 +48,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 3. Eliminar usuario de la tabla usuarios
+    // 3. Verificar si el usuario está siendo usado como reclutador
+    const { data: reclutamientos, error: errorReclutamientos } = await supabaseService
+      .from('reclutamientos')
+      .select('id')
+      .eq('reclutador_id', userId);
+
+    if (errorReclutamientos) {
+      console.error('Error verificando reclutamientos del usuario:', errorReclutamientos);
+      return res.status(400).json({ 
+        error: 'Error verificando reclutamientos del usuario', 
+        detail: errorReclutamientos.message 
+      });
+    }
+
+    // Si el usuario está siendo usado como reclutador, no permitir eliminación
+    if (reclutamientos && reclutamientos.length > 0) {
+      console.error('No se puede eliminar usuario que está siendo usado como reclutador');
+      return res.status(400).json({ 
+        error: 'No se puede eliminar el usuario', 
+        detail: `El usuario está asignado como reclutador en ${reclutamientos.length} reclutamiento(s). Primero debe reasignar estos reclutamientos.`
+      });
+    }
+
+    // 4. Eliminar usuario de la tabla usuarios
     const { error: errorUsuario } = await supabaseService
       .from('usuarios')
       .delete()
@@ -62,7 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // 4. Eliminar usuario de Auth
+    // 5. Eliminar usuario de Auth
     const { error: errorAuth } = await supabaseService.auth.admin.deleteUser(userId);
 
     if (errorAuth) {
@@ -71,7 +94,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Solo logueamos el error para debugging
     }
 
-    // 5. Eliminar avatar si existe
+    // 6. Eliminar avatar si existe
     try {
       const { data: avatarFiles, error: listError } = await supabaseService.storage
         .from('avatars')
