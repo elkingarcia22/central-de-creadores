@@ -138,7 +138,8 @@ export default function GestionUsuariosPage() {
                 <img
                   src={avatarUrl}
                   alt={displayName}
-                  className="absolute top-0 left-0 w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-sm z-10"
+                  className="absolute top-0 left-0 w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-sm z-20"
+                  style={{ display: 'block' }}
                   onError={e => { 
                     // Si falla la imagen, simplemente ocultarla para mostrar el avatar con iniciales
                     const target = e.target as HTMLImageElement;
