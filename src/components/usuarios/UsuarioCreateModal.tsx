@@ -20,6 +20,13 @@ interface UsuarioCreateModalProps {
 export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = false }: UsuarioCreateModalProps) {
   const [submitting, setSubmitting] = useState(false);
 
+  // Resetear submitting cuando el modal se cierre
+  React.useEffect(() => {
+    if (!isOpen) {
+      setSubmitting(false);
+    }
+  }, [isOpen]);
+
   const handleFormSubmit = (data: Usuario) => {
     setSubmitting(true);
     onSave(data);

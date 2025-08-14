@@ -20,6 +20,13 @@ interface UsuarioEditModalProps {
 export default function UsuarioEditModal({ isOpen, onClose, onSave, usuario, loading = false }: UsuarioEditModalProps) {
   const [submitting, setSubmitting] = useState(false);
 
+  // Resetear submitting cuando el modal se cierre
+  React.useEffect(() => {
+    if (!isOpen) {
+      setSubmitting(false);
+    }
+  }, [isOpen]);
+
   const handleFormSubmit = (data: Usuario) => {
     setSubmitting(true);
     onSave(data);
