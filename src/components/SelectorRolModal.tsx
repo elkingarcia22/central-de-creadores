@@ -4,6 +4,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useRol } from '../contexts/RolContext';
 import { Modal, Typography, Button } from './ui';
 import { AdministradorIcon, InvestigadorIcon, ReclutadorIcon } from './login-icons';
+import { CalendarIcon } from './icons';
 
 interface SelectorRolModalProps {
   roles: Array<{ id: string; nombre: string }>;
@@ -73,8 +74,8 @@ export default function SelectorRolModal({ roles, isOpen, onClose }: SelectorRol
         return <InvestigadorIcon className="w-8 h-8" />;
       case 'reclutador':
         return <ReclutadorIcon className="w-8 h-8" />;
-      case 'agendador':
-        return <ReclutadorIcon className="w-8 h-8" />; // Usar el mismo icono que reclutador
+              case 'agendador':
+          return <CalendarIcon className="w-8 h-8" />; // Icono de calendario para agendador
       default:
         return <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
           <span className="text-sm font-bold text-gray-600">{roleName[0]}</span>
