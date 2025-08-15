@@ -117,7 +117,7 @@ interface InvestigacionDetalle {
   libreto?: string;
 }
 
-const VerReclutamiento: NextPage = () => {
+const VerReclutamientoComponent: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const reclutamientoId = Array.isArray(id) ? id[0] : id;
@@ -2577,5 +2577,7 @@ const VerReclutamiento: NextPage = () => {
     </Layout>
   );
 };
+
+const VerReclutamiento = memo(VerReclutamientoComponent);
 
 export default VerReclutamiento; 
