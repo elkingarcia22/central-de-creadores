@@ -179,7 +179,7 @@ export const obtenerUsuarios = async (): Promise<RespuestaAPI<Usuario[]>> => {
     }
 
     // Formatear datos para que coincidan con la interfaz Usuario
-    const usuariosFormateados = (result.data || []).map((user: any) => ({
+    const usuariosFormateados = (result.usuarios || []).map((user: any) => ({
       id: user.id,
       full_name: user.full_name || user.email || 'Sin nombre',
       email: user.email || 'sin-email@ejemplo.com',
