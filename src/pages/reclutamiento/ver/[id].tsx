@@ -174,6 +174,7 @@ const VerReclutamiento: NextPage = () => {
   // Refs para evitar duplicaciones
   const lastCargarParticipantesTime = useRef(0);
   const lastActualizarReclutamientoTime = useRef(0);
+  const lastRecargarDatosCompletosTime = useRef(0);
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
@@ -224,6 +225,18 @@ const VerReclutamiento: NextPage = () => {
   }, [id]);
 
   const recargarDatosCompletos = async () => {
+    const now = Date.now();
+    const timeSinceLastCall = now - lastRecargarDatosCompletosTime.current;
+    
+    // Evitar ejecuciones en menos de 3 segundos
+    if (timeSinceLastCall < 3000) {
+      console.log('⚠️ Evitando recarga duplicada de datos completos - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
+      return;
+    }
+    
+    console.log('🔄 recargarDatosCompletos ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
+    lastRecargarDatosCompletosTime.current = now;
+    
     try {
       setLoading(true);
       await Promise.all([
@@ -2510,7 +2523,7 @@ const VerReclutamiento: NextPage = () => {
           setParticipanteToEditAgendamiento(null);
         }}
         onSuccess={async () => {
-          // Solo recargar una vez para evitar recargas múltiples
+          // Recargar datos una sola vez con control de duplicaciones
           await recargarDatosCompletos();
           setShowAsignarAgendamientoModal(false);
           setParticipanteToEditAgendamiento(null);
