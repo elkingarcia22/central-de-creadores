@@ -28,6 +28,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         reclutador_data: reclutador
       });
 
+      // Verificar si el usuario existe en la tabla usuarios (para FK constraint)
+      const { data: usuarioEnTabla, error: errorUsuario } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('id', responsable_id)
+        .single();
+
+      if (errorUsuario || !usuarioEnTabla) {
+        console.log('⚠️ Usuario no encontrado en tabla usuarios, creando...');
+        
+        // Obtener roles del usuario
+        const { data: userRoles, error: errorRoles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', responsable_id);
+
+        const roles = userRoles?.map(ur => ur.role) || [];
+        
+        // Crear usuario en tabla usuarios
+        const { error: errorCrearUsuario } = await supabase
+          .from('usuarios')
+          .upsert({
+            id: responsable_id,
+            nombre: reclutador.full_name,
+            correo: reclutador.email,
+            foto_url: reclutador.avatar_url || null,
+            activo: true,
+            rol_plataforma: roles.length > 0 ? roles[0] : null
+          }, {
+            onConflict: 'id'
+          });
+
+        if (errorCrearUsuario) {
+          console.error('❌ Error creando usuario en tabla usuarios:', errorCrearUsuario);
+          return res.status(500).json({ error: 'Error creando usuario en tabla usuarios' });
+        }
+
+        console.log('✅ Usuario creado en tabla usuarios');
+      }
+
       // Crear participante placeholder si no existe
       const { data: participantePlaceholder, error: errorParticipante } = await supabase
         .from('participantes')
