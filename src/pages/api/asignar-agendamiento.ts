@@ -53,7 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           correo: reclutador.email,
           foto_url: reclutador.avatar_url || null,
           activo: true,
-          rol_plataforma: roles.length > 0 ? roles[0] : null
+          rol_plataforma: roles.length > 0 ? roles[0] : null,
+          borrado_manual: false
         });
 
         const { error: errorCrearUsuario } = await supabase
@@ -64,7 +65,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             correo: reclutador.email,
             foto_url: reclutador.avatar_url || null,
             activo: true,
-            rol_plataforma: roles.length > 0 ? roles[0] : null
+            rol_plataforma: roles.length > 0 ? roles[0] : null,
+            borrado_manual: false
           }, {
             onConflict: 'id'
           });
