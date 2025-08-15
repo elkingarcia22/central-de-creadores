@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
@@ -170,14 +170,25 @@ const VerReclutamiento: NextPage = () => {
   const [isEditing, setIsEditing] = useState(false); // Bandera para evitar recargas durante edición
   const [participanteToEditAgendamiento, setParticipanteToEditAgendamiento] = useState<any>(null);
   const [isClosingAsignarModal, setIsClosingAsignarModal] = useState(false); // Controlar cierre del modal
+  
+  // Ref para evitar cargas duplicadas
+  const loadingRef = useRef(false);
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
+    // Evitar cargas duplicadas
+    if (loadingRef.current) {
+      console.log('⚠️ Evitando carga duplicada de participantes');
+      return;
+    }
+    
     try {
       // Verificar que el ID esté disponible
       if (!id) {
         return;
       }
+      
+      loadingRef.current = true;
       
       // Obtener todos los reclutamientos de la investigación
       const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${id}`, {
@@ -197,6 +208,8 @@ const VerReclutamiento: NextPage = () => {
     } catch (error) {
       console.error('❌ Error cargando participantes:', error);
       setParticipantes([]);
+    } finally {
+      loadingRef.current = false;
     }
   };
 
@@ -253,6 +266,12 @@ const VerReclutamiento: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
+    // Evitar cargas duplicadas
+    if (loadingRef.current) {
+      console.log('⚠️ Evitando carga duplicada de reclutamiento');
+      return;
+    }
+    
     // 1. Actualizar estados en el backend
     try {
       const res = await fetch('/api/actualizar-estados-reclutamiento', { method: 'POST' });
@@ -269,6 +288,8 @@ const VerReclutamiento: NextPage = () => {
         // Durante la inicialización, usar setLoading para el skeleton
         setLoading(true);
       }
+      loadingRef.current = true;
+      
       const response = await fetch('/api/metricas-reclutamientos');
       if (response.ok) {
         const data = await response.json();
@@ -290,6 +311,7 @@ const VerReclutamiento: NextPage = () => {
       showError('Error inesperado al cargar el reclutamiento');
     } finally {
       setLoading(false);
+      loadingRef.current = false;
       setIsInitializing(false); // Finalizar inicialización
     }
   }, [id, isInitializing, showError]);
