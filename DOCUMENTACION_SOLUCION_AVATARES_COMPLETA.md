@@ -103,136 +103,82 @@ Se resolvieron múltiples problemas críticos relacionados con la gestión de us
 
 ---
 
-## 🗄️ **ESTRUCTURA FINAL DE LA BASE DE DATOS**
+## 🗄️ **ESTRUCTURA DE BASE DE DATOS ACTUAL**
 
 ### **Tablas Principales:**
 
-#### 1. **`profiles` (Supabase Auth)**
-```sql
-- id: UUID (PK)
-- email: TEXT
-- full_name: TEXT
-- avatar_url: TEXT
-- created_at: TIMESTAMP
-- updated_at: TIMESTAMP
-```
+1. **`profiles`** (Supabase Auth)
+   - `id`: UUID del usuario
+   - `full_name`: Nombre completo
+   - `email`: Email del usuario
+   - `avatar_url`: URL de la foto de perfil
+   - `created_at`, `updated_at`: Timestamps
 
-#### 2. **`usuarios` (Tabla de negocio)**
-```sql
-- id: UUID (PK, FK a profiles.id)
-- nombre: TEXT
-- correo: TEXT
-- foto_url: TEXT
-- activo: BOOLEAN
-- rol_plataforma: TEXT
-- borrado_manual: BOOLEAN
-```
+2. **`usuarios`** (Tabla de negocio)
+   - `id`: UUID del usuario (FK a profiles.id)
+   - `nombre`: Nombre completo
+   - `correo`: Email del usuario
+   - `foto_url`: URL de la foto de perfil
+   - `activo`: Boolean (true/false)
+   - `rol_plataforma`: Rol principal del usuario
 
-#### 3. **`user_roles` (Roles de usuario)**
-```sql
-- user_id: UUID (FK a profiles.id)
-- role: UUID (FK a roles_plataforma.id)
-- created_at: TIMESTAMP
-- updated_at: TIMESTAMP
-```
+3. **`user_roles`** (Roles del usuario)
+   - `user_id`: UUID del usuario (FK a profiles.id)
+   - `role`: Nombre del rol (administrador, investigador, etc.)
 
-#### 4. **`roles_plataforma` (Catálogo de roles)**
-```sql
-- id: UUID (PK)
-- nombre: TEXT
-- descripcion: TEXT
-- activo: BOOLEAN
-```
+4. **`reclutamientos`** (Referencia a usuarios)
+   - `reclutador_id`: FK a `usuarios.id`
 
-### **Foreign Key Constraints:**
-- `reclutamientos.reclutador_id` → `usuarios.id`
-- `participantes.kam_id` → `usuarios.id`
-- `user_roles.user_id` → `profiles.id`
-- `user_roles.role` → `roles_plataforma.id`
+5. **`participantes`** (Referencia a usuarios)
+   - `kam_id`: FK a `usuarios.id`
+
+### **Vistas (Deprecadas):**
+- **`usuarios_con_roles`**: ❌ **NO USAR** - Problemas de sincronización
 
 ---
 
-## 🔧 **APIs IMPLEMENTADAS/MODIFICADAS**
+## 🔌 **APIs ACTUALES**
 
-### 1. **`/api/usuarios` (Fuente de datos unificada)**
+### **1. `/api/usuarios` (PRINCIPAL - Usar siempre)**
 ```typescript
-// Consulta directa a profiles y user_roles
-const { data: profiles } = await supabase
-  .from('profiles')
-  .select('id, full_name, email, avatar_url, created_at, updated_at')
-  .not('email', 'is', null)
-  .order('full_name');
-
-const { data: userRoles } = await supabase
-  .from('user_roles')
-  .select('user_id, role');
-
-// Combina datos en memoria para consistencia real-time
-```
-
-### 2. **`/api/crear-usuario` (Creación completa)**
-```typescript
-// 1. Crear en Supabase Auth
-const { data: authData } = await supabase.auth.admin.createUser({...});
-
-// 2. Crear en profiles
-await supabase.from('profiles').upsert({...});
-
-// 3. Crear en usuarios (para FK)
-await supabase.from('usuarios').upsert({
-  id: authData.user.id,
-  nombre: full_name,
-  correo: authData.user.email,
-  foto_url: avatar_url || null,
-  activo: true,
-  rol_plataforma: roles[0] || null
-});
-
-// 4. Asignar roles
-await supabase.from('user_roles').insert(rolesData);
-```
-
-### 3. **`/api/eliminar-usuario` (Eliminación segura)**
-```typescript
-// 1. Verificar FK constraints
-const { data: reclutamientos } = await supabase
-  .from('reclutamientos')
-  .select('id')
-  .eq('reclutador_id', userId);
-
-const { data: participantes } = await supabase
-  .from('participantes')
-  .select('id')
-  .eq('kam_id', userId);
-
-// 2. Bloquear si hay referencias
-if (reclutamientos.length > 0 || participantes.length > 0) {
-  return res.status(400).json({
-    error: 'No se puede eliminar el usuario',
-    detail: `El usuario está asignado como ${errores.join(' y ')}.`
-  });
+// Fuente: profiles + user_roles (directo)
+// Formato de respuesta:
+{
+  usuarios: [
+    {
+      id: string,
+      full_name: string,
+      email: string,
+      avatar_url: string | null,
+      roles: string[],
+      created_at: string
+    }
+  ],
+  total: number,
+  fuente: 'profiles_y_roles'
 }
-
-// 3. Eliminar en orden correcto
-await supabase.from('user_roles').delete().eq('user_id', userId);
-await supabase.from('usuarios').delete().eq('id', userId);
-await supabase.auth.admin.deleteUser(userId);
 ```
 
-### 4. **`/api/actualizar-avatar` (Corregida)**
+### **2. `obtenerUsuarios()` (Investigaciones)**
 ```typescript
-// Usar supabaseServer en lugar de createClient
-import { supabaseServer as supabaseService } from '../../api/supabase-server';
+// Fuente: /api/usuarios (redirige a profiles + user_roles)
+// Formato de respuesta:
+{
+  data: Usuario[],
+  mensaje: string
+}
+```
 
-// Subir a storage y actualizar profiles
-const { data: uploadData } = await supabaseService.storage
-  .from('avatars')
-  .upload(avatarPath, buffer, {...});
+### **3. `/api/crear-usuario`**
+```typescript
+// Crea en: Auth + profiles + usuarios + user_roles
+// Resuelve FK constraints para reclutamientos y participantes
+```
 
-await supabaseService
-  .from('profiles')
-  .update({ avatar_url: avatarUrl })
-  .eq('id', userId);
+### **4. `/api/eliminar-usuario`**
+```typescript
+// Verifica FK constraints antes de eliminar
+// Elimina de: user_roles + usuarios + Auth
 ```
 
 ---
