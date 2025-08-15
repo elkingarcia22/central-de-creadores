@@ -120,16 +120,16 @@ const VerReclutamiento: NextPage = () => {
           <Typography variant="h6">Fechas</Typography>
         </div>
         <div className="space-y-3">
-          {reclutamiento?.investigacion_fecha_inicio && (
+          {investigacion?.fecha_inicio && (
             <div>
               <Typography variant="caption" color="secondary">Fecha de inicio</Typography>
-              <Typography variant="body2">{formatearFecha(reclutamiento.investigacion_fecha_inicio)}</Typography>
+              <Typography variant="body2">{formatearFecha(investigacion.fecha_inicio)}</Typography>
             </div>
           )}
-          {reclutamiento?.investigacion_fecha_fin && (
+          {investigacion?.fecha_fin && (
             <div>
               <Typography variant="caption" color="secondary">Fecha de fin</Typography>
-              <Typography variant="body2">{formatearFecha(reclutamiento.investigacion_fecha_fin)}</Typography>
+              <Typography variant="body2">{formatearFecha(investigacion.fecha_fin)}</Typography>
             </div>
           )}
           {reclutamiento?.fecha_asignado && (
@@ -170,18 +170,18 @@ const VerReclutamiento: NextPage = () => {
           <Typography variant="h6">Equipo</Typography>
         </div>
         <div className="space-y-4">
-          {reclutamiento?.responsable_nombre && (
+          {reclutamiento?.reclutador && (
             <div>
               <Typography variant="caption" color="secondary">Responsable</Typography>
-              <Typography variant="body2">{reclutamiento.responsable_nombre}</Typography>
-              <Typography variant="body2" color="secondary">{reclutamiento.responsable_correo}</Typography>
+              <Typography variant="body2">{reclutamiento.reclutador.nombre}</Typography>
+              <Typography variant="body2" color="secondary">{reclutamiento.reclutador.email}</Typography>
             </div>
           )}
-          {reclutamiento?.implementador_nombre && (
+          {reclutamiento?.implementador && (
             <div>
               <Typography variant="caption" color="secondary">Implementador</Typography>
-              <Typography variant="body2">{reclutamiento.implementador_nombre}</Typography>
-              <Typography variant="body2" color="secondary">{reclutamiento.implementador_correo}</Typography>
+              <Typography variant="body2">{reclutamiento.implementador.nombre}</Typography>
+              <Typography variant="body2" color="secondary">{reclutamiento.implementador.email}</Typography>
             </div>
           )}
         </div>
@@ -222,18 +222,18 @@ const VerReclutamiento: NextPage = () => {
               <ClipboardListIcon className="w-5 h-5 text-primary" />
               <Typography variant="h6">Estado del Reclutamiento</Typography>
             </div>
-            <Badge variant={getEstadoBadgeVariant(reclutamiento.estado_reclutamiento_nombre)}>
-              {reclutamiento.estado_reclutamiento_nombre}
+            <Badge variant={getEstadoBadgeVariant(reclutamiento.estado_agendamiento.nombre)}>
+              {reclutamiento.estado_agendamiento.nombre}
             </Badge>
           </div>
           
           {/* Información del libreto */}
-          {reclutamiento?.libreto_titulo && (
+          {investigacion?.libreto && (
             <div className="mb-4">
               <Typography variant="caption" color="secondary">Libreto</Typography>
-              <Typography variant="body2">{reclutamiento.libreto_titulo}</Typography>
+              <Typography variant="body2">{investigacion.libreto.titulo}</Typography>
               <Typography variant="body2" color="secondary">
-                {reclutamiento.libreto_numero_participantes} participantes requeridos
+                {investigacion.libreto.numero_participantes} participantes requeridos
               </Typography>
             </div>
           )}
@@ -242,7 +242,7 @@ const VerReclutamiento: NextPage = () => {
           <div className="flex items-center gap-2">
             <Typography variant="caption" color="secondary">Progreso</Typography>
             <Typography variant="body2">
-              {reclutamiento.participantes_reclutados}/{reclutamiento.libreto_numero_participantes || 0}
+              {participantes.length}/{investigacion?.libreto?.numero_participantes || 0}
             </Typography>
           </div>
         </Card>
@@ -356,23 +356,27 @@ const VerReclutamiento: NextPage = () => {
 
         {/* Tabs */}
         <Tabs
-          tabs={[
+          value={activeTab}
+          onChange={setActiveTab}
+          items={[
             {
-              id: 'informacion',
+              value: 'informacion',
               label: 'Información',
-              icon: <ClipboardListIcon className="w-4 h-4" />,
-              content: <div className="mt-6">{InformacionTabContent}</div>
+              icon: <ClipboardListIcon className="w-4 h-4" />
             },
             {
-              id: 'participantes',
+              value: 'participantes',
               label: 'Participantes',
-              icon: <UserIcon className="w-4 h-4" />,
-              content: <div className="mt-6">{ParticipantesTabContent}</div>
+              icon: <UserIcon className="w-4 h-4" />
             }
           ]}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
         />
+
+        {/* Tab Content */}
+        <div className="mt-6">
+          {activeTab === 'informacion' && InformacionTabContent}
+          {activeTab === 'participantes' && ParticipantesTabContent}
+        </div>
 
         {/* Modal de Asignar Agendamiento */}
         <AsignarAgendamientoModal
