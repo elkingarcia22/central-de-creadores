@@ -2134,27 +2134,36 @@ const VerReclutamientoComponent: NextPage = () => {
     };
 
   // Tabs dinámicos - usando datos de la investigación con memoización
-  const tabs = useMemo(() => [
-    {
-      id: 'informacion',
-      label: 'Información',
-      icon: <InfoIcon className="w-4 h-4" />, 
-      content: <InformacionGeneral />
-    },
-    ...(libreto ? [{
-      id: 'libreto',
-      label: 'Libreto',
-      icon: <FileTextIcon className="w-4 h-4" />, 
-      content: <LibretoContent />
-    }] : []),
-    // Solo mostrar el tab de participantes si hay participantes
-    ...(participantes.length > 0 ? [{
-      id: 'reclutamiento',
-      label: 'Participantes y Asignaciones',
-      icon: <ClipboardListIcon className="w-4 h-4" />, 
-      content: <ParticipantesContent />
-    }] : [])
-  ], [libreto, participantes.length]);
+  const tabs = useMemo(() => {
+    console.log('🔍 CONFIGURANDO TABS:', {
+      libreto: !!libreto,
+      participantesLength: participantes.length,
+      reclutamiento: !!reclutamiento,
+      investigacion: !!investigacion
+    });
+    
+    return [
+      {
+        id: 'informacion',
+        label: 'Información',
+        icon: <InfoIcon className="w-4 h-4" />, 
+        content: <InformacionGeneral />
+      },
+      ...(libreto ? [{
+        id: 'libreto',
+        label: 'Libreto',
+        icon: <FileTextIcon className="w-4 h-4" />, 
+        content: <LibretoContent />
+      }] : []),
+      // Solo mostrar el tab de participantes si hay participantes
+      ...(participantes.length > 0 ? [{
+        id: 'reclutamiento',
+        label: 'Participantes y Asignaciones',
+        icon: <ClipboardListIcon className="w-4 h-4" />, 
+        content: <ParticipantesContent />
+      }] : [])
+    ];
+  }, [libreto, participantes.length]);
 
   // Debug: Log de tabs (solo en cliente) - COMENTADO PARA REDUCIR RUIDO
   // if (typeof window !== 'undefined') {
