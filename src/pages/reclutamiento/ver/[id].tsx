@@ -306,46 +306,44 @@ const VerReclutamientoComponent: NextPage = () => {
     }
   }, [id, isInitializing, showError]);
 
-  // SOLUCIÓN SIMPLE: Volver al enfoque original pero con control de duplicaciones
-  useEffect(() => {
-    if (!isEditing && id) {
-      actualizarYcargarReclutamiento();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isEditing]);
+  // SOLUCIÓN DRÁSTICA: Un solo useEffect para cargar todo
+  const [datosCargados, setDatosCargados] = useState(false);
 
-  // Cargar investigación cuando tengamos reclutamiento
   useEffect(() => {
-    const cargarInvestigacion = async () => {
-      if (reclutamiento?.investigacion_id && !investigacion?.id) {
+    const cargarTodo = async () => {
+      if (!isEditing && id && !datosCargados) {
         try {
-          const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
-          if (!resultado.error && resultado.data) {
-            setInvestigacion(resultado.data);
-          }
-        } catch (error) {
-          console.error('Error cargando investigación:', error);
-        }
-      }
-    };
-    cargarInvestigacion();
-  }, [reclutamiento?.investigacion_id, investigacion?.id]);
-
-  // Cargar libreto y catálogos cuando tengamos la investigación
-  useEffect(() => {
-    const cargarDatosCompletos = async () => {
-      if (investigacion?.id && !libreto?.id) {
-        try {
-          setLoadingLibreto(true);
+          console.log('🚀 INICIANDO CARGA COMPLETA');
           
-          // Cargar libreto
-          const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
-          if (!libretoResultado.error && libretoResultado.data) {
-            setLibreto(libretoResultado.data);
+          // 1. Cargar reclutamiento
+          await actualizarYcargarReclutamiento();
+          
+          // 2. Esperar un poco
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // 3. Cargar investigación si no está cargada
+          if (reclutamiento?.investigacion_id && !investigacion?.id) {
+            const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
+            if (!resultado.error && resultado.data) {
+              setInvestigacion(resultado.data);
+            }
           }
           
-          // Cargar catálogos solo si no están cargados
-          if (!catalogosLibreto.plataformas.length) {
+          // 4. Esperar un poco más
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // 5. Cargar libreto si no está cargado
+          if (investigacion?.id && !libreto?.id) {
+            setLoadingLibreto(true);
+            const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
+            if (!libretoResultado.error && libretoResultado.data) {
+              setLibreto(libretoResultado.data);
+            }
+            setLoadingLibreto(false);
+          }
+          
+          // 6. Cargar catálogos si no están cargados
+          if (investigacion?.id && !catalogosLibreto.plataformas.length) {
             const [
               plataformasResponse,
               rolesResponse,
@@ -375,22 +373,27 @@ const VerReclutamientoComponent: NextPage = () => {
             });
           }
           
+          // 7. Cargar participantes si no están cargados
+          if ((reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
+            await cargarParticipantes();
+          }
+          
+          setDatosCargados(true);
+          console.log('✅ CARGA COMPLETA FINALIZADA');
+          
         } catch (error) {
-          console.error('Error cargando datos completos:', error);
-        } finally {
-          setLoadingLibreto(false);
+          console.error('❌ Error en carga completa:', error);
         }
       }
     };
-    cargarDatosCompletos();
-  }, [investigacion?.id, libreto?.id, catalogosLibreto.plataformas.length]);
 
-  // Cargar participantes cuando cambie el reclutamiento
+    cargarTodo();
+  }, [id, isEditing, datosCargados]);
+
+  // Resetear cuando cambie el ID
   useEffect(() => {
-    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
-      cargarParticipantes();
-    }
-  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing, participantes.length]);
+    setDatosCargados(false);
+  }, [id]);
 
   // Ajustar tab activo cuando no hay participantes
   useEffect(() => {
