@@ -173,6 +173,8 @@ const VerReclutamiento: NextPage = () => {
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
+    console.log('🔄 cargarParticipantes ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
+    
     try {
       // Verificar que el ID esté disponible
       if (!id) {
@@ -253,6 +255,8 @@ const VerReclutamiento: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
+    console.log('🔄 actualizarYcargarReclutamiento ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
+    
     // 1. Actualizar estados en el backend
     try {
       const res = await fetch('/api/actualizar-estados-reclutamiento', { method: 'POST' });
