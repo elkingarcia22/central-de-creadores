@@ -172,8 +172,8 @@ export default function AsignarAgendamientoModal({
   };
 
   // Manejar envío del formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     if (isEditMode) {
       // Modo de edición: actualizar solo el responsable
@@ -267,7 +267,7 @@ export default function AsignarAgendamientoModal({
       </Button>
       <Button
         variant="primary"
-        type="submit"
+        onClick={handleSubmit}
         loading={loading}
         disabled={loading || !responsableId || (!isEditMode && !investigacionId && !investigacionSeleccionada)}
         className="flex items-center gap-2"
