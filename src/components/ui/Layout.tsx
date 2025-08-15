@@ -21,7 +21,8 @@ import {
   ConfiguracionesIcon,
   ConocimientoIcon,
   UsuariosIcon,
-  DesignSystemIcon
+  DesignSystemIcon,
+  ShieldIcon
 } from '../icons';
 import PerfilPersonalModal from '../usuarios/PerfilPersonalModal';
 
@@ -108,7 +109,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" />,
       subMenu: [
         { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-muted-foreground" /> },
-        { label: 'Roles y Permisos', href: '/configuraciones/roles-permisos', icon: <ConfiguracionesIcon className="w-6 h-6 text-muted-foreground" /> }
+        { label: 'Roles y Permisos', href: '/configuraciones/roles-permisos', icon: <ShieldIcon className="w-6 h-6 text-muted-foreground" /> }
       ]
     },
     { label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-muted-foreground" /> },
