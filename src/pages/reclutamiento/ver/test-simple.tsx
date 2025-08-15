@@ -12,11 +12,15 @@ const TestSimplePage: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Contador de renderizados
+  // Contador de renderizados - SOLO PARA DEBUG
   useEffect(() => {
-    setRenderCount(prev => prev + 1);
     console.log('🔄 RENDERIZADO #', renderCount + 1, 'Timestamp:', new Date().toISOString());
   });
+
+  // Incrementar contador solo cuando cambia el tab
+  useEffect(() => {
+    setRenderCount(prev => prev + 1);
+  }, [activeTab]);
 
   // Cargar datos una sola vez
   useEffect(() => {
