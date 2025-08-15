@@ -47,6 +47,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const roles = userRoles?.map(ur => ur.role) || [];
         
         // Crear usuario en tabla usuarios
+        console.log('🔍 Intentando crear usuario en tabla usuarios:', {
+          id: responsable_id,
+          nombre: reclutador.full_name,
+          correo: reclutador.email,
+          foto_url: reclutador.avatar_url || null,
+          activo: true,
+          rol_plataforma: roles.length > 0 ? roles[0] : null
+        });
+
         const { error: errorCrearUsuario } = await supabase
           .from('usuarios')
           .upsert({
@@ -62,7 +71,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (errorCrearUsuario) {
           console.error('❌ Error creando usuario en tabla usuarios:', errorCrearUsuario);
-          return res.status(500).json({ error: 'Error creando usuario en tabla usuarios' });
+          console.error('❌ Detalles del error:', {
+            message: errorCrearUsuario.message,
+            details: errorCrearUsuario.details,
+            hint: errorCrearUsuario.hint,
+            code: errorCrearUsuario.code
+          });
+          return res.status(500).json({ 
+            error: 'Error creando usuario en tabla usuarios',
+            details: errorCrearUsuario.message 
+          });
         }
 
         console.log('✅ Usuario creado en tabla usuarios');
