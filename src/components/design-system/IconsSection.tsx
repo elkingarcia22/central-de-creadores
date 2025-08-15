@@ -9,17 +9,85 @@ const IconsSection: React.FC = () => {
   );
 
   const iconCategories = {
-    'Navegación': ['ArrowLeftIcon', 'ArrowRightIcon', 'ChevronDownIcon', 'ChevronUpIcon'],
-    'Acciones': ['PlusIcon', 'EditIcon', 'TrashIcon', 'CopyIcon', 'SaveIcon'],
-    'Usuarios': ['UserIcon', 'UserAvatarIcon', 'UsersIcon'],
-    'Estado': ['CheckCircleIcon', 'AlertTriangleIcon', 'InfoIcon', 'XIcon'],
-    'Navegación UI': ['HomeIcon', 'SettingsIcon', 'MenuIcon', 'SearchIcon'],
+    'Navegación': [
+      'ArrowLeftIcon', 'ArrowRightIcon', 'ArrowUpIcon', 'ArrowDownIcon',
+      'ChevronDownIcon', 'ChevronRightIcon', 'ChevronLeftIcon'
+    ],
+    'Acciones': [
+      'PlusIcon', 'MinusIcon', 'EditIcon', 'DeleteIcon', 'TrashIcon', 
+      'CopyIcon', 'SaveIcon', 'CloseIcon', 'XIcon', 'CheckIcon', 'CheckmarkIcon'
+    ],
+    'Usuarios y Roles': [
+      'UserIcon', 'UsersIcon', 'AdminIcon', 'AdministradorIcon', 
+      'InvestigadorIcon', 'ReclutadorIcon'
+    ],
+    'Estado y Notificaciones': [
+      'CheckCircleIcon', 'AlertTriangleIcon', 'WarningIcon', 'ErrorIcon',
+      'InfoIcon', 'AlertCircleIcon', 'SuccessIcon', 'BellIcon'
+    ],
+    'Navegación UI': [
+      'HomeIcon', 'SettingsIcon', 'MenuIcon', 'SearchIcon', 'FilterIcon',
+      'DashboardIcon', 'ConfiguracionesIcon'
+    ],
+    'Comunicación': [
+      'MessageIcon', 'PhoneIcon', 'EmailIcon', 'ShareIcon', 'NetworkIcon'
+    ],
+    'Datos y Análisis': [
+      'DatabaseIcon', 'ChartIcon', 'BarChartIcon', 'MetricasIcon',
+      'ClipboardListIcon'
+    ],
+    'Archivos y Documentos': [
+      'FileIcon', 'FileTextIcon', 'DocumentIcon', 'FolderIcon',
+      'DownloadIcon', 'UploadIcon', 'LinkIcon'
+    ],
+    'Tiempo y Fechas': [
+      'TimeIcon', 'ClockIcon', 'CalendarIcon', 'CalendarDaysIcon',
+      'SesionesIcon'
+    ],
+    'Seguridad y Permisos': [
+      'ShieldIcon', 'LockIcon', 'UnlockIcon', 'PasswordIcon',
+      'EyeIcon', 'EyeOffIcon'
+    ],
+    'Módulos del Sistema': [
+      'InvestigacionesIcon', 'ReclutamientoIcon', 'ParticipantesIcon',
+      'EmpresasIcon', 'ConocimientoIcon', 'UsuariosIcon'
+    ],
+    'Herramientas y Configuración': [
+      'ToolIcon', 'RefreshIcon', 'MoreVerticalIcon', 'SortIcon',
+      'SortAscIcon', 'SortDescIcon'
+    ],
+    'Tema y Diseño': [
+      'SunIcon', 'MoonIcon', 'PaletteIcon', 'TypeIcon', 'BoxIcon',
+      'GridIcon', 'DesignSystemIcon', 'ElevationIcon'
+    ],
     'Otros': iconNames.filter(name => 
-      !['ArrowLeftIcon', 'ArrowRightIcon', 'ChevronDownIcon', 'ChevronUpIcon', 
-        'PlusIcon', 'EditIcon', 'TrashIcon', 'CopyIcon', 'SaveIcon',
-        'UserIcon', 'UserAvatarIcon', 'UsersIcon',
-        'CheckCircleIcon', 'AlertTriangleIcon', 'InfoIcon', 'XIcon',
-        'HomeIcon', 'SettingsIcon', 'MenuIcon', 'SearchIcon'].includes(name)
+      ![
+        'ArrowLeftIcon', 'ArrowRightIcon', 'ArrowUpIcon', 'ArrowDownIcon',
+        'ChevronDownIcon', 'ChevronRightIcon', 'ChevronLeftIcon',
+        'PlusIcon', 'MinusIcon', 'EditIcon', 'DeleteIcon', 'TrashIcon', 
+        'CopyIcon', 'SaveIcon', 'CloseIcon', 'XIcon', 'CheckIcon', 'CheckmarkIcon',
+        'UserIcon', 'UsersIcon', 'AdminIcon', 'AdministradorIcon', 
+        'InvestigadorIcon', 'ReclutadorIcon',
+        'CheckCircleIcon', 'AlertTriangleIcon', 'WarningIcon', 'ErrorIcon',
+        'InfoIcon', 'AlertCircleIcon', 'SuccessIcon', 'BellIcon',
+        'HomeIcon', 'SettingsIcon', 'MenuIcon', 'SearchIcon', 'FilterIcon',
+        'DashboardIcon', 'ConfiguracionesIcon',
+        'MessageIcon', 'PhoneIcon', 'EmailIcon', 'ShareIcon', 'NetworkIcon',
+        'DatabaseIcon', 'ChartIcon', 'BarChartIcon', 'MetricasIcon',
+        'ClipboardListIcon',
+        'FileIcon', 'FileTextIcon', 'DocumentIcon', 'FolderIcon',
+        'DownloadIcon', 'UploadIcon', 'LinkIcon',
+        'TimeIcon', 'ClockIcon', 'CalendarIcon', 'CalendarDaysIcon',
+        'SesionesIcon',
+        'ShieldIcon', 'LockIcon', 'UnlockIcon', 'PasswordIcon',
+        'EyeIcon', 'EyeOffIcon',
+        'InvestigacionesIcon', 'ReclutamientoIcon', 'ParticipantesIcon',
+        'EmpresasIcon', 'ConocimientoIcon', 'UsuariosIcon',
+        'ToolIcon', 'RefreshIcon', 'MoreVerticalIcon', 'SortIcon',
+        'SortAscIcon', 'SortDescIcon',
+        'SunIcon', 'MoonIcon', 'PaletteIcon', 'TypeIcon', 'BoxIcon',
+        'GridIcon', 'DesignSystemIcon', 'ElevationIcon'
+      ].includes(name)
     )
   };
 
@@ -30,17 +98,17 @@ const IconsSection: React.FC = () => {
           Iconografía
         </Typography>
         <Typography variant="body1" color="secondary">
-          Biblioteca de iconos SVG del sistema de diseño
+          Biblioteca completa de iconos SVG del sistema de diseño ({iconNames.length} iconos disponibles)
         </Typography>
       </div>
 
       {Object.entries(iconCategories).map(([category, iconList]) => (
         <Card key={category} className="p-6">
           <Typography variant="h3" weight="semibold" className="mb-4">
-            {category}
+            {category} ({iconList.length})
           </Typography>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
             {iconList.map((iconName) => {
               const IconComponent = Icons[iconName as keyof typeof Icons] as React.ComponentType<any>;
               if (!IconComponent) return null;
@@ -48,7 +116,7 @@ const IconsSection: React.FC = () => {
               return (
                 <div key={iconName} className="flex flex-col items-center p-3 border border-border rounded-lg hover:bg-muted transition-colors">
                   <IconComponent className="w-6 h-6 mb-2" />
-                  <Typography variant="caption" className="text-center">
+                  <Typography variant="caption" className="text-center text-xs">
                     {iconName.replace('Icon', '')}
                   </Typography>
                 </div>
@@ -98,62 +166,68 @@ const IconsSection: React.FC = () => {
               Colores de Iconos
             </Typography>
             <div className="flex items-center gap-4">
-              <Icons.UserIcon className="w-6 h-6 text-foreground" />
-              <Icons.UserIcon className="w-6 h-6 text-primary" />
-              <Icons.UserIcon className="w-6 h-6 text-secondary" />
-              <Icons.UserIcon className="w-6 h-6 text-success" />
-              <Icons.UserIcon className="w-6 h-6 text-warning" />
-              <Icons.UserIcon className="w-6 h-6 text-destructive" />
-              <Icons.UserIcon className="w-6 h-6 text-muted-foreground" />
+              <div className="flex flex-col items-center">
+                <Icons.UserIcon className="w-6 h-6 text-primary" />
+                <Typography variant="caption">Primary</Typography>
+              </div>
+              <div className="flex flex-col items-center">
+                <Icons.UserIcon className="w-6 h-6 text-secondary" />
+                <Typography variant="caption">Secondary</Typography>
+              </div>
+              <div className="flex flex-col items-center">
+                <Icons.UserIcon className="w-6 h-6 text-success" />
+                <Typography variant="caption">Success</Typography>
+              </div>
+              <div className="flex flex-col items-center">
+                <Icons.UserIcon className="w-6 h-6 text-warning" />
+                <Typography variant="caption">Warning</Typography>
+              </div>
+              <div className="flex flex-col items-center">
+                <Icons.UserIcon className="w-6 h-6 text-destructive" />
+                <Typography variant="caption">Destructive</Typography>
+              </div>
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Uso en Componentes */}
+      {/* Guía de Uso */}
       <Card className="p-6">
         <Typography variant="h3" weight="semibold" className="mb-4">
-          Uso en Componentes
+          Guía de Uso
         </Typography>
         
         <div className="space-y-4">
           <div>
             <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Botones con Iconos
+              Importación
             </Typography>
-            <div className="flex flex-wrap gap-2">
-              <button className="flex items-center gap-2 px-3 py-1 bg-primary text-primary-foreground rounded text-sm">
-                <Icons.PlusIcon className="w-4 h-4" />
-                Agregar
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1 bg-secondary text-secondary-foreground rounded text-sm">
-                <Icons.EditIcon className="w-4 h-4" />
-                Editar
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1 bg-destructive text-destructive-foreground rounded text-sm">
-                <Icons.TrashIcon className="w-4 h-4" />
-                Eliminar
-              </button>
+            <div className="bg-gray-100 p-3 rounded-lg">
+              <Typography variant="code" className="text-sm">
+                import {'{'} UserIcon, SettingsIcon {'}'} from '../components/icons';
+              </Typography>
             </div>
           </div>
           
           <div>
             <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Estados con Iconos
+              Uso Básico
             </Typography>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-success">
-                <Icons.CheckCircleIcon className="w-5 h-5" />
-                <span>Completado</span>
-              </div>
-              <div className="flex items-center gap-2 text-warning">
-                <Icons.AlertTriangleIcon className="w-5 h-5" />
-                <span>Advertencia</span>
-              </div>
-              <div className="flex items-center gap-2 text-destructive">
-                <Icons.XIcon className="w-5 h-5" />
-                <span>Error</span>
-              </div>
+            <div className="bg-gray-100 p-3 rounded-lg">
+              <Typography variant="code" className="text-sm">
+                {'<'}UserIcon className="w-6 h-6" /{'>'}
+              </Typography>
+            </div>
+          </div>
+          
+          <div>
+            <Typography variant="subtitle2" weight="medium" className="mb-2">
+              Con Colores
+            </Typography>
+            <div className="bg-gray-100 p-3 rounded-lg">
+              <Typography variant="code" className="text-sm">
+                {'<'}SettingsIcon className="w-6 h-6 text-primary" /{'>'}
+              </Typography>
             </div>
           </div>
         </div>
