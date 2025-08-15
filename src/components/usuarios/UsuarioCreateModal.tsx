@@ -32,6 +32,11 @@ export default function UsuarioCreateModal({ isOpen, onClose, onSave, loading = 
     // Solo necesitamos cerrar el modal y recargar la tabla
     console.log('UsuarioCreateModal: Usuario creado exitosamente, cerrando modal...');
     setSubmitting(false);
+    
+    // Llamar a onSave para que la página principal recargue la tabla
+    onSave(data);
+    
+    // Cerrar el modal
     onClose();
   };
 
