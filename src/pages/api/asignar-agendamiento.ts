@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Verificar si el reclutador existe
       const { data: reclutador, error: errorReclutador } = await supabase
-        .from('usuarios_con_roles')
+        .from('profiles')
         .select('id, full_name, email')
         .eq('id', responsable_id)
         .single();
