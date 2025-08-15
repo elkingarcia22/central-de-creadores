@@ -306,101 +306,91 @@ const VerReclutamiento: NextPage = () => {
     }
   }, [id, isInitializing, showError]);
 
-  // SOLUCIÓN RADICAL: Un solo useEffect con control de estado para evitar duplicaciones
-  const [datosCargados, setDatosCargados] = useState(false);
-  const [cargandoDatos, setCargandoDatos] = useState(false);
-
-  // Resetear estado cuando cambie el ID
+  // SOLUCIÓN SIMPLE: Volver al enfoque original pero con control de duplicaciones
   useEffect(() => {
-    setDatosCargados(false);
-    setCargandoDatos(false);
-  }, [id]);
+    if (!isEditing && id) {
+      actualizarYcargarReclutamiento();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditing]);
 
+  // Cargar investigación cuando tengamos reclutamiento
   useEffect(() => {
-    const cargarTodoEnSecuencia = async () => {
-      if (!isEditing && id && !datosCargados && !cargandoDatos) {
+    const cargarInvestigacion = async () => {
+      if (reclutamiento?.investigacion_id && !investigacion?.id) {
         try {
-          setCargandoDatos(true);
-          console.log('🚀 INICIANDO CARGA COMPLETA DE DATOS');
-
-          // 1. Cargar reclutamiento
-          await actualizarYcargarReclutamiento();
-          
-          // 2. Esperar un poco para que se actualice el estado
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // 3. Cargar investigación si no está cargada
-          if (reclutamiento?.investigacion_id && !investigacion?.id) {
-            const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
-            if (!resultado.error && resultado.data) {
-              setInvestigacion(resultado.data);
-            }
+          const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
+          if (!resultado.error && resultado.data) {
+            setInvestigacion(resultado.data);
           }
-          
-          // 4. Esperar un poco más
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // 5. Cargar libreto y catálogos si no están cargados
-          if (investigacion?.id && !libreto?.id) {
-            setLoadingLibreto(true);
-            
-            const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
-            if (!libretoResultado.error && libretoResultado.data) {
-              setLibreto(libretoResultado.data);
-            }
-            
-            if (!catalogosLibreto.plataformas.length) {
-              const [
-                plataformasResponse,
-                rolesResponse,
-                industriasResponse,
-                modalidadesResponse,
-                tamanosResponse,
-                tiposResponse,
-                paisesResponse
-              ] = await Promise.all([
-                obtenerPlataformas(),
-                obtenerRolesEmpresa(),
-                obtenerIndustrias(),
-                obtenerModalidades(),
-                obtenerTamanosEmpresa(),
-                obtenerTiposPrueba(),
-                obtenerPaises()
-              ]);
-              
-              setCatalogosLibreto({
-                plataformas: plataformasResponse.data || [],
-                rolesEmpresa: rolesResponse.data || [],
-                industrias: industriasResponse.data || [],
-                modalidades: modalidadesResponse.data || [],
-                tamanosEmpresa: tamanosResponse.data || [],
-                tiposPrueba: tiposResponse.data || [],
-                paises: paisesResponse.data || []
-              });
-            }
-            
-            setLoadingLibreto(false);
-          }
-          
-          // 6. Cargar participantes si no están cargados
-          if ((reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
-            await cargarParticipantes();
-          }
-          
-          // 7. Marcar como cargado
-          setDatosCargados(true);
-          console.log('✅ CARGA COMPLETA FINALIZADA');
-          
         } catch (error) {
-          console.error('❌ Error en carga completa:', error);
-        } finally {
-          setCargandoDatos(false);
+          console.error('Error cargando investigación:', error);
         }
       }
     };
+    cargarInvestigacion();
+  }, [reclutamiento?.investigacion_id, investigacion?.id]);
 
-    cargarTodoEnSecuencia();
-  }, [id, isEditing, datosCargados, cargandoDatos]);
+  // Cargar libreto y catálogos cuando tengamos la investigación
+  useEffect(() => {
+    const cargarDatosCompletos = async () => {
+      if (investigacion?.id && !libreto?.id) {
+        try {
+          setLoadingLibreto(true);
+          
+          // Cargar libreto
+          const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
+          if (!libretoResultado.error && libretoResultado.data) {
+            setLibreto(libretoResultado.data);
+          }
+          
+          // Cargar catálogos solo si no están cargados
+          if (!catalogosLibreto.plataformas.length) {
+            const [
+              plataformasResponse,
+              rolesResponse,
+              industriasResponse,
+              modalidadesResponse,
+              tamanosResponse,
+              tiposResponse,
+              paisesResponse
+            ] = await Promise.all([
+              obtenerPlataformas(),
+              obtenerRolesEmpresa(),
+              obtenerIndustrias(),
+              obtenerModalidades(),
+              obtenerTamanosEmpresa(),
+              obtenerTiposPrueba(),
+              obtenerPaises()
+            ]);
+            
+            setCatalogosLibreto({
+              plataformas: plataformasResponse.data || [],
+              rolesEmpresa: rolesResponse.data || [],
+              industrias: industriasResponse.data || [],
+              modalidades: modalidadesResponse.data || [],
+              tamanosEmpresa: tamanosResponse.data || [],
+              tiposPrueba: tiposResponse.data || [],
+              paises: paisesResponse.data || []
+            });
+          }
+          
+        } catch (error) {
+          console.error('Error cargando datos completos:', error);
+        } finally {
+          setLoadingLibreto(false);
+        }
+      }
+    };
+    cargarDatosCompletos();
+  }, [investigacion?.id, libreto?.id, catalogosLibreto.plataformas.length]);
+
+  // Cargar participantes cuando cambie el reclutamiento
+  useEffect(() => {
+    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
+      cargarParticipantes();
+    }
+  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing, participantes.length]);
 
   // Ajustar tab activo cuando no hay participantes
   useEffect(() => {
