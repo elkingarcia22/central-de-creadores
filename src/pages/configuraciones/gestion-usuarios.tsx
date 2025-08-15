@@ -389,14 +389,25 @@ export default function GestionUsuariosPage() {
     try {
       console.log('🔄 Recargando tabla después de crear usuario...');
       
-      // Cerrar el modal
+      // Cerrar el modal primero
       setShowModal(false);
       
+      // Esperar un poco para asegurar que la API haya terminado de procesar
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Recargar la tabla, la creación ya se hizo en UsuarioForm
-      fetchUsuarios();
+      console.log('📊 Llamando fetchUsuarios para recargar tabla...');
+      await fetchUsuarios();
+      
+      console.log('✅ Tabla recargada exitosamente después de crear usuario');
       
     } catch (error) {
       console.error('Error recargando tabla:', error);
+      // Intentar recargar de nuevo en caso de error
+      setTimeout(() => {
+        console.log('🔄 Reintentando recarga de tabla...');
+        fetchUsuarios();
+      }, 1000);
     }
   };
 
