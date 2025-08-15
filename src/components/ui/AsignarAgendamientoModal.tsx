@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 import { 
   SideModal, 
@@ -48,6 +48,9 @@ export default function AsignarAgendamientoModal({
   responsableActual
 }: AsignarAgendamientoModalProps) {
   const { showSuccess, showError } = useToast();
+  
+  // Ref para evitar notificaciones duplicadas
+  const lastSuccessNotificationTime = useRef(0);
   
   console.log('🔍 AsignarAgendamientoModal props:', { isEditMode, reclutamientoId, responsableActual });
   
@@ -196,7 +199,14 @@ export default function AsignarAgendamientoModal({
         });
 
         if (response.ok) {
-          showSuccess('Responsable actualizado exitosamente');
+          const now = Date.now();
+          const timeSinceLastNotification = now - lastSuccessNotificationTime.current;
+          
+          // Evitar notificaciones en menos de 2 segundos
+          if (timeSinceLastNotification >= 2000) {
+            showSuccess('Responsable actualizado exitosamente');
+            lastSuccessNotificationTime.current = now;
+          }
           onSuccess();
         } else {
           const errorData = await response.json();
@@ -234,7 +244,14 @@ export default function AsignarAgendamientoModal({
       });
 
       if (response.ok) {
-        showSuccess('Agendamiento asignado exitosamente');
+        const now = Date.now();
+        const timeSinceLastNotification = now - lastSuccessNotificationTime.current;
+        
+        // Evitar notificaciones en menos de 2 segundos
+        if (timeSinceLastNotification >= 2000) {
+          showSuccess('Agendamiento asignado exitosamente');
+          lastSuccessNotificationTime.current = now;
+        }
         onSuccess();
       } else {
         const errorData = await response.json();
