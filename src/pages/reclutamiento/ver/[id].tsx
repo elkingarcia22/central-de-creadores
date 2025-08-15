@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback, useRef } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
@@ -170,10 +170,24 @@ const VerReclutamiento: NextPage = () => {
   const [isEditing, setIsEditing] = useState(false); // Bandera para evitar recargas durante edición
   const [participanteToEditAgendamiento, setParticipanteToEditAgendamiento] = useState<any>(null);
   const [isClosingAsignarModal, setIsClosingAsignarModal] = useState(false); // Controlar cierre del modal
+  
+  // Refs para evitar duplicaciones
+  const lastCargarParticipantesTime = useRef(0);
+  const lastActualizarReclutamientoTime = useRef(0);
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
+    const now = Date.now();
+    const timeSinceLastCall = now - lastCargarParticipantesTime.current;
+    
+    // Evitar ejecuciones en menos de 3 segundos
+    if (timeSinceLastCall < 3000) {
+      console.log('⚠️ Evitando carga duplicada de participantes - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
+      return;
+    }
+    
     console.log('🔄 cargarParticipantes ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
+    lastCargarParticipantesTime.current = now;
     
     try {
       // Verificar que el ID esté disponible
@@ -255,7 +269,17 @@ const VerReclutamiento: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
+    const now = Date.now();
+    const timeSinceLastCall = now - lastActualizarReclutamientoTime.current;
+    
+    // Evitar ejecuciones en menos de 3 segundos
+    if (timeSinceLastCall < 3000) {
+      console.log('⚠️ Evitando carga duplicada de reclutamiento - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
+      return;
+    }
+    
     console.log('🔄 actualizarYcargarReclutamiento ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
+    lastActualizarReclutamientoTime.current = now;
     
     // 1. Actualizar estados en el backend
     try {
