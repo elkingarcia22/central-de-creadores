@@ -311,7 +311,8 @@ const VerReclutamiento: NextPage = () => {
     if (!isEditing && id) {
       actualizarYcargarReclutamiento();
     }
-  }, [id, isEditing, actualizarYcargarReclutamiento]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditing]); // Removido actualizarYcargarReclutamiento de las dependencias
 
   // Cargar los datos completos de la investigación cuando tengamos el reclutamiento
   useEffect(() => {
@@ -2152,14 +2153,14 @@ const VerReclutamiento: NextPage = () => {
     }] : [])
   ];
 
-  // Debug: Log de tabs (solo en cliente)
-  if (typeof window !== 'undefined') {
-    console.log('🔍 Tabs configurados:', tabs);
-    console.log('🔍 Número de tabs:', tabs.length);
-    console.log('🔍 Tab activo:', activeTab);
-    console.log('🔍 Número de participantes:', participantes.length);
-    console.log('🔍 Participantes:', participantes);
-  }
+  // Debug: Log de tabs (solo en cliente) - COMENTADO PARA REDUCIR RUIDO
+  // if (typeof window !== 'undefined') {
+  //   console.log('🔍 Tabs configurados:', tabs);
+  //   console.log('🔍 Número de tabs:', tabs.length);
+  //   console.log('🔍 Tab activo:', activeTab);
+  //   console.log('🔍 Número de participantes:', participantes.length);
+  //   console.log('🔍 Participantes:', participantes);
+  // }
 
   if (isInitializing || loading) {
     return (

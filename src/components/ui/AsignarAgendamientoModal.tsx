@@ -52,13 +52,13 @@ export default function AsignarAgendamientoModal({
   // Ref para evitar notificaciones duplicadas
   const lastSuccessNotificationTime = useRef(0);
   
-  console.log('🔍 AsignarAgendamientoModal RENDERIZADO - props:', { 
-    isOpen, 
-    isEditMode, 
-    reclutamientoId, 
-    responsableActual,
-    timestamp: new Date().toISOString()
-  });
+  // console.log('🔍 AsignarAgendamientoModal RENDERIZADO - props:', { 
+  //   isOpen, 
+  //   isEditMode, 
+  //   reclutamientoId, 
+  //   responsableActual,
+  //   timestamp: new Date().toISOString()
+  // });
   
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
@@ -184,7 +184,7 @@ export default function AsignarAgendamientoModal({
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     
-    console.log('🔍 handleSubmit EJECUTADO - timestamp:', new Date().toISOString());
+    // console.log('🔍 handleSubmit EJECUTADO - timestamp:', new Date().toISOString());
     
     if (isEditMode) {
       // Modo de edición: actualizar solo el responsable
