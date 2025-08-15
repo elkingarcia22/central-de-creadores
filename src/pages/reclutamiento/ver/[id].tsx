@@ -171,28 +171,17 @@ const VerReclutamiento: NextPage = () => {
   const [participanteToEditAgendamiento, setParticipanteToEditAgendamiento] = useState<any>(null);
   const [isClosingAsignarModal, setIsClosingAsignarModal] = useState(false); // Controlar cierre del modal
   
-  // Refs para evitar duplicaciones
-  const lastCargarParticipantesTime = useRef(0);
-  const lastActualizarReclutamientoTime = useRef(0);
-  const lastRecargarDatosCompletosTime = useRef(0);
+  // Refs para evitar duplicaciones (simplificados)
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
-    const now = Date.now();
-    const timeSinceLastCall = now - lastCargarParticipantesTime.current;
-    
-    // Evitar ejecuciones en menos de 3 segundos
-    if (timeSinceLastCall < 3000) {
-      console.log('⚠️ Evitando carga duplicada de participantes - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
-      return;
-    }
-    
-    console.log('🔄 cargarParticipantes ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
-    lastCargarParticipantesTime.current = now;
-    
     try {
+      console.log('🔄 Cargando participantes...');
+      console.log('🔍 ID usado para cargar:', id);
+      
       // Verificar que el ID esté disponible
       if (!id) {
+        console.log('⚠️ ID no disponible aún, esperando...');
         return;
       }
       
@@ -206,7 +195,13 @@ const VerReclutamiento: NextPage = () => {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Participantes cargados:', data);
+        console.log('🔍 Número de participantes:', data.participantes?.length || data.length);
+        
         setParticipantes(data.participantes || data);
+        
+        // Forzar la actualización del estado
+        console.log('🔄 Estado actualizado con participantes:', data.participantes?.length || data.length);
       } else {
         console.error('❌ Error cargando participantes:', response.statusText);
         setParticipantes([]);
@@ -225,17 +220,7 @@ const VerReclutamiento: NextPage = () => {
   }, [id]);
 
   const recargarDatosCompletos = async () => {
-    const now = Date.now();
-    const timeSinceLastCall = now - lastRecargarDatosCompletosTime.current;
-    
-    // Evitar ejecuciones en menos de 3 segundos
-    if (timeSinceLastCall < 3000) {
-      console.log('⚠️ Evitando recarga duplicada de datos completos - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
-      return;
-    }
-    
-    console.log('🔄 recargarDatosCompletos ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
-    lastRecargarDatosCompletosTime.current = now;
+    console.log('🔄 recargarDatosCompletos ejecutándose - ID:', id);
     
     try {
       setLoading(true);
@@ -282,17 +267,7 @@ const VerReclutamiento: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
-    const now = Date.now();
-    const timeSinceLastCall = now - lastActualizarReclutamientoTime.current;
-    
-    // Evitar ejecuciones en menos de 3 segundos
-    if (timeSinceLastCall < 3000) {
-      console.log('⚠️ Evitando carga duplicada de reclutamiento - Tiempo desde última ejecución:', timeSinceLastCall, 'ms');
-      return;
-    }
-    
-    console.log('🔄 actualizarYcargarReclutamiento ejecutándose - ID:', id, 'Timestamp:', new Date().toISOString());
-    lastActualizarReclutamientoTime.current = now;
+    console.log('🔄 actualizarYcargarReclutamiento ejecutándose - ID:', id);
     
     // 1. Actualizar estados en el backend
     try {
