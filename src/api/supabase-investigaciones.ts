@@ -167,20 +167,19 @@ export const obtenerTiposInvestigacion = async (): Promise<RespuestaAPI<TipoInve
 
 export const obtenerUsuarios = async (): Promise<RespuestaAPI<Usuario[]>> => {
   try {
-    console.log('🔍 Obteniendo usuarios desde vista usuarios_con_roles...');
-    // Usar la vista usuarios_con_roles para traer todos los usuarios de la plataforma
-    const { data, error } = await supabase
-      .from('usuarios_con_roles')
-      .select('id, full_name, email, avatar_url, roles, created_at')
-      .order('email', { nullsFirst: false });
+    console.log('🔍 Obteniendo usuarios desde API /api/usuarios...');
+    
+    // Usar la API /api/usuarios que obtiene datos directamente de profiles y user_roles
+    const response = await fetch('/api/usuarios');
+    const result = await response.json();
 
-    if (error) {
-      console.log('⚠️ Error obteniendo usuarios:', error.message);
-      throw error;
+    if (!response.ok) {
+      console.log('⚠️ Error obteniendo usuarios desde API:', result.error);
+      throw new Error(result.error || 'Error obteniendo usuarios');
     }
 
     // Formatear datos para que coincidan con la interfaz Usuario
-    const usuariosFormateados = (data || []).map(user => ({
+    const usuariosFormateados = (result.data || []).map((user: any) => ({
       id: user.id,
       full_name: user.full_name || user.email || 'Sin nombre',
       email: user.email || 'sin-email@ejemplo.com',
@@ -189,7 +188,7 @@ export const obtenerUsuarios = async (): Promise<RespuestaAPI<Usuario[]>> => {
       created_at: user.created_at || null
     }));
 
-    console.log('✅ Usuarios obtenidos desde vista usuarios_con_roles:', usuariosFormateados.length);
+    console.log('✅ Usuarios obtenidos desde API /api/usuarios:', usuariosFormateados.length);
     return {
       data: usuariosFormateados,
       mensaje: 'Usuarios obtenidos exitosamente'
