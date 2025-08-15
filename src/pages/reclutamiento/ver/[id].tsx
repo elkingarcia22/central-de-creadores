@@ -212,12 +212,8 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
-  // Cargar participantes cuando el ID esté disponible
-  useEffect(() => {
-    if (id) {
-      cargarParticipantes();
-    }
-  }, [id]);
+  // REMOVIDO: useEffect que cargaba participantes cuando cambiaba el ID
+  // Los participantes se cargan cuando cambia el reclutamiento, no cuando cambia el ID
 
   const recargarDatosCompletos = async () => {
     console.log('🔄 recargarDatosCompletos ejecutándose - ID:', id);
@@ -388,8 +384,12 @@ const VerReclutamiento: NextPage = () => {
     cargarDatosCompletos();
   }, [investigacion?.id]);
 
-  // REMOVIDO: useEffect problemático que causaba duplicaciones
-  // Los participantes se cargan solo cuando cambia el ID inicial
+  // Cargar participantes cuando cambie el reclutamiento
+  useEffect(() => {
+    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id)) {
+      cargarParticipantes();
+    }
+  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing]);
 
   // Ajustar tab activo cuando no hay participantes
   useEffect(() => {
