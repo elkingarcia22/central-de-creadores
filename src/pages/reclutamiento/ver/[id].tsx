@@ -43,7 +43,6 @@ import {
 import { formatearFecha } from '../../../utils/fechas';
 import { getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../../../utils/estadoUtils';
 import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../../utils/tipoParticipanteUtils';
-import { useReclutamientoDataSimple } from '../../../hooks/useReclutamientoDataSimple';
 import { 
   obtenerInvestigacionPorId,
   actualizarLinkPrueba,
@@ -127,9 +126,6 @@ const VerReclutamiento: NextPage = () => {
   const { showError, showSuccess, showWarning, showInfo } = useToast();
   const { userProfile } = useUser();
   
-  // Hook para evitar duplicaciones
-  const { preventDuplicateLoad, setLoadingState, isLoading } = useReclutamientoDataSimple({ id });
-  
   const [reclutamiento, setReclutamiento] = useState<ReclutamientoDetalle | null>(null);
   const [investigacion, setInvestigacion] = useState<InvestigacionDetalle | null>(null);
   const [loading, setLoading] = useState(false);
@@ -177,18 +173,11 @@ const VerReclutamiento: NextPage = () => {
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
-    // Prevenir carga duplicada
-    if (!preventDuplicateLoad()) {
-      return;
-    }
-    
     try {
       // Verificar que el ID esté disponible
       if (!id) {
         return;
       }
-      
-      setLoadingState(true);
       
       // Obtener todos los reclutamientos de la investigación
       const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${id}`, {
@@ -208,8 +197,6 @@ const VerReclutamiento: NextPage = () => {
     } catch (error) {
       console.error('❌ Error cargando participantes:', error);
       setParticipantes([]);
-    } finally {
-      setLoadingState(false);
     }
   };
 
@@ -266,11 +253,6 @@ const VerReclutamiento: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
-    // Prevenir carga duplicada
-    if (!preventDuplicateLoad()) {
-      return;
-    }
-    
     // 1. Actualizar estados en el backend
     try {
       const res = await fetch('/api/actualizar-estados-reclutamiento', { method: 'POST' });
@@ -287,8 +269,6 @@ const VerReclutamiento: NextPage = () => {
         // Durante la inicialización, usar setLoading para el skeleton
         setLoading(true);
       }
-      setLoadingState(true);
-      
       const response = await fetch('/api/metricas-reclutamientos');
       if (response.ok) {
         const data = await response.json();
@@ -310,10 +290,9 @@ const VerReclutamiento: NextPage = () => {
       showError('Error inesperado al cargar el reclutamiento');
     } finally {
       setLoading(false);
-      setLoadingState(false);
       setIsInitializing(false); // Finalizar inicialización
     }
-  }, [id, isInitializing, showError, preventDuplicateLoad, setLoadingState]);
+  }, [id, isInitializing, showError]);
 
   // Cargar los datos del reclutamiento
   useEffect(() => {
