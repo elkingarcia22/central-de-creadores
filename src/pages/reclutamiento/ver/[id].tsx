@@ -306,24 +306,30 @@ const VerReclutamiento: NextPage = () => {
     }
   }, [id, isInitializing, showError]);
 
-  // Cargar los datos del reclutamiento
+  // CONSOLIDADO: Cargar todos los datos en un solo useEffect para evitar cascadas
   useEffect(() => {
-    if (!isEditing && id) {
-      actualizarYcargarReclutamiento();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isEditing]); // Removido actualizarYcargarReclutamiento de las dependencias
+    const cargarDatosCompletos = async () => {
+      if (!isEditing && id) {
+        try {
+          // 1. Cargar reclutamiento
+          await actualizarYcargarReclutamiento();
+        } catch (error) {
+          console.error('Error cargando reclutamiento:', error);
+        }
+      }
+    };
 
-  // Cargar los datos completos de la investigación cuando tengamos el reclutamiento
+    cargarDatosCompletos();
+  }, [id, isEditing]); // Solo depende de id e isEditing
+
+  // Cargar investigación cuando tengamos reclutamiento
   useEffect(() => {
     const cargarInvestigacion = async () => {
-      if (reclutamiento?.investigacion_id) {
+      if (reclutamiento?.investigacion_id && !investigacion?.id) {
         try {
           const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
           if (!resultado.error && resultado.data) {
             setInvestigacion(resultado.data);
-          } else {
-            console.error('Error cargando investigación:', resultado.error);
           }
         } catch (error) {
           console.error('Error cargando investigación:', error);
@@ -331,12 +337,12 @@ const VerReclutamiento: NextPage = () => {
       }
     };
     cargarInvestigacion();
-  }, [reclutamiento?.investigacion_id]);
+  }, [reclutamiento?.investigacion_id, investigacion?.id]);
 
   // Cargar libreto y catálogos cuando tengamos la investigación
   useEffect(() => {
     const cargarDatosCompletos = async () => {
-      if (investigacion?.id) {
+      if (investigacion?.id && !libreto?.id) {
         try {
           setLoadingLibreto(true);
           
@@ -346,34 +352,36 @@ const VerReclutamiento: NextPage = () => {
             setLibreto(libretoResultado.data);
           }
           
-          // Cargar catálogos
-          const [
-            plataformasResponse,
-            rolesResponse,
-            industriasResponse,
-            modalidadesResponse,
-            tamanosResponse,
-            tiposResponse,
-            paisesResponse
-          ] = await Promise.all([
-            obtenerPlataformas(),
-            obtenerRolesEmpresa(),
-            obtenerIndustrias(),
-            obtenerModalidades(),
-            obtenerTamanosEmpresa(),
-            obtenerTiposPrueba(),
-            obtenerPaises()
-          ]);
-          
-          setCatalogosLibreto({
-            plataformas: plataformasResponse.data || [],
-            rolesEmpresa: rolesResponse.data || [],
-            industrias: industriasResponse.data || [],
-            modalidades: modalidadesResponse.data || [],
-            tamanosEmpresa: tamanosResponse.data || [],
-            tiposPrueba: tiposResponse.data || [],
-            paises: paisesResponse.data || []
-          });
+          // Cargar catálogos solo si no están cargados
+          if (!catalogosLibreto.plataformas.length) {
+            const [
+              plataformasResponse,
+              rolesResponse,
+              industriasResponse,
+              modalidadesResponse,
+              tamanosResponse,
+              tiposResponse,
+              paisesResponse
+            ] = await Promise.all([
+              obtenerPlataformas(),
+              obtenerRolesEmpresa(),
+              obtenerIndustrias(),
+              obtenerModalidades(),
+              obtenerTamanosEmpresa(),
+              obtenerTiposPrueba(),
+              obtenerPaises()
+            ]);
+            
+            setCatalogosLibreto({
+              plataformas: plataformasResponse.data || [],
+              rolesEmpresa: rolesResponse.data || [],
+              industrias: industriasResponse.data || [],
+              modalidades: modalidadesResponse.data || [],
+              tamanosEmpresa: tamanosResponse.data || [],
+              tiposPrueba: tiposResponse.data || [],
+              paises: paisesResponse.data || []
+            });
+          }
           
         } catch (error) {
           console.error('Error cargando datos completos:', error);
@@ -383,14 +391,14 @@ const VerReclutamiento: NextPage = () => {
       }
     };
     cargarDatosCompletos();
-  }, [investigacion?.id]);
+  }, [investigacion?.id, libreto?.id, catalogosLibreto.plataformas.length]);
 
   // Cargar participantes cuando cambie el reclutamiento
   useEffect(() => {
-    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id)) {
+    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
       cargarParticipantes();
     }
-  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing]);
+  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing, participantes.length]);
 
   // Ajustar tab activo cuando no hay participantes
   useEffect(() => {
@@ -2394,9 +2402,9 @@ const VerReclutamiento: NextPage = () => {
         <div className="mt-6">
           {(() => {
             const activeTabData = tabs.find(tab => tab.id === activeTab);
-            console.log('🔍 Tab activo encontrado:', activeTabData);
-            console.log('🔍 ID del tab activo:', activeTab);
-            console.log('🔍 Contenido del tab:', activeTabData?.content);
+            // console.log('🔍 Tab activo encontrado:', activeTabData);
+            // console.log('🔍 ID del tab activo:', activeTab);
+            // console.log('🔍 Contenido del tab:', activeTabData?.content);
             return activeTabData?.content;
           })()}
         </div>
