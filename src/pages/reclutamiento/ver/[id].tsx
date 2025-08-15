@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, memo, useCallback, useRef, useMemo } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
@@ -2130,8 +2130,8 @@ const VerReclutamiento: NextPage = () => {
       );
     };
 
-  // Tabs dinámicos - usando datos de la investigación
-  const tabs = [
+  // Tabs dinámicos - usando datos de la investigación con memoización
+  const tabs = useMemo(() => [
     {
       id: 'informacion',
       label: 'Información',
@@ -2151,7 +2151,7 @@ const VerReclutamiento: NextPage = () => {
       icon: <ClipboardListIcon className="w-4 h-4" />, 
       content: <ParticipantesContent />
     }] : [])
-  ];
+  ], [libreto, participantes.length]);
 
   // Debug: Log de tabs (solo en cliente) - COMENTADO PARA REDUCIR RUIDO
   // if (typeof window !== 'undefined') {
