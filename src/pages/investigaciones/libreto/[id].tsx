@@ -158,6 +158,12 @@ const LibretoDetallePage: NextPage = () => {
       
       setLibreto(response.data);
       showSuccess('Libreto actualizado exitosamente');
+      
+      // Redirigir de vuelta a la vista de investigación después de guardar
+      setTimeout(() => {
+        router.push(`/investigaciones/ver/${id}`);
+      }, 1000); // Pequeño delay para que el usuario vea el mensaje de éxito
+      
     } catch (error: any) {
       console.error('Error guardando libreto:', error);
       showError(error.message || 'Error al guardar el libreto');
@@ -182,7 +188,12 @@ const LibretoDetallePage: NextPage = () => {
       }
       
       showSuccess('Libreto eliminado exitosamente');
-      router.push('/investigaciones');
+      
+      // Redirigir de vuelta a la vista de investigación después de eliminar
+      setTimeout(() => {
+        router.push(`/investigaciones/ver/${id}`);
+      }, 1000); // Pequeño delay para que el usuario vea el mensaje de éxito
+      
     } catch (error: any) {
       console.error('Error eliminando libreto:', error);
       showError(error.message || 'Error al eliminar el libreto');
@@ -192,7 +203,8 @@ const LibretoDetallePage: NextPage = () => {
   };
 
   const handleCancel = () => {
-    router.push('/investigaciones');
+    // Redirigir de vuelta a la vista de investigación
+    router.push(`/investigaciones/ver/${id}`);
   };
 
   if (loading) {

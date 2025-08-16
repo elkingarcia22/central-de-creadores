@@ -39,12 +39,15 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
 
   // Inicializar el estado del sidebar solo en el cliente
   useEffect(() => {
-    setIsClient(true);
-    const saved = localStorage.getItem('sidebarCollapsed');
-    const initialState = saved ? JSON.parse(saved) : false;
-    console.log('Sidebar initial state:', initialState);
-    setSidebarCollapsed(initialState);
-  }, []);
+    console.log('🔍 Layout - useEffect inicialización');
+    if (!isClient) {
+      setIsClient(true);
+      const saved = localStorage.getItem('sidebarCollapsed');
+      const initialState = saved ? JSON.parse(saved) : false;
+      console.log('Sidebar initial state:', initialState);
+      setSidebarCollapsed(initialState);
+    }
+  }, []); // Removido isClient de las dependencias para evitar re-ejecuciones
   const router = useRouter();
   const { rolSeleccionado, setRolSeleccionado, rolesDisponibles, setRolesDisponibles } = useRol();
   const { userProfile, userEmail, userName, userImage, refreshUser } = useUser();
@@ -53,18 +56,21 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
 
   // Sincronizar el contexto de rol con la URL
   useEffect(() => {
+    console.log('🔍 Layout - useEffect rol:', { rol, rolSeleccionado });
     if (rol && rol !== rolSeleccionado) {
+      console.log('🔍 Layout - Cambiando rol de', rolSeleccionado, 'a', rol);
       setRolSeleccionado(rol);
     }
-  }, [rol, rolSeleccionado, setRolSeleccionado]);
+  }, [rol]); // Removido rolSeleccionado y setRolSeleccionado de las dependencias
 
   // Guardar el estado del sidebar en localStorage cuando cambie
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    console.log('🔍 Layout - useEffect sidebarCollapsed:', { sidebarCollapsed });
+    if (typeof window !== 'undefined' && isClient) {
       localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
       console.log('Sidebar state saved:', sidebarCollapsed);
     }
-  }, [sidebarCollapsed]);
+  }, [sidebarCollapsed]); // Removido isClient de las dependencias
 
   // Configuración de menús principales por rol
   const menuConfig = {

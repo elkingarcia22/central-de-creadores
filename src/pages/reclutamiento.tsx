@@ -59,6 +59,9 @@ interface InvestigacionReclutamiento {
   riesgo_reclutamiento_color: string; // Color del riesgo de reclutamiento
   dias_restantes_inicio: number; // Días restantes hasta el inicio
   tipo_reclutamiento: string; // 'automatico' o 'manual'
+  tipo?: string; // 'asignacion_agendamiento' para reclutamientos asignados
+  participante_nombre?: string; // Nombre del participante para asignaciones
+  fecha_sesion?: string | null; // Fecha de sesión para asignaciones
 }
 
 interface MetricasReclutamiento {
@@ -99,6 +102,7 @@ export default function ReclutamientoPage() {
 
   // Estados
   const [investigaciones, setInvestigaciones] = useState<InvestigacionReclutamiento[]>([]);
+  const [reclutamientosAsignados, setReclutamientosAsignados] = useState<any[]>([]);
   
   // Estados para filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -147,16 +151,22 @@ export default function ReclutamientoPage() {
     { value: 'alto', label: 'Alto' },
     { value: 'medio', label: 'Medio' },
     { value: 'bajo', label: 'Bajo' },
-    { value: 'sin_fecha', label: 'Sin fecha' },
-    { value: 'completado', label: 'Completado' },
   ];
   
-  // Cargar datos iniciales y cuando cambie el rol
+  // Cargar datos iniciales y cuando cambie el rol o el usuario
   useEffect(() => {
     console.log('🚀 useEffect ejecutándose - cargando datos iniciales');
     console.log('🎭 Rol actual:', rolSeleccionado);
+    console.log('👤 User Profile:', userProfile?.id);
+    
+    // Evitar cargar datos si el rol está vacío o el usuario no está cargado
+    if (!rolSeleccionado || !userProfile?.id) {
+      console.log('⏸️ Rol vacío o usuario no cargado, esperando...');
+      return;
+    }
+    
     cargarDatos();
-  }, [rolSeleccionado]); // Se ejecuta cuando cambia el rol
+  }, [rolSeleccionado, userProfile?.id]); // Se ejecuta cuando cambia el rol o el usuario
 
   // Cargar datos
   const cargarDatos = async () => {
@@ -186,18 +196,27 @@ export default function ReclutamientoPage() {
       // Verificar permisos antes de cargar
       console.log('🔍 Verificando permisos de reclutamiento...');
       console.log('👤 Usuario ID:', usuarioId);
+      console.log('👤 User Profile ID:', userProfile?.id);
       console.log('🎭 Rol Seleccionado:', rolSeleccionado);
       console.log('🔐 Tiene permiso ver reclutamientos:', tienePermiso('reclutamientos', 'ver'));
       
-      if (!tienePermiso('reclutamientos', 'ver')) {
+      // Verificar que el usuario esté cargado
+      if (!userProfile?.id) {
+        console.log('⏸️ Usuario no cargado aún, esperando...');
+        return;
+      }
+
+      // Para agendador, permitir acceso siempre (puede ver sus asignaciones)
+      const rolActivoEsAdmin = rolSeleccionado?.toLowerCase() === 'administrador';
+      const esAgendador = rolSeleccionado?.toLowerCase() === 'agendador';
+      
+      if (!tienePermiso('reclutamientos', 'ver') && !rolActivoEsAdmin && !esAgendador) {
         console.log('❌ Usuario no tiene permisos para ver reclutamientos');
         setInvestigaciones([]);
         return;
       }
-      
-      const rolActivoEsAdmin = rolSeleccionado?.toLowerCase() === 'administrador';
       console.log('🎭 Rol Activo en Reclutamiento:', rolSeleccionado, 'Es Admin:', rolActivoEsAdmin);
-      const url = `/api/metricas-reclutamientos?usuarioId=${usuarioId}&esAdmin=${rolActivoEsAdmin}&rol=${rolSeleccionado}`;
+      const url = `/api/metricas-reclutamientos?usuarioId=${userProfile?.id}&esAdmin=${rolActivoEsAdmin}&rol=${rolSeleccionado}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
@@ -206,9 +225,25 @@ export default function ReclutamientoPage() {
         if (data.investigaciones && data.investigaciones.length > 0) {
           console.log('📊 Primera investigación:', data.investigaciones[0]);
           console.log('📊 Campo libreto_numero_participantes:', data.investigaciones[0].libreto_numero_participantes);
+          
+          // Verificar duplicados en los datos recibidos
+          const ids = data.investigaciones.map((inv: any) => inv.reclutamiento_id);
+          const idsUnicos = [...new Set(ids)];
+          console.log('🔍 IDs únicos:', idsUnicos.length);
+          console.log('🔍 IDs totales:', ids.length);
+          console.log('🔍 ¿Hay duplicados en la API?', ids.length !== idsUnicos.length);
+          
+          if (ids.length !== idsUnicos.length) {
+            console.log('❌ DUPLICADOS ENCONTRADOS EN LA API:');
+            const duplicados = ids.filter((id: string, index: number) => ids.indexOf(id) !== index);
+            console.log('🔍 IDs duplicados:', [...new Set(duplicados)]);
+          }
         }
-        setMetricas(data);
+        setMetricas(data.metricas);
         setInvestigaciones(data.investigaciones);
+        setReclutamientosAsignados(data.reclutamientosAsignados || []);
+        console.log('📊 Reclutamientos asignados cargados:', data.reclutamientosAsignados?.length || 0);
+        console.log('📊 Datos de reclutamientos asignados:', data.reclutamientosAsignados);
       } else {
         throw new Error('Error al obtener métricas');
       }
@@ -271,10 +306,11 @@ export default function ReclutamientoPage() {
 
     // Filtrar por nivel de riesgo
     if (filters.nivelRiesgo.length > 0) {
-      filtradas = filtradas.filter(inv => 
-        inv.riesgo_reclutamiento && 
-        filters.nivelRiesgo.includes(inv.riesgo_reclutamiento.toLowerCase())
-      );
+      filtradas = filtradas.filter(inv => {
+        // Si el riesgo es null, asignar 'bajo' por defecto
+        const riesgo = inv.riesgo_reclutamiento || 'bajo';
+        return filters.nivelRiesgo.includes(riesgo.toLowerCase());
+      });
     }
 
     // Filtrar por porcentaje de avance usando slider
@@ -314,8 +350,25 @@ export default function ReclutamientoPage() {
 
   // Investigaciones filtradas
   const investigacionesFiltradas = useMemo(() => {
-    return filtrarInvestigaciones(investigaciones, searchTerm, filters);
+    console.log('🔍 investigacionesFiltradas ejecutándose');
+    console.log('📊 investigaciones.length:', investigaciones.length);
+    console.log('🔍 investigaciones:', investigaciones);
+    const resultado = filtrarInvestigaciones(investigaciones, searchTerm, filters);
+    console.log('📊 investigacionesFiltradas.length:', resultado.length);
+    console.log('🔍 investigacionesFiltradas:', resultado);
+    return resultado;
   }, [investigaciones, searchTerm, filters, filtrarInvestigaciones]);
+
+  // Solo usar investigaciones filtradas (sin agregar asignaciones como filas separadas)
+  const datosCompletos = useMemo(() => {
+    console.log('🔍 datosCompletos ejecutándose');
+    console.log('📊 investigacionesFiltradas.length:', investigacionesFiltradas.length);
+    console.log('📊 reclutamientosAsignados.length:', reclutamientosAsignados.length);
+    
+    // Solo devolver las investigaciones filtradas, sin agregar asignaciones como filas separadas
+    console.log('📊 Datos completos (solo investigaciones):', investigacionesFiltradas.length);
+    return investigacionesFiltradas;
+  }, [investigacionesFiltradas, reclutamientosAsignados]);
 
   // Generar opciones de filtro dinámicamente - AHORA POR NOMBRE
   const filterOptionsDynamic = useMemo(() => {
@@ -324,11 +377,21 @@ export default function ReclutamientoPage() {
     const implementadores = [...new Set(investigaciones.map(inv => inv.implementador_nombre).filter(Boolean))];
     const riesgos = [...new Set(investigaciones.map(inv => inv.riesgo_reclutamiento).filter(Boolean))];
     
-    // Opciones de estado: usar nombres del catálogo para mostrar todas las opciones
+    // Opciones de estado: usar nombres del catálogo para el value y label
     const estados = estadosReclutamiento.map(e => ({
-      value: e.label, // Usar el nombre como value para que coincida con el filtrado
-      label: e.label
+      value: e.nombre, // Usar el nombre como value para que coincida con el filtrado
+      label: e.nombre // Usar el nombre para mostrar
     }));
+    
+    // Agregar "Agendada" si no está en la lista pero está en los datos
+    const estadosEnDatos = [...new Set(investigaciones.map(inv => inv.estado_reclutamiento_nombre).filter(Boolean))];
+    const estadosFaltantes = estadosEnDatos.filter(estado => !estados.some(e => e.value === estado));
+    
+    if (estadosFaltantes.length > 0) {
+      estadosFaltantes.forEach(estado => {
+        estados.push({ value: estado, label: estado });
+      });
+    }
     
     const options = {
       estados: estados, // Todos los estados del catálogo
@@ -340,10 +403,10 @@ export default function ReclutamientoPage() {
       tiposInvestigacion: [
         { value: 'todos', label: 'Todos los tipos' },
       ],
-      nivelRiesgo: riesgos.map(riesgo => ({ value: riesgo.toLowerCase(), label: riesgo })),
+      nivelRiesgo: opcionesNivelRiesgo, // Usar las opciones estáticas definidas
     };
     return options;
-  }, [investigaciones, estadosReclutamiento]);
+  }, [investigaciones, estadosReclutamiento, opcionesNivelRiesgo]);
 
   // === CÁLCULO DE MÉTRICAS DE RIESGO EN VIVO ===
   const metricasRiesgo = useMemo(() => {
@@ -635,9 +698,11 @@ export default function ReclutamientoPage() {
         // Acciones del menú desplegable
         const actions = [
           {
-            label: 'Ver',
+            label: row.tipo === 'asignacion_agendamiento' ? 'Ver Reclutamiento' : 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
-            onClick: () => router.push(`/reclutamiento/ver/${row.reclutamiento_id}`),
+            onClick: () => {
+              router.push(`/reclutamiento/ver/${row.reclutamiento_id}`);
+            },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
@@ -718,8 +783,7 @@ export default function ReclutamientoPage() {
   }
 
   return (
-    <>
-      <Layout rol={rolSeleccionado}>
+    <Layout rol={rolSeleccionado}>
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
@@ -777,7 +841,7 @@ export default function ReclutamientoPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricas.estados.pendientes}
+                      {metricas?.estados?.pendientes || 0}
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Pendientes
@@ -794,7 +858,7 @@ export default function ReclutamientoPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricasRiesgo.alto + metricasRiesgo.medio}
+                      {(metricasRiesgo?.alto || 0) + (metricasRiesgo?.medio || 0)}
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Riesgo Alto/Medio
@@ -811,7 +875,7 @@ export default function ReclutamientoPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricas.estados.completados}
+                      {metricas?.estados?.completados || 0}
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Completados
@@ -858,7 +922,7 @@ export default function ReclutamientoPage() {
 
           {/* Tabla de reclutamientos */}
           <DataTable
-            data={investigacionesFiltradas}
+            data={datosCompletos}
             columns={columns}
             loading={loading}
             searchable={false}
@@ -929,7 +993,5 @@ export default function ReclutamientoPage() {
         loading={loadingDelete}
       /> */}
     </Layout>
-    <DiagnosticoPermisos />
-    </>
   );
 } 

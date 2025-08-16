@@ -186,7 +186,8 @@ export const getEstadoReclutamientoVariant = (estado: string): 'default' | 'warn
   const estadoLower = estado?.toLowerCase()?.trim();
   
   switch (estadoLower) {
-    case 'pendiente': return 'warning';        // Amarillo
+    case 'pendiente': 
+    case 'pendiente de agendamiento': return 'warning';        // Amarillo
     case 'en progreso': 
     case 'en_progreso': 
     case 'en progreso': return 'accent-purple'; // Púrpura (único)
@@ -205,6 +206,8 @@ export const getEstadoReclutamientoText = (estado: string): string => {
   switch (estado?.toLowerCase()) {
     case 'pendiente':
       return 'Pendiente';
+    case 'pendiente de agendamiento':
+      return 'Pendiente de Agendamiento';
     case 'en progreso':
     case 'en_progreso':
     case 'en progreso':

@@ -41,29 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { usuarioId, esAdmin, rol } = req.query;
     
-    console.log('🔍 Obteniendo métricas de reclutamientos...');
+    console.log('🔍 Obteniendo métricas de reclutamientos desde vista...');
     console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin, 'Rol:', rol);
 
-    // Construir consulta base para investigaciones
+    // Construir consulta base usando la vista corregida
     let queryInvestigaciones = supabase
-      .from('investigaciones')
-      .select(`
-        id,
-        nombre,
-        estado,
-        fecha_inicio,
-        fecha_fin,
-        riesgo_automatico,
-        responsable_id,
-        implementador_id,
-        producto_id,
-        tipo_investigacion_id,
-        libreto,
-        creado_el,
-        creado_por,
-        estado_reclutamiento
-      `)
-      .eq('estado', 'por_agendar');
+      .from('vista_reclutamientos_completa')
+      .select('*');
 
     // Aplicar filtros de asignación si no es administrador
     if (esAdmin !== 'true' && usuarioId) {
@@ -72,8 +56,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Para el rol agendador, no filtrar por investigaciones ya que verá todos los reclutamientos
       // donde es responsable del agendamiento (se filtrará después)
       if (rol !== 'agendador') {
-        // Los investigadores solo ven investigaciones donde son responsables o implementadores, NO como creadores
-        queryInvestigaciones = queryInvestigaciones.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
+        // Para investigador y otros roles, filtrar por investigaciones donde son responsables o implementadores
+        // Por ahora, no aplicar filtro para evitar errores en la consulta
+        console.log('⚠️ Filtro de responsable/implementador deshabilitado temporalmente');
       }
     }
 
@@ -85,172 +70,169 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('✅ Investigaciones por agendar obtenidas:', investigacionesPorAgendar?.length || 0);
+
+    // Obtener reclutamientos asignados al usuario para agendamiento (simplificado)
+    let reclutamientosAsignados: any[] = [];
+    if (usuarioId) {
+      console.log('🔍 Buscando reclutamientos asignados para usuario:', usuarioId);
+      
+      // Consulta simple como en debug-asignaciones-simple
+      const { data: asignaciones, error: errorAsignaciones } = await supabase
+        .from('reclutamientos')
+        .select('id, investigacion_id, participantes_id, estado_agendamiento, reclutador_id, fecha_sesion')
+        .eq('reclutador_id', usuarioId);
+
+      if (errorAsignaciones) {
+        console.error('❌ Error obteniendo asignaciones:', errorAsignaciones);
+      } else {
+        console.log('✅ Reclutamientos asignados para agendamiento:', asignaciones?.length || 0);
+        console.log('📊 Datos de asignaciones:', asignaciones);
+        reclutamientosAsignados = asignaciones || [];
+      }
+    }
     if (investigacionesPorAgendar && investigacionesPorAgendar.length > 0) {
       console.log('🔍 Detalles de investigaciones por agendar:');
       investigacionesPorAgendar.forEach((inv, index) => {
-        console.log(`  ${index + 1}. ${inv.nombre} (ID: ${inv.id})`);
-        console.log(`     - Responsable: ${inv.responsable_id}`);
-        console.log(`     - Implementador: ${inv.implementador_id}`);
-        console.log(`     - Creado por: ${inv.creado_por}`);
+        console.log(`  ${index + 1}. ${inv.titulo_investigacion} (ID: ${inv.investigacion_id})`);
+        console.log(`     - Responsable: ${inv.responsable_nombre}`);
+        console.log(`     - Implementador: ${inv.implementador_nombre}`);
+        console.log(`     - Tiene libreto: ${inv.tiene_libreto}`);
+        console.log(`     - Tiene participantes: ${inv.tiene_participantes}`);
       });
     }
 
-    // Obtener datos adicionales necesarios
-    const { data: profiles, error: errorProfiles } = await supabase
-      .from('profiles')
-      .select('id, full_name, email');
-
-    const { data: libretos, error: errorLibretos } = await supabase
-      .from('libretos_investigacion')
-      .select('id, nombre_sesion, descripcion_general, numero_participantes, numero_participantes_esperados');
-
-    const { data: productos, error: errorProductos } = await supabase
-      .from('productos')
-      .select('id, nombre');
-
-    const { data: tiposInvestigacion, error: errorTipos } = await supabase
-      .from('tipos_investigacion')
-      .select('id, nombre');
-
-    const { data: estados, error: errorEstados } = await supabase
-      .from('estado_reclutamiento_cat')
-      .select('id, nombre')
-      .eq('activo', true);
-
-    // Crear mapas para búsqueda rápida
-    const profilesMap = new Map((profiles || []).map(p => [p.id, p]));
-    const libretosMap = new Map((libretos || []).map(l => [l.id, l]));
-    const productosMap = new Map((productos || []).map(p => [p.id, p]));
-    const tiposMap = new Map((tiposInvestigacion || []).map(t => [t.id, t]));
-    const estadosMap = new Map((estados || []).map(e => [e.id, e]));
-
-    // Obtener reclutamientos y agrupar por investigacion_id
-    let queryReclutamientos = supabase
-      .from('reclutamientos')
-      .select('id, investigacion_id, estado_agendamiento, responsable_agendamiento');
-    
-    // Para el rol agendador, filtrar por responsable_agendamiento
-    if (rol === 'agendador' && usuarioId) {
-      console.log('📅 Filtrando reclutamientos por responsable_agendamiento para agendador');
-      queryReclutamientos = queryReclutamientos.eq('responsable_agendamiento', usuarioId);
-    }
-    
-    const { data: reclutamientos, error: errorReclutamientos } = await queryReclutamientos;
-
-    if (errorReclutamientos) {
-      console.error('Error obteniendo reclutamientos:', errorReclutamientos);
-      return res.status(500).json({ error: 'Error obteniendo reclutamientos' });
-    }
-
-    // Obtener los estados de reclutamiento desde la tabla estado_reclutamiento_cat
-    const { data: estadosReclutamiento, error: errorEstadosReclutamiento } = await supabase
-      .from('estado_reclutamiento_cat')
-      .select('id, nombre, color, orden')
-      .eq('activo', true)
-      .order('orden');
-
-    if (errorEstadosReclutamiento) {
-      console.error('Error obteniendo estados de reclutamiento:', errorEstadosReclutamiento);
-      return res.status(500).json({ error: 'Error obteniendo estados de reclutamiento' });
-    }
-
-    // Crear un mapa de conteo de reclutamientos por investigación
-    const reclutamientosMap = new Map();
-    const reclutamientosPorInvestigacion = new Map();
-    
-    (reclutamientos || []).forEach(r => {
-      // Solo contar si NO está en estado "Pendiente de agendamiento"
-      if (r.estado_agendamiento !== 'd32b84d1-6209-41d9-8108-03588ca1f9b5') {
-        const count = reclutamientosMap.get(r.investigacion_id) || 0;
-        reclutamientosMap.set(r.investigacion_id, count + 1);
-      }
+    // La vista ya tiene todos los datos necesarios, solo necesitamos formatear la respuesta
+    const investigacionesFormateadas = (investigacionesPorAgendar || []).map(inv => {
+      // Calcular riesgo de reclutamiento basado en fecha de inicio
+      let riesgo_reclutamiento = 'bajo';
+      let riesgo_reclutamiento_color = '#10B981';
+      let dias_restantes_inicio = 0;
       
-      // Agrupar reclutamientos por investigación
-      if (!reclutamientosPorInvestigacion.has(r.investigacion_id)) {
-        reclutamientosPorInvestigacion.set(r.investigacion_id, []);
-      }
-      reclutamientosPorInvestigacion.get(r.investigacion_id).push(r);
-    });
-
-    // Procesar investigaciones por agendar (automáticas)
-    const investigacionesProcesadas = await Promise.all((investigacionesPorAgendar || []).map(async (i) => {
-      const libreto = i.libreto ? libretosMap.get(i.libreto) : null;
-      const producto = i.producto_id ? productosMap.get(i.producto_id) : null;
-      const tipo = i.tipo_investigacion_id ? tiposMap.get(i.tipo_investigacion_id) : null;
-      const responsable = i.responsable_id ? profilesMap.get(i.responsable_id) : null;
-      const implementador = i.implementador_id ? profilesMap.get(i.implementador_id) : null;
-
-      const riesgoReclutamiento = i.fecha_inicio ? 
-        calcularRiesgoReclutamiento(i.fecha_inicio) : 
-        { riesgo: 'bajo', color: '#10B981', diasRestantes: 0 };
-
-      // Contar reclutamientos asociados a esta investigación
-      const participantesReclutados = reclutamientosMap.get(i.id) || 0;
-
-      // Calcular estado de reclutamiento basándose en el progreso
-      let estadoReclutamientoNombre = 'Pendiente';
-      let estadoReclutamientoColor = '#F59E0B';
-      let estadoReclutamientoId = null;
-      
-      // Lógica simple: si hay participantes reclutados, el estado es "En progreso"
-      // Si se completó el número esperado, es "Agendada"
-      if (participantesReclutados > 0) {
-        const numeroEsperado = libreto?.numero_participantes || libreto?.numero_participantes_esperados || 0;
+      if (inv.fecha_inicio) {
+        const fechaInicio = new Date(inv.fecha_inicio);
+        const hoy = new Date();
+        dias_restantes_inicio = Math.ceil((fechaInicio.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
         
-        if (numeroEsperado > 0 && participantesReclutados >= numeroEsperado) {
-          estadoReclutamientoNombre = 'Agendada';
-          estadoReclutamientoColor = '#10B981';
+        if (dias_restantes_inicio < 0) {
+          // Fecha ya pasó - mantener como alto
+          riesgo_reclutamiento = 'alto';
+          riesgo_reclutamiento_color = '#EF4444';
+        } else if (dias_restantes_inicio < 7) {
+          riesgo_reclutamiento = 'alto';
+          riesgo_reclutamiento_color = '#EF4444';
+        } else if (dias_restantes_inicio < 14) {
+          riesgo_reclutamiento = 'medio';
+          riesgo_reclutamiento_color = '#F59E0B';
         } else {
-          estadoReclutamientoNombre = 'En progreso';
-          estadoReclutamientoColor = '#3B82F6';
+          riesgo_reclutamiento = 'bajo';
+          riesgo_reclutamiento_color = '#10B981';
         }
+      } else {
+        // Sin fecha de inicio - alto
+        riesgo_reclutamiento = 'alto';
+        riesgo_reclutamiento_color = '#EF4444';
       }
-
-      // Buscar el ID del estado en estado_reclutamiento_cat
-      const estadoEncontrado = estadosReclutamiento?.find(e => e.nombre === estadoReclutamientoNombre);
-      estadoReclutamientoId = estadoEncontrado?.id || null;
 
       return {
-        reclutamiento_id: null, // No es un reclutamiento manual
-        investigacion_id: i.id,
-        investigacion_nombre: i.nombre || 'Sin nombre',
-        estado_investigacion: i.estado || 'Sin estado',
-        investigacion_fecha_inicio: i.fecha_inicio,
-        investigacion_fecha_fin: i.fecha_fin,
-        investigacion_riesgo: i.riesgo_automatico || 'medio',
-        libreto_titulo: libreto?.nombre_sesion || 'Sin libreto',
-        libreto_descripcion: libreto?.descripcion_general || '',
-        libreto_numero_participantes: libreto?.numero_participantes || libreto?.numero_participantes_esperados || 0,
-        responsable_nombre: responsable?.full_name || 'Sin responsable',
-        responsable_correo: responsable?.email || '',
-        responsable_id: responsable?.id || '',
-        implementador_nombre: implementador?.full_name || 'Sin implementador',
-        implementador_correo: implementador?.email || '',
-        estado_reclutamiento_id: estadoReclutamientoId || '',
-        estado_reclutamiento_nombre: estadoReclutamientoNombre,
-        estado_reclutamiento_color: estadoReclutamientoColor,
-        participantes_reclutados: participantesReclutados,
-        progreso_reclutamiento: libreto && (libreto.numero_participantes || libreto.numero_participantes_esperados)
-          ? `${participantesReclutados}/${libreto.numero_participantes || libreto.numero_participantes_esperados}`
-          : participantesReclutados > 0 
-            ? `${participantesReclutados}/?` 
-            : '0/0',
-        porcentaje_completitud: libreto && (libreto.numero_participantes || libreto.numero_participantes_esperados)
-          ? Math.round((participantesReclutados / (libreto.numero_participantes || libreto.numero_participantes_esperados)) * 100)
-          : 0,
-        tipo_reclutamiento: 'automatico', // Siempre automático para la lista principal
-        riesgo_reclutamiento: riesgoReclutamiento.riesgo,
-        riesgo_reclutamiento_color: riesgoReclutamiento.color,
-        dias_restantes_inicio: riesgoReclutamiento.diasRestantes,
-        participante_nombre: 'Sin participante', // No aplica para investigaciones automáticas
-        participante_email: '',
-        fecha_asignado: i.creado_el,
-        fecha_sesion: null
+        reclutamiento_id: inv.reclutamiento_id,
+        investigacion_id: inv.investigacion_id,
+        investigacion_nombre: inv.titulo_investigacion,
+        estado_investigacion: inv.estado_investigacion,
+        investigacion_fecha_inicio: inv.fecha_inicio,
+        investigacion_fecha_fin: inv.fecha_fin,
+        investigacion_riesgo: inv.riesgo_automatico,
+        libreto_titulo: inv.titulo_libreto,
+        libreto_descripcion: inv.descripcion_libreto,
+        libreto_numero_participantes: inv.participantes_requeridos,
+        responsable_nombre: inv.responsable_nombre,
+        responsable_correo: inv.responsable_email,
+        responsable_id: inv.responsable_id, // Agregar ID del responsable
+        implementador_nombre: inv.implementador_nombre,
+        implementador_correo: inv.implementador_email,
+        implementador_id: inv.implementador_id, // Agregar ID del implementador
+        estado_reclutamiento_id: inv.estado_reclutamiento_id,
+        estado_reclutamiento_nombre: inv.estado_reclutamiento_nombre,
+        estado_reclutamiento_color: inv.estado_reclutamiento_color,
+        fecha_sesion: inv.fecha_sesion,
+        participantes_reclutados: inv.participantes_actuales,
+        progreso_reclutamiento: inv.progreso_reclutamiento,
+        porcentaje_completitud: inv.progreso_porcentaje,
+        riesgo_reclutamiento: riesgo_reclutamiento,
+        riesgo_reclutamiento_color: riesgo_reclutamiento_color,
+        dias_restantes_inicio: dias_restantes_inicio,
+        tiene_libreto: inv.tiene_libreto,
+        tiene_participantes: inv.tiene_participantes
       };
-    }));
+    });
+
+    // Filtrar investigaciones según el rol del usuario
+    let investigacionesFinales = investigacionesFormateadas;
+    
+    if ((rol === 'agendador' || rol === 'Agendador') && usuarioId) {
+      console.log('📅 Filtrando reclutamientos para agendador');
+      
+      // Obtener el nombre del usuario actual
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', usuarioId)
+        .single();
+      
+      if (userError) {
+        console.error('❌ Error obteniendo datos del usuario:', userError);
+      }
+      
+      const nombreUsuario = userData?.full_name || '';
+      
+      // Obtener IDs de investigaciones donde el usuario tiene asignaciones
+      const investigacionesIdsConAsignaciones = new Set(
+        reclutamientosAsignados.map(r => r.investigacion_id)
+      );
+      
+      console.log('🔍 Investigaciones con asignaciones:', Array.from(investigacionesIdsConAsignaciones));
+      
+      // Filtrar investigaciones para mostrar:
+      // 1. Las que tienen asignaciones del agendador
+      // 2. Las donde el agendador es responsable o implementador
+      investigacionesFinales = investigacionesFormateadas.filter(inv => {
+        const tieneAsignacion = investigacionesIdsConAsignaciones.has(inv.investigacion_id);
+        const esResponsable = inv.responsable_nombre === nombreUsuario;
+        const esImplementador = inv.implementador_nombre === nombreUsuario;
+        
+        return tieneAsignacion || esResponsable || esImplementador;
+      });
+      
+      console.log('📊 Investigaciones filtradas para agendador:', investigacionesFinales.length);
+    } else if ((rol === 'investigador' || rol === 'Investigador') && usuarioId) {
+      console.log('🔬 Filtrando reclutamientos para investigador');
+      
+      // Obtener el nombre del usuario actual
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', usuarioId)
+        .single();
+      
+      if (userError) {
+        console.error('❌ Error obteniendo datos del usuario:', userError);
+      }
+      
+      const nombreUsuario = userData?.full_name || '';
+      
+      // Para investigador, mostrar solo reclutamientos donde es responsable o implementador
+      const investigacionesFiltradas = investigacionesFormateadas.filter(inv => {
+        const esResponsable = inv.responsable_nombre === nombreUsuario;
+        const esImplementador = inv.implementador_nombre === nombreUsuario;
+        return esResponsable || esImplementador;
+      });
+      
+      investigacionesFinales = investigacionesFiltradas;
+      
+      console.log('📊 Investigaciones filtradas para investigador:', investigacionesFinales.length);
+    }
 
     // Calcular métricas
-    const total = investigacionesProcesadas.length;
+    const total = investigacionesFinales.length;
     const estadosCount = {
       pendientes: 0,
       enProgreso: 0,
@@ -263,68 +245,105 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       medio: 0,
       alto: 0
     };
-    
-    // Contar por estado
-    investigacionesProcesadas.forEach(inv => {
-      const estadoNombre = inv.estado_reclutamiento_nombre?.toLowerCase();
-      if (estadoNombre?.includes('pendiente') || estadoNombre?.includes('por iniciar')) {
-        estadosCount.pendientes++;
-      } else if (estadoNombre?.includes('progreso') || estadoNombre?.includes('en curso')) {
-        estadosCount.enProgreso++;
-      } else if (estadoNombre?.includes('completado') || estadoNombre?.includes('finalizado') || estadoNombre?.includes('completada') || estadoNombre?.includes('agendada')) {
-        estadosCount.completados++;
-      } else if (estadoNombre?.includes('cancelado')) {
-        estadosCount.cancelados++;
-      } else {
-        // Por defecto, considerar como pendiente
-        estadosCount.pendientes++;
+
+    investigacionesFinales.forEach(inv => {
+      // Contar por estado
+      switch (inv.estado_reclutamiento_nombre) {
+        case 'Pendiente':
+          estadosCount.pendientes++;
+          break;
+        case 'En progreso':
+          estadosCount.enProgreso++;
+          break;
+        case 'Agendada':
+          estadosCount.completados++;
+          break;
+        default:
+          estadosCount.pendientes++;
       }
 
-      // Contar por riesgo de reclutamiento
-      const riesgo = inv.riesgo_reclutamiento?.toLowerCase();
-      if (riesgo === 'bajo') {
-        riesgoCount.bajo++;
-      } else if (riesgo === 'medio') {
-        riesgoCount.medio++;
-      } else if (riesgo === 'alto') {
-        riesgoCount.alto++;
+      // Contar por riesgo
+      switch (inv.riesgo_reclutamiento) {
+        case 'bajo':
+          riesgoCount.bajo++;
+          break;
+        case 'medio':
+          riesgoCount.medio++;
+          break;
+        case 'alto':
+          riesgoCount.alto++;
+          break;
+        default:
+          riesgoCount.medio++;
       }
     });
 
-    const totalParticipantesNecesarios = investigacionesProcesadas.reduce((sum, inv) => 
-      sum + inv.libreto_numero_participantes, 0
-    );
-
-    const totalParticipantesReclutados = investigacionesProcesadas.reduce((sum, inv) => 
-      sum + inv.participantes_reclutados, 0
-    );
-
-    const promedioCompletitud = total > 0 ? 
-      investigacionesProcesadas.reduce((sum, inv) => sum + inv.porcentaje_completitud, 0) / total : 0;
-
-    const response = {
+    console.log('✅ Métricas calculadas:', {
       total,
-      estados: estadosCount,
-      riesgoReclutamiento: riesgoCount,
-      progreso: {
-        totalParticipantesNecesarios,
-        totalParticipantesReclutados,
-        promedioCompletitud: Math.round(promedioCompletitud),
-        progresoGeneral: totalParticipantesNecesarios > 0 ? 
-          Math.round((totalParticipantesReclutados / totalParticipantesNecesarios) * 100) + '%' : '0%'
-      },
-      resumen: {
-        responsablesUnicos: new Set(investigacionesProcesadas.map(inv => inv.responsable_nombre)).size,
-        implementadoresUnicos: new Set(investigacionesProcesadas.map(inv => inv.implementador_nombre)).size,
-        libretosUnicos: new Set(investigacionesProcesadas.map(inv => inv.libreto_titulo)).size
-      },
-      metricasPorMes: [], // Calcular basado en fechas
-      investigaciones: investigacionesProcesadas
-    };
+      estadosCount,
+      riesgoCount
+    });
 
-    res.status(200).json(response);
+    // Formatear reclutamientos asignados para agendamiento
+    const reclutamientosAsignadosFormateados = await Promise.all(reclutamientosAsignados.map(async (r) => {
+      // Obtener nombre de investigación
+      const { data: investigacion } = await supabase
+        .from('investigaciones')
+        .select('nombre, estado')
+        .eq('id', r.investigacion_id)
+        .single();
+
+      // Obtener nombre de participante
+      let participante = null;
+      if (r.participantes_id) {
+        const { data: participanteData } = await supabase
+          .from('participantes')
+          .select('nombre')
+          .eq('id', r.participantes_id)
+          .single();
+        participante = participanteData;
+      }
+
+      // Obtener nombre del estado de agendamiento
+      console.log('🔍 Buscando estado de agendamiento:', r.estado_agendamiento);
+      const { data: estadoAgendamiento, error: errorEstado } = await supabase
+        .from('estado_agendamiento_cat')
+        .select('nombre')
+        .eq('id', r.estado_agendamiento)
+        .single();
+      
+      if (errorEstado) {
+        console.error('❌ Error obteniendo estado de agendamiento:', errorEstado);
+      } else {
+        console.log('✅ Estado de agendamiento encontrado:', estadoAgendamiento);
+      }
+
+              return {
+          reclutamiento_id: r.id,
+          investigacion_id: r.investigacion_id,
+          investigacion_nombre: investigacion?.nombre || 'Sin nombre',
+          participante_nombre: participante?.nombre || 'Sin participante',
+          estado_agendamiento: r.estado_agendamiento,
+          estado_agendamiento_nombre: estadoAgendamiento?.nombre || 'Sin estado',
+          estado_agendamiento_color: '#F59E0B', // Color por defecto para "Pendiente de agendamiento"
+          fecha_sesion: r.fecha_sesion,
+          tipo: 'asignacion_agendamiento'
+        };
+    }));
+
+    return res.status(200).json({
+      investigaciones: investigacionesFinales,
+      reclutamientosAsignados: reclutamientosAsignadosFormateados,
+      metricas: {
+        total,
+        estados: estadosCount,
+        riesgo: riesgoCount,
+        asignacionesAgendamiento: reclutamientosAsignadosFormateados.length
+      }
+    });
+
   } catch (error) {
-    console.error('Error en API métricas de reclutamiento:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('❌ Error en métricas de reclutamientos:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 } 

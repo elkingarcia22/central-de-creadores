@@ -15,9 +15,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 API recibió request body:', req.body);
     console.log('🔍 API recibió headers:', req.headers);
     
-    const { email, full_name, avatar_url, roles } = req.body;
+    const { email, full_name, avatar_url, roles, password } = req.body;
 
     console.log('🔍 Datos extraídos:', { email, full_name, avatar_url, roles });
+    console.log('🔍 Nota: Todos los usuarios se crean con contraseña "123456"');
 
     // Validar datos requeridos
     if (!email || !full_name) {
@@ -30,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Crear el usuario en Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
-      password: 'tempPassword123!', // Contraseña temporal
+      password: '123456', // Contraseña estándar para todos los usuarios
       email_confirm: true,
       user_metadata: {
         full_name
@@ -75,13 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('✅ Perfil creado/actualizado exitosamente');
-
-    if (profileError) {
-      console.error('Error actualizando perfil:', profileError);
-      return res.status(400).json({ error: 'Error actualizando perfil: ' + profileError.message });
-    }
-
-    console.log('✅ Perfil actualizado');
 
     // Crear también en la tabla usuarios para mantener la FK de reclutamientos
     console.log('🔧 Creando usuario en tabla usuarios para FK...');
@@ -131,6 +125,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: authData.user.id,
         email: authData.user.email,
         full_name
+      },
+      credentials: {
+        email: authData.user.email,
+        password: '123456'
       }
     });
 

@@ -77,6 +77,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
     administrador: [
       { label: 'Investigaciones', href: '/investigaciones', icon: 'investigaciones' },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: 'reclutamiento' },
+      { label: 'Mis Asignaciones', href: '/mis-asignaciones', icon: 'sesiones' },
       { label: 'Sesiones', href: '/sesiones', icon: 'sesiones' },
       { label: 'Métricas', href: '/metricas', icon: 'metricas' },
       { label: 'Participantes', href: '/participantes', icon: 'participantes' },

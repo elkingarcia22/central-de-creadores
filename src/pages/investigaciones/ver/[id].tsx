@@ -188,7 +188,6 @@ const VerInvestigacion: NextPage = () => {
         const resultado = await obtenerInvestigacionPorId(id);
         if (!resultado.error && resultado.data) {
           setInvestigacion(resultado.data);
-          await cargarLibreto(id);
           await cargarDatosAdicionales();
           await cargarSeguimientos(id);
           await cargarTrazabilidad(id);
@@ -204,6 +203,13 @@ const VerInvestigacion: NextPage = () => {
     };
     cargarInvestigacion();
   }, [id, showError]);
+
+  // Cargar el libreto en un useEffect separado
+  useEffect(() => {
+    if (id && typeof id === 'string' && !loading) {
+      cargarLibreto(id);
+    }
+  }, [id, loading]);
   
   // Cargar datos adicionales necesarios para seguimientos
   const cargarDatosAdicionales = async () => {
@@ -268,12 +274,22 @@ const VerInvestigacion: NextPage = () => {
     }
   }, [haySeguimientos, activeTab, id]);
 
-  // Función para cargar el libreto
+  // Función para cargar el libreto y catálogos
   const cargarLibreto = async (investigacionId: string) => {
     try {
       setLoadingLibreto(true);
       
-      const [libretoResponse, plataformasResponse, rolesEmpresaResponse, industriasResponse, modalidadesResponse, tamanosEmpresaResponse, tiposPruebaResponse, paisesResponse] = await Promise.all([
+      // Cargar libreto y catálogos en paralelo
+      const [
+        libretoResponse,
+        plataformasResponse,
+        rolesResponse,
+        industriasResponse,
+        modalidadesResponse,
+        tamanosResponse,
+        tiposResponse,
+        paisesResponse
+      ] = await Promise.all([
         obtenerLibretoPorInvestigacion(investigacionId),
         obtenerPlataformas(),
         obtenerRolesEmpresa(),
@@ -284,38 +300,26 @@ const VerInvestigacion: NextPage = () => {
         obtenerPaises()
       ]);
       
+      // Establecer el libreto
       if (libretoResponse.data) {
         setLibreto(libretoResponse.data);
-        console.log('✅ Libreto cargado:', libretoResponse.data);
       } else {
         setLibreto(null);
-        console.log('ℹ️ No hay libreto para esta investigación');
       }
 
-      if (plataformasResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, plataformas: plataformasResponse.data.map(p => ({ value: p.id, label: p.nombre })) }));
-      }
-      if (rolesEmpresaResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, rolesEmpresa: rolesEmpresaResponse.data.map(r => ({ value: r.id, label: r.nombre })) }));
-      }
-      if (industriasResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, industrias: industriasResponse.data.map(i => ({ value: i.id, label: i.nombre })) }));
-      }
-      if (modalidadesResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, modalidades: modalidadesResponse.data.map(m => ({ value: m.id, label: m.nombre })) }));
-      }
-      if (tamanosEmpresaResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, tamanosEmpresa: tamanosEmpresaResponse.data.map(t => ({ value: t.id, label: t.nombre })) }));
-      }
-      if (tiposPruebaResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, tiposPrueba: tiposPruebaResponse.data.map(t => ({ value: t.id, label: t.nombre })) }));
-      }
-      if (paisesResponse.data) {
-        setCatalogosLibreto(prev => ({ ...prev, paises: paisesResponse.data.map(p => ({ value: p.id, label: p.nombre })) }));
-      }
+      // Establecer los catálogos
+      setCatalogosLibreto({
+        plataformas: plataformasResponse.data || [],
+        rolesEmpresa: rolesResponse.data || [],
+        industrias: industriasResponse.data || [],
+        modalidades: modalidadesResponse.data || [],
+        tamanosEmpresa: tamanosResponse.data || [],
+        tiposPrueba: tiposResponse.data || [],
+        paises: paisesResponse.data || []
+      });
 
     } catch (error) {
-      console.error('Error cargando libreto:', error);
+      console.error('Error cargando libreto y catálogos:', error);
       setLibreto(null);
     } finally {
       setLoadingLibreto(false);
@@ -747,6 +751,18 @@ const VerInvestigacion: NextPage = () => {
 
   // Contenido del tab Libreto
   const LibretoContent: React.FC = () => {
+    if (typeof window !== 'undefined') {
+      console.log('🔍 LIBRETOCONTENT RENDERIZANDO (CLIENTE) - libreto:', !!libreto, 'loadingLibreto:', loadingLibreto);
+      console.log('🔍 Catálogos cargados:', {
+        plataformas: catalogosLibreto.plataformas.length,
+        rolesEmpresa: catalogosLibreto.rolesEmpresa.length,
+        industrias: catalogosLibreto.industrias.length,
+        modalidades: catalogosLibreto.modalidades.length,
+        tamanosEmpresa: catalogosLibreto.tamanosEmpresa.length
+      });
+    }
+
+
     if (loadingLibreto) {
       return (
         <div className="space-y-6">
@@ -914,7 +930,7 @@ const VerInvestigacion: NextPage = () => {
                     Plataforma
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.plataformas.find(p => p.value === libreto.plataforma_id)?.label || 'No especificado'}
+                    {catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -961,7 +977,7 @@ const VerInvestigacion: NextPage = () => {
                     Rol en Empresa
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.rolesEmpresa.find(r => r.value === libreto.rol_empresa_id)?.label || 'No especificado'}
+                    {catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -970,7 +986,7 @@ const VerInvestigacion: NextPage = () => {
                     Industria
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.industrias.find(i => i.value === libreto.industria_id)?.label || 'No especificado'}
+                    {catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -979,7 +995,19 @@ const VerInvestigacion: NextPage = () => {
                     Modalidad
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.modalidades.find(m => m.value === libreto.modalidad_id)?.label || 'No especificado'}
+                    {(() => {
+                      if (!libreto.modalidad_id) return 'No especificado';
+                      
+                      const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
+                      
+                      // Usar catálogos reales
+                      const nombres = modalidadIds
+                        .filter(id => id)
+                        .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
+                        .filter(Boolean);
+                      
+                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                    })()}
                   </Typography>
                 </div>
 
@@ -988,7 +1016,19 @@ const VerInvestigacion: NextPage = () => {
                     Tamaño de Empresa
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.tamanosEmpresa.find(t => t.value === libreto.tamano_empresa_id)?.label || 'No especificado'}
+                    {(() => {
+                      if (!libreto.tamano_empresa_id) return 'No especificado';
+                      
+                      const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
+                      
+                      // Usar catálogos reales
+                      const nombres = tamanoIds
+                        .filter(id => id)
+                        .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
+                        .filter(Boolean);
+                      
+                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                    })()}
                   </Typography>
                 </div>
               </div>
@@ -1010,6 +1050,8 @@ const VerInvestigacion: NextPage = () => {
     );
   };
 
+
+
   // Tabs dinámicos
   const tabs = [
     {
@@ -1018,12 +1060,12 @@ const VerInvestigacion: NextPage = () => {
       icon: <InfoIcon className="w-4 h-4" />, 
       content: <InformacionGeneral />
     },
-    ...(libreto ? [{
+    {
       id: 'libreto',
       label: 'Libreto',
       icon: <FileTextIcon className="w-4 h-4" />, 
       content: <LibretoContent />
-    }] : []),
+    },
     // Mostrar tab de seguimientos solo si hay seguimientos existentes
     ...(haySeguimientos ? [{
       id: 'seguimientos',

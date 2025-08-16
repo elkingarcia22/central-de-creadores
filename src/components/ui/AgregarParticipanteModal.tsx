@@ -333,10 +333,20 @@ export default function AgregarParticipanteModal({
       console.log('🔍 Tipo participante seleccionado:', tipoParticipante);
       
       // Usar el ID del reclutamiento o el investigacion_id como fallback
-      const reclutamientoId = reclutamiento?.id || reclutamiento?.reclutamiento_id;
+      // Si es desde agendamiento pendiente, usar el ID específico del reclutamiento
+      let reclutamientoId = reclutamiento?.id || reclutamiento?.reclutamiento_id;
       
-      // Si no hay reclutamiento_id, crear un nuevo reclutamiento
-      if (!reclutamientoId || reclutamiento?.reclutamiento_id === null) {
+      // Si es desde agendamiento pendiente y tenemos un ID específico, usarlo
+      if (esDesdeAgendamientoPendiente && reclutamiento?.id_original) {
+        reclutamientoId = reclutamiento.id_original;
+      }
+      
+      // Verificar si el reclutamientoId es un ID válido de reclutamiento
+      // Si es el mismo que investigacion_id, probablemente no es un ID válido de reclutamiento
+      const esIdValidoReclutamiento = reclutamientoId && reclutamientoId !== reclutamiento?.investigacion_id;
+      
+      // Si no hay reclutamiento_id válido, crear un nuevo reclutamiento
+      if (!esIdValidoReclutamiento || reclutamiento?.reclutamiento_id === null) {
         // NOTA: NO eliminamos reclutamientos existentes para permitir duplicados
         console.log('🔍 Creando nuevo reclutamiento sin eliminar existentes (soporte para duplicados)');
         

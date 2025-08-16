@@ -121,12 +121,20 @@ export default function AsignarAgendamientoModal({
   // Cargar investigaciones disponibles
   const cargarInvestigaciones = async () => {
     try {
+      // Obtener investigaciones de la tabla de reclutamiento (como en el backup)
       const response = await fetch('/api/metricas-reclutamientos');
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Datos de métricas recibidos:', data);
+        
+        // Filtrar investigaciones que estén por agendar y NO tengan agendamiento asignado
         const investigacionesDisponibles = data.investigaciones?.filter((inv: any) => 
-          inv.estado_investigacion === 'por_agendar' && !inv.reclutamiento_id
+          inv.estado_investigacion === 'por_agendar' && !inv.tiene_agendamiento
         ) || [];
+        
+        console.log('🔍 Investigaciones disponibles para agendamiento:', investigacionesDisponibles.length);
+        console.log('🔍 Investigaciones disponibles:', investigacionesDisponibles);
+        
         setInvestigaciones(investigacionesDisponibles);
       } else {
         throw new Error('Error al obtener investigaciones');

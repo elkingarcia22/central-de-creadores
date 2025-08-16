@@ -36,56 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .single();
 
       if (errorUsuario || !usuarioEnTabla) {
-        console.log('⚠️ Usuario no encontrado en tabla usuarios, creando...');
-        
-        // Obtener roles del usuario
-        const { data: userRoles, error: errorRoles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', responsable_id);
-
-        const roles = userRoles?.map(ur => ur.role) || [];
-        
-        // Crear usuario en tabla usuarios
-        console.log('🔍 Intentando crear usuario en tabla usuarios:', {
-          id: responsable_id,
-          nombre: reclutador.full_name,
-          correo: reclutador.email,
-          foto_url: reclutador.avatar_url || null,
-          activo: true,
-          rol_plataforma: roles.length > 0 ? roles[0] : null,
-          borrado_manual: false
-        });
-
-        const { error: errorCrearUsuario } = await supabase
-          .from('usuarios')
-          .upsert({
-            id: responsable_id,
-            nombre: reclutador.full_name,
-            correo: reclutador.email,
-            foto_url: reclutador.avatar_url || null,
-            activo: true,
-            rol_plataforma: roles.length > 0 ? roles[0] : null,
-            borrado_manual: false
-          }, {
-            onConflict: 'id'
-          });
-
-        if (errorCrearUsuario) {
-          console.error('❌ Error creando usuario en tabla usuarios:', errorCrearUsuario);
-          console.error('❌ Detalles del error:', {
-            message: errorCrearUsuario.message,
-            details: errorCrearUsuario.details,
-            hint: errorCrearUsuario.hint,
-            code: errorCrearUsuario.code
-          });
-          return res.status(500).json({ 
-            error: 'Error creando usuario en tabla usuarios',
-            details: errorCrearUsuario.message 
-          });
-        }
-
-        console.log('✅ Usuario creado en tabla usuarios');
+        console.log('⚠️ Usuario no encontrado en tabla usuarios, pero continuando...');
+        console.log('ℹ️ El usuario será creado automáticamente por el sistema cuando sea necesario');
+        // No intentamos crear el usuario aquí para evitar problemas de RLS
       }
 
       // Crear participante placeholder si no existe

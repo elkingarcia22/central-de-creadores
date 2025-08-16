@@ -202,12 +202,12 @@ export const obtenerUsuarios = async (): Promise<RespuestaAPI<Usuario[]>> => {
   }
 };
 
-export const obtenerEstadosReclutamiento = async (): Promise<RespuestaAPI<Array<{value: string, label: string}>>> => {
+export const obtenerEstadosReclutamiento = async (): Promise<RespuestaAPI<Array<{id: string, nombre: string}>>> => {
   try {
     console.log('🔍 Obteniendo estados de reclutamiento desde tabla...');
     
     const { data: estados, error } = await supabase
-      .from('estado_agendamiento_cat')
+      .from('estado_reclutamiento_cat')
       .select('id, nombre, activo')
       .eq('activo', true)
       .order('nombre', { ascending: true });
@@ -221,8 +221,8 @@ export const obtenerEstadosReclutamiento = async (): Promise<RespuestaAPI<Array<
     
     // Mapear los valores a formato de opciones para selects
     const estadosFormateados = (estados || []).map((estado: any) => ({
-      value: estado.id,
-      label: estado.nombre || 'Sin nombre'
+      id: estado.id,
+      nombre: estado.nombre || 'Sin nombre'
     }));
 
     return {

@@ -263,8 +263,7 @@ export default function Login() {
     router.replace(mainModule);
   }
 
-  // Debug: Log del renderizado
-  console.log('🎨 Renderizando login - error:', error, 'loading:', loading);
+
 
   return (
     <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background`}>
@@ -274,16 +273,13 @@ export default function Login() {
             Central de Creadores
           </Typography>
           <Typography variant="subtitle1" color="secondary" className="w-full text-center whitespace-normal break-words">
-            Inicia sesión en tu cuenta
+            Plataforma de investigación de usuarios
           </Typography>
         </div>
 
         <Card variant="elevated" padding="lg">
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* Debug: Mostrar el valor del error */}
-            <div className="text-xs text-gray-500">
-              Debug - Error state: "{error}" (length: {error.length})
-            </div>
+
             
             {error && (
               <div className="p-3 rounded-lg bg-red-100 border border-red-400 text-red-700">

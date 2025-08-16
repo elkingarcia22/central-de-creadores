@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { format } from 'date-fns';
@@ -7,7 +7,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip } from '../../../components/ui';
 import EditarReclutamientoModal from '../../../components/ui/EditarReclutamientoModal';
 import EditarResponsableAgendamientoModal from '../../../components/ui/EditarResponsableAgendamientoModal';
 import AgregarParticipanteModal from '../../../components/ui/AgregarParticipanteModal';
@@ -41,8 +41,6 @@ import {
   UsersIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
-import { getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../../../utils/estadoUtils';
-import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../../utils/tipoParticipanteUtils';
 import { 
   obtenerInvestigacionPorId,
   actualizarLinkPrueba,
@@ -117,7 +115,7 @@ interface InvestigacionDetalle {
   libreto?: string;
 }
 
-const VerReclutamientoComponent: NextPage = () => {
+const VerReclutamiento: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const reclutamientoId = Array.isArray(id) ? id[0] : id;
@@ -170,8 +168,6 @@ const VerReclutamientoComponent: NextPage = () => {
   const [isEditing, setIsEditing] = useState(false); // Bandera para evitar recargas durante edición
   const [participanteToEditAgendamiento, setParticipanteToEditAgendamiento] = useState<any>(null);
   const [isClosingAsignarModal, setIsClosingAsignarModal] = useState(false); // Controlar cierre del modal
-  
-  // Refs para evitar duplicaciones (simplificados)
 
   // Función global para cargar participantes
   const cargarParticipantes = async () => {
@@ -185,7 +181,7 @@ const VerReclutamientoComponent: NextPage = () => {
         return;
       }
       
-      // Obtener todos los reclutamientos de la investigación
+      // Primero obtener todos los reclutamientos de la investigación
       const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${id}`, {
         headers: {
           'Cache-Control': 'no-cache',
@@ -198,10 +194,37 @@ const VerReclutamientoComponent: NextPage = () => {
         console.log('📊 Participantes cargados:', data);
         console.log('🔍 Número de participantes:', data.participantes?.length || data.length);
         
+        // Log específico para ver los valores de hora_sesion
+        if (data.participantes) {
+          data.participantes.forEach((participante: any, index: number) => {
+            console.log(`🔍 Participante ${index + 1} - ${participante.nombre}:`, {
+              id: participante.id,
+              nombre: participante.nombre,
+              hora_sesion: participante.hora_sesion,
+              reclutamiento_id: participante.reclutamiento_id
+            });
+            
+            // Log específico para el participante que estamos editando
+            if (participante.nombre === 'prueba 12344') {
+              console.log('🎯 PARTICIPANTE ESPECÍFICO - prueba 12344:', {
+                hora_sesion: participante.hora_sesion,
+                hora_sesion_tipo: typeof participante.hora_sesion,
+                hora_sesion_es_null: participante.hora_sesion === null,
+                hora_sesion_es_undefined: participante.hora_sesion === undefined
+              });
+            }
+          });
+        }
+        
         setParticipantes(data.participantes || data);
         
         // Forzar la actualización del estado
         console.log('🔄 Estado actualizado con participantes:', data.participantes?.length || data.length);
+        
+        // Log específico para ver el estado actual
+        setTimeout(() => {
+          console.log('🔍 Estado actual después de setParticipantes:', participantes);
+        }, 100);
       } else {
         console.error('❌ Error cargando participantes:', response.statusText);
         setParticipantes([]);
@@ -212,12 +235,27 @@ const VerReclutamientoComponent: NextPage = () => {
     }
   };
 
-  // REMOVIDO: useEffect que cargaba participantes cuando cambiaba el ID
-  // Los participantes se cargan cuando cambia el reclutamiento, no cuando cambia el ID
+  // Cargar participantes cuando el ID esté disponible
+  useEffect(() => {
+    if (id) {
+      console.log('🔄 ID disponible, cargando participantes:', id);
+      cargarParticipantes();
+    }
+  }, [id]);
+
+  // Monitorear cambios en el estado de participantes
+  useEffect(() => {
+    console.log('🔄 Estado de participantes cambiado:', participantes.length, 'participantes');
+    participantes.forEach((participante, index) => {
+      console.log(`🔍 Participante ${index + 1}:`, {
+        id: participante.id,
+        nombre: participante.nombre,
+        hora_sesion: participante.hora_sesion
+      });
+    });
+  }, [participantes]);
 
   const recargarDatosCompletos = async () => {
-    console.log('🔄 recargarDatosCompletos ejecutándose - ID:', id);
-    
     try {
       setLoading(true);
       await Promise.all([
@@ -263,8 +301,6 @@ const VerReclutamientoComponent: NextPage = () => {
 
   // Función para actualizar y cargar datos del reclutamiento
   const actualizarYcargarReclutamiento = useCallback(async () => {
-    console.log('🔄 actualizarYcargarReclutamiento ejecutándose - ID:', id);
-    
     // 1. Actualizar estados en el backend
     try {
       const res = await fetch('/api/actualizar-estados-reclutamiento', { method: 'POST' });
@@ -306,94 +342,90 @@ const VerReclutamientoComponent: NextPage = () => {
     }
   }, [id, isInitializing, showError]);
 
-  // SOLUCIÓN DRÁSTICA: Un solo useEffect para cargar todo
-  const [datosCargados, setDatosCargados] = useState(false);
-
+  // Cargar los datos del reclutamiento
   useEffect(() => {
-    const cargarTodo = async () => {
-      if (!isEditing && id && !datosCargados) {
+    if (!isEditing && id) {
+      actualizarYcargarReclutamiento();
+    }
+  }, [id, isEditing, actualizarYcargarReclutamiento]);
+
+  // Cargar los datos completos de la investigación cuando tengamos el reclutamiento
+  useEffect(() => {
+    const cargarInvestigacion = async () => {
+      if (reclutamiento?.investigacion_id) {
         try {
-          console.log('🚀 INICIANDO CARGA COMPLETA');
-          
-          // 1. Cargar reclutamiento
-          await actualizarYcargarReclutamiento();
-          
-          // 2. Esperar un poco
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // 3. Cargar investigación si no está cargada
-          if (reclutamiento?.investigacion_id && !investigacion?.id) {
-            const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
-            if (!resultado.error && resultado.data) {
-              setInvestigacion(resultado.data);
-            }
+          const resultado = await obtenerInvestigacionPorId(reclutamiento.investigacion_id);
+          if (!resultado.error && resultado.data) {
+            setInvestigacion(resultado.data);
+          } else {
+            console.error('Error cargando investigación:', resultado.error);
           }
-          
-          // 4. Esperar un poco más
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // 5. Cargar libreto si no está cargado
-          if (investigacion?.id && !libreto?.id) {
-            setLoadingLibreto(true);
-            const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
-            if (!libretoResultado.error && libretoResultado.data) {
-              setLibreto(libretoResultado.data);
-            }
-            setLoadingLibreto(false);
-          }
-          
-          // 6. Cargar catálogos si no están cargados
-          if (investigacion?.id && !catalogosLibreto.plataformas.length) {
-            const [
-              plataformasResponse,
-              rolesResponse,
-              industriasResponse,
-              modalidadesResponse,
-              tamanosResponse,
-              tiposResponse,
-              paisesResponse
-            ] = await Promise.all([
-              obtenerPlataformas(),
-              obtenerRolesEmpresa(),
-              obtenerIndustrias(),
-              obtenerModalidades(),
-              obtenerTamanosEmpresa(),
-              obtenerTiposPrueba(),
-              obtenerPaises()
-            ]);
-            
-            setCatalogosLibreto({
-              plataformas: plataformasResponse.data || [],
-              rolesEmpresa: rolesResponse.data || [],
-              industrias: industriasResponse.data || [],
-              modalidades: modalidadesResponse.data || [],
-              tamanosEmpresa: tamanosResponse.data || [],
-              tiposPrueba: tiposResponse.data || [],
-              paises: paisesResponse.data || []
-            });
-          }
-          
-          // 7. Cargar participantes si no están cargados
-          if ((reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id) && participantes.length === 0) {
-            await cargarParticipantes();
-          }
-          
-          setDatosCargados(true);
-          console.log('✅ CARGA COMPLETA FINALIZADA');
-          
         } catch (error) {
-          console.error('❌ Error en carga completa:', error);
+          console.error('Error cargando investigación:', error);
         }
       }
     };
+    cargarInvestigacion();
+  }, [reclutamiento?.investigacion_id]);
 
-    cargarTodo();
-  }, [id, isEditing, datosCargados]);
-
-  // Resetear cuando cambie el ID
+  // Cargar libreto y catálogos cuando tengamos la investigación
   useEffect(() => {
-    setDatosCargados(false);
-  }, [id]);
+    const cargarDatosCompletos = async () => {
+      if (investigacion?.id) {
+        try {
+          setLoadingLibreto(true);
+          
+          // Cargar libreto
+          const libretoResultado = await obtenerLibretoPorInvestigacion(investigacion.id);
+          if (!libretoResultado.error && libretoResultado.data) {
+            setLibreto(libretoResultado.data);
+          }
+          
+          // Cargar catálogos
+          const [
+            plataformasResponse,
+            rolesResponse,
+            industriasResponse,
+            modalidadesResponse,
+            tamanosResponse,
+            tiposResponse,
+            paisesResponse
+          ] = await Promise.all([
+            obtenerPlataformas(),
+            obtenerRolesEmpresa(),
+            obtenerIndustrias(),
+            obtenerModalidades(),
+            obtenerTamanosEmpresa(),
+            obtenerTiposPrueba(),
+            obtenerPaises()
+          ]);
+          
+          setCatalogosLibreto({
+            plataformas: plataformasResponse.data || [],
+            rolesEmpresa: rolesResponse.data || [],
+            industrias: industriasResponse.data || [],
+            modalidades: modalidadesResponse.data || [],
+            tamanosEmpresa: tamanosResponse.data || [],
+            tiposPrueba: tiposResponse.data || [],
+            paises: paisesResponse.data || []
+          });
+          
+        } catch (error) {
+          console.error('Error cargando datos completos:', error);
+        } finally {
+          setLoadingLibreto(false);
+        }
+      }
+    };
+    cargarDatosCompletos();
+  }, [investigacion?.id]);
+
+  // Cargar participantes cuando cambie el reclutamiento
+  useEffect(() => {
+    if (!isEditing && (reclutamiento?.reclutamiento_id || reclutamiento?.investigacion_id)) {
+      cargarParticipantes();
+    }
+  }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing]);
 
   // Ajustar tab activo cuando no hay participantes
   useEffect(() => {
@@ -418,47 +450,34 @@ const VerReclutamientoComponent: NextPage = () => {
     }
     
     // Verificar si es "Agendamiento Pendiente"
-    const esPendienteDeAgendamiento = participante.estado_agendamiento === 'Pendiente de agendamiento' || 
+    // Un participante es "pendiente de agendamiento" si:
+    // 1. No tiene fecha_sesion (no está agendado)
+    // 2. O tiene estado específico de pendiente
+    // 3. O es un reclutamiento sin participante asignado
+    const esPendienteDeAgendamiento = !participante.fecha_sesion || 
+                                     participante.estado_agendamiento === 'Pendiente de agendamiento' || 
                                      participante.estado_agendamiento === 'Pendiente' ||
-                                     !participante.fecha_sesion;
+                                     (participante.tipo === 'agendamiento_pendiente') ||
+                                     (participante.reclutador_id && !participante.participante_id);
     console.log('🔍 esPendienteDeAgendamiento:', esPendienteDeAgendamiento);
     console.log('🔍 Estado agendamiento:', participante.estado_agendamiento);
     console.log('🔍 Fecha sesión:', participante.fecha_sesion);
+    console.log('🔍 Tipo participante:', participante.tipo);
+    console.log('🔍 Reclutador ID:', participante.reclutador_id);
+    console.log('🔍 Participante ID:', participante.participante_id);
+    console.log('🔍 Todos los campos del participante:', Object.keys(participante));
     
     if (esPendienteDeAgendamiento) {
       // Para "Agendamiento Pendiente", usar AsignarAgendamientoModal para editar solo el responsable
       console.log('🔍 Abriendo AsignarAgendamientoModal para editar responsable');
       console.log('🔍 Participante completo:', participante);
+      console.log('🔍 reclutador_id:', participante.reclutador_id);
+      console.log('🔍 reclutador:', participante.reclutador);
+      console.log('🔍 reclutador_nombre:', participante.reclutador_nombre);
       console.log('🔍 reclutamiento_id:', participante.reclutamiento_id);
       console.log('🔍 Todos los campos del participante:', Object.keys(participante));
-      
-      // Obtener el reclutador_id del reclutamiento
-      const reclutamientoId = participante.reclutamiento_id || participante.id;
-      console.log('🔍 Obteniendo datos del reclutamiento:', reclutamientoId);
-      
-      try {
-        const response = await fetch(`/api/reclutamientos/${reclutamientoId}`);
-        if (response.ok) {
-          const reclutamientoData = await response.json();
-          console.log('🔍 Datos del reclutamiento obtenidos:', reclutamientoData);
-          
-          // Crear participante con reclutador_id del reclutamiento
-          const participanteConReclutador = {
-            ...participante,
-            reclutador_id: reclutamientoData.reclutador_id
-          };
-          
-          console.log('🔍 Participante con reclutador_id:', participanteConReclutador);
-          setParticipanteToEditAgendamiento(participanteConReclutador);
-          setShowAsignarAgendamientoModal(true);
-        } else {
-          console.error('❌ Error obteniendo datos del reclutamiento');
-          showError('Error obteniendo datos del reclutamiento');
-        }
-      } catch (error) {
-        console.error('❌ Error obteniendo datos del reclutamiento:', error);
-        showError('Error obteniendo datos del reclutamiento');
-      }
+      setParticipanteToEditAgendamiento(participante);
+      setShowAsignarAgendamientoModal(true);
       return;
     }
     
@@ -684,41 +703,98 @@ const VerReclutamientoComponent: NextPage = () => {
   ];
 
   const getEstadoBadgeVariant = (estado: string) => {
-    return getEstadoReclutamientoVariant(estado);
+    switch (estado?.toLowerCase()) {
+      case 'en_borrador':
+        return 'default';
+      case 'por_agendar':
+        return 'warning';
+      case 'por_iniciar':
+        return 'info';
+      case 'en_progreso':
+        return 'info';
+      case 'finalizado':
+        return 'success';
+      case 'pausado':
+        return 'secondary';
+      case 'cancelado':
+        return 'danger';
+      default:
+        return 'default';
+    }
   };
 
   // Formatear el estado para mostrar
   const formatearEstado = (estado: string) => {
-    return getEstadoReclutamientoText(estado);
-  };
-
-  // Función para obtener el color del estado de agendamiento (DEPRECATED - usar getEstadoReclutamientoVariant)
-  const getEstadoAgendamientoColor = (estado: string): string => {
-    if (!estado) return '#6B7280';
-    
-    // Usar nuestro sistema centralizado
-    const variant = getEstadoReclutamientoVariant(estado);
-    
-    // Mapear variants a colores (solo para compatibilidad)
-    switch (variant) {
-      case 'warning': return '#F59E0B'; // Amarillo
-      case 'accent-purple': return '#8B5CF6'; // Púrpura
-      case 'success': return '#3B82F6'; // Azul (cambiado de accent-blue a success)
-      case 'accent-indigo': return '#6366F1'; // Índigo
-      case 'accent-pink': return '#EC4899'; // Rosa
-      case 'success': return '#10B981'; // Verde
-      case 'danger': return '#EF4444'; // Rojo
-      case 'secondary': return '#6B7280'; // Gris
-      default: return '#6B7280'; // Gris por defecto
+    switch (estado?.toLowerCase()) {
+      case 'en_borrador':
+        return 'En Borrador';
+      case 'por_agendar':
+        return 'Por Agendar';
+      case 'por_iniciar':
+        return 'Por Iniciar';
+      case 'en_progreso':
+        return 'En Progreso';
+      case 'finalizado':
+        return 'Finalizado';
+      case 'pausado':
+        return 'Pausado';
+      case 'cancelado':
+        return 'Cancelado';
+      default:
+        return estado || 'Sin estado';
     }
   };
 
-  // Función para obtener el variant del badge basado en el estado (ACTUALIZADA)
-  const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | 'warning' | 'accent-purple' | 'accent-indigo' | 'accent-pink' | 'danger' | 'success' | 'secondary' => {
+  // Función para obtener el color del estado de agendamiento
+  const getEstadoAgendamientoColor = (estado: string): string => {
+    if (!estado) return '#6B7280';
+    
+    switch (estado.toLowerCase()) {
+      case 'pendiente de agendamiento':
+        return '#F59E0B'; // Amarillo
+      case 'pendiente':
+        return '#F59E0B'; // Amarillo
+      case 'en progreso':
+        return '#3B82F6'; // Azul
+      case 'finalizado':
+        return '#10B981'; // Verde
+      case 'cancelado':
+        return '#EF4444'; // Rojo
+      case 'confirmado':
+        return '#8B5CF6'; // Púrpura
+      case 'reprogramado':
+        return '#6B7280'; // Gris
+      case 'no show':
+        return '#6B7280'; // Gris
+      default:
+        return '#6B7280'; // Gris por defecto
+    }
+  };
+
+  // Función para obtener el variant del badge basado en el estado
+  const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' => {
     if (!estado) return 'default';
     
-    // Usar nuestro sistema centralizado
-    return getEstadoReclutamientoVariant(estado);
+    switch (estado.toLowerCase()) {
+      case 'pendiente de agendamiento':
+        return 'warning';
+      case 'pendiente':
+        return 'warning';
+      case 'en progreso':
+        return 'primary';
+      case 'finalizado':
+        return 'success';
+      case 'cancelado':
+        return 'danger';
+      case 'confirmado':
+        return 'info';
+      case 'reprogramado':
+        return 'secondary';
+      case 'no show':
+        return 'secondary';
+      default:
+        return 'default';
+    }
   };
 
   // Función para determinar el tipo de participante
@@ -752,11 +828,27 @@ const VerReclutamientoComponent: NextPage = () => {
   const getTipoParticipanteBadge = (participante: any) => {
     const tipo = getTipoParticipante(participante);
     
-    return (
-      <Chip variant={getTipoParticipanteVariant(tipo)} size="sm">
-        {getTipoParticipanteText(tipo)}
-      </Chip>
-    );
+    switch (tipo) {
+      case 'interno':
+        return (
+          <Chip variant="info" size="sm">
+            Participante Interno
+          </Chip>
+        );
+      case 'friend_family':
+        return (
+          <Chip variant="secondary" size="sm">
+            Friend and Family
+          </Chip>
+        );
+      case 'externo':
+      default:
+        return (
+          <Chip variant="primary" size="sm">
+            Participante Externo
+          </Chip>
+        );
+    }
   };
 
   // Función para obtener datos específicos según el tipo de participante
@@ -809,12 +901,12 @@ const VerReclutamientoComponent: NextPage = () => {
           {selectedParticipante.estado_agendamiento?.nombre && (
             <div className="flex items-center gap-2">
               <Typography variant="caption" color="secondary">Estado de Agendamiento</Typography>
-              <Chip
+              <Badge
                 variant={getEstadoAgendamientoBadgeVariant(selectedParticipante.estado_agendamiento.nombre)}
                 className="ml-2"
               >
                 {selectedParticipante.estado_agendamiento?.nombre}
-              </Chip>
+              </Badge>
             </div>
           )}
           {selectedParticipante.responsable_agendamiento?.nombre && (
@@ -1016,7 +1108,7 @@ const VerReclutamientoComponent: NextPage = () => {
           {selectedParticipante.tipo && (
             <div>
               <Typography variant="caption" color="secondary">Tipo de Cliente</Typography>
-              <Chip variant={
+              <Badge variant={
                 selectedParticipante.tipo === 'interno' ? 'info' : 
                 selectedParticipante.tipo === 'friend_family' ? 'secondary' : 
                 'primary'
@@ -1024,15 +1116,15 @@ const VerReclutamientoComponent: NextPage = () => {
                 {selectedParticipante.tipo === 'interno' ? 'Cliente Interno' : 
                  selectedParticipante.tipo === 'friend_family' ? 'Friend and Family' : 
                  'Cliente Externo'}
-              </Chip>
+              </Badge>
             </div>
           )}
           {selectedParticipante.tipo === 'externo' && selectedParticipante.estado_participante && (
             <div>
               <Typography variant="caption" color="secondary">Estado del Participante</Typography>
-              <Chip variant="success" size="sm">
+              <Badge variant="success" size="sm">
                 {selectedParticipante.estado_participante}
-              </Chip>
+              </Badge>
             </div>
           )}
           {/* Cargo solo para participantes externos que lo tengan */}
@@ -1429,6 +1521,18 @@ const VerReclutamientoComponent: NextPage = () => {
     </div>
   );
 
+  // Logs para debug de catálogos
+  if (typeof window !== 'undefined') {
+    console.log('🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto:', !!libreto, 'loadingLibreto:', loadingLibreto);
+    console.log('🔍 Catálogos cargados en reclutamiento:', {
+      plataformas: catalogosLibreto.plataformas.length,
+      rolesEmpresa: catalogosLibreto.rolesEmpresa.length,
+      industrias: catalogosLibreto.industrias.length,
+      modalidades: catalogosLibreto.modalidades.length,
+      tamanosEmpresa: catalogosLibreto.tamanosEmpresa.length
+    });
+  }
+
   // Contenido del tab Libreto - usando datos reales del libreto (igual que en investigaciones)
   const LibretoContent: React.FC = () => {
     if (loadingLibreto) {
@@ -1590,7 +1694,7 @@ const VerReclutamientoComponent: NextPage = () => {
                     Plataforma
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.plataformas.find(p => p.value === libreto.plataforma_id)?.label || 'No especificado'}
+                    {catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -1637,7 +1741,7 @@ const VerReclutamientoComponent: NextPage = () => {
                     Rol en Empresa
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.rolesEmpresa.find(r => r.value === libreto.rol_empresa_id)?.label || 'No especificado'}
+                    {catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -1646,7 +1750,7 @@ const VerReclutamientoComponent: NextPage = () => {
                     Industria
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.industrias.find(i => i.value === libreto.industria_id)?.label || 'No especificado'}
+                    {catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
                   </Typography>
                 </div>
 
@@ -1655,7 +1759,19 @@ const VerReclutamientoComponent: NextPage = () => {
                     Modalidad
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.modalidades.find(m => m.value === libreto.modalidad_id)?.label || 'No especificado'}
+                    {(() => {
+                      if (!libreto.modalidad_id) return 'No especificado';
+                      
+                      const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
+                      
+                      // Usar catálogos reales
+                      const nombres = modalidadIds
+                        .filter(id => id)
+                        .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
+                        .filter(Boolean);
+                      
+                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                    })()}
                   </Typography>
                 </div>
 
@@ -1664,7 +1780,19 @@ const VerReclutamientoComponent: NextPage = () => {
                     Tamaño de Empresa
                   </Typography>
                   <Typography variant="body2">
-                    {catalogosLibreto.tamanosEmpresa.find(t => t.value === libreto.tamano_empresa_id)?.label || 'No especificado'}
+                    {(() => {
+                      if (!libreto.tamano_empresa_id) return 'No especificado';
+                      
+                      const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
+                      
+                      // Usar catálogos reales
+                      const nombres = tamanoIds
+                        .filter(id => id)
+                        .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
+                        .filter(Boolean);
+                      
+                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                    })()}
                   </Typography>
                 </div>
               </div>
@@ -2133,46 +2261,28 @@ const VerReclutamientoComponent: NextPage = () => {
       );
     };
 
-  // Tabs dinámicos - usando datos de la investigación con memoización
-  const tabs = useMemo(() => {
-    console.log('🔍 CONFIGURANDO TABS:', {
-      libreto: !!libreto,
-      participantesLength: participantes.length,
-      reclutamiento: !!reclutamiento,
-      investigacion: !!investigacion
-    });
-    
-    return [
-      {
-        id: 'informacion',
-        label: 'Información',
-        icon: <InfoIcon className="w-4 h-4" />, 
-        content: <InformacionGeneral />
-      },
-      ...(libreto ? [{
-        id: 'libreto',
-        label: 'Libreto',
-        icon: <FileTextIcon className="w-4 h-4" />, 
-        content: <LibretoContent />
-      }] : []),
-      // Solo mostrar el tab de participantes si hay participantes
-      ...(participantes.length > 0 ? [{
-        id: 'reclutamiento',
-        label: 'Participantes y Asignaciones',
-        icon: <ClipboardListIcon className="w-4 h-4" />, 
-        content: <ParticipantesContent />
-      }] : [])
-    ];
-  }, [libreto, participantes.length]);
-
-  // Debug: Log de tabs (solo en cliente) - COMENTADO PARA REDUCIR RUIDO
-  // if (typeof window !== 'undefined') {
-  //   console.log('🔍 Tabs configurados:', tabs);
-  //   console.log('🔍 Número de tabs:', tabs.length);
-  //   console.log('🔍 Tab activo:', activeTab);
-  //   console.log('🔍 Número de participantes:', participantes.length);
-  //   console.log('🔍 Participantes:', participantes);
-  // }
+  // Tabs dinámicos - usando datos de la investigación
+  const tabs = [
+    {
+      id: 'informacion',
+      label: 'Información',
+      icon: <InfoIcon className="w-4 h-4" />, 
+      content: <InformacionGeneral />
+    },
+    ...(libreto ? [{
+      id: 'libreto',
+      label: 'Libreto',
+      icon: <FileTextIcon className="w-4 h-4" />, 
+      content: <LibretoContent />
+    }] : []),
+    // Solo mostrar el tab de participantes si hay participantes o asignaciones
+    ...(true ? [{
+      id: 'reclutamiento',
+      label: 'Participantes y Asignaciones',
+      icon: <ClipboardListIcon className="w-4 h-4" />, 
+      content: <ParticipantesContent />
+    }] : [])
+  ];
 
   if (isInitializing || loading) {
     return (
@@ -2319,12 +2429,12 @@ const VerReclutamientoComponent: NextPage = () => {
             <div className="flex items-center gap-3">
               <Typography variant="h2">Ver Reclutamiento</Typography>
               {reclutamiento && (
-                <Chip
+                <Badge
                   variant={getEstadoBadgeVariant(reclutamiento.estado_reclutamiento_nombre)}
                   className="ml-2"
                 >
                   {reclutamiento.estado_reclutamiento_nombre || 'Sin estado'}
-                </Chip>
+                </Badge>
               )}
             </div>
           </div>
@@ -2401,17 +2511,6 @@ const VerReclutamientoComponent: NextPage = () => {
           variant="default"
           fullWidth={true}
         />
-
-        {/* Contenido de los tabs */}
-        <div className="mt-6">
-          {(() => {
-            const activeTabData = tabs.find(tab => tab.id === activeTab);
-            // console.log('🔍 Tab activo encontrado:', activeTabData);
-            // console.log('🔍 ID del tab activo:', activeTab);
-            // console.log('🔍 Contenido del tab:', activeTabData?.content);
-            return activeTabData?.content;
-          })()}
-        </div>
       </div>
 
       {/* Modal unificado para gestionar links */}
@@ -2507,7 +2606,7 @@ const VerReclutamientoComponent: NextPage = () => {
           setParticipanteToEditAgendamiento(null);
         }}
         onSuccess={async () => {
-          // Recargar datos una sola vez con control de duplicaciones
+          // Solo recargar una vez para evitar recargas múltiples
           await recargarDatosCompletos();
           setShowAsignarAgendamientoModal(false);
           setParticipanteToEditAgendamiento(null);
@@ -2522,7 +2621,7 @@ const VerReclutamientoComponent: NextPage = () => {
         investigacionNombre={reclutamiento?.investigacion_nombre || ''}
         isEditMode={participanteToEditAgendamiento ? true : false}
         reclutamientoId={participanteToEditAgendamiento?.reclutamiento_id || null}
-        responsableActual={participanteToEditAgendamiento?.reclutador_id || null}
+        responsableActual={participanteToEditAgendamiento?.reclutador?.id || participanteToEditAgendamiento?.reclutador_id || null}
       />
 
       {/* Modal para agregar participante desde "Agendamiento Pendiente" */}
@@ -2589,7 +2688,5 @@ const VerReclutamientoComponent: NextPage = () => {
     </Layout>
   );
 };
-
-const VerReclutamiento = memo(VerReclutamientoComponent);
 
 export default VerReclutamiento; 
