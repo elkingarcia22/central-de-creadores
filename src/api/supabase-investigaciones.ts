@@ -32,12 +32,8 @@ export const obtenerEstadosInvestigacion = async (): Promise<RespuestaAPI<Array<
 
     console.log('✅ Estados de investigación obtenidos:', data);
     
-    // Estados que queremos excluir
-    const estadosExcluidos = ['por agenda'];
-    
     // Filtrar y mapear los valores a formato de opciones para selects
     const estadosFormateados = (data || [])
-      .filter((estado: string) => !estadosExcluidos.includes(estado))
       .map((estado: string) => ({
         value: estado,
         label: formatearLabelEstado(estado)
@@ -50,14 +46,14 @@ export const obtenerEstadosInvestigacion = async (): Promise<RespuestaAPI<Array<
   } catch (error: any) {
     console.error('Error obteniendo estados de investigación:', error);
     
-    // Fallback a valores predeterminados si hay error
+    // Fallback a valores predeterminados si hay error (usando estados reales del enum)
     const estadosFallback = [
       { value: 'en_borrador', label: 'En Borrador' },
       { value: 'por_iniciar', label: 'Por Iniciar' },
       { value: 'en_progreso', label: 'En Progreso' },
       { value: 'finalizado', label: 'Finalizado' },
       { value: 'pausado', label: 'Pausado' },
-      { value: 'cancelado', label: 'Cancelado' },
+      { value: 'por_agendar', label: 'Por Agendar' },
       { value: 'deprecado', label: 'Deprecado' }
     ];
     
@@ -77,7 +73,7 @@ const formatearLabelEstado = (estado: string): string => {
     'en_progreso': 'En Progreso',
     'finalizado': 'Finalizado',
     'pausado': 'Pausado',
-    'cancelado': 'Cancelado',
+    'por_agendar': 'Por Agendar',
     'deprecado': 'Deprecado'
   };
   

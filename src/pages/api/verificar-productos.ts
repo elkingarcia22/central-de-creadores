@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../api/supabase';
+import { supabaseServer } from '../../api/supabase-server';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // 1. VERIFICAR SI EXISTE LA TABLA
       console.log('📋 Verificando existencia de la tabla...');
-      const { data: productos, error: errorProductos } = await supabase
+      const { data: productos, error: errorProductos } = await supabaseServer
         .from('productos')
         .select('*')
         .order('nombre');

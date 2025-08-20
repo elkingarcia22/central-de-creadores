@@ -1,43 +1,58 @@
 -- ====================================
--- VERIFICAR ESTRUCTURA TABLAS PARTICIPANTES
+-- VERIFICAR ESTRUCTURA DE TABLAS DE PARTICIPANTES
 -- ====================================
+-- Ejecutar en el SQL Editor de Supabase
 
--- 1. Verificar estructura de la tabla participantes
+-- 1. Verificar estructura de tabla participantes (externos)
 SELECT 
-    'Estructura tabla participantes' as tipo,
-    column_name,
-    data_type
+    column_name, 
+    data_type, 
+    is_nullable,
+    column_default
 FROM information_schema.columns 
-WHERE table_name = 'participantes'
+WHERE table_schema = 'public' 
+AND table_name = 'participantes'
 ORDER BY ordinal_position;
 
--- 2. Verificar estructura de la tabla participantes_internos
+-- 2. Verificar estructura de tabla participantes_internos
 SELECT 
-    'Estructura tabla participantes_internos' as tipo,
-    column_name,
-    data_type
+    column_name, 
+    data_type, 
+    is_nullable,
+    column_default
 FROM information_schema.columns 
-WHERE table_name = 'participantes_internos'
+WHERE table_schema = 'public' 
+AND table_name = 'participantes_internos'
 ORDER BY ordinal_position;
 
--- 3. Verificar algunos datos de ejemplo de participantes
+-- 3. Verificar estructura de tabla participantes_friend_family
 SELECT 
-    'Datos ejemplo participantes' as tipo,
-    id,
-    nombre
-FROM participantes 
-LIMIT 1;
-
--- 4. Verificar algunos datos de ejemplo de participantes_internos
-SELECT 
-    'Datos ejemplo participantes_internos' as tipo,
-    id,
-    nombre
-FROM participantes_internos 
-LIMIT 1; 
-
--- Verificar la estructura real de la tabla participantes
-SELECT column_name, data_type, is_nullable
+    column_name, 
+    data_type, 
+    is_nullable,
+    column_default
 FROM information_schema.columns 
-WHERE table_name = 'participantes' 
-ORDER BY ordinal_position; 
+WHERE table_schema = 'public' 
+AND table_name = 'participantes_friend_family'
+ORDER BY ordinal_position;
+
+-- 4. Verificar si las tablas existen
+SELECT 
+    table_name,
+    CASE 
+        WHEN EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = table_name) 
+        THEN 'EXISTE'
+        ELSE 'NO EXISTE'
+    END as estado
+FROM (VALUES 
+    ('participantes'),
+    ('participantes_internos'),
+    ('participantes_friend_family')
+) AS t(table_name);
+
+-- 5. Verificar datos de ejemplo en cada tabla
+SELECT 'participantes' as tabla, COUNT(*) as total FROM participantes
+UNION ALL
+SELECT 'participantes_internos' as tabla, COUNT(*) as total FROM participantes_internos
+UNION ALL
+SELECT 'participantes_friend_family' as tabla, COUNT(*) as total FROM participantes_friend_family; 

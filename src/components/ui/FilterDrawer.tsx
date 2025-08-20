@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Button from './Button';
 import Select from './Select';
@@ -7,6 +7,7 @@ import Typography from './Typography';
 import Chip from './Chip';
 import MultiSelect from './MultiSelect';
 import Slider from './Slider';
+import Input from './Input';
 import { CloseIcon, FilterIcon, TrashIcon } from '../icons';
 
 // Interface específica para filtros de investigaciones
@@ -89,16 +90,48 @@ export interface FilterOptions {
   participantesMax?: string;
   porcentajeAvance?: [number, number];
   numeroParticipantes?: [number, number];
+  // Campos específicos para participantes
+  roles?: Array<{ value: string; label: string }>;
+  empresas?: Array<{ value: string; label: string }>;
+  departamentos?: Array<{ value: string; label: string }>;
+  tieneEmail?: Array<{ value: string; label: string }>;
+  tieneProductos?: Array<{ value: string; label: string }>;
+  // Campos específicos para empresas
+  sectores?: Array<{ value: string; label: string }>;
+  tamanos?: Array<{ value: string; label: string }>;
+  paises?: Array<{ value: string; label: string }>;
+  kams?: Array<{ value: string; label: string }>;
+  industrias?: Array<{ value: string; label: string }>;
+  modalidades?: Array<{ value: string; label: string }>;
+  relaciones?: Array<{ value: string; label: string }>;
+  productos?: Array<{ value: string; label: string }>;
+}
+
+// Interface específica para filtros de participantes
+export interface FilterValuesParticipantes {
+  busqueda?: string;
+  tipo?: string | 'todos';
+  estado_participante?: string | 'todos';
+  rol_empresa?: string | 'todos';
+  empresa?: string | 'todos';
+  departamento?: string | 'todos';
+  fecha_ultima_participacion_desde?: string;
+  fecha_ultima_participacion_hasta?: string;
+  total_participaciones_min?: string;
+  total_participaciones_max?: string;
+  tiene_email?: string | 'todos';
+  tiene_productos?: string | 'todos';
 }
 
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa';
+  participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
 const FilterDrawer: React.FC<FilterDrawerProps> = ({
@@ -108,9 +141,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   onFiltersChange,
   options,
   className = '',
-  type = 'investigacion'
+  type = 'investigacion',
+  participanteType = 'externos'
 }) => {
   const { theme } = useTheme();
+
+
 
   const handleFilterChange = (key: string, value: any) => {
     onFiltersChange({
@@ -140,6 +176,21 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         seguimiento: 'todos',
         estadoSeguimiento: []
       } as FilterValuesInvestigacion);
+    } else if (type === 'participante') {
+      onFiltersChange({
+        busqueda: '',
+        tipo: 'todos',
+        estado_participante: 'todos',
+        rol_empresa: 'todos',
+        empresa: 'todos',
+        departamento: 'todos',
+        fecha_ultima_participacion_desde: '',
+        fecha_ultima_participacion_hasta: '',
+        total_participaciones_min: '',
+        total_participaciones_max: '',
+        tiene_email: 'todos',
+        tiene_productos: 'todos'
+      } as FilterValuesParticipantes);
     } else {
       onFiltersChange({
         estados: [],
@@ -190,6 +241,20 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (invFilters.linkResultados && invFilters.linkResultados !== 'todos') count++;
       if (invFilters.seguimiento && invFilters.seguimiento !== 'todos') count++;
       if (invFilters.estadoSeguimiento && invFilters.estadoSeguimiento.length > 0) count++;
+    } else if (type === 'participante') {
+      const partFilters = filters as FilterValuesParticipantes;
+      if (partFilters.busqueda) count++;
+      if (partFilters.estado_participante && partFilters.estado_participante !== 'todos') count++;
+      if (partFilters.rol_empresa && partFilters.rol_empresa !== 'todos') count++;
+      if (partFilters.empresa && partFilters.empresa !== 'todos') count++;
+      if (partFilters.departamento && partFilters.departamento !== 'todos') count++;
+
+      if (partFilters.fecha_ultima_participacion_desde) count++;
+      if (partFilters.fecha_ultima_participacion_hasta) count++;
+      if (partFilters.total_participaciones_min) count++;
+      if (partFilters.total_participaciones_max) count++;
+      if (partFilters.tiene_email && partFilters.tiene_email !== 'todos') count++;
+      if (partFilters.tiene_productos && partFilters.tiene_productos !== 'todos') count++;
     } else {
       const recFilters = filters as FilterValuesReclutamiento;
       if (recFilters.estados.length > 0) count++;
@@ -496,18 +561,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <Typography variant="subtitle2" weight="medium" className="mb-2">
                     Fecha de Inicio
                   </Typography>
-                  <div className="grid grid-cols-2 gap-2">
-                    <DatePicker
-                      placeholder="Desde..."
-                      value={(filters as FilterValuesInvestigacion).fecha_inicio_desde || ''}
-                      onChange={(value) => handleFilterChange('fecha_inicio_desde', value)}
-                    />
-                    <DatePicker
-                      placeholder="Hasta..."
-                      value={(filters as FilterValuesInvestigacion).fecha_inicio_hasta || ''}
-                      onChange={(value) => handleFilterChange('fecha_inicio_hasta', value)}
-                    />
-                  </div>
+                  <DatePicker
+                    placeholder="Seleccionar fecha de inicio..."
+                    value={(filters as FilterValuesInvestigacion).fecha_inicio_desde || ''}
+                    onChange={(e) => handleFilterChange('fecha_inicio_desde', e.target.value)}
+                    fullWidth
+                  />
                 </div>
 
                 {/* Fecha de Fin */}
@@ -515,21 +574,15 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <Typography variant="subtitle2" weight="medium" className="mb-2">
                     Fecha de Fin
                   </Typography>
-                  <div className="grid grid-cols-2 gap-2">
-                    <DatePicker
-                      placeholder="Desde..."
-                      value={(filters as FilterValuesInvestigacion).fecha_fin_desde || ''}
-                      onChange={(value) => handleFilterChange('fecha_fin_desde', value)}
-                    />
-                    <DatePicker
-                      placeholder="Hasta..."
-                      value={(filters as FilterValuesInvestigacion).fecha_fin_hasta || ''}
-                      onChange={(value) => handleFilterChange('fecha_fin_hasta', value)}
-                    />
-                  </div>
+                  <DatePicker
+                    placeholder="Seleccionar fecha de fin..."
+                    value={(filters as FilterValuesInvestigacion).fecha_fin_desde || ''}
+                    onChange={(e) => handleFilterChange('fecha_fin_desde', e.target.value)}
+                    fullWidth
+                  />
                 </div>
               </>
-            ) : (
+            ) : type === 'reclutamiento' ? (
               // Filtros específicos para reclutamiento
               <>
                 {/* Estados de Reclutamiento */}
@@ -620,6 +673,148 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   />
                 </div>
               </>
+            ) : type === 'participante' ? (
+              // Filtros específicos para participantes
+              <>
+                {/* Estado del Participante - solo para participantes externos */}
+                {participanteType === 'externos' && (
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Estado del Participante
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar estado..."
+                      options={options.estados || []}
+                      value={(filters as FilterValuesParticipantes).estado_participante || 'todos'}
+                      onChange={(value) => handleFilterChange('estado_participante', value)}
+                      fullWidth
+                    />
+                  </div>
+                )}
+
+                {/* Rol en la Empresa - común para todos los tipos */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Rol en la Empresa
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar rol..."
+                    options={options.roles || []}
+                    value={(filters as FilterValuesParticipantes).rol_empresa || 'todos'}
+                    onChange={(value) => handleFilterChange('rol_empresa', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Empresa - solo para participantes externos */}
+                {participanteType === 'externos' && (
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Empresa
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar empresa..."
+                      options={options.empresas || []}
+                      value={(filters as FilterValuesParticipantes).empresa || 'todos'}
+                      onChange={(value) => handleFilterChange('empresa', value)}
+                      fullWidth
+                    />
+                  </div>
+                )}
+
+                {/* Departamento - solo para participantes internos y friend & family */}
+                {(participanteType === 'internos' || participanteType === 'friend_family') && (
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Departamento
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar departamento..."
+                      options={options.departamentos || []}
+                      value={(filters as FilterValuesParticipantes).departamento || 'todos'}
+                      onChange={(value) => handleFilterChange('departamento', value)}
+                      fullWidth
+                    />
+                  </div>
+                )}
+
+                {/* Fecha Última Participación - común para todos los tipos */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Fecha Última Participación
+                  </Typography>
+                  <div className="grid grid-cols-2 gap-2">
+                    <DatePicker
+                      placeholder="Desde..."
+                      value={(filters as FilterValuesParticipantes).fecha_ultima_participacion_desde || ''}
+                      onChange={(e) => handleFilterChange('fecha_ultima_participacion_desde', e.target.value)}
+                    />
+                    <DatePicker
+                      placeholder="Hasta..."
+                      value={(filters as FilterValuesParticipantes).fecha_ultima_participacion_hasta || ''}
+                      onChange={(e) => handleFilterChange('fecha_ultima_participacion_hasta', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Total de Participaciones - común para todos los tipos */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Total de Participaciones
+                  </Typography>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Mínimo"
+                      value={(filters as FilterValuesParticipantes).total_participaciones_min || ''}
+                      onChange={(e) => handleFilterChange('total_participaciones_min', e.target.value)}
+                      type="number"
+                    />
+                    <Input
+                      placeholder="Máximo"
+                      value={(filters as FilterValuesParticipantes).total_participaciones_max || ''}
+                      onChange={(e) => handleFilterChange('total_participaciones_max', e.target.value)}
+                      type="number"
+                    />
+                  </div>
+                </div>
+
+                {/* Tiene Email - común para todos los tipos */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Tiene Email
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar..."
+                    options={options.tieneEmail || []}
+                    value={(filters as FilterValuesParticipantes).tiene_email || 'todos'}
+                    onChange={(value) => handleFilterChange('tiene_email', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Tiene Productos - solo para participantes externos */}
+                {participanteType === 'externos' && (
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Tiene Productos
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar..."
+                      options={options.tieneProductos || []}
+                      value={(filters as FilterValuesParticipantes).tiene_productos || 'todos'}
+                      onChange={(value) => handleFilterChange('tiene_productos', value)}
+                      fullWidth
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              // Filtros por defecto o para otros tipos
+              <div className="p-4">
+                <Typography variant="body2" className="text-muted-foreground">
+                  No hay filtros disponibles para este tipo.
+                </Typography>
+              </div>
             )}
           </div>
 

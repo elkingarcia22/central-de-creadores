@@ -12,8 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Obtener todas las investigaciones (versión simple)
     const { data: investigaciones, error } = await supabase
       .from('investigaciones')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id, nombre, estado, creado_el')
+      .order('creado_el', { ascending: false });
 
     if (error) {
       console.error('❌ Error obteniendo investigaciones:', error);

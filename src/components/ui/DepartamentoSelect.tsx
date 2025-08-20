@@ -242,11 +242,18 @@ const DepartamentoSelect = forwardRef<HTMLDivElement, DepartamentoSelectProps>((
       const response = await fetch('/api/departamentos');
       if (response.ok) {
         const data = await response.json();
-        setDepartamentos(data.departamentos);
-        setDepartamentosAgrupados(data.departamentosAgrupados);
+        console.log('🔍 Departamentos cargados:', data);
+        setDepartamentos(data.departamentos || []);
+        setDepartamentosAgrupados(data.departamentosAgrupados || {});
+      } else {
+        console.error('❌ Error en respuesta de departamentos:', response.status);
+        setDepartamentos([]);
+        setDepartamentosAgrupados({});
       }
     } catch (error) {
-      console.error('Error cargando departamentos:', error);
+      console.error('❌ Error cargando departamentos:', error);
+      setDepartamentos([]);
+      setDepartamentosAgrupados({});
     } finally {
       setLoading(false);
     }
@@ -259,7 +266,7 @@ const DepartamentoSelect = forwardRef<HTMLDivElement, DepartamentoSelectProps>((
   };
 
   // Filtrar departamentos por búsqueda
-  const departamentosFiltrados = Object.entries(departamentosAgrupados).reduce((acc, [categoria, depts]) => {
+  const departamentosFiltrados = Object.entries(departamentosAgrupados || {}).reduce((acc, [categoria, depts]) => {
     const deptsFiltrados = depts.filter(dept =>
       dept.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       dept.categoria.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -308,6 +315,26 @@ const DepartamentoSelect = forwardRef<HTMLDivElement, DepartamentoSelectProps>((
     e.stopPropagation();
     // Evitar que se cierre el dropdown al hacer clic dentro del panel
   };
+
+  // Si está cargando, mostrar un placeholder
+  if (loading) {
+    return (
+      <div className={`${fullWidth ? 'w-full' : ''}`}>
+        {label && (
+          <label 
+            htmlFor={id || name} 
+            className="block text-sm font-medium text-foreground mb-0.5"
+          >
+            {label}
+            {required && <span className="text-destructive ml-1">*</span>}
+          </label>
+        )}
+        <div className="px-4 py-2 text-sm min-h-[44px] bg-input-solid border border-border rounded-lg text-muted-foreground">
+          Cargando departamentos...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`${fullWidth ? 'w-full' : ''}`}>

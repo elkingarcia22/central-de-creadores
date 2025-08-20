@@ -1,99 +1,52 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+import { supabaseServer } from '../../api/supabase-server';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      console.log('🔧 Poblando tabla productos...');
+      console.log('🔧 Poblando tabla productos con datos de prueba...');
 
-      // 1. PRODUCTOS DE EJEMPLO
-      const productosEjemplo = [
-        {
-          nombre: 'Software de Gestión Empresarial',
-          activo: true
-        },
-        {
-          nombre: 'Plataforma de E-learning',
-          activo: true
-        },
-        {
-          nombre: 'App de Gestión de Proyectos',
-          activo: true
-        },
-        {
-          nombre: 'Sistema de CRM',
-          activo: true
-        },
-        {
-          nombre: 'Plataforma de Análisis de Datos',
-          activo: true
-        },
-        {
-          nombre: 'Software de Contabilidad',
-          activo: true
-        },
-        {
-          nombre: 'App de Recursos Humanos',
-          activo: true
-        },
-        {
-          nombre: 'Plataforma de Marketing Digital',
-          activo: true
-        }
+      // Productos de prueba
+      const productosPrueba = [
+        { nombre: 'Analytics', activo: true },
+        { nombre: 'API', activo: true },
+        { nombre: 'Dashboard', activo: true },
+        { nombre: 'Mobile App', activo: true },
+        { nombre: 'Web Platform', activo: true },
+        { nombre: 'CRM', activo: true },
+        { nombre: 'ERP', activo: true },
+        { nombre: 'BI Tools', activo: true },
+        { nombre: 'Cloud Services', activo: true },
+        { nombre: 'Security Suite', activo: true }
       ];
 
-      // 2. INSERTAR PRODUCTOS
-      console.log('📦 Insertando productos...');
-      const { data: productosInsertados, error: errorInsert } = await supabase
+      // Insertar productos
+      const { data, error } = await supabaseServer
         .from('productos')
-        .insert(productosEjemplo)
+        .insert(productosPrueba)
         .select();
 
-      if (errorInsert) {
-        console.error('❌ Error al insertar productos:', errorInsert);
-        return res.status(500).json({ error: 'Error al insertar productos', details: errorInsert });
+      if (error) {
+        console.error('❌ Error insertando productos:', error);
+        return res.status(500).json({ 
+          error: 'Error insertando productos', 
+          details: error 
+        });
       }
 
-      console.log('✅ Productos insertados:', productosInsertados);
-
-      // 3. VERIFICAR RESULTADO
-      console.log('📊 Verificando resultado...');
-      const { data: productosFinales, error: errorFinal } = await supabase
-        .from('productos')
-        .select('*')
-        .order('nombre');
-
-      if (errorFinal) {
-        console.error('❌ Error al obtener productos finales:', errorFinal);
-        return res.status(500).json({ error: 'Error al obtener productos finales', details: errorFinal });
-      }
-
-      // 4. PREPARAR RESPUESTA
-      const resultado = {
-        productosInsertados: productosInsertados || [],
-        productosFinales: productosFinales || [],
-        resumen: {
-          totalInsertados: productosInsertados?.length || 0,
-          totalFinal: productosFinales?.length || 0,
-          categorias: [...new Set(productosFinales?.map(p => p.categoria) || [])]
-        }
-      };
-
-      console.log('✅ Población completada:', resultado.resumen);
+      console.log('✅ Productos insertados:', data?.length || 0);
 
       return res.status(200).json({
         success: true,
-        message: 'Productos creados exitosamente',
-        data: resultado
+        message: 'Productos insertados exitosamente',
+        data: {
+          productosInsertados: data?.length || 0,
+          productos: data || []
+        }
       });
 
     } catch (error) {
-      console.error('❌ Error en el proceso:', error);
+      console.error('❌ Error en poblar productos:', error);
       return res.status(500).json({ 
         error: 'Error interno del servidor', 
         details: error instanceof Error ? error.message : 'Error desconocido'

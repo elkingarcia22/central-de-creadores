@@ -1,391 +1,909 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { Layout, Typography, Card, Button, Chip } from '../components/ui';
+import { useToast } from '../contexts/ToastContext';
+import { useUser } from '../contexts/UserContext';
+import { usePermisos } from '../utils/permisosUtils';
+
+import { Layout } from '../components/ui';
+import Typography from '../components/ui/Typography';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Select from '../components/ui/Select';
+import DataTable from '../components/ui/DataTable';
+import Input from '../components/ui/Input';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import Badge from '../components/ui/Badge';
+import FilterDrawer from '../components/ui/FilterDrawer';
+import Chip from '../components/ui/Chip';
+import ActionsMenu from '../components/ui/ActionsMenu';
+import GroupedActions from '../components/ui/GroupedActions';
+import SideModal from '../components/ui/SideModal';
+import { InlineSelect, InlineDate } from '../components/ui/InlineEdit';
+import InlineUserSelect from '../components/ui/InlineUserSelect';
+import EmpresaSideModal from '../components/empresas/EmpresaSideModal';
+import EmpresaViewModal from '../components/empresas/EmpresaViewModal';
 import { 
+  SearchIcon, 
+  PlusIcon, 
+  MoreVerticalIcon, 
+  EditIcon, 
+  CopyIcon, 
+  BuildingIcon, 
+  LinkIcon, 
+  BarChartIcon, 
+  TrashIcon, 
+  EyeIcon, 
+  FilterIcon, 
+  UserIcon, 
   EmpresasIcon, 
-  PlusIcon,
-  SearchIcon,
-  FilterIcon,
-  UserIcon,
-  DocumentIcon,
-  MetricasIcon
+  AlertTriangleIcon, 
+  CheckCircleIcon, 
+  ClipboardListIcon, 
+  InfoIcon,
+  XIcon,
+  SaveIcon,
+  CalendarIcon,
+  PhoneIcon,
+  EmailIcon
 } from '../components/icons';
-import { getEstadoEmpresaVariant, getEstadoEmpresaText } from '../utils/estadoUtils';
+import { formatearFecha } from '../utils/fechas';
+
+// Interfaces para empresas
+interface Empresa {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  // Información del KAM
+  kam_id?: string;
+  kam_nombre?: string;
+  kam_email?: string;
+  // Información del país
+  pais_id?: string;
+  pais_nombre?: string;
+  // Información de la industria
+  industria_id?: string;
+  industria_nombre?: string;
+  // Información del estado
+  estado_id?: string;
+  estado_nombre?: string;
+  // Información del tamaño
+  tamano_id?: string;
+  tamano_nombre?: string;
+  // Información de la modalidad
+  modalidad_id?: string;
+  modalidad_nombre?: string;
+  // Información de la relación
+  relacion_id?: string;
+  relacion_nombre?: string;
+  // Información del producto
+  producto_id?: string;
+  producto_nombre?: string;
+  // Campos adicionales para compatibilidad
+  sector?: string;
+  tamano?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Usuario {
+  id: string;
+  nombre: string | null;
+  correo: string | null;
+  foto_url: string | null;
+}
+
+// Tipos para filtros
+interface FilterValuesEmpresa {
+  busqueda?: string;
+  estado?: string;
+  sector?: string;
+  tamano?: string;
+  pais?: string;
+  kam_id?: string;
+  activo?: boolean;
+  industria?: string;
+  modalidad?: string;
+  relacion?: string;
+  producto?: string;
+}
+
+interface FilterOptions {
+  estados: { value: string; label: string }[];
+  sectores: { value: string; label: string }[];
+  tamanos: { value: string; label: string }[];
+  paises: { value: string; label: string }[];
+  kams: { value: string; label: string }[];
+  industrias: { value: string; label: string }[];
+  modalidades: { value: string; label: string }[];
+  relaciones: { value: string; label: string }[];
+  productos: { value: string; label: string }[];
+}
 
 export default function EmpresasPage() {
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
+  const { showSuccess, showError, showWarning } = useToast();
+  const { userProfile } = useUser();
+  const { tienePermiso } = usePermisos();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterSector, setFilterSector] = useState('todos');
+  
+  // Estados principales
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    estados: [],
+    sectores: [],
+    tamanos: [],
+    paises: [],
+    kams: [],
+    industrias: [],
+    modalidades: [],
+    relaciones: [],
+    productos: []
+  });
 
-  // Datos simulados de empresas
-  const empresas = [
+  // Estados para filtros y búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<FilterValuesEmpresa>({
+    busqueda: '',
+    estado: 'todos',
+    sector: 'todos',
+    tamano: 'todos',
+    pais: 'todos',
+    kam_id: 'todos',
+    activo: true,
+    industria: 'todos',
+    modalidad: 'todos',
+    relacion: 'todos',
+    producto: 'todos'
+  });
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [selectedEmpresas, setSelectedEmpresas] = useState<string[]>([]);
+
+  // Estados para modales
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
+  const [empresaToDelete, setEmpresaToDelete] = useState<Empresa | null>(null);
+
+  // Estados para formularios
+  const [formData, setFormData] = useState<Partial<Empresa>>({});
+  const [saving, setSaving] = useState(false);
+
+  // Referencias
+  const tableRef = useRef<any>(null);
+
+  // Cargar datos iniciales
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  const cargarDatos = async () => {
+    try {
+      setLoading(true);
+      await Promise.all([
+        cargarEmpresas(),
+        cargarUsuarios(),
+        cargarOpcionesFiltros()
+      ]);
+    } catch (error) {
+      console.error('Error cargando datos:', error);
+      showError('Error al cargar los datos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cargarEmpresas = async () => {
+    try {
+      console.log('🔄 Cargando empresas...');
+      
+      const response = await fetch('/api/empresas');
+      console.log('📡 Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Datos recibidos:', data);
+        console.log('📊 Número de empresas:', data?.length || 0);
+        setEmpresas(data || []);
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Error cargando empresas:', response.status, errorData);
+        showError('Error al cargar empresas');
+      }
+    } catch (error) {
+      console.error('❌ Error cargando empresas:', error);
+      showError('Error al cargar empresas');
+    }
+  };
+
+  const cargarUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        setUsuarios(data || []);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
+    }
+  };
+
+  const cargarOpcionesFiltros = async () => {
+    try {
+      // Cargar opciones de filtros desde las APIs correspondientes
+      const [estadosRes, paisesRes, industriasRes, tamanosRes, modalidadesRes, relacionesRes, productosRes] = await Promise.all([
+        fetch('/api/estados-empresa'),
+        fetch('/api/paises'),
+        fetch('/api/industrias'),
+        fetch('/api/tamanos-empresa'),
+        fetch('/api/modalidades'),
+        fetch('/api/relaciones-empresa'),
+        fetch('/api/productos')
+      ]);
+
+      const estados = estadosRes.ok ? await estadosRes.json() : [];
+      const paises = paisesRes.ok ? await paisesRes.json() : [];
+      const industrias = industriasRes.ok ? await industriasRes.json() : [];
+      const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
+      const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
+      const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
+      const productos = productosRes.ok ? await productosRes.json() : [];
+
+      setFilterOptions({
+        estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
+        sectores: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
+        tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
+        paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
+        kams: usuarios.map((u: any) => ({ value: u.id, label: u.nombre || u.correo })),
+        industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
+        modalidades: modalidades.map((m: any) => ({ value: m.id, label: m.nombre })),
+        relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
+        productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
+      });
+    } catch (error) {
+      console.error('Error cargando opciones de filtros:', error);
+    }
+  };
+
+  // Función para filtrar empresas
+  const filtrarEmpresas = useCallback((empresas: Empresa[], searchTerm: string, filters: FilterValuesEmpresa) => {
+    let filtradas = [...empresas];
+    
+    // Filtrar por término de búsqueda
+    if (searchTerm.trim()) {
+      const termino = searchTerm.toLowerCase();
+      filtradas = filtradas.filter(emp => 
+        emp?.nombre?.toLowerCase().includes(termino) ||
+        emp?.descripcion?.toLowerCase().includes(termino) ||
+        emp?.kam_nombre?.toLowerCase().includes(termino) ||
+        emp?.pais_nombre?.toLowerCase().includes(termino) ||
+        emp?.industria_nombre?.toLowerCase().includes(termino)
+      );
+    }
+    
+    // Filtrar por estado
+    if (filters.estado && filters.estado !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.estado_nombre === filters.estado);
+    }
+    
+    // Filtrar por sector/industria
+    if (filters.sector && filters.sector !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.industria_id === filters.sector);
+    }
+    
+    // Filtrar por tamaño
+    if (filters.tamano && filters.tamano !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.tamano_id === filters.tamano);
+    }
+    
+    // Filtrar por país
+    if (filters.pais && filters.pais !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.pais_id === filters.pais);
+    }
+    
+    // Filtrar por KAM
+    if (filters.kam_id && filters.kam_id !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.kam_id === filters.kam_id);
+    }
+    
+    // Filtrar por estado activo/inactivo
+    if (filters.activo !== undefined) {
+      filtradas = filtradas.filter(emp => emp?.activo === filters.activo);
+    }
+    
+    return filtradas;
+  }, []);
+
+  // Empresas filtradas
+  const empresasFiltradas = useMemo(() => {
+    return filtrarEmpresas(empresas, searchTerm, filters);
+  }, [empresas, searchTerm, filters, filtrarEmpresas]);
+
+  // Función para contar filtros activos
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filters.estado && filters.estado !== 'todos') count++;
+    if (filters.sector && filters.sector !== 'todos') count++;
+    if (filters.tamano && filters.tamano !== 'todos') count++;
+    if (filters.pais && filters.pais !== 'todos') count++;
+    if (filters.kam_id && filters.kam_id !== 'todos') count++;
+    if (filters.activo !== undefined) count++;
+    return count;
+  };
+
+  // Handlers para filtros
+  const handleOpenFilters = () => setShowFilterDrawer(true);
+  const handleCloseFilters = () => setShowFilterDrawer(false);
+
+  const handleFiltersChange = (newFilters: FilterValuesEmpresa) => {
+    setFilters(newFilters);
+  };
+
+  // Handlers para acciones
+  const handleCreateEmpresa = () => {
+    setFormData({});
+    setShowCreateModal(true);
+  };
+
+  const handleEditEmpresa = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setFormData(empresa);
+    setShowEditModal(true);
+  };
+
+  const handleViewEmpresa = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setShowViewModal(true);
+  };
+
+  const handleDeleteEmpresa = (empresa: Empresa) => {
+    setEmpresaToDelete(empresa);
+  };
+
+  const handleDuplicateEmpresa = (empresa: Empresa) => {
+    const empresaDuplicada = {
+      ...empresa,
+      id: '',
+      nombre: `${empresa.nombre} (Copia)`,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    setFormData(empresaDuplicada);
+    setShowCreateModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!empresaToDelete) return;
+    
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/empresas?id=${empresaToDelete.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        showSuccess('Empresa eliminada correctamente');
+        setEmpresas(prev => prev.filter(emp => emp.id !== empresaToDelete.id));
+        setEmpresaToDelete(null);
+      } else {
+        showError('Error al eliminar la empresa');
+      }
+    } catch (error) {
+      console.error('Error eliminando empresa:', error);
+      showError('Error al eliminar la empresa');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveEmpresa = async (data: Partial<Empresa>) => {
+    try {
+      setSaving(true);
+      const isEditing = !!selectedEmpresa;
+      const url = '/api/empresas';
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        const savedEmpresa = await response.json();
+        showSuccess(`Empresa ${isEditing ? 'actualizada' : 'creada'} correctamente`);
+        
+        if (isEditing) {
+          setEmpresas(prev => prev.map(emp => emp.id === selectedEmpresa.id ? savedEmpresa : emp));
+          setShowEditModal(false);
+        } else {
+          setEmpresas(prev => [...prev, savedEmpresa]);
+          setShowCreateModal(false);
+        }
+        
+        setSelectedEmpresa(null);
+        setFormData({});
+      } else {
+        showError('Error al guardar la empresa');
+      }
+    } catch (error) {
+      console.error('Error guardando empresa:', error);
+      showError('Error al guardar la empresa');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Handlers para actualizaciones en línea
+  const handleInlineUpdate = async (empresaId: string, field: string, value: any) => {
+    try {
+      const response = await fetch('/api/empresas', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: empresaId,
+          [field]: value
+        })
+      });
+      
+      if (response.ok) {
+        const updatedEmpresa = await response.json();
+        setEmpresas(prev => prev.map(emp => emp.id === empresaId ? updatedEmpresa : emp));
+        showSuccess('Empresa actualizada correctamente');
+      } else {
+        showError('Error al actualizar la empresa');
+      }
+    } catch (error) {
+      console.error('Error actualizando empresa:', error);
+      showError('Error al actualizar la empresa');
+    }
+  };
+
+  // Definición de las columnas
+  const columns = [
     {
-      id: 1,
-      nombre: 'TechCorp Solutions',
-      descripcion: 'Empresa líder en desarrollo de software y soluciones tecnológicas',
-      sector: 'tecnología',
-      tamaño: 'mediana',
-      contacto: 'Juan Pérez',
-      email: 'juan.perez@techcorp.com',
-      telefono: '+1 (555) 123-4567',
-      proyectos: 8,
-      estado: 'activa',
-      fechaRegistro: '2023-01-15'
+      key: 'nombre',
+      label: 'Empresa',
+      sortable: true,
+      width: 'w-80',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <div className="space-y-1">
+            <div className="font-medium text-gray-900 dark:text-gray-100">
+              {row.nombre || 'Sin nombre'}
+            </div>
+            <div className="text-sm text-gray-500">
+              {row.descripcion || 'Sin descripción'}
+            </div>
+          </div>
+        );
+      }
     },
     {
-      id: 2,
-      nombre: 'FinanceHub International',
-      descripcion: 'Plataforma financiera innovadora para servicios bancarios digitales',
-      sector: 'fintech',
-      tamaño: 'grande',
-      contacto: 'María González',
-      email: 'maria.gonzalez@financehub.com',
-      telefono: '+1 (555) 987-6543',
-      proyectos: 12,
-      estado: 'activa',
-      fechaRegistro: '2022-11-20'
+      key: 'kam',
+      label: 'KAM',
+      sortable: false,
+      width: 'w-64',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        
+        const usuarioKAM = usuarios.find(u => u.id === row.kam_id);
+        
+        return (
+          <InlineUserSelect
+            value={row.kam_id}
+            options={usuarios.map(u => ({ 
+              value: u.id, 
+              label: u.nombre || u.correo || 'Sin nombre', 
+              email: u.correo, 
+              avatar_url: u.foto_url 
+            }))}
+            currentUser={usuarioKAM ? {
+              name: usuarioKAM.nombre,
+              email: usuarioKAM.correo,
+              avatar_url: usuarioKAM.foto_url
+            } : undefined}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'kam_id', newValue)}
+          />
+        );
+      }
     },
     {
-      id: 3,
-      nombre: 'HealthTech Innovations',
-      descripcion: 'Desarrollo de aplicaciones móviles para el sector de la salud',
-      sector: 'salud',
-      tamaño: 'pequeña',
-      contacto: 'Carlos Rodríguez',
-      email: 'carlos.rodriguez@healthtech.com',
-      telefono: '+1 (555) 456-7890',
-      proyectos: 5,
-      estado: 'activa',
-      fechaRegistro: '2023-03-10'
+      key: 'estado',
+      label: 'Estado',
+      sortable: true,
+      width: 'min-w-[120px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.estado_id}
+            options={filterOptions.estados}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'estado_id', newValue)}
+            useChip={true}
+            getChipVariant={(value) => value === 'activa' ? 'success' : 'warning'}
+            getChipText={(value) => value === 'activa' ? 'Activa' : 'Inactiva'}
+          />
+        );
+      }
     },
     {
-      id: 4,
-      nombre: 'GovDigital Systems',
-      descripcion: 'Soluciones digitales para entidades gubernamentales',
-      sector: 'gobierno',
-      tamaño: 'mediana',
-      contacto: 'Ana Martínez',
-      email: 'ana.martinez@govdigital.com',
-      telefono: '+1 (555) 321-0987',
-      proyectos: 6,
-      estado: 'inactiva',
-      fechaRegistro: '2022-08-05'
+      key: 'pais',
+      label: 'País',
+      sortable: false,
+      width: 'min-w-[140px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.pais_id}
+            options={filterOptions.paises}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'pais_id', newValue)}
+          />
+        );
+      }
+    },
+    {
+      key: 'industria',
+      label: 'Industria',
+      sortable: false,
+      width: 'min-w-[140px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.industria_id}
+            options={filterOptions.industrias}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'industria_id', newValue)}
+          />
+        );
+      }
+    },
+    {
+      key: 'tamano',
+      label: 'Tamaño',
+      sortable: false,
+      width: 'min-w-[120px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.tamano_id}
+            options={filterOptions.tamanos}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'tamano_id', newValue)}
+          />
+        );
+      }
+    },
+    {
+      key: 'modalidad',
+      label: 'Modalidad',
+      sortable: false,
+      width: 'min-w-[120px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.modalidad_id}
+            options={filterOptions.modalidades}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'modalidad_id', newValue)}
+          />
+        );
+      }
+    },
+    {
+      key: 'relacion',
+      label: 'Relación',
+      sortable: false,
+      width: 'min-w-[120px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <InlineSelect
+            value={row.relacion_id}
+            options={filterOptions.relaciones}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'relacion_id', newValue)}
+          />
+        );
+      }
+    },
+    {
+      key: 'created_at',
+      label: 'Fecha Creación',
+      sortable: true,
+      width: 'min-w-[140px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <div className="text-sm text-gray-600">
+            {formatearFecha(row.created_at)}
+          </div>
+        );
+      }
+    },
+    {
+      key: 'actions',
+      label: 'Acciones',
+      sortable: false,
+      width: 'min-w-[120px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <ActionsMenu
+            actions={[
+              {
+                label: 'Ver detalles',
+                icon: <EyeIcon className="w-4 h-4" />,
+                onClick: () => handleViewEmpresa(row)
+              },
+              {
+                label: 'Editar',
+                icon: <EditIcon className="w-4 h-4" />,
+                onClick: () => handleEditEmpresa(row)
+              },
+              {
+                label: 'Duplicar',
+                icon: <CopyIcon className="w-4 h-4" />,
+                onClick: () => handleDuplicateEmpresa(row)
+              },
+                             {
+                 label: 'Eliminar',
+                 icon: <TrashIcon className="w-4 h-4" />,
+                 onClick: () => handleDeleteEmpresa(row),
+                 className: 'text-red-600 hover:text-red-700'
+               }
+            ]}
+          />
+        );
+      }
     }
   ];
 
-  const getSectorColor = (sector: string) => {
-    switch (sector) {
-      case 'tecnología': return 'primary';
-      case 'fintech': return 'success';
-      case 'salud': return 'secondary';
-      case 'gobierno': return 'warning';
-      default: return 'default';
+  // Acciones grupales
+  const bulkActions = [
+    {
+      label: 'Eliminar seleccionadas',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (selectedIds: string[]) => {
+        // Implementar eliminación masiva
+        console.log('Eliminar empresas:', selectedIds);
+      }
     }
-  };
-
-  const getTamañoColor = (tamaño: string) => {
-    switch (tamaño) {
-      case 'pequeña': return 'info';
-      case 'mediana': return 'warning';
-      case 'grande': return 'success';
-      default: return 'default';
-    }
-  };
-
-
-
-  const filteredEmpresas = empresas.filter(empresa => {
-    const matchesSearch = empresa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         empresa.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         empresa.contacto.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterSector === 'todos' || empresa.sector === filterSector;
-    return matchesSearch && matchesFilter;
-  });
-
-  const totalProyectos = empresas.reduce((sum, empresa) => sum + empresa.proyectos, 0);
-  const empresasActivas = empresas.filter(empresa => empresa.estado === 'activa').length;
+  ];
 
   return (
-    <Layout rol={rolSeleccionado}>
-      <div className="py-10 px-4">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'} mt-1`}>
-                  <EmpresasIcon className="w-8 h-8 text-success" />
-                </div>
-                <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    Empresas
-                  </Typography>
-                  <Typography variant="subtitle1" color="secondary">
-                    Gestionar empresas y organizaciones
-                  </Typography>
-                </div>
-              </div>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => router.push('/empresas/nueva')}
-              >
-                Nueva Empresa
-              </Button>
-            </div>
-          </div>
-
-        {/* Filtros y Búsqueda */}
-        <Card variant="elevated" padding="md" className="mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center">
-            <div className="flex-1 relative">
-              <SearchIcon className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground`} />
-              <input
-                type="text"
-                placeholder="Buscar empresas..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg bg-input border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-ring"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <FilterIcon className={`w-5 h-5 text-muted-foreground`} />
-              <select
-                value={filterSector}
-                onChange={(e) => setFilterSector(e.target.value)}
-                className="px-3 py-2 border rounded-lg bg-input border-border text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
-              >
-                <option value="todos">Todos los sectores</option>
-                <option value="tecnología">Tecnología</option>
-                <option value="fintech">Fintech</option>
-                <option value="salud">Salud</option>
-                <option value="gobierno">Gobierno</option>
-              </select>
-            </div>
-          </div>
-        </Card>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card variant="elevated" padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                  {empresas.length}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  Total Empresas
-                </Typography>
-              </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-teal-900 bg-opacity-20' : 'bg-teal-50'}`}>
-                <EmpresasIcon className="w-6 h-6 text-teal-600" />
-              </div>
-            </div>
-          </Card>
-
-          <Card variant="elevated" padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                  {empresasActivas}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  Empresas Activas
-                </Typography>
-              </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
-                <UserIcon className="w-6 h-6 text-success" />
-              </div>
-            </div>
-          </Card>
-
-          <Card variant="elevated" padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                  {totalProyectos}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  Total Proyectos
-                </Typography>
-              </div>
-              <div className="p-3 rounded-lg bg-card">
-                <DocumentIcon className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          <Card variant="elevated" padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                  {empresas.length > 0 ? Math.round(totalProyectos / empresas.length) : 0}
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  Promedio Proyectos
-                </Typography>
-              </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                <MetricasIcon className="w-6 h-6 text-warning" />
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Lista de Empresas */}
+    <>
+      <Layout>
         <div className="space-y-6">
-          {filteredEmpresas.map((empresa) => (
-            <Card 
-              key={empresa.id}
-              variant="elevated" 
-              padding="lg"
-              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
-              onClick={() => router.push(`/empresas/${empresa.id}`)}
-            >
-              <div className="space-y-4">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Typography variant="h4" weight="semibold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                        {empresa.nombre}
-                      </Typography>
-                      <Chip 
-                        variant={getSectorColor(empresa.sector)}
-                        size="sm"
-                      >
-                        {empresa.sector}
-                      </Chip>
-                      <Chip 
-                        variant={getTamañoColor(empresa.tamaño)}
-                        size="sm"
-                      >
-                        {empresa.tamaño}
-                      </Chip>
-                                          <Chip 
-                      variant={getEstadoEmpresaVariant(empresa.estado)}
-                      size="sm"
-                    >
-                      {getEstadoEmpresaText(empresa.estado)}
-                    </Chip>
-                    </div>
-                    <Typography variant="body1" color="secondary" className="mb-3">
-                      {empresa.descripcion}
-                    </Typography>
-                  </div>
-                </div>
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Typography variant="h2" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                Empresas
+              </Typography>
+              <Typography variant="body1" color="secondary">
+                Gestiona las empresas de tu portafolio
+              </Typography>
+            </div>
+            
+                         <Button
+               variant="primary"
+               onClick={handleCreateEmpresa}
+               className="flex items-center gap-2"
+             >
+               <PlusIcon className="w-4 h-4" />
+               Crear Empresa
+             </Button>
+          </div>
 
-                {/* Detalles */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className={`w-4 h-4 text-muted-foreground`} />
-                    <div>
-                      <Typography variant="body2" color="secondary">
-                        Contacto
-                      </Typography>
-                      <Typography variant="body2" weight="medium" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                        {empresa.contacto}
-                      </Typography>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DocumentIcon className={`w-4 h-4 text-muted-foreground`} />
-                    <div>
-                      <Typography variant="body2" color="secondary">
-                        Email
-                      </Typography>
-                      <Typography variant="body2" weight="medium" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                        {empresa.email}
-                      </Typography>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MetricasIcon className={`w-4 h-4 text-muted-foreground`} />
-                    <div>
-                      <Typography variant="body2" color="secondary">
-                        Proyectos
-                      </Typography>
-                      <Typography variant="body2" weight="medium" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                        {empresa.proyectos}
-                      </Typography>
-                    </div>
-                  </div>
+          {/* Métricas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Total Empresas */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Total Empresas
+                  </Typography>
                 </div>
-
-                {/* Información adicional */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Typography variant="body2" color="secondary">
-                      Teléfono: {empresa.telefono}
-                    </Typography>
-                  </div>
-                  <div>
-                    <Typography variant="body2" color="secondary">
-                      Registro: {new Date(empresa.fechaRegistro).toLocaleDateString()}
-                    </Typography>
-                  </div>
-                </div>
-
-                {/* Acciones */}
-                <div className="flex gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/empresas/${empresa.id}`)}
-                  >
-                    Ver Detalles
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/empresas/${empresa.id}/editar`)}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/empresas/${empresa.id}/proyectos`)}
-                  >
-                    Proyectos
-                  </Button>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-primary/10'}`}>
+                  <BuildingIcon className="w-6 h-6 text-primary" />
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
 
-        {/* Estado vacío */}
-        {filteredEmpresas.length === 0 && (
-          <Card variant="elevated" padding="lg" className="text-center">
-            <div className="space-y-4">
-              <EmpresasIcon className="w-16 h-16 mx-auto text-gray-400" />
-              <Typography variant="h4" color="secondary" weight="medium">
-                No se encontraron empresas
-              </Typography>
-              <Typography variant="body1" color="secondary">
-                {searchTerm || filterSector !== 'todos' 
-                  ? 'Intenta ajustar los filtros de búsqueda'
-                  : 'Comienza registrando tu primera empresa'
-                }
-              </Typography>
-              {!searchTerm && filterSector === 'todos' && (
+            {/* Empresas Activas */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.filter(emp => emp.activo).length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Empresas Activas
+                  </Typography>
+                </div>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
+                  <CheckCircleIcon className="w-6 h-6 text-success" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Empresas Inactivas */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.filter(emp => !emp.activo).length}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Empresas Inactivas
+                  </Typography>
+                </div>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
+                  <AlertTriangleIcon className="w-6 h-6 text-warning" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Promedio por KAM */}
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {usuarios.length > 0 ? Math.round(empresas.length / usuarios.length) : 0}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Promedio por KAM
+                  </Typography>
+                </div>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
+                  <UserIcon className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Barra de búsqueda y filtro */}
+          <Card variant="elevated" padding="md" className="mb-6">
+            <div className="flex flex-col lg:flex-row gap-4 items-center">
+              <div className="flex-1 relative">
+                <Input
+                  placeholder="Buscar empresas..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                />
+              </div>
+              <div className="flex items-center gap-2">
                 <Button
-                  variant="primary"
-                  onClick={() => router.push('/empresas/nueva')}
+                  variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                  onClick={handleOpenFilters}
+                  className="relative flex items-center gap-2"
                 >
-                  Registrar Empresa
+                  <FilterIcon className="w-4 h-4" />
+                  Filtros Avanzados
+                  {getActiveFiltersCount() > 0 && (
+                    <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                      {getActiveFiltersCount()}
+                    </span>
+                  )}
                 </Button>
-              )}
+              </div>
             </div>
           </Card>
-        )}
+
+          {/* Tabla de empresas */}
+          <DataTable
+            data={empresasFiltradas}
+            columns={columns}
+            loading={loading}
+            searchable={false}
+            filterable={false}
+            selectable={true}
+            onSelectionChange={setSelectedEmpresas}
+            emptyMessage="No se encontraron empresas"
+            loadingMessage="Cargando empresas..."
+            rowKey="id"
+            bulkActions={bulkActions}
+          />
         </div>
-      </div>
-    </Layout>
+      </Layout>
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={!!empresaToDelete}
+        onClose={() => setEmpresaToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Eliminar Empresa"
+        message={`¿Estás seguro de que deseas eliminar la empresa "${empresaToDelete?.nombre}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="error"
+        loading={saving}
+      />
+
+      {/* Drawer de filtros avanzados */}
+      <FilterDrawer
+        isOpen={showFilterDrawer}
+        onClose={handleCloseFilters}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        type="empresa"
+        options={{
+          estados: filterOptions.estados,
+          sectores: filterOptions.sectores,
+          tamanos: filterOptions.tamanos,
+          paises: filterOptions.paises,
+          kams: filterOptions.kams,
+          industrias: filterOptions.industrias,
+          modalidades: filterOptions.modalidades,
+          relaciones: filterOptions.relaciones,
+          productos: filterOptions.productos
+        }}
+      />
+
+             {/* Modales de creación/edición/vista */}
+       <EmpresaSideModal
+         isOpen={showCreateModal || showEditModal}
+         onClose={() => {
+           setShowCreateModal(false);
+           setShowEditModal(false);
+           setSelectedEmpresa(null);
+           setFormData({});
+         }}
+         onSave={handleSaveEmpresa}
+         empresa={selectedEmpresa}
+         usuarios={usuarios}
+         filterOptions={filterOptions}
+         loading={saving}
+       />
+
+       <EmpresaViewModal
+         isOpen={showViewModal}
+         onClose={() => {
+           setShowViewModal(false);
+           setSelectedEmpresa(null);
+         }}
+         empresa={selectedEmpresa}
+       />
+    </>
   );
 } 

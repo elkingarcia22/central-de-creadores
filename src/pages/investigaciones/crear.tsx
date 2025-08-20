@@ -555,6 +555,7 @@ const CrearInvestigacionPage: NextPage = () => {
                 value={formData.fecha_inicio}
                 onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
                 required
+                fullWidth
               />
               
               <DatePicker
@@ -562,6 +563,7 @@ const CrearInvestigacionPage: NextPage = () => {
                 value={formData.fecha_fin}
                 onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
                 required
+                fullWidth
               />
 
               <Select
