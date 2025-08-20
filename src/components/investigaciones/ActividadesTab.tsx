@@ -155,7 +155,11 @@ const ActividadesTab: React.FC<ActividadesTabProps> = ({ investigacionId }) => {
                   <Typography variant="body2" className="font-medium">
                     {actividad.usuario?.full_name || 'Desconocido'}
                   </Typography>
-                  <UserAvatar src={actividad.usuario?.avatar_url} fallbackText={actividad.usuario?.full_name || ''} size="sm" />
+                  <UserAvatar 
+                    src={actividad.usuario?.avatar_url} 
+                    fallbackText={actividad.usuario?.full_name || 'Usuario'} 
+                    size="sm" 
+                  />
                   <Typography variant="body2" className="text-muted-foreground ml-2">
                     {formatDistanceToNow(new Date(actividad.fecha_creacion), { addSuffix: true, locale: enUS })}
                     <span className="ml-2 text-xs text-muted-foreground">({format(new Date(actividad.fecha_creacion), 'dd/MM/yyyy HH:mm', { locale: enUS })})</span>

@@ -89,7 +89,7 @@ export class ContextManager {
   /**
    * Buscar contexto por términos de búsqueda
    */
-  async searchContext({ search_terms, time_range, session_id }) {
+  async searchContext({ search_terms = [], time_range = 'all', session_id }) {
     try {
       const contexts = await this.loadContexts();
       let filteredContexts = contexts.contexts;
@@ -100,35 +100,75 @@ export class ContextManager {
       }
 
       // Filtrar por rango de tiempo
-      if (time_range !== 'all') {
-        const timeLimit = this.getTimeLimit(time_range);
-        filteredContexts = filteredContexts.filter(ctx => 
-          new Date(ctx.timestamp) >= timeLimit
-        );
+      if (time_range && time_range !== 'all') {
+        const now = new Date();
+        const timeRanges = {
+          last_hour: now.getTime() - (60 * 60 * 1000),
+          last_day: now.getTime() - (24 * 60 * 60 * 1000),
+          last_week: now.getTime() - (7 * 24 * 60 * 60 * 1000)
+        };
+        
+        if (timeRanges[time_range]) {
+          const cutoffTime = timeRanges[time_range];
+          filteredContexts = filteredContexts.filter(ctx => {
+            const contextTime = new Date(ctx.timestamp).getTime();
+            return contextTime >= cutoffTime;
+          });
+        }
       }
 
-      // Búsqueda por términos
-      if (search_terms.length > 0) {
+      // Buscar por términos si se proporcionan
+      if (search_terms && search_terms.length > 0) {
         filteredContexts = filteredContexts.filter(ctx => {
-          const searchText = `${ctx.task} ${ctx.summary} ${ctx.tags.join(' ')}`.toLowerCase();
-          return search_terms.some(term => 
-            searchText.includes(term.toLowerCase())
-          );
+          const searchText = search_terms.join(' ').toLowerCase();
+          const contextText = `${ctx.task} ${ctx.summary || ''} ${ctx.tags?.join(' ') || ''}`.toLowerCase();
+          return search_terms.some(term => contextText.includes(term.toLowerCase()));
         });
       }
 
-      // Ordenar por relevancia e importancia
+      // Ordenar por importancia y fecha
       filteredContexts.sort((a, b) => {
-        const scoreA = this.calculateRelevanceScore(a, search_terms);
-        const scoreB = this.calculateRelevanceScore(b, search_terms);
-        return scoreB - scoreA;
+        if (a.importance !== b.importance) {
+          return b.importance - a.importance;
+        }
+        return new Date(b.timestamp) - new Date(a.timestamp);
       });
 
       return filteredContexts;
-
     } catch (error) {
       console.error('Error buscando contexto:', error);
       return [];
+    }
+  }
+
+  /**
+   * Obtener contexto reciente para recuperación automática
+   */
+  async getRecentContext() {
+    try {
+      const contexts = await this.loadContexts();
+      if (contexts.contexts.length === 0) {
+        return null;
+      }
+
+      // Obtener el contexto más reciente y más importante
+      const recentContexts = contexts.contexts
+        .filter(ctx => {
+          const contextTime = new Date(ctx.timestamp).getTime();
+          const oneDayAgo = new Date().getTime() - (24 * 60 * 60 * 1000);
+          return contextTime >= oneDayAgo;
+        })
+        .sort((a, b) => {
+          if (a.importance !== b.importance) {
+            return b.importance - a.importance;
+          }
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+
+      return recentContexts[0] || null;
+    } catch (error) {
+      console.error('Error obteniendo contexto reciente:', error);
+      return null;
     }
   }
 

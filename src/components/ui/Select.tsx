@@ -1,436 +1,300 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
-import { createPortal } from 'react-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import { ChevronDownIcon, CheckIcon } from '../icons';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ChevronDownIcon, SearchIcon, CheckIcon } from '../icons';
+
+// Función cn para combinar clases CSS
+const cn = (...classes: (string | undefined | null | false)[]) => {
+  return classes.filter(Boolean).join(' ');
+};
 
 export interface SelectOption {
-  value: string | number;
+  value: string;
   label: string;
   disabled?: boolean;
-  renderOption?: () => React.ReactNode;
 }
 
 export interface SelectProps {
   options: SelectOption[];
-  value?: string | number;
-  defaultValue?: string | number;
-  onChange?: (value: string | number) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   onBlur?: () => void;
   onFocus?: () => void;
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'error' | 'success';
-  disabled?: boolean;
-  required?: boolean;
-  fullWidth?: boolean;
   placeholder?: string;
   label?: string;
-  helperText?: string;
-  error?: string;
+  required?: boolean;
+  disabled?: boolean;
+  searchable?: boolean;
+  multiple?: boolean;
   className?: string;
-  name?: string;
-  id?: string;
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'outline' | 'ghost';
+  error?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
 }
 
-const Select = forwardRef<HTMLDivElement, SelectProps>(({
+const Select: React.FC<SelectProps> = ({
   options,
   value,
-  defaultValue,
   onChange,
   onBlur,
   onFocus,
+  placeholder = 'Seleccionar...',
+  label,
+  required = false,
+  disabled = false,
+  searchable = false,
+  multiple = false,
+  className,
   size = 'md',
   variant = 'default',
-  disabled = false,
-  required = false,
-  fullWidth = false,
-  placeholder = 'Seleccionar opción...',
-  label,
-  helperText,
-  error,
-  className = '',
-  name,
-  id,
-  isOpen: propIsOpen,
-  onOpenChange,
-  ...props
-}, ref) => {
-  const { theme } = useTheme();
+  error = false,
+  loading = false,
+  fullWidth = false
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [dropdownPosition, setDropdownPosition] = useState<any>({});
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Nueva función mejorada para calcular posición
-  const updateDropdownPosition = () => {
-    if (!containerRef.current) return;
-    
+  // Filtrar opciones basado en el término de búsqueda
+  const filteredOptions = options.filter(option =>
+    searchable && searchTerm
+      ? option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      : true
+  );
+
+  // Obtener la opción seleccionada
+  const selectedOption = options.find(option => option.value === value);
+
+  // Calcular posición del dropdown de manera más estable
+  const getDropdownPosition = useCallback(() => {
+    if (!containerRef.current) return {};
+
     const rect = containerRef.current.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
-    const spaceBelow = viewportHeight - rect.bottom - 10;
-    const spaceAbove = rect.top - 10;
-    const dropdownHeight = Math.min(300, options.length * 44 + 20);
     
-    // Determinar si mostrar arriba o abajo
-    const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
-    
-    // Calcular posición horizontal con límites del viewport
-    let left = rect.left + window.scrollX;
+    // Calcular dimensiones del dropdown
+    const dropdownHeight = Math.min(300, filteredOptions.length * 40 + 20);
     const dropdownWidth = Math.max(rect.width, 280);
     
-    // Asegurar que no se salga del viewport horizontalmente
-    if (left + dropdownWidth > viewportWidth) {
-      left = viewportWidth - dropdownWidth - 20;
-    }
-    if (left < 20) {
-      left = 20;
-    }
+    // Calcular espacio disponible
+    const spaceBelow = viewportHeight - rect.bottom - 10;
+    const spaceAbove = rect.top - 10;
     
-    const position = {
+    // Determinar posición vertical
+    const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+    
+    // Determinar posición horizontal
+    let left = rect.left;
+    if (left + dropdownWidth > viewportWidth) {
+      left = viewportWidth - dropdownWidth - 10;
+    }
+    if (left < 10) {
+      left = 10;
+    }
+
+    return {
       position: 'fixed' as const,
-      zIndex: 99999,
+      top: showAbove ? `${rect.top - dropdownHeight - 5}px` : `${rect.bottom + 5}px`,
       left: `${left}px`,
       width: `${dropdownWidth}px`,
-      transform: 'none',
-      ...(showAbove 
-        ? { 
-            bottom: `${viewportHeight - rect.top + 5}px`,
-            maxHeight: `${Math.min(300, spaceAbove)}px`
-          }
-        : { 
-            top: `${rect.bottom + 5}px`,
-            maxHeight: `${Math.min(300, spaceBelow)}px`
-          }
-      )
+      maxHeight: `${Math.min(300, showAbove ? spaceAbove : spaceBelow)}px`,
+      zIndex: 99999
     };
-    
-    setDropdownPosition(position);
-  };
+  }, [filteredOptions.length]);
 
-  // Efecto para manejar posicionamiento y eventos
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    // Posicionar inmediatamente
-    updateDropdownPosition();
-    
-    // Crear throttled version para mejor performance
-    let ticking = false;
-    const throttledUpdate = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          updateDropdownPosition();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    // Event listeners
-    const handleScroll = (e: Event) => {
-      throttledUpdate();
-    };
-
-    const handleResize = () => {
-      throttledUpdate();
-    };
-
-    // Agregar listeners a window y document
-    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
-    window.addEventListener('resize', handleResize, { passive: true });
-    document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
-
-    // Buscar contenedores padre con scroll y agregar listeners también
-    const searchScrollContainers = (element: HTMLElement | null): HTMLElement[] => {
-      const containers: HTMLElement[] = [];
-      let parent = element?.parentElement;
-      
-      while (parent) {
-        const style = window.getComputedStyle(parent);
-        const hasScroll = style.overflow === 'auto' || 
-                         style.overflow === 'scroll' || 
-                         style.overflowY === 'auto' || 
-                         style.overflowY === 'scroll';
-        
-        if (hasScroll) {
-          containers.push(parent);
-        }
-        
-        parent = parent.parentElement;
-      }
-      
-      return containers;
-    };
-
-    // Buscar contenedores de scroll y agregar listeners
-    const scrollContainers = searchScrollContainers(containerRef.current);
-    scrollContainers.forEach(container => {
-      container.addEventListener('scroll', handleScroll, { passive: true });
-    });
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-      window.removeEventListener('resize', handleResize, true);
-      document.removeEventListener('scroll', handleScroll, true);
-      
-      // Remover listeners de contenedores de scroll
-      scrollContainers.forEach(container => {
-        container.removeEventListener('scroll', handleScroll, true);
-      });
-    };
-  }, [isOpen, options?.length]);
-
-  // Cerrar dropdown al hacer clic fuera
+  // Manejar clic fuera del dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      
-      // No cerrar si se hizo clic en el container del select
-      if (containerRef.current && containerRef.current.contains(target)) {
-        return;
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSearchTerm('');
+        onBlur?.();
       }
-      
-      // Verificar si el clic fue en algún elemento del dropdown (por el portal)
-      const dropdownElements = document.querySelectorAll('[data-dropdown-portal="true"]');
-      for (const element of dropdownElements) {
-        if (element.contains(target)) {
-          return;
-        }
-      }
-      
-      setIsOpen(false);
-      setSearchTerm('');
     };
 
     if (isOpen) {
-      // Usar un delay más corto y usar mousedown en lugar de click
-      const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside, true);
-      }, 50);
-      
-      return () => {
-        clearTimeout(timeoutId);
-        document.removeEventListener('mousedown', handleClickOutside, true);
-      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside, true);
-    };
   }, [isOpen]);
 
-  // Escuchar eventos de otros dropdowns
+  // Manejar teclas
   useEffect(() => {
-    const handleOtherOpen = () => {
-      setIsOpen(false);
-      setSearchTerm('');
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      switch (event.key) {
+        case 'Escape':
+          setIsOpen(false);
+          setSearchTerm('');
+          break;
+        case 'Enter':
+          event.preventDefault();
+          if (filteredOptions.length > 0) {
+            onChange?.(filteredOptions[0].value);
+            setIsOpen(false);
+            setSearchTerm('');
+          }
+          break;
+      }
     };
 
-    document.addEventListener('otherDropdownOpen', handleOtherOpen);
-    return () => document.removeEventListener('otherDropdownOpen', handleOtherOpen);
-  }, []);
-  
-  const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm min-h-[36px]',
-    md: 'px-4 py-2 text-sm min-h-[44px]',
-    lg: 'px-4 py-3 text-base min-h-[52px]'
-  };
-
-  const selectedOption = options?.find(option => option.value === value);
-  const filteredOptions = options
-    ?.filter(option => option.label && typeof option.label === 'string')
-    .filter(option =>
-      option.label.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
-
-  const handleToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (disabled) {
-      return;
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
     }
-    
-    const newIsOpen = !isOpen;
-    setIsOpen(newIsOpen);
-    
-    if (!isOpen) {
-      onFocus?.();
-    } else {
+  }, [isOpen, filteredOptions, onChange]);
+
+  // Cerrar dropdown cuando se selecciona una opción
+  const handleOptionClick = (optionValue: string) => {
+    onChange?.(optionValue);
+    if (!multiple) {
+      setIsOpen(false);
+      setSearchTerm('');
       onBlur?.();
     }
   };
 
-  const handleOptionSelect = (optionValue: string | number) => {
-    onChange?.(optionValue);
-    setIsOpen(false);
-    setSearchTerm('');
-    onBlur?.();
+  // Clases CSS
+  const sizeClasses = {
+    sm: 'h-8 px-2 text-sm',
+    md: 'h-10 px-3 text-sm',
+    lg: 'h-12 px-4 text-base'
   };
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsOpen(false);
-    setSearchTerm('');
+  const variantClasses = {
+    default: 'bg-background border border-input hover:bg-accent hover:text-accent-foreground',
+    outline: 'bg-transparent border border-input hover:bg-accent hover:text-accent-foreground',
+    ghost: 'bg-transparent hover:bg-accent hover:text-accent-foreground'
   };
 
-  const handleDropdownClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Evitar que se cierre el dropdown al hacer clic dentro del panel
-  };
+  const errorClasses = error ? 'border-destructive focus:ring-destructive' : '';
 
   return (
-    <div className={`${fullWidth ? 'w-full' : ''}`}>
+    <div className={cn('relative', fullWidth && 'w-full', className)} ref={containerRef}>
       {label && (
-        <label 
-          htmlFor={id || name} 
-          className="block text-sm font-medium text-foreground mb-0.5"
-        >
+        <span className="block text-sm font-medium text-foreground mb-1">
           {label}
           {required && <span className="text-destructive ml-1">*</span>}
-        </label>
+        </span>
       )}
-      
-      <div className="relative" ref={containerRef}>
-        {/* Botón selector */}
-        <button
-          type="button"
-          onClick={handleToggle}
-          disabled={disabled}
-          className={`
-            w-full ${sizeClasses[size]} 
-            bg-input-solid border border-border rounded-lg text-left
-            focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring
-            disabled:opacity-50 disabled:cursor-not-allowed
-            transition-all duration-200
-            ${isOpen ? 'ring-2 ring-ring border-ring' : 'hover:border-muted-foreground'}
-            ${error ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}
-            ${className}
-          `}
-        >
-          <div className="flex items-center justify-between">
-            <span className={`truncate ${selectedOption ? 'text-foreground' : 'text-muted-foreground'}`}>
-              {selectedOption ? selectedOption.label : placeholder}
-            </span>
-            <ChevronDownIcon 
-                        className={`w-5 h-5 text-muted-foreground transition-transform duration-200 flex-shrink-0 ml-2 ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
-            />
-          </div>
-        </button>
-
-        {/* Dropdown personalizado */}
-        {isOpen && createPortal(
-          <>
-            {/* Backdrop */}
-            <div 
-              className="fixed inset-0 z-40" 
-              onClick={handleBackdropClick}
-            />
-            
-            {/* Panel de opciones */}
-            <div 
-              data-dropdown-portal="true"
-              className="bg-popover-solid border border-border rounded-lg shadow-lg"
-              style={{
-                ...dropdownPosition,
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                backdropFilter: 'blur(0px)',
-                isolation: 'isolate'
-              }}
-              onClick={handleDropdownClick}
-            >
-              {/* Barra de búsqueda (solo si hay muchas opciones) */}
-              {options.length > 8 && (
-                <div className="p-3 border-b border-border">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar opciones..."
-                    className="w-full px-3 py-2 text-sm border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-input-solid text-foreground placeholder:text-muted-foreground"
-                  />
-                </div>
-              )}
-
-              {/* Lista de opciones con scroll */}
-              <div 
-                className="overflow-y-auto scrollbar-dropdown"
-                style={{ 
-                  maxHeight: options.length > 8 ? '240px' : '300px'
-                }}
-              >
-                {filteredOptions.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground">
-                    <p className="text-sm">
-                      {searchTerm ? 'No se encontraron opciones' : 'No hay opciones disponibles'}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="py-1">
-                    {filteredOptions.map((option, index) => (
-                      <button
-              key={option.value}
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          if (!option.disabled && onChange) {
-                            onChange(option.value);
-                            setIsOpen(false);
-                            setSearchTerm('');
-                            onBlur?.();
-                          }
-                        }}
-              disabled={option.disabled}
-                        className={`
-                          w-full px-4 py-2 text-left text-sm transition-colors
-                          hover:bg-accent-solid
-                          focus:outline-none focus:bg-accent-solid
-                          disabled:opacity-50 disabled:cursor-not-allowed
-                          ${option.value === value 
-                            ? 'bg-primary/10 border-r-2 border-primary text-foreground' 
-                            : 'text-popover-foreground'
-                          }
-                        `}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="truncate">
-              {option.label}
-                          </span>
-                          {option.value === value && (
-                            <CheckIcon className="w-4 h-4 text-primary flex-shrink-0 ml-2" />
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-        </div>
-          </>,
-          document.body
+      {/* Trigger */}
+      <button
+        type="button"
+        className={cn(
+          'flex items-center justify-between w-full rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          sizeClasses[size],
+          variantClasses[variant],
+          errorClasses,
+          disabled && 'opacity-50 cursor-not-allowed',
+          !disabled && 'cursor-pointer'
         )}
-      </div>
-      
-      {(helperText || error) && (
-        <p className={`text-sm mt-0.5 ${error 
-          ? 'text-destructive'
-          : 'text-muted-foreground'
-        }`}>
-          {error || helperText}
-        </p>
+        onClick={() => {
+          if (!disabled && !loading) {
+            const newIsOpen = !isOpen;
+            setIsOpen(newIsOpen);
+            if (newIsOpen) {
+              onFocus?.();
+            } else {
+              onBlur?.();
+            }
+          }
+        }}
+        disabled={disabled || loading}
+      >
+        <div className="flex items-center min-w-0 flex-1">
+          {loading ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+              <span className="text-sm text-muted-foreground">
+                Cargando...
+              </span>
+            </div>
+          ) : selectedOption ? (
+            <span className="text-sm truncate">
+              {selectedOption.label}
+            </span>
+          ) : (
+            <span className="text-sm text-muted-foreground truncate">
+              {placeholder}
+            </span>
+          )}
+        </div>
+        <ChevronDownIcon 
+          className={cn(
+            'h-4 w-4 transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )} 
+        />
+      </button>
+
+      {/* Dropdown */}
+      {isOpen && (
+        <div
+          ref={dropdownRef}
+          className="absolute w-full mt-1 bg-background border border-border rounded-md shadow-lg overflow-hidden z-50"
+          style={{
+            top: '100%',
+            left: 0,
+            right: 0,
+            maxHeight: '300px'
+          }}
+        >
+          {/* Search input */}
+          {searchable && (
+            <div className="p-2 border-b border-border">
+              <div className="relative">
+                <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-8 pr-2 py-1 text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground"
+                  autoFocus
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Options */}
+          <div className="max-h-60 overflow-y-auto">
+            {filteredOptions.length === 0 ? (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                No se encontraron opciones
+              </div>
+            ) : (
+              filteredOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={cn(
+                    'w-full px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                    option.disabled && 'opacity-50 cursor-not-allowed',
+                    !option.disabled && 'cursor-pointer',
+                    value === option.value && 'bg-accent text-accent-foreground'
+                  )}
+                  onClick={() => !option.disabled && handleOptionClick(option.value)}
+                  disabled={option.disabled}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm truncate">
+                      {option.label}
+                    </span>
+                    {value === option.value && (
+                      <CheckIcon className="h-4 w-4 text-primary" />
+                    )}
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
-});
-
-Select.displayName = 'Select';
+};
 
 export default Select; 

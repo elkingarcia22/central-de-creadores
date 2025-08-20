@@ -21,7 +21,7 @@ Ejecuta el script de diagnóstico para identificar el problema específico:
 
 ```sql
 -- Ejecutar en Supabase SQL Editor
--- Archivo: diagnostico-automatizacion-estadisticas.sql
+-- Archivo: sigue existiendo una card diagnostico-automatizacion-estadisticas.sql
 ```
 
 **Este script verificará**:

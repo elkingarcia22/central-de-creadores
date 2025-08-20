@@ -39,8 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let usuarios: any[] = [];
 
     if (usuarioIds.length > 0) {
+      // Usar profiles directamente en lugar de la vista usuarios_con_roles
       const { data: usuariosData, error: usuariosError } = await supabase
-        .from('usuarios_con_roles')
+        .from('profiles')
         .select('id, full_name, email, avatar_url')
         .in('id', usuarioIds);
 
@@ -48,6 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.error('Error al obtener usuarios:', usuariosError);
       } else {
         usuarios = usuariosData || [];
+        console.log('✅ Usuarios obtenidos para actividades:', usuarios.length);
       }
     }
 

@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
-import DiagnosticoPermisos from '../components/DiagnosticoPermisos';
+
 import { Layout, Typography, Card, Button, DataTable, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';

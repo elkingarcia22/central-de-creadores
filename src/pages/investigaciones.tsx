@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
-import DiagnosticoPermisos from '../components/DiagnosticoPermisos';
+
 import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
@@ -252,20 +252,25 @@ export default function InvestigacionesPage() {
     investigacionesRef.current = investigaciones;
   }, [investigaciones]);
 
-  // Cargar datos iniciales y cuando cambie el rol
+  // Cargar datos iniciales y cuando cambie el rol o usuario
   useEffect(() => {
     console.log('🚀 useEffect ejecutándose - cargando datos iniciales');
     console.log('🎭 Rol actual:', rolSeleccionado);
-    Promise.all([
-      fetchInvestigaciones(),
-      fetchUsuarios(),
-      fetchPeriodos(),
-      fetchEstadosInvestigacion(),
-      fetchCategoriasRiesgo(),
-      fetchTiposInvestigacion(),
-      fetchMetricasSeguimientos()
-    ]);
-  }, [rolSeleccionado]); // Se ejecuta cuando cambia el rol
+    console.log('👤 Usuario ID:', usuarioId);
+    
+    // Solo cargar si tenemos el rol y el usuario
+    if (rolSeleccionado && usuarioId) {
+      Promise.all([
+        fetchInvestigaciones(),
+        fetchUsuarios(),
+        fetchPeriodos(),
+        fetchEstadosInvestigacion(),
+        fetchCategoriasRiesgo(),
+        fetchTiposInvestigacion(),
+        fetchMetricasSeguimientos()
+      ]);
+    }
+  }, [rolSeleccionado, usuarioId]); // Se ejecuta cuando cambia el rol o el usuario
 
   // ====================================
   // FUNCIÓN PARA OBTENER MÉTRICAS DE SEGUIMIENTOS
@@ -340,9 +345,19 @@ export default function InvestigacionesPage() {
       );
     }
     
-    // Filtrar por estado
+    // Filtrar por estado (select simple)
     if (filters.estado && filters.estado !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.estado === filters.estado);
+      console.log('🔍 Aplicando filtro de estado:', filters.estado);
+      console.log('🔍 Investigaciones antes del filtro:', filtradas.length);
+      console.log('🔍 Estados disponibles:', [...new Set(filtradas.map(inv => inv?.estado))]);
+      
+      filtradas = filtradas.filter(inv => {
+        const coincide = inv?.estado === filters.estado;
+        console.log(`  - ${inv?.nombre}: estado=${inv?.estado}, coincide=${coincide}`);
+        return coincide;
+      });
+      
+      console.log('🔍 Investigaciones después del filtro:', filtradas.length);
     }
     
     // Filtrar por tipo de investigación
@@ -566,7 +581,7 @@ export default function InvestigacionesPage() {
         { value: 'en_progreso', label: 'En Progreso' },
         { value: 'finalizado', label: 'Finalizado' },
         { value: 'pausado', label: 'Pausado' },
-        { value: 'cancelado', label: 'Cancelado' },
+        { value: 'por_agendar', label: 'Por Agendar' },
         { value: 'deprecado', label: 'Deprecado' }
       ]);
     }
@@ -718,6 +733,9 @@ export default function InvestigacionesPage() {
   };
 
   const handleFiltersChange = (newFilters: FilterValuesInvestigacion) => {
+    console.log('🔍 handleFiltersChange llamado con:', newFilters);
+    console.log('🔍 Estado anterior:', filters.estado);
+    console.log('🔍 Estado nuevo:', newFilters.estado);
     setFilters(newFilters);
   };
 
@@ -1339,7 +1357,6 @@ export default function InvestigacionesPage() {
         }))}
       />
     </Layout>
-    <DiagnosticoPermisos />
     </>
   );
 }

@@ -449,23 +449,18 @@ const VerReclutamiento: NextPage = () => {
       return;
     }
     
-    // Verificar si es "Agendamiento Pendiente"
-    // Un participante es "pendiente de agendamiento" si:
-    // 1. No tiene fecha_sesion (no está agendado)
-    // 2. O tiene estado específico de pendiente
-    // 3. O es un reclutamiento sin participante asignado
+    // Verificar si es "Agendamiento Pendiente" - Lógica mejorada
     const esPendienteDeAgendamiento = !participante.fecha_sesion || 
                                      participante.estado_agendamiento === 'Pendiente de agendamiento' || 
                                      participante.estado_agendamiento === 'Pendiente' ||
                                      (participante.tipo === 'agendamiento_pendiente') ||
-                                     (participante.reclutador_id && !participante.participante_id);
+                                     (participante.reclutador_id && !participante.participante_id) ||
+                                     (participante.estado_agendamiento?.nombre === 'Pendiente de agendamiento');
+    
     console.log('🔍 esPendienteDeAgendamiento:', esPendienteDeAgendamiento);
     console.log('🔍 Estado agendamiento:', participante.estado_agendamiento);
     console.log('🔍 Fecha sesión:', participante.fecha_sesion);
     console.log('🔍 Tipo participante:', participante.tipo);
-    console.log('🔍 Reclutador ID:', participante.reclutador_id);
-    console.log('🔍 Participante ID:', participante.participante_id);
-    console.log('🔍 Todos los campos del participante:', Object.keys(participante));
     
     if (esPendienteDeAgendamiento) {
       // Para "Agendamiento Pendiente", usar AsignarAgendamientoModal para editar solo el responsable
@@ -475,9 +470,48 @@ const VerReclutamiento: NextPage = () => {
       console.log('🔍 reclutador:', participante.reclutador);
       console.log('🔍 reclutador_nombre:', participante.reclutador_nombre);
       console.log('🔍 reclutamiento_id:', participante.reclutamiento_id);
-      console.log('🔍 Todos los campos del participante:', Object.keys(participante));
-      setParticipanteToEditAgendamiento(participante);
-      setShowAsignarAgendamientoModal(true);
+      
+      // Obtener el reclutador del reclutamiento
+      try {
+        console.log('🔍 Obteniendo datos del reclutamiento para obtener reclutador...');
+        const response = await fetch(`/api/reclutamientos/${participante.reclutamiento_id}`);
+        
+        if (response.ok) {
+          const reclutamientoData = await response.json();
+          console.log('🔍 Datos del reclutamiento obtenidos:', reclutamientoData);
+          
+          // Crear un participante con el reclutador_id del reclutamiento
+          const participanteConReclutador = {
+            ...participante,
+            reclutador_id: reclutamientoData.reclutador_id || participante.reclutador_id,
+            reclutador: reclutamientoData.reclutador || participante.reclutador
+          };
+          
+          console.log('🔍 PARTICIPANTE CON RECLUTADOR:', JSON.stringify(participanteConReclutador, null, 2));
+          console.log('🔍 CAMPOS DEL PARTICIPANTE:');
+          console.log('- id:', participanteConReclutador.id);
+          console.log('- reclutamiento_id:', participanteConReclutador.reclutamiento_id);
+          console.log('- reclutador_id:', participanteConReclutador.reclutador_id);
+          console.log('- reclutador:', participanteConReclutador.reclutador);
+          console.log('- reclutador_nombre:', participanteConReclutador.reclutador_nombre);
+          console.log('- nombre:', participanteConReclutador.nombre);
+          console.log('- email:', participanteConReclutador.email);
+          console.log('- estado_agendamiento:', participanteConReclutador.estado_agendamiento);
+          
+          setParticipanteToEditAgendamiento(participanteConReclutador);
+          setShowAsignarAgendamientoModal(true);
+        } else {
+          console.error('❌ Error obteniendo datos del reclutamiento:', response.statusText);
+          // Usar el participante original si no se pueden obtener los datos del reclutamiento
+          setParticipanteToEditAgendamiento(participante);
+          setShowAsignarAgendamientoModal(true);
+        }
+      } catch (error) {
+        console.error('❌ Error obteniendo datos del reclutamiento:', error);
+        // Usar el participante original si hay error
+        setParticipanteToEditAgendamiento(participante);
+        setShowAsignarAgendamientoModal(true);
+      }
       return;
     }
     
@@ -506,7 +540,8 @@ const VerReclutamiento: NextPage = () => {
           fecha_sesion: debugData.fecha_sesion || participante.fecha_sesion,
           investigacion_id: reclutamiento?.investigacion_id || '',
           duracion_sesion: debugData.duracion_sesion,
-          tipo_participante: participante.tipo || 'externo'
+          tipo_participante: participante.tipo || 'externo',
+          es_agendamiento_pendiente: false // Participantes normales no son agendamiento pendiente
         };
         console.log('🔍 Debug handleEditParticipante - reclutamientoData:', reclutamientoData);
         console.log('🔍 Configurando modal de edición...');
@@ -888,55 +923,372 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
-  // Componente para el contenido del tab de Reclutamiento
+  // Componente para el contenido del tab de Reclutamiento - INFORMACIÓN COMPLETA
   const ReclutamientoTabContent = memo(() => (
     <div className="space-y-6">
-      {/* Información de Reclutamiento Detallada */}
+      {/* Información básica del participante */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <ClipboardListIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información de Reclutamiento</Typography>
+          <UserIcon className="w-5 h-5 text-primary" />
+          <Typography variant="h5">Información del Participante</Typography>
         </div>
-        <div className="space-y-3">
-          {selectedParticipante.estado_agendamiento?.nombre && (
-            <div className="flex items-center gap-2">
-              <Typography variant="caption" color="secondary">Estado de Agendamiento</Typography>
-              <Badge
-                variant={getEstadoAgendamientoBadgeVariant(selectedParticipante.estado_agendamiento.nombre)}
-                className="ml-2"
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Typography variant="caption" color="secondary">Nombre</Typography>
+            <Typography variant="body2" className="font-medium">
+              {selectedParticipante.nombre || 'Sin nombre'}
+            </Typography>
+          </div>
+          
+          <div>
+            <Typography variant="caption" color="secondary">Email</Typography>
+            <Typography variant="body2">
+              {selectedParticipante.email || 'Sin email'}
+            </Typography>
+          </div>
+          
+          <div>
+            <Typography variant="caption" color="secondary">Tipo</Typography>
+            <div className="mt-1">
+              {getTipoParticipanteBadge(selectedParticipante)}
+            </div>
+          </div>
+          
+          {selectedParticipante.rol_empresa && (
+            <div>
+              <Typography variant="caption" color="secondary">Rol en Empresa</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.rol_empresa}
+              </Typography>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Información completa del agendamiento */}
+      <Card className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarIcon className="w-5 h-5 text-primary" />
+          <Typography variant="h5">Información Completa del Agendamiento</Typography>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {selectedParticipante.fecha_sesion && (
+            <div>
+              <Typography variant="caption" color="secondary">Fecha de Sesión</Typography>
+              <Typography variant="body2" className="font-medium">
+                {new Date(selectedParticipante.fecha_sesion).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </Typography>
+            </div>
+          )}
+          
+          {selectedParticipante.hora_sesion && (
+            <div>
+              <Typography variant="caption" color="secondary">Hora de Sesión</Typography>
+              <Typography variant="body2" className="font-medium">
+                {selectedParticipante.hora_sesion}
+              </Typography>
+            </div>
+          )}
+          
+          <div>
+            <Typography variant="caption" color="secondary">Estado del Agendamiento</Typography>
+            <div className="mt-1">
+              <Chip 
+                variant={getEstadoAgendamientoBadgeVariant(
+                  typeof selectedParticipante.estado_agendamiento === 'object' 
+                    ? selectedParticipante.estado_agendamiento.nombre 
+                    : selectedParticipante.estado_agendamiento
+                )}
+                size="sm"
               >
-                {selectedParticipante.estado_agendamiento?.nombre}
-              </Badge>
+                {typeof selectedParticipante.estado_agendamiento === 'object' 
+                  ? selectedParticipante.estado_agendamiento.nombre 
+                  : selectedParticipante.estado_agendamiento || 'Sin estado'}
+              </Chip>
             </div>
-          )}
-          {selectedParticipante.responsable_agendamiento?.nombre && (
+          </div>
+          
+          <div>
+            <Typography variant="caption" color="secondary">Responsable del Agendamiento</Typography>
+            <Typography variant="body2" className="font-medium">
+              {selectedParticipante.responsable_agendamiento?.nombre || 
+               selectedParticipante.responsable_agendamiento?.full_name || 
+               selectedParticipante.reclutador_nombre || 
+               'Sin responsable'}
+            </Typography>
+          </div>
+
+          {/* Información adicional del reclutamiento */}
+          {selectedParticipante.reclutamiento_id && (
             <div>
-              <Typography variant="caption" color="secondary">Responsable del Agendamiento</Typography>
-              <Typography variant="body2">{selectedParticipante.responsable_agendamiento.nombre}</Typography>
+              <Typography variant="caption" color="secondary">ID del Reclutamiento</Typography>
+              <Typography variant="body2" className="font-mono text-xs">
+                {selectedParticipante.reclutamiento_id}
+              </Typography>
             </div>
           )}
-          {selectedParticipante.responsable_agendamiento?.email && (
+
+          {selectedParticipante.duracion_sesion && (
             <div>
-              <Typography variant="caption" color="secondary">Email del Responsable</Typography>
-              <Typography variant="body2">{selectedParticipante.responsable_agendamiento.email}</Typography>
+              <Typography variant="caption" color="secondary">Duración de Sesión</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.duracion_sesion} minutos
+              </Typography>
             </div>
           )}
+
+          {selectedParticipante.modalidad && (
+            <div>
+              <Typography variant="caption" color="secondary">Modalidad</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.modalidad}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.plataforma && (
+            <div>
+              <Typography variant="caption" color="secondary">Plataforma</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.plataforma}
+              </Typography>
+            </div>
+          )}
+
           {selectedParticipante.fecha_asignado && (
             <div>
               <Typography variant="caption" color="secondary">Fecha de Asignación</Typography>
-              <Typography variant="body2">{formatearFecha(selectedParticipante.fecha_asignado)}</Typography>
+              <Typography variant="body2">
+                {formatearFecha(selectedParticipante.fecha_asignado)}
+              </Typography>
             </div>
           )}
-          {selectedParticipante.fecha_sesion && (
-            <div>
-              <Typography variant="caption" color="secondary">Fecha de Sesión Programada</Typography>
-              <Typography variant="body2">{formatearFecha(selectedParticipante.fecha_sesion)}</Typography>
-            </div>
-          )}
+
           {selectedParticipante.fecha_creacion && (
             <div>
               <Typography variant="caption" color="secondary">Fecha de Creación</Typography>
-              <Typography variant="body2">{formatearFecha(selectedParticipante.fecha_creacion)}</Typography>
+              <Typography variant="body2">
+                {formatearFecha(selectedParticipante.fecha_creacion)}
+              </Typography>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Información de la investigación */}
+      <Card className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <ReclutamientoIcon className="w-5 h-5 text-primary" />
+          <Typography variant="h5">Información de la Investigación</Typography>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {selectedParticipante.investigacion_nombre && (
+            <div>
+              <Typography variant="caption" color="secondary">Nombre de la Investigación</Typography>
+              <Typography variant="body2" className="font-medium">
+                {selectedParticipante.investigacion_nombre}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.investigacion_id && (
+            <div>
+              <Typography variant="caption" color="secondary">ID de la Investigación</Typography>
+              <Typography variant="body2" className="font-mono text-xs">
+                {selectedParticipante.investigacion_id}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.producto_nombre && (
+            <div>
+              <Typography variant="caption" color="secondary">Producto</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.producto_nombre}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.periodo_nombre && (
+            <div>
+              <Typography variant="caption" color="secondary">Período</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.periodo_nombre}
+              </Typography>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Información adicional según el tipo */}
+      {selectedParticipante.tipo === 'externo' && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BuildingIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Información de Empresa</Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {selectedParticipante.empresa_nombre && (
+              <div>
+                <Typography variant="caption" color="secondary">Empresa</Typography>
+                <Typography variant="body2" className="font-medium">
+                  {selectedParticipante.empresa_nombre}
+                </Typography>
+              </div>
+            )}
+
+            {selectedParticipante.empresa_id && (
+              <div>
+                <Typography variant="caption" color="secondary">ID de la Empresa</Typography>
+                <Typography variant="body2" className="font-mono text-xs">
+                  {selectedParticipante.empresa_id}
+                </Typography>
+              </div>
+            )}
+            
+            {selectedParticipante.estado_calculado && (
+              <div>
+                <Typography variant="caption" color="secondary">Estado del Participante</Typography>
+                <div className="mt-1">
+                  <Chip
+                    variant={selectedParticipante.estado_calculado.estado === 'Enfriamiento' ? 'warning' : 'success'}
+                    size="sm"
+                    className="text-white"
+                  >
+                    {selectedParticipante.estado_calculado.estado}
+                  </Chip>
+                </div>
+              </div>
+            )}
+
+            {selectedParticipante.cantidad_participaciones && (
+              <div>
+                <Typography variant="caption" color="secondary">Cantidad de Participaciones</Typography>
+                <Typography variant="body2" className="font-medium">
+                  {selectedParticipante.cantidad_participaciones} sesiones
+                </Typography>
+              </div>
+            )}
+            
+            {selectedParticipante.productos_relacionados && selectedParticipante.productos_relacionados.length > 0 && (
+              <div className="md:col-span-2">
+                <Typography variant="caption" color="secondary">Productos Relacionados</Typography>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {selectedParticipante.productos_relacionados.map((producto: any, index: number) => (
+                    <Chip key={index} variant="secondary" size="sm">
+                      {producto}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Información de departamento para internos */}
+      {(selectedParticipante.tipo === 'interno' || selectedParticipante.tipo === 'friend_family') && selectedParticipante.departamento && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BuildingIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Información de Departamento</Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Typography variant="caption" color="secondary">Departamento</Typography>
+              <Typography variant="body2" className="font-medium">
+                {typeof selectedParticipante.departamento === 'object' && selectedParticipante.departamento.nombre 
+                  ? selectedParticipante.departamento.nombre 
+                  : typeof selectedParticipante.departamento === 'string' 
+                    ? selectedParticipante.departamento 
+                    : 'Sin departamento'}
+              </Typography>
+            </div>
+
+            {selectedParticipante.departamento_id && (
+              <div>
+                <Typography variant="caption" color="secondary">ID del Departamento</Typography>
+                <Typography variant="body2" className="font-mono text-xs">
+                  {selectedParticipante.departamento_id}
+                </Typography>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Información de dolores y necesidades */}
+      {selectedParticipante.dolores_necesidades && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangleIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Dolores y Necesidades</Typography>
+          </div>
+          
+          <Typography variant="body2">
+            {selectedParticipante.dolores_necesidades}
+          </Typography>
+        </Card>
+      )}
+
+      {/* Comentarios */}
+      {selectedParticipante.comentarios && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <FileTextIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Comentarios</Typography>
+          </div>
+          
+          <Typography variant="body2">
+            {selectedParticipante.comentarios}
+          </Typography>
+        </Card>
+      )}
+
+      {/* Información de fechas */}
+      <Card className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <ClockIcon className="w-5 h-5 text-primary" />
+          <Typography variant="h5">Información de Fechas</Typography>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {selectedParticipante.created_at && (
+            <div>
+              <Typography variant="caption" color="secondary">Fecha de Creación</Typography>
+              <Typography variant="body2">
+                {new Date(selectedParticipante.created_at).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.updated_at && (
+            <div>
+              <Typography variant="caption" color="secondary">Última Actualización</Typography>
+              <Typography variant="body2">
+                {new Date(selectedParticipante.updated_at).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </Typography>
             </div>
           )}
         </div>
@@ -2621,7 +2973,14 @@ const VerReclutamiento: NextPage = () => {
         investigacionNombre={reclutamiento?.investigacion_nombre || ''}
         isEditMode={participanteToEditAgendamiento ? true : false}
         reclutamientoId={participanteToEditAgendamiento?.reclutamiento_id || null}
-        responsableActual={participanteToEditAgendamiento?.reclutador?.id || participanteToEditAgendamiento?.reclutador_id || null}
+        responsableActual={(() => {
+          const responsable = participanteToEditAgendamiento?.reclutador?.id || participanteToEditAgendamiento?.reclutador_id || null;
+          console.log('🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento:', participanteToEditAgendamiento);
+          console.log('🔍 Modal AsignarAgendamientoModal - responsableActual:', responsable);
+          console.log('🔍 Modal AsignarAgendamientoModal - reclutador objeto:', participanteToEditAgendamiento?.reclutador);
+          console.log('🔍 Modal AsignarAgendamientoModal - reclutador_id:', participanteToEditAgendamiento?.reclutador_id);
+          return responsable;
+        })()}
       />
 
       {/* Modal para agregar participante desde "Agendamiento Pendiente" */}

@@ -1,5 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseServer as supabase } from '../../api/supabase-server';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { supabase } from '../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -7,82 +7,86 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Usar profiles y user_roles directamente para obtener datos actualizados
-    console.log('🔍 Iniciando consulta a profiles y user_roles...');
+    console.log('🔍 Consultando usuarios...');
     
-    // Obtener todos los profiles
-    let { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, avatar_url, created_at, updated_at')
-      .not('email', 'is', null)
+    // Consultar directamente usuarios_con_roles para obtener todos los usuarios disponibles
+    // Esto incluye usuarios que pueden no estar en profiles pero sí en otras tablas
+    let { data, error } = await supabase
+      .from('usuarios_con_roles')
+      .select('id, full_name, email, avatar_url, roles')
       .order('full_name');
-
-    if (profilesError) {
-      console.error('Error obteniendo profiles:', profilesError);
-      return res.status(500).json({ error: profilesError.message });
+    
+    console.log('📊 Resultado consulta usuarios_con_roles:');
+    console.log('- Data:', data);
+    console.log('- Error:', error);
+    console.log('- Count:', data ? data.length : 0);
+    
+    // Si no hay datos en usuarios_con_roles, intentar con profiles como fallback
+    if (!data || data.length === 0) {
+      console.log('🔍 No hay datos en usuarios_con_roles, intentando con profiles...');
+      const { data: dataProfiles, error: errorProfiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url')
+        .order('full_name');
+      
+      data = dataProfiles;
+      error = errorProfiles;
+      
+      console.log('📊 Resultado consulta profiles:');
+      console.log('- Data:', data);
+      console.log('- Error:', error);
+      console.log('- Count:', data ? data.length : 0);
+    }
+    
+    // Si aún no hay datos, intentar con la tabla usuarios original
+    if (!data || data.length === 0) {
+      console.log('🔍 No hay datos en usuarios_con_roles, intentando con tabla usuarios...');
+      const { data: dataUsuarios, error: errorUsuarios } = await supabase
+        .from('usuarios')
+        .select('id, nombre, correo, activo')
+        .order('nombre');
+      
+      data = dataUsuarios;
+      error = errorUsuarios;
+      
+      console.log('📊 Resultado consulta usuarios:');
+      console.log('- Data:', data);
+      console.log('- Error:', error);
+      console.log('- Count:', data ? data.length : 0);
     }
 
-    // Obtener todos los roles
-    let { data: userRoles, error: rolesError } = await supabase
-      .from('user_roles')
-      .select('user_id, role');
+    console.log('📊 Resultado consulta usuarios:');
+    console.log('- Data:', data);
+    console.log('- Error:', error);
+    console.log('- Count:', data ? data.length : 0);
 
-    if (rolesError) {
-      console.error('Error obteniendo roles:', rolesError);
-      return res.status(500).json({ error: rolesError.message });
+    if (error) {
+      console.error('❌ Error obteniendo usuarios:', error);
+      return res.status(500).json({ error: 'Error al obtener usuarios' });
     }
 
-    // Agrupar roles por usuario
-    const rolesByUser: { [key: string]: string[] } = {};
-    userRoles?.forEach(ur => {
-      if (!rolesByUser[ur.user_id]) {
-        rolesByUser[ur.user_id] = [];
-      }
-      rolesByUser[ur.user_id].push(ur.role);
-    });
-
-    // Combinar profiles con roles
-    const usuarios = profiles?.map(profile => ({
-      id: profile.id,
-      full_name: profile.full_name,
-      email: profile.email,
-      avatar_url: profile.avatar_url,
-      roles: rolesByUser[profile.id] || [],
-      created_at: profile.created_at,
-      updated_at: profile.updated_at
+    console.log('✅ Devolviendo usuarios:', data?.length || 0);
+    
+    // Formatear los datos para que sean consistentes
+    const usuariosFormateados = data?.map(usuario => ({
+      id: usuario.id,
+      full_name: usuario.full_name || usuario.nombre || 'Sin nombre',
+      email: usuario.email || usuario.correo || 'sin-email@ejemplo.com',
+      avatar_url: usuario.avatar_url || null,
+      roles: usuario.roles || []
     })) || [];
     
-    console.log('🔍 Resultado de consulta:', { usuarios: usuarios?.length || 0 });
-
-    // Verificar que los datos están funcionando correctamente
-    if (usuarios && usuarios.length > 0) {
-      console.log('✅ Profiles y roles funcionando correctamente');
-    }
-
-    // Convertir datos de usuarios al formato esperado por el componente
-    const usuariosFormateados = usuarios?.map(user => ({
-      id: user.id,
-      full_name: user.full_name || 'Sin nombre',
-      email: user.email,
-      avatar_url: user.avatar_url || null,
-      roles: user.roles || [],
-      created_at: new Date().toISOString()
-    })) || [];
-
-    // Formatear la respuesta como espera el componente
-    return res.status(200).json({
-      usuarios: usuariosFormateados || [],
-      total: usuariosFormateados?.length || 0,
-      fuente: 'profiles_y_roles',
-      mensaje: 'Datos obtenidos directamente de profiles y user_roles'
-    });
-
+    console.log('✅ Usuarios formateados:', usuariosFormateados.length);
+    console.log('✅ Usuarios con roles:', usuariosFormateados.filter(u => u.roles && u.roles.length > 0).length);
+    console.log('✅ Usuarios sin roles:', usuariosFormateados.filter(u => !u.roles || u.roles.length === 0).length);
+    
+    // Incluir también usuarios sin roles específicos para que puedan ser asignados como responsables
+    console.log('✅ Incluyendo usuarios sin roles para permitir asignación como responsables');
+    
+    console.log('✅ Usuarios formateados:', usuariosFormateados.length);
+    return res.status(200).json({ usuarios: usuariosFormateados });
   } catch (error) {
-    console.error('Error en /api/usuarios:', error);
-    return res.status(500).json({ 
-      error: 'Error interno del servidor',
-      usuarios: [],
-      total: 0
-    });
+    console.error('❌ Error en la API:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 } 

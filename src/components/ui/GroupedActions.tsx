@@ -31,8 +31,8 @@ interface GroupedActionsProps {
 }
 
 const GroupedActions: React.FC<GroupedActionsProps> = ({
-  independentActions,
-  menuActions,
+  independentActions = [],
+  menuActions = [],
   className = ''
 }) => {
   const [linkModalOpen, setLinkModalOpen] = useState(false);

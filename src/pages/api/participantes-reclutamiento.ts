@@ -275,6 +275,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       }
 
+      // Obtener estados de participante para mapear IDs a nombres
+      const { data: estadosParticipante, error: estadosError } = await supabaseServer
+        .from('estado_participante_cat')
+        .select('id, nombre')
+        .eq('activo', true);
+
+      let estadosParticipanteMap: any = {};
+      if (!estadosError && estadosParticipante) {
+        estadosParticipante.forEach((estado: any) => {
+          estadosParticipanteMap[estado.id] = estado.nombre;
+        });
+      }
+
       // Obtener participantes internos
       let participantesInternosData: any = {};
       if (participantesInternosIds.length > 0) {
@@ -406,7 +419,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             : null,
           
           // Información del participante
-          estado_participante: participante?.estado_participante || 'Activo',
+          estado_participante: participante?.estado_participante ? estadosParticipanteMap[participante.estado_participante] || 'Estado desconocido' : 'Activo',
           fecha_ultima_participacion: participante?.fecha_ultima_participacion || '',
           cantidad_participaciones: participante?.total_participaciones || 0,
           

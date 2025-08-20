@@ -82,6 +82,7 @@ export default function CrearParticipanteExternoModal({
 
   const cargarDatosIniciales = async () => {
     try {
+      console.log('🔍 CrearParticipanteExternoModal - cargando datos iniciales');
       setLoading(true);
       await Promise.all([
         cargarResponsables(),
@@ -90,8 +91,9 @@ export default function CrearParticipanteExternoModal({
         cargarEstadosParticipante(),
         cargarProductos()
       ]);
+      console.log('✅ CrearParticipanteExternoModal - datos iniciales cargados');
     } catch (error) {
-      console.error('Error cargando datos iniciales:', error);
+      console.error('❌ Error cargando datos iniciales:', error);
       showError('Error al cargar los datos iniciales');
     } finally {
       setLoading(false);
@@ -113,15 +115,17 @@ export default function CrearParticipanteExternoModal({
 
   const cargarRolesEmpresa = async () => {
     try {
+      console.log('🔍 Cargando roles de empresa...');
       const response = await fetch('/api/roles-empresa');
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Roles de empresa cargados:', data.length);
         setRolesEmpresa(data);
       } else {
-        console.error('Error en respuesta de roles de empresa:', response.status);
+        console.error('❌ Error en respuesta de roles de empresa:', response.status);
       }
     } catch (error) {
-      console.error('Error cargando roles de empresa:', error);
+      console.error('❌ Error cargando roles de empresa:', error);
     }
   };
 
@@ -250,7 +254,11 @@ export default function CrearParticipanteExternoModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🔍 CrearParticipanteExternoModal - handleSubmit ejecutado');
+    console.log('🔍 FormData:', formData);
+    
     if (!formData.nombre || !formData.rolEmpresaId) {
+      console.log('❌ Validación fallida - nombre:', formData.nombre, 'rolEmpresaId:', formData.rolEmpresaId);
       showError('Por favor completa los campos requeridos');
       return;
     }
@@ -311,7 +319,10 @@ export default function CrearParticipanteExternoModal({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        onClick={() => {
+          const e = new Event('submit') as any;
+          handleSubmit(e);
+        }}
         loading={loading}
         disabled={loading || !formData.nombre || !formData.rolEmpresaId}
       >
@@ -354,7 +365,7 @@ export default function CrearParticipanteExternoModal({
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="w-full">
           <Select
             label="Rol en la Empresa *"
             value={formData.rolEmpresaId}

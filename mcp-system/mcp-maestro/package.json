@@ -9,7 +9,10 @@
     "dev": "node --watch server.js",
     "test": "node --test test/*.js",
     "lint": "eslint *.js tools/*.js",
-    "format": "prettier --write *.js tools/*.js"
+    "format": "prettier --write *.js tools/*.js",
+    "auto-init": "node scripts/auto-init.js",
+    "status": "node -e \"import('./scripts/auto-init.js').then(m => new m.AutoInitializer().checkStatus().then(console.log))\"",
+    "ready": "node -e \"import('./scripts/auto-init.js').then(m => new m.AutoInitializer().isReady().then(console.log))\""
   },
   "keywords": [
     "mcp",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * MCP MAESTRO - ORQUESTADOR PRINCIPAL
+ * MCP MAESTRO - ORQUESTADOR PRINCIPAL MEJORADO
  * 
  * Responsabilidades:
  * - Coordinar todos los demás MCPs especializados
@@ -9,6 +9,9 @@
  * - Decidir qué MCP activar según la solicitud
  * - Recuperar contexto perdido automáticamente
  * - Gestionar el flujo de trabajo entre MCPs
+ * - Verificar información antes de asumir
+ * - Activar GitHub automáticamente
+ * - Activación automática en nuevos chats
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -27,6 +30,9 @@ import { ContextManager } from './tools/context-manager.js';
 import { MCPDispatcher } from './tools/mcp-dispatcher.js';
 import { SessionManager } from './tools/session-manager.js';
 import { DecisionTracker } from './tools/decision-tracker.js';
+import { ProjectAnalyzer } from './tools/project-analyzer.js';
+import { GitHubIntegration } from './tools/github-integration.js';
+import { MCPSyncManager } from './tools/mcp-sync-manager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +42,7 @@ class MCPMaestroServer {
     this.server = new Server(
       {
         name: 'mcp-maestro',
-        version: '1.0.0',
+        version: '2.0.0',
       },
       {
         capabilities: {
@@ -50,8 +56,55 @@ class MCPMaestroServer {
     this.mcpDispatcher = new MCPDispatcher(__dirname);
     this.sessionManager = new SessionManager(__dirname);
     this.decisionTracker = new DecisionTracker(__dirname);
+    this.projectAnalyzer = new ProjectAnalyzer(__dirname);
+    this.githubIntegration = new GitHubIntegration(__dirname);
+    this.mcpSyncManager = new MCPSyncManager(__dirname);
+
+    // Estado del sistema
+    this.isInitialized = false;
+    this.currentSession = null;
+    this.projectContext = null;
 
     this.setupToolHandlers();
+    this.initializeSystem();
+  }
+
+  async initializeSystem() {
+    try {
+      console.log('🎯 MCP Maestro iniciando sistema...');
+      
+      // Cargar contexto del proyecto
+      this.projectContext = await this.projectAnalyzer.analyzeProject();
+      
+      // Activar GitHub automáticamente
+      await this.githubIntegration.activate();
+      
+      // Iniciar sincronización automática con otros MCPs
+      await this.mcpSyncManager.startAutoSync(5); // Sincronizar cada 5 minutos
+      
+      // Recuperar contexto perdido si existe
+      await this.autoRecoverContext();
+      
+      this.isInitialized = true;
+      console.log('✅ MCP Maestro inicializado y listo para orquestar');
+      
+    } catch (error) {
+      console.error('❌ Error inicializando MCP Maestro:', error);
+    }
+  }
+
+  async autoRecoverContext() {
+    try {
+      const recentContext = await this.contextManager.getRecentContext();
+      if (recentContext) {
+        console.log('🔄 Recuperando contexto automáticamente...');
+        this.currentSession = recentContext.session_id;
+        return recentContext;
+      }
+    } catch (error) {
+      console.log('ℹ️ No se encontró contexto para recuperar');
+    }
+    return null;
   }
 
   setupToolHandlers() {
@@ -82,6 +135,10 @@ class MCPMaestroServer {
                 preserve_context: {
                   type: 'boolean',
                   description: 'Si debe preservar el contexto para futuras consultas'
+                },
+                verify_before_assume: {
+                  type: 'boolean',
+                  description: 'Verificar información antes de asumir (recomendado: true)'
                 }
               },
               required: ['task_description'],
@@ -235,6 +292,113 @@ class MCPMaestroServer {
               required: ['query'],
               additionalProperties: false,
             },
+          },
+          {
+            name: 'verify_project_info',
+            description: 'Verificar información del proyecto antes de asumir',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                query: {
+                  type: 'string',
+                  description: 'Información a verificar'
+                },
+                context: {
+                  type: 'string',
+                  description: 'Contexto de la verificación'
+                }
+              },
+              required: ['query'],
+              additionalProperties: false,
+            },
+          },
+          {
+            name: 'activate_github',
+            description: 'Activar integración con GitHub automáticamente',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                force: {
+                  type: 'boolean',
+                  description: 'Forzar activación'
+                }
+              },
+              required: [],
+              additionalProperties: false,
+            },
+          },
+          {
+            name: 'auto_activate_session',
+            description: 'Activar sesión automáticamente en nuevo chat',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                chat_id: {
+                  type: 'string',
+                  description: 'ID del nuevo chat'
+                },
+                user_context: {
+                  type: 'object',
+                  description: 'Contexto del usuario'
+                }
+              },
+              required: [],
+              additionalProperties: false,
+            },
+          },
+          {
+            name: 'sync_mcps',
+            description: 'Sincronizar información de todos los MCPs especializados',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                target_mcp: {
+                  type: 'string',
+                  enum: ['supabase', 'design-system', 'code-structure', 'testing-qa', 'all'],
+                  description: 'MCP específico a sincronizar o "all" para todos'
+                },
+                force_sync: {
+                  type: 'boolean',
+                  description: 'Forzar sincronización completa'
+                }
+              },
+              required: [],
+              additionalProperties: false,
+            },
+          },
+          {
+            name: 'get_mcp_status',
+            description: 'Obtener estado de sincronización de todos los MCPs',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                detailed: {
+                  type: 'boolean',
+                  description: 'Incluir información detallada de cada MCP'
+                }
+              },
+              required: [],
+              additionalProperties: false,
+            },
+          },
+          {
+            name: 'get_supabase_info',
+            description: 'Obtener información actualizada de Supabase',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                include_schema: {
+                  type: 'boolean',
+                  description: 'Incluir información del esquema'
+                },
+                include_tables: {
+                  type: 'boolean',
+                  description: 'Incluir información de tablas'
+                }
+              },
+              required: [],
+              additionalProperties: false,
+            },
           }
         ],
       };
@@ -245,6 +409,11 @@ class MCPMaestroServer {
       const { name, arguments: args } = request.params;
 
       try {
+        // Asegurar que el sistema esté inicializado
+        if (!this.isInitialized) {
+          await this.initializeSystem();
+        }
+
         switch (name) {
           case 'orchestrate_task':
             return await this.orchestrateTask(args);
@@ -267,6 +436,24 @@ class MCPMaestroServer {
           case 'query_knowledge_base':
             return await this.queryKnowledgeBase(args);
             
+          case 'verify_project_info':
+            return await this.verifyProjectInfo(args);
+            
+          case 'activate_github':
+            return await this.activateGitHub(args);
+            
+          case 'auto_activate_session':
+            return await this.autoActivateSession(args);
+            
+          case 'sync_mcps':
+            return await this.syncMCPs(args);
+            
+          case 'get_mcp_status':
+            return await this.getMCPStatus(args);
+            
+          case 'get_supabase_info':
+            return await this.getSupabaseInfo(args);
+            
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,
@@ -287,9 +474,39 @@ class MCPMaestroServer {
    * Orquestar una tarea compleja decidiendo qué MCPs activar
    */
   async orchestrateTask(args) {
-    const { task_description, context_hints = [], priority = 'normal', preserve_context = true } = args;
+    const { 
+      task_description, 
+      context_hints = [], 
+      priority = 'normal', 
+      preserve_context = true,
+      verify_before_assume = true 
+    } = args;
     
     console.log(`🎯 MAESTRO: Orquestando tarea: ${task_description}`);
+    
+    // Verificar información antes de asumir si se solicita
+    if (verify_before_assume) {
+      const verificationResult = await this.verifyProjectInfo({
+        query: task_description,
+        context: 'orchestration'
+      });
+      
+      if (!verificationResult.success) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                success: false,
+                error: 'Información del proyecto no verificada',
+                verification_result: verificationResult,
+                recommendation: 'Ejecutar verify_project_info primero'
+              }, null, 2)
+            }
+          ]
+        };
+      }
+    }
     
     // Iniciar nueva sesión
     const sessionId = await this.sessionManager.startSession({
@@ -297,6 +514,8 @@ class MCPMaestroServer {
       priority,
       context_hints
     });
+
+    this.currentSession = sessionId;
 
     // Analizar la tarea para determinar qué MCPs se necesitan
     const analysisResult = await this.analyzeTask(task_description, context_hints);
@@ -330,7 +549,8 @@ class MCPMaestroServer {
             execution_plan: executionPlan,
             results: results,
             summary: this.generateTaskSummary(task_description, results),
-            next_steps: this.suggestNextSteps(results)
+            next_steps: this.suggestNextSteps(results),
+            context_preserved: preserve_context
           }, null, 2)
         }
       ]
@@ -532,6 +752,322 @@ class MCPMaestroServer {
         }
       ]
     };
+  }
+
+  /**
+   * Verificar información del proyecto antes de asumir
+   */
+  async verifyProjectInfo(args) {
+    const { query, context } = args;
+    
+    console.log(`🔍 MAESTRO: Verificando información: ${query}`);
+    
+    try {
+      const verificationResult = await this.projectAnalyzer.verifyInformation(query, context);
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              query,
+              context,
+              verification_result: verificationResult,
+              is_verified: verificationResult.is_verified,
+              missing_info: verificationResult.missing_info,
+              recommendations: verificationResult.recommendations
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: error.message,
+              query,
+              context
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Activar GitHub automáticamente
+   */
+  async activateGitHub(args) {
+    const { force = false } = args;
+    
+    console.log(`🔗 MAESTRO: Activando GitHub...`);
+    
+    try {
+      const result = await this.githubIntegration.activate(force);
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              github_activated: result.success,
+              details: result,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: error.message,
+              github_activated: false
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Activar sesión automáticamente en nuevo chat
+   */
+  async autoActivateSession(args) {
+    const { chat_id, user_context } = args;
+    
+    console.log(`🚀 MAESTRO: Activando sesión automática para chat: ${chat_id}`);
+    
+    try {
+      // Recuperar contexto reciente
+      const recentContext = await this.autoRecoverContext();
+      
+      // Activar GitHub si no está activo
+      await this.githubIntegration.activate();
+      
+      // Crear nueva sesión
+      const sessionId = await this.sessionManager.startSession({
+        chat_id,
+        user_context,
+        auto_activated: true
+      });
+      
+      this.currentSession = sessionId;
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              session_id: sessionId,
+              chat_id,
+              context_recovered: !!recentContext,
+              github_activated: true,
+              project_context: this.projectContext,
+              ready_for_tasks: true,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: error.message,
+              chat_id
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Sincronizar MCPs especializados
+   */
+  async syncMCPs(args) {
+    const { target_mcp = 'all', force_sync = false } = args;
+    
+    console.log(`🔄 MAESTRO: Sincronizando MCPs - Target: ${target_mcp}`);
+    
+    try {
+      let result;
+      
+      if (target_mcp === 'all') {
+        result = await this.mcpSyncManager.syncAllMCPs();
+      } else {
+        result = await this.mcpSyncManager.syncMCP(target_mcp);
+      }
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              target_mcp,
+              force_sync,
+              result,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              target_mcp,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Obtener estado de sincronización de MCPs
+   */
+  async getMCPStatus(args) {
+    const { detailed = false } = args;
+    
+    console.log(`📊 MAESTRO: Obteniendo estado de MCPs - Detailed: ${detailed}`);
+    
+    try {
+      const syncStatus = this.mcpSyncManager.getSyncStatus();
+      
+      let result = {
+        sync_status: syncStatus,
+        auto_sync_enabled: this.mcpSyncManager.isAutoSyncEnabled,
+        last_sync: new Date().toISOString()
+      };
+      
+      if (detailed) {
+        // Incluir datos detallados de cada MCP
+        const detailedData = {};
+        for (const [mcpName, mcpData] of this.mcpSyncManager.syncData) {
+          detailedData[mcpName] = {
+            ...mcpData,
+            data: this.mcpSyncManager.getMCPData(mcpName)
+          };
+        }
+        result.detailed_data = detailedData;
+      }
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              detailed,
+              result,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              detailed,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+
+  /**
+   * Obtener información actualizada de Supabase
+   */
+  async getSupabaseInfo(args) {
+    const { include_schema = true, include_tables = true } = args;
+    
+    console.log(`🗄️ MAESTRO: Obteniendo información de Supabase`);
+    
+    try {
+      // Sincronizar Supabase primero para obtener información actualizada
+      const supabaseSync = await this.mcpSyncManager.syncMCP('supabase');
+      
+      if (!supabaseSync.success) {
+        throw new Error(`Error sincronizando Supabase: ${supabaseSync.error}`);
+      }
+      
+      const supabaseData = supabaseSync.data;
+      
+      // Filtrar información según parámetros
+      const result = {
+        connection: supabaseData.connection,
+        last_sync: supabaseSync.timestamp
+      };
+      
+      if (include_schema) {
+        result.schema = supabaseData.schema;
+        result.functions = supabaseData.functions;
+        result.policies = supabaseData.policies;
+        result.migrations = supabaseData.migrations;
+      }
+      
+      if (include_tables) {
+        result.tables = supabaseData.tables;
+        result.data = supabaseData.data;
+      }
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: true,
+              include_schema,
+              include_tables,
+              supabase_info: result,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              include_schema,
+              include_tables,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }, null, 2)
+          }
+        ]
+      };
+    }
   }
 
   // Métodos auxiliares

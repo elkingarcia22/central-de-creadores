@@ -52,13 +52,13 @@ export default function AsignarAgendamientoModal({
   // Ref para evitar notificaciones duplicadas
   const lastSuccessNotificationTime = useRef(0);
   
-  // console.log('🔍 AsignarAgendamientoModal RENDERIZADO - props:', { 
-  //   isOpen, 
-  //   isEditMode, 
-  //   reclutamientoId, 
-  //   responsableActual,
-  //   timestamp: new Date().toISOString()
-  // });
+  console.log('🔍 AsignarAgendamientoModal RENDERIZADO - props:', { 
+    isOpen, 
+    isEditMode, 
+    reclutamientoId, 
+    responsableActual,
+    timestamp: new Date().toISOString()
+  });
   
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
@@ -76,22 +76,63 @@ export default function AsignarAgendamientoModal({
 
   // Precargar responsable actual en modo de edición
   useEffect(() => {
-    console.log('🔍 useEffect responsableActual:', { isOpen, isEditMode, responsableActual, responsablesLength: responsables.length });
+    console.log('🔍 useEffect responsableActual:', { 
+      isOpen, 
+      isEditMode, 
+      responsableActual, 
+      responsablesLength: responsables.length,
+      responsables: responsables.map(r => ({ id: r.id, name: r.full_name }))
+    });
+    
     if (isOpen && isEditMode && responsableActual && responsables.length > 0) {
       console.log('🔍 Precargando responsable:', responsableActual);
+      
+      // Verificar si el responsable existe en la lista
+      console.log('🔍 Buscando responsable con ID:', responsableActual);
+      console.log('🔍 Tipos de IDs - responsableActual:', typeof responsableActual);
+      console.log('🔍 Lista de responsables disponibles:');
+      responsables.forEach((r, index) => {
+        console.log(`  ${index + 1}. ID: "${r.id}" (tipo: ${typeof r.id}), Nombre: "${r.full_name}"`);
+      });
+      
+      const responsableEncontrado = responsables.find(r => r.id === responsableActual);
+      console.log('🔍 Responsable encontrado en lista:', responsableEncontrado);
+      
+      // También intentar con comparación de strings
+      const responsableEncontradoString = responsables.find(r => String(r.id) === String(responsableActual));
+      console.log('🔍 Responsable encontrado con comparación de strings:', responsableEncontradoString);
+      
       setResponsableId(responsableActual);
     } else if (isOpen && isEditMode && responsableActual && responsables.length === 0) {
       console.log('🔍 Esperando a que se carguen los responsables para precargar:', responsableActual);
       // Esperar a que se carguen los responsables
       const timer = setTimeout(() => {
-        if (responsables.length > 0) {
-          console.log('🔍 Precargando responsable después de carga:', responsableActual);
-          setResponsableId(responsableActual);
-        }
+                                 if (responsables.length > 0) {
+                           console.log('🔍 Precargando responsable después de carga:', responsableActual);
+                           console.log('🔍 Lista de responsables después de carga:');
+                           responsables.forEach((r, index) => {
+                             console.log(`  ${index + 1}. ID: "${r.id}" (tipo: ${typeof r.id}), Nombre: "${r.full_name}"`);
+                           });
+                           
+                           const responsableEncontrado = responsables.find(r => r.id === responsableActual);
+                           console.log('🔍 Responsable encontrado después de carga:', responsableEncontrado);
+                           
+                           // También intentar con comparación de strings
+                           const responsableEncontradoString = responsables.find(r => String(r.id) === String(responsableActual));
+                           console.log('🔍 Responsable encontrado con comparación de strings después de carga:', responsableEncontradoString);
+                           
+                           setResponsableId(responsableActual);
+                         }
       }, 100);
       return () => clearTimeout(timer);
     } else {
-      console.log('🔍 No se precarga responsable:', { isOpen, isEditMode, responsableActual, responsablesLength: responsables.length });
+      console.log('🔍 No se precarga responsable - razón:', { 
+        isOpen, 
+        isEditMode, 
+        responsableActual, 
+        responsablesLength: responsables.length,
+        razon: !isOpen ? 'modal cerrado' : !isEditMode ? 'no es modo edición' : !responsableActual ? 'no hay responsable actual' : 'responsables no cargados'
+      });
     }
   }, [isOpen, isEditMode, responsableActual, responsables.length]);
 
@@ -156,28 +197,26 @@ export default function AsignarAgendamientoModal({
         // Manejar diferentes formatos de respuesta
         const usuarios = data.usuarios || data || [];
         
-        // Filtrar usuarios que tengan roles de reclutador o administrador
-        const responsablesDisponibles = usuarios.filter((user: Usuario) => {
-          // Si no tiene roles, incluir por defecto (para desarrollo)
-          if (!user.roles || user.roles.length === 0) {
-            return true; // Incluir todos los usuarios si no hay roles definidos
-          }
-          
-          return user.roles.some((role: string) => 
-            role.toLowerCase().includes('reclutador') || 
-            role.toLowerCase().includes('administrador') ||
-            role.toLowerCase().includes('admin')
-          );
-        });
+        // Incluir TODOS los usuarios disponibles para permitir asignación como responsables
+        // Esto es importante porque algunos usuarios pueden no tener roles específicos pero ser válidos como responsables
+        const responsablesDisponibles = usuarios;
+        
+        console.log('👥 Todos los usuarios disponibles:', usuarios.length);
+        console.log('👥 Usuarios con roles:', usuarios.filter(u => u.roles && u.roles.length > 0).length);
+        console.log('👥 Usuarios sin roles:', usuarios.filter(u => !u.roles || u.roles.length === 0).length);
         
         console.log('👥 Responsables disponibles:', responsablesDisponibles);
+        console.log('👥 Responsables disponibles - count:', responsablesDisponibles.length);
         setResponsables(responsablesDisponibles);
         
         // Si no hay responsables filtrados, mostrar todos los usuarios
         if (responsablesDisponibles.length === 0 && usuarios.length > 0) {
           console.log('⚠️ No se encontraron usuarios con roles específicos, mostrando todos');
+          console.log('⚠️ Usuarios sin filtrar - count:', usuarios.length);
           setResponsables(usuarios);
         }
+        
+        console.log('👥 Responsables finales establecidos:', responsablesDisponibles.length > 0 ? responsablesDisponibles : usuarios);
       } else {
         throw new Error('Error al obtener responsables');
       }
