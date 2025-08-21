@@ -16,6 +16,7 @@ import Badge from '../../../components/ui/Badge';
 import Chip from '../../../components/ui/Chip';
 import MetricCard from '../../../components/ui/MetricCard';
 import Tabs from '../../../components/ui/Tabs';
+import SimpleAvatar from '../../../components/ui/SimpleAvatar';
 import EmpresaSideModal from '../../../components/empresas/EmpresaSideModal';
 import { 
   BuildingIcon, 
