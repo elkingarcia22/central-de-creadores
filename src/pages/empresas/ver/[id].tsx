@@ -575,23 +575,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 <span>Volver</span>
               </Button>
               
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <BuildingIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <Typography variant="h3" className="mb-2">{empresaData.nombre}</Typography>
-                  <div className="flex items-center gap-3">
-                    <Chip variant={empresaData.activo ? 'success' : 'warning'}>
-                      {empresaData.activo ? 'Activa' : 'Inactiva'}
-                    </Chip>
-                    {empresaData.estado_nombre && (
-                      <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
-                        {empresaData.estado_nombre}
-                      </Chip>
-                    )}
-                  </div>
-                </div>
+              <div>
+                <Typography variant="h3">{empresaData.nombre}</Typography>
               </div>
             </div>
             
