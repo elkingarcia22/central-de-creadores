@@ -322,7 +322,14 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [activeTab, setActiveTab] = useState('informacion');
 
   // Componente de contenido de información
-  const InformacionContent = () => (
+  const InformacionContent = () => {
+    console.log('🔍 InformacionContent - empresaData:', empresaData);
+    console.log('🔍 InformacionContent - filterOptions:', filterOptions);
+    console.log('🔍 InformacionContent - productos_ids:', empresaData.productos_ids);
+    console.log('🔍 InformacionContent - tamano_nombre:', empresaData.tamano_nombre);
+    console.log('🔍 InformacionContent - relacion_nombre:', empresaData.relacion_nombre);
+    
+    return (
     <div className="space-y-6">
       {/* Información básica */}
       <Card className="p-6">
@@ -406,7 +413,11 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     <Chip key={productoId} variant="outline" size="sm">
                       {producto.label}
                     </Chip>
-                  ) : null;
+                  ) : (
+                    <Chip key={productoId} variant="outline" size="sm">
+                      Producto ID: {productoId}
+                    </Chip>
+                  );
                 })}
               </div>
             </div>
@@ -434,25 +445,10 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         </div>
       </Card>
 
-      {/* Estado */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <ConfiguracionesIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Estado</Typography>
-        </div>
-        <div className="space-y-3">
-          {empresaData.estado_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Estado de la Empresa</Typography>
-              <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
-                {empresaData.estado_nombre}
-              </Chip>
-            </div>
-          )}
-        </div>
-      </Card>
+
     </div>
   );
+  };
 
   // Componente de contenido de estadísticas
   const EstadisticasContent = () => (
