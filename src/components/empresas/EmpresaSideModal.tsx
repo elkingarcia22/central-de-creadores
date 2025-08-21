@@ -63,6 +63,13 @@ export default function EmpresaSideModal({
       console.log('🔍 EmpresaSideModal - empresa.productos_ids:', empresa.productos_ids);
       console.log('🔍 EmpresaSideModal - empresa.kam_id:', empresa.kam_id);
       
+      // Convertir producto_id a productos_ids si es necesario
+      let productos_ids = empresa.productos_ids || [];
+      if (empresa.producto_id && !empresa.productos_ids) {
+        productos_ids = [empresa.producto_id];
+        console.log('🔄 Convirtiendo producto_id a productos_ids:', productos_ids);
+      }
+      
       const newFormData = {
         id: empresa.id,
         nombre: empresa.nombre || '',
@@ -73,7 +80,7 @@ export default function EmpresaSideModal({
         tamano_id: empresa.tamano_id || '',
         relacion_id: empresa.relacion_id || '',
         producto_id: empresa.producto_id || '',
-        productos_ids: empresa.productos_ids || [],
+        productos_ids: productos_ids,
         activo: empresa.activo
       };
       console.log('🔍 EmpresaSideModal - formData configurado:', newFormData);
