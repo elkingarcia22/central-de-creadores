@@ -252,17 +252,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       const paises = paisesRes.ok ? await paisesRes.json() : [];
       console.log('✅ Países cargados:', paises.length);
       
-      const industriasRes = await fetch('/api/industrias');
-      const industrias = industriasRes.ok ? await industriasRes.json() : [];
-      console.log('✅ Industrias cargadas:', industrias.length);
-      
       const tamanosRes = await fetch('/api/tamanos-empresa');
       const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
       console.log('✅ Tamaños cargados:', tamanos.length);
-      
-      const modalidadesRes = await fetch('/api/modalidades');
-      const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
-      console.log('✅ Modalidades cargadas:', modalidades.length);
       
       const relacionesRes = await fetch('/api/relaciones-empresa');
       const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
@@ -274,12 +266,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
 
       setFilterOptions({
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
-        sectores: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
         kams: usuarios.map((u: any) => ({ value: u.id, label: u.nombre || u.correo })),
-        industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
-        modalidades: modalidades.map((m: any) => ({ value: m.id, label: m.nombre })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
       });
@@ -673,24 +662,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         );
       }
     },
-    {
-      key: 'industria',
-      label: 'Industria',
-      sortable: false,
-      width: 'min-w-[140px]',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <InlineSelect
-            value={row.industria_id}
-            options={filterOptions.industrias}
-            onSave={(newValue) => handleInlineUpdate(row.id, 'industria_id', newValue)}
-          />
-        );
-      }
-    },
+
     {
       key: 'tamano',
       label: 'Tamaño',
@@ -709,24 +681,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         );
       }
     },
-    {
-      key: 'modalidad',
-      label: 'Modalidad',
-      sortable: false,
-      width: 'min-w-[120px]',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <InlineSelect
-            value={row.modalidad_id}
-            options={filterOptions.modalidades}
-            onSave={(newValue) => handleInlineUpdate(row.id, 'modalidad_id', newValue)}
-          />
-        );
-      }
-    },
+
     {
       key: 'relacion',
       label: 'Relación',
