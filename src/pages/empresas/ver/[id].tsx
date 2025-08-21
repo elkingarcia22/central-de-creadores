@@ -139,8 +139,13 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       console.log('👥 Tipo de usuariosData:', typeof usuariosData);
       console.log('👥 Es array:', Array.isArray(usuariosData));
       
-      // Verificar que usuariosData sea un array
-      const usuariosArray = Array.isArray(usuariosData) ? usuariosData : [];
+      // Extraer usuarios del objeto si es necesario
+      let usuariosArray = [];
+      if (Array.isArray(usuariosData)) {
+        usuariosArray = usuariosData;
+      } else if (usuariosData && usuariosData.usuarios && Array.isArray(usuariosData.usuarios)) {
+        usuariosArray = usuariosData.usuarios;
+      }
       console.log('👥 UsuariosArray final:', usuariosArray.length);
       
       // Cargar catálogos - usar APIs correctas
