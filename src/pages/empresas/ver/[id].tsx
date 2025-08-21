@@ -134,14 +134,19 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       // Cargar usuarios
       const usuariosRes = await fetch('/api/usuarios');
       const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
-      console.log('👥 Usuarios cargados:', usuariosData.length);
+      console.log('👥 Usuarios cargados:', usuariosData);
+      console.log('👥 Tipo de usuariosData:', typeof usuariosData);
+      console.log('👥 Es array:', Array.isArray(usuariosData));
       
-      // Cargar catálogos
-      const estadosRes = await fetch('/api/estados');
+      // Verificar que usuariosData sea un array
+      const usuariosArray = Array.isArray(usuariosData) ? usuariosData : [];
+      
+      // Cargar catálogos - usar APIs correctas
+      const estadosRes = await fetch('/api/estados-empresa');
       const estados = estadosRes.ok ? await estadosRes.json() : [];
       console.log('🏷️ Estados cargados:', estados.length);
       
-      const tamanosRes = await fetch('/api/tamanos');
+      const tamanosRes = await fetch('/api/tamanos-empresa');
       const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
       console.log('📏 Tamaños cargados:', tamanos.length);
       
@@ -161,14 +166,14 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
-        kams: usuariosData.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
+        kams: usuariosArray.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
       };
 
       console.log('📋 FilterOptions configuradas:', filterOptionsData);
       
-      setUsuarios(usuariosData);
+      setUsuarios(usuariosArray);
       setFilterOptions(filterOptionsData);
       
       console.log('✅ Datos del modal cargados exitosamente');
