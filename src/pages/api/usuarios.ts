@@ -36,6 +36,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('- Data:', data);
       console.log('- Error:', error);
       console.log('- Count:', data ? data.length : 0);
+    } else {
+      // Si hay datos en usuarios_con_roles, verificar si algunos usuarios no tienen avatar
+      // y buscar sus avatares en profiles
+      console.log('🔍 Verificando avatares faltantes en profiles...');
+      
+      const usuariosSinAvatar = data.filter(usuario => !usuario.avatar_url);
+      console.log(`📊 Usuarios sin avatar: ${usuariosSinAvatar.length}`);
+      
+      if (usuariosSinAvatar.length > 0) {
+        const idsSinAvatar = usuariosSinAvatar.map(u => u.id);
+        console.log('🔍 Buscando avatares en profiles para:', idsSinAvatar);
+        
+        const { data: avataresProfiles, error: errorAvatares } = await supabase
+          .from('profiles')
+          .select('id, avatar_url')
+          .in('id', idsSinAvatar);
+        
+        console.log('📊 Avatares encontrados en profiles:', avataresProfiles);
+        console.log('📊 Error buscando avatares:', errorAvatares);
+        
+        // Crear un mapa de avatares por ID
+        const avataresMap = new Map();
+        avataresProfiles?.forEach(profile => {
+          if (profile.avatar_url) {
+            avataresMap.set(profile.id, profile.avatar_url);
+          }
+        });
+        
+        // Actualizar los usuarios con sus avatares encontrados
+        data = data.map(usuario => ({
+          ...usuario,
+          avatar_url: usuario.avatar_url || avataresMap.get(usuario.id) || null
+        }));
+        
+        console.log('✅ Avatares actualizados para usuarios sin avatar');
+      }
     }
     
     // Si aún no hay datos, intentar con la tabla usuarios original
