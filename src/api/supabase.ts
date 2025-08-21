@@ -4,6 +4,7 @@ import { supabaseMock, shouldUseMock } from './supabase-mock'
 // Verificar si tenemos las credenciales de Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 // TEMPORAL: Forzar uso de mock debido a error 500 en trigger
 const FORCE_MOCK = false; // Cambiado a false para usar Supabase real
@@ -23,4 +24,9 @@ if (FORCE_MOCK || shouldUseMock()) {
   supabase = createClient(supabaseUrl!, supabaseAnonKey!);
 }
 
-export { supabase };
+// Cliente de servidor con permisos completos
+const supabaseServer = supabaseServiceKey 
+  ? createClient(supabaseUrl!, supabaseServiceKey)
+  : supabase;
+
+export { supabase, supabaseServer };
