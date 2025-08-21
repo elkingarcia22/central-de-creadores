@@ -36,6 +36,25 @@ import {
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
+// Funciones de utilidad para colores
+const getEstadoColor = (estado: string): string => {
+  const estadoLower = estado.toLowerCase();
+  if (estadoLower.includes('activo') || estadoLower.includes('activa')) return 'success';
+  if (estadoLower.includes('inactivo') || estadoLower.includes('inactiva')) return 'warning';
+  if (estadoLower.includes('pendiente')) return 'warning';
+  if (estadoLower.includes('completado') || estadoLower.includes('finalizado')) return 'success';
+  if (estadoLower.includes('cancelado') || estadoLower.includes('cancelada')) return 'danger';
+  return 'default';
+};
+
+const getRiesgoColor = (riesgo: string): string => {
+  const riesgoLower = riesgo.toLowerCase();
+  if (riesgoLower.includes('alto') || riesgoLower.includes('high')) return 'danger';
+  if (riesgoLower.includes('medio') || riesgoLower.includes('medium')) return 'warning';
+  if (riesgoLower.includes('bajo') || riesgoLower.includes('low')) return 'success';
+  return 'default';
+};
+
 interface EstadisticasEmpresa {
   totalParticipaciones: number;
   totalParticipantes: number;
