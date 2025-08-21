@@ -511,7 +511,10 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           return <div className="text-gray-400">Sin datos</div>;
         }
         return (
-          <div className="font-medium text-gray-900 dark:text-gray-100">
+          <div 
+            className="font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary transition-colors"
+            onClick={() => router.push(`/empresas/ver/${row.id}`)}
+          >
             {row.nombre || 'Sin nombre'}
           </div>
         );

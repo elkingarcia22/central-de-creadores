@@ -188,22 +188,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     <div className="space-y-6">
       {/* Información básica */}
       <Card className="p-6">
-        <div className="mb-4">
-          <Typography variant="h3" className="mb-2">{empresaData.nombre}</Typography>
-          <div className="flex items-center gap-3">
-            <Chip variant={empresaData.activo ? 'success' : 'warning'}>
-              {empresaData.activo ? 'Activa' : 'Inactiva'}
-            </Chip>
-            {empresaData.estado_nombre && (
-              <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
-                {empresaData.estado_nombre}
-              </Chip>
-            )}
-          </div>
-        </div>
-        
         {empresaData.descripcion && (
-          <div className="mb-4">
+          <div>
             <Typography variant="subtitle2" className="mb-2">Descripción</Typography>
             <Typography variant="body1" color="secondary">
               {empresaData.descripcion}
@@ -255,45 +241,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           </div>
         </Card>
 
-        {/* Estado */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BuildingIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Estado</Typography>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <Typography variant="caption" color="secondary">Estado</Typography>
-              {(() => {
-                console.log('🔍 Estado de empresa:', empresaData.estado_nombre);
-                if (empresaData.estado_nombre) {
-                  const color = getEstadoColor(empresaData.estado_nombre);
-                  console.log('🎨 Renderizando chip con color:', color);
-                  return (
-                    <Chip variant={color}>
-                      {empresaData.estado_nombre}
-                    </Chip>
-                  );
-                } else {
-                  console.log('⚠️ No hay estado, mostrando texto');
-                  return <Typography variant="body2">Sin especificar</Typography>;
-                }
-              })()}
-            </div>
-            {empresaData.tamano_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Tamaño</Typography>
-                <Typography variant="body2">{empresaData.tamano_nombre}</Typography>
-              </div>
-            )}
-            {empresaData.relacion_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Relación</Typography>
-                <Typography variant="body2">{empresaData.relacion_nombre}</Typography>
-              </div>
-            )}
-          </div>
-        </Card>
+
 
         {/* Configuración */}
         <Card className="p-6">
@@ -318,6 +266,18 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               <div>
                 <Typography variant="caption" color="secondary">Industria</Typography>
                 <Typography variant="body2">{empresaData.industria_nombre}</Typography>
+              </div>
+            )}
+            {empresaData.tamano_nombre && (
+              <div>
+                <Typography variant="caption" color="secondary">Tamaño</Typography>
+                <Typography variant="body2">{empresaData.tamano_nombre}</Typography>
+              </div>
+            )}
+            {empresaData.relacion_nombre && (
+              <div>
+                <Typography variant="caption" color="secondary">Relación</Typography>
+                <Typography variant="body2">{empresaData.relacion_nombre}</Typography>
               </div>
             )}
           </div>
@@ -601,17 +561,25 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.back()}
-                className="flex items-center space-x-2"
+                variant="ghost"
+                onClick={() => router.push('/empresas')}
+                className="p-2"
               >
-                <ArrowLeftIcon className="w-4 h-4" />
-                <span>Volver</span>
+                <ArrowLeftIcon className="w-5 h-5" />
               </Button>
               
               <div>
-                <Typography variant="h3">{empresaData.nombre}</Typography>
+                <Typography variant="h3" className="mb-2">{empresaData.nombre}</Typography>
+                <div className="flex items-center gap-3">
+                  <Chip variant={empresaData.activo ? 'success' : 'warning'}>
+                    {empresaData.activo ? 'Activa' : 'Inactiva'}
+                  </Chip>
+                  {empresaData.estado_nombre && (
+                    <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
+                      {empresaData.estado_nombre}
+                    </Chip>
+                  )}
+                </div>
               </div>
             </div>
             
