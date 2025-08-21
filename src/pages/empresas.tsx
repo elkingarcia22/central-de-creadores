@@ -25,6 +25,7 @@ import GroupedActions from '../components/ui/GroupedActions';
 import SideModal from '../components/ui/SideModal';
 import { InlineSelect, InlineDate } from '../components/ui/InlineEdit';
 import InlineUserSelect from '../components/ui/InlineUserSelect';
+import EditableChip from '../components/ui/EditableChip';
 import EmpresaSideModal from '../components/empresas/EmpresaSideModal';
 import EmpresaViewModal from '../components/empresas/EmpresaViewModal';
 import { 
@@ -666,9 +667,13 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         const chipVariant = getRelacionChipVariant(relacion.label);
         
         return (
-          <Chip variant={chipVariant} size="sm">
-            {relacion.label}
-          </Chip>
+          <EditableChip
+            value={row.relacion_id}
+            options={filterOptions.relaciones}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'relacion_id', newValue)}
+            getChipVariant={getRelacionChipVariant}
+            size="sm"
+          />
         );
       }
     },
