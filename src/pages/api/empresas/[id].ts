@@ -109,6 +109,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       productoData = producto;
     }
 
+    // Obtener productos relacionados desde la tabla de relación
+    let productosRelacionados = [];
+    if (empresa.id) {
+      const { data: productosEmpresa } = await supabase
+        .from('empresa_productos')
+        .select('producto_id')
+        .eq('empresa_id', empresa.id);
+      
+      if (productosEmpresa && productosEmpresa.length > 0) {
+        const productoIds = productosEmpresa.map(p => p.producto_id);
+        const { data: productos } = await supabase
+          .from('productos')
+          .select('id, nombre')
+          .in('id', productoIds);
+        productosRelacionados = productos || [];
+      }
+    }
+
     // Formatear respuesta
     const empresaFormateada = {
       id: empresa.id,
@@ -131,6 +149,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       industria_nombre: industriaData?.nombre,
       producto_id: empresa.producto_id,
       producto_nombre: productoData?.nombre,
+      productos_ids: productosRelacionados.map(p => p.id),
+      productos_nombres: productosRelacionados.map(p => p.nombre),
       activo: empresa.activo,
       created_at: empresa.created_at,
       updated_at: empresa.updated_at
