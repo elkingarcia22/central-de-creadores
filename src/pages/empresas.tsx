@@ -417,13 +417,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   // Handlers para actualizaciones en línea
   const handleInlineUpdate = async (empresaId: string, field: string, value: any) => {
     try {
-      const response = await fetch('/api/empresas', {
+      const response = await fetch(`/api/empresas?id=${empresaId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          id: empresaId,
           [field]: value
         })
       });
