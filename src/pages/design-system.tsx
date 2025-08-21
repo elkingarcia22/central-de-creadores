@@ -7,6 +7,7 @@ import SpacingSection from '../components/design-system/SpacingSection';
 import IconsSection from '../components/design-system/IconsSection';
 import ElevationSection from '../components/design-system/ElevationSection';
 import EstadosSection from '../components/design-system/EstadosSection';
+import MicroInteractionsSection from '../components/design-system/MicroInteractionsSection';
 import { 
   PaletteIcon, 
   TypeIcon, 
@@ -27,6 +28,7 @@ const DesignSystemPage: React.FC = () => {
     { id: 'icons', label: 'Iconos', icon: SearchIcon, content: <IconsSection /> },
     { id: 'elevation', label: 'Elevación', icon: ElevationIcon, content: <ElevationSection /> },
     { id: 'estados', label: 'Manejo de Estados', icon: BoxIcon, content: <EstadosSection /> },
+    { id: 'micro-interactions', label: 'Micro-Interacciones', icon: BoxIcon, content: <MicroInteractionsSection /> },
   ];
 
   return (

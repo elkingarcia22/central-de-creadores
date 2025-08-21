@@ -71,7 +71,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       if (empresaData.kam_id) {
         const { data: kamData, error: kamError } = await supabase
           .from('usuarios')
-          .select('id, nombre, correo')
+          .select('id, nombre, correo, foto_url')
           .eq('id', empresaData.kam_id)
           .single();
         
@@ -139,7 +139,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       if (kamIds.length > 0) {
         const { data: kamsData, error: kamsError } = await supabase
           .from('usuarios')
-          .select('id, nombre, correo')
+          .select('id, nombre, correo, foto_url')
           .in('id', kamIds);
         
         console.log('🔍 DEBUG: KAMs data:', kamsData);
@@ -178,6 +178,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         kam_id: empresa.kam_id,
         kam_nombre: empresa.kam?.nombre || null,
         kam_email: empresa.kam?.correo || null,
+        kam_foto_url: empresa.kam?.foto_url || null,
         // Información del país
         pais_id: empresa.pais,
         pais_nombre: empresa.pais_info?.nombre || null,

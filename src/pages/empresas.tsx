@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
@@ -17,6 +18,7 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import Badge from '../components/ui/Badge';
 import FilterDrawer from '../components/ui/FilterDrawer';
 import Chip from '../components/ui/Chip';
+import SimpleAvatar from '../components/ui/SimpleAvatar';
 import ActionsMenu from '../components/ui/ActionsMenu';
 import GroupedActions from '../components/ui/GroupedActions';
 import SideModal from '../components/ui/SideModal';
@@ -122,7 +124,11 @@ interface FilterOptions {
   productos: { value: string; label: string }[];
 }
 
-export default function EmpresasPage() {
+interface EmpresasPageProps {
+  initialEmpresas: Empresa[];
+}
+
+export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
@@ -131,8 +137,8 @@ export default function EmpresasPage() {
   const router = useRouter();
   
   // Estados principales
-  const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [empresas, setEmpresas] = useState<Empresa[]>(initialEmpresas);
+  const [loading, setLoading] = useState(initialEmpresas.length === 0);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     estados: [],
@@ -155,7 +161,7 @@ export default function EmpresasPage() {
     tamano: 'todos',
     pais: 'todos',
     kam_id: 'todos',
-    activo: true,
+    activo: undefined,
     industria: 'todos',
     modalidad: 'todos',
     relacion: 'todos',
@@ -181,22 +187,34 @@ export default function EmpresasPage() {
 
   // Cargar datos iniciales
   useEffect(() => {
-    cargarDatos();
-  }, []);
+    console.log('🔄 useEffect ejecutándose - cargando datos iniciales');
+    if (initialEmpresas.length > 0) {
+      console.log('✅ Empresas ya cargadas desde SSR:', initialEmpresas.length);
+      setLoading(false);
+    } else {
+      cargarDatos();
+    }
+  }, [initialEmpresas]);
 
   const cargarDatos = async () => {
     try {
       setLoading(true);
+      console.log('🚀 Iniciando carga de datos...');
+      
+      // Cargar empresas, usuarios y opciones de filtros
       await Promise.all([
         cargarEmpresas(),
         cargarUsuarios(),
         cargarOpcionesFiltros()
       ]);
+      
+      console.log('✅ Datos cargados exitosamente');
     } catch (error) {
-      console.error('Error cargando datos:', error);
+      console.error('❌ Error cargando datos:', error);
       showError('Error al cargar los datos');
     } finally {
       setLoading(false);
+      console.log('🏁 Carga de datos completada');
     }
   };
 
@@ -204,7 +222,7 @@ export default function EmpresasPage() {
     try {
       console.log('🔄 Cargando empresas...');
       
-      const response = await fetch('/api/empresas');
+      const response = await fetch('http://localhost:3000/api/empresas');
       console.log('📡 Response status:', response.status);
       
       if (response.ok) {
@@ -237,24 +255,36 @@ export default function EmpresasPage() {
 
   const cargarOpcionesFiltros = async () => {
     try {
-      // Cargar opciones de filtros desde las APIs correspondientes
-      const [estadosRes, paisesRes, industriasRes, tamanosRes, modalidadesRes, relacionesRes, productosRes] = await Promise.all([
-        fetch('/api/estados-empresa'),
-        fetch('/api/paises'),
-        fetch('/api/industrias'),
-        fetch('/api/tamanos-empresa'),
-        fetch('/api/modalidades'),
-        fetch('/api/relaciones-empresa'),
-        fetch('/api/productos')
-      ]);
-
+      console.log('🔧 Cargando opciones de filtros...');
+      
+      // Cargar cada API por separado para mejor manejo de errores
+      const estadosRes = await fetch('/api/estados-empresa');
       const estados = estadosRes.ok ? await estadosRes.json() : [];
+      console.log('✅ Estados cargados:', estados.length);
+      
+      const paisesRes = await fetch('/api/paises');
       const paises = paisesRes.ok ? await paisesRes.json() : [];
+      console.log('✅ Países cargados:', paises.length);
+      
+      const industriasRes = await fetch('/api/industrias');
       const industrias = industriasRes.ok ? await industriasRes.json() : [];
+      console.log('✅ Industrias cargadas:', industrias.length);
+      
+      const tamanosRes = await fetch('/api/tamanos-empresa');
       const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
+      console.log('✅ Tamaños cargados:', tamanos.length);
+      
+      const modalidadesRes = await fetch('/api/modalidades');
       const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
+      console.log('✅ Modalidades cargadas:', modalidades.length);
+      
+      const relacionesRes = await fetch('/api/relaciones-empresa');
       const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
+      console.log('✅ Relaciones cargadas:', relaciones.length);
+      
+      const productosRes = await fetch('/api/productos');
       const productos = productosRes.ok ? await productosRes.json() : [];
+      console.log('✅ Productos cargados:', productos.length);
 
       setFilterOptions({
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
@@ -267,10 +297,12 @@ export default function EmpresasPage() {
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
       });
+      
+      console.log('✅ Opciones de filtros configuradas');
     } catch (error) {
-      console.error('Error cargando opciones de filtros:', error);
+      console.error('❌ Error cargando opciones de filtros:', error);
     }
-  };
+
 
   // Función para filtrar empresas
   const filtrarEmpresas = useCallback((empresas: Empresa[], searchTerm: string, filters: FilterValuesEmpresa) => {
@@ -482,13 +514,8 @@ export default function EmpresasPage() {
           return <div className="text-gray-400">Sin datos</div>;
         }
         return (
-          <div className="space-y-1">
-            <div className="font-medium text-gray-900 dark:text-gray-100">
-              {row.nombre || 'Sin nombre'}
-            </div>
-            <div className="text-sm text-gray-500">
-              {row.descripcion || 'Sin descripción'}
-            </div>
+          <div className="font-medium text-gray-900 dark:text-gray-100">
+            {row.nombre || 'Sin nombre'}
           </div>
         );
       }
@@ -503,24 +530,17 @@ export default function EmpresasPage() {
           return <div className="text-gray-400">Sin datos</div>;
         }
         
-        const usuarioKAM = usuarios.find(u => u.id === row.kam_id);
-        
         return (
-          <InlineUserSelect
-            value={row.kam_id}
-            options={usuarios.map(u => ({ 
-              value: u.id, 
-              label: u.nombre || u.correo || 'Sin nombre', 
-              email: u.correo, 
-              avatar_url: u.foto_url 
-            }))}
-            currentUser={usuarioKAM ? {
-              name: usuarioKAM.nombre,
-              email: usuarioKAM.correo,
-              avatar_url: usuarioKAM.foto_url
-            } : undefined}
-            onSave={(newValue) => handleInlineUpdate(row.id, 'kam_id', newValue)}
-          />
+          <div className="flex items-center gap-2">
+            <SimpleAvatar
+              src={row.kam_foto_url || null}
+              fallbackText={row.kam_nombre || 'Sin asignar'}
+              size="sm"
+            />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              {row.kam_nombre || 'Sin asignar'}
+            </span>
+          </div>
         );
       }
     },
@@ -539,8 +559,14 @@ export default function EmpresasPage() {
             options={filterOptions.estados}
             onSave={(newValue) => handleInlineUpdate(row.id, 'estado_id', newValue)}
             useChip={true}
-            getChipVariant={(value) => value === 'activa' ? 'success' : 'warning'}
-            getChipText={(value) => value === 'activa' ? 'Activa' : 'Inactiva'}
+            getChipVariant={(value) => {
+              const estado = filterOptions.estados.find(e => e.value === value);
+              return estado?.label === 'activa' ? 'success' : 'warning';
+            }}
+            getChipText={(value) => {
+              const estado = filterOptions.estados.find(e => e.value === value);
+              return estado?.label === 'activa' ? 'Activa' : 'Inactiva';
+            }}
           />
         );
       }
@@ -635,22 +661,7 @@ export default function EmpresasPage() {
         );
       }
     },
-    {
-      key: 'created_at',
-      label: 'Fecha Creación',
-      sortable: true,
-      width: 'min-w-[140px]',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <div className="text-sm text-gray-600">
-            {formatearFecha(row.created_at)}
-          </div>
-        );
-      }
-    },
+
     {
       key: 'actions',
       label: 'Acciones',
@@ -906,4 +917,38 @@ export default function EmpresasPage() {
        />
     </>
   );
-} 
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  try {
+    console.log('🔄 getServerSideProps ejecutándose para empresas');
+    
+    const response = await fetch('http://localhost:3000/api/empresas');
+    console.log('📡 Response status:', response.status);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('📊 Datos recibidos en SSR:', data?.length || 0);
+      
+      return {
+        props: {
+          initialEmpresas: data || []
+        }
+      };
+    } else {
+      console.error('❌ Error en SSR:', response.status);
+      return {
+        props: {
+          initialEmpresas: []
+        }
+      };
+    }
+  } catch (error) {
+    console.error('❌ Error en SSR:', error);
+    return {
+      props: {
+        initialEmpresas: []
+      }
+    };
+  }
+};

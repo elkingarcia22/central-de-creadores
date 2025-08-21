@@ -81,4 +81,35 @@ export { default as CrearReclutamientoModal } from "./CrearReclutamientoModal";
 export { default as AsignarAgendamientoModal } from "./AsignarAgendamientoModal";
 
 // Componente de gráfico
-export { default as DonutChart } from './DonutChart'; 
+export { default as DonutChart } from './DonutChart';
+
+// Componentes especializados avanzados
+export { default as DragDropZone } from './DragDropZone';
+export { default as Calendar } from './Calendar';
+export { default as KanbanBoard } from './KanbanBoard';
+export { default as Timeline } from './Timeline';
+export { default as KanbanBoardTest } from './KanbanBoardTest';
+export { default as TimelineTest } from './TimelineTest';
+export { default as KanbanBoardSimple } from './KanbanBoardSimple';
+
+// Componentes de feedback
+export { default as Alert } from './Alert';
+export { default as Skeleton, SkeletonText, SkeletonAvatar, SkeletonCard } from './Skeleton';
+export { default as Divider } from './Divider';
+
+// Componentes de data display
+export { default as List } from './List';
+
+// Componentes de inputs básicos
+export { default as Checkbox, CheckboxGroup } from './Checkbox';
+export { default as RadioButton, RadioGroup } from './RadioButton';
+
+// Componentes de navegación y organización
+export { default as Accordion } from './Accordion';
+
+// Componentes de charts
+export { default as LineChart } from './LineChart';
+export { default as BarChart } from './BarChart';
+
+// Componentes con micro-interacciones
+export { default as Counter, CounterGroup } from './Counter'; 
