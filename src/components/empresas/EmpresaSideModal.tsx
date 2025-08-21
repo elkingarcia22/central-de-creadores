@@ -59,6 +59,10 @@ export default function EmpresaSideModal({
     console.log('🔍 EmpresaSideModal - filterOptions recibidas:', filterOptions);
     
     if (empresa) {
+      console.log('🔍 EmpresaSideModal - empresa.producto_id:', empresa.producto_id);
+      console.log('🔍 EmpresaSideModal - empresa.productos_ids:', empresa.productos_ids);
+      console.log('🔍 EmpresaSideModal - empresa.kam_id:', empresa.kam_id);
+      
       const newFormData = {
         id: empresa.id,
         nombre: empresa.nombre || '',
