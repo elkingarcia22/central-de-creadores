@@ -209,7 +209,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
-        kams: usuarios.map((u: any) => ({ value: u.id, label: u.nombre || u.correo })),
+        kams: usuarios.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
       });
@@ -898,7 +898,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           paises: filterOptions.paises,
           kams: filterOptions.kams,
           relaciones: filterOptions.relaciones,
-          productos: filterOptions.productos
+          productos: filterOptions.productos,
+          usuarios: usuarios
         }}
       />
 
