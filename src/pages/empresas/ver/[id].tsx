@@ -978,9 +978,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       producto_nombre: productoData?.nombre || null,
       productos_ids: productosRelacionados.map(p => p.id),
       productos_nombres: productosRelacionados.map(p => p.nombre),
-      activo: empresa.activo,
-      created_at: empresa.created_at,
-      updated_at: empresa.updated_at
+      activo: empresa.activo ?? true,
+      created_at: empresa.created_at || null,
+      updated_at: empresa.updated_at || null
     };
 
     console.log(`✅ SSR - Empresa formateada: ${empresaFormateada.nombre}`);
