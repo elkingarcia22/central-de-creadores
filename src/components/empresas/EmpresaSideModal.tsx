@@ -5,6 +5,7 @@ import Button from '../ui/Button';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Textarea from '../ui/Textarea';
+import UserSelectorWithAvatar from '../ui/UserSelectorWithAvatar';
 import { SaveIcon, XIcon } from '../icons';
 
 interface Empresa {
@@ -221,19 +222,18 @@ export default function EmpresaSideModal({
           </Typography>
           
           <div>
-            <Select
+            <UserSelectorWithAvatar
               label="KAM Asignado"
               value={formData.kam_id || ''}
               onChange={(value) => handleInputChange('kam_id', value)}
-              options={[
-                { value: '', label: 'Seleccionar KAM' },
-                ...(Array.isArray(usuarios) ? usuarios.filter(u => u.activo !== false).map(u => ({
-                  value: u.id,
-                  label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre'
-                })) : [])
-              ]}
               placeholder="Selecciona un KAM"
-              fullWidth
+              users={Array.isArray(usuarios) ? usuarios.filter(u => u.activo !== false).map(u => ({
+                id: u.id,
+                full_name: u.full_name || u.nombre || 'Sin nombre',
+                email: u.email || u.correo || 'sin-email@ejemplo.com',
+                avatar_url: u.avatar_url
+              })) : []}
+              loading={loading}
             />
           </div>
         </div>
