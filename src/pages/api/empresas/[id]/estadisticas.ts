@@ -128,7 +128,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 2. Obtener participantes de esta empresa
-    const { data: participantes, error: errorParticipantes } = await supabase
+    const { data: participantes, error: errorParticipantes } = await supabaseServer
       .from('participantes')
       .select('id, nombre, rol_empresa_id, fecha_ultima_participacion, total_participaciones')
       .eq('empresa_id', id);
@@ -147,7 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (participanteIds.length > 0) {
       // Obtener el ID del estado "Finalizado"
-      const { data: estadosData } = await supabase
+      const { data: estadosData } = await supabaseServer
         .from('estado_agendamiento_cat')
         .select('id, nombre')
         .ilike('nombre', '%finalizado%');
@@ -156,7 +156,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (estadoFinalizadoId) {
         // Obtener reclutamientos finalizados con información completa
-        const { data: reclutamientos, error: errorReclutamientos } = await supabase
+        const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
           .from('reclutamientos')
           .select(`
             id,
@@ -192,7 +192,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const investigacionesIds = [...new Set(reclutamientos.map(r => r.investigacion_id))];
           
           if (investigacionesIds.length > 0) {
-            const { data: investigaciones, error: errorInvestigaciones } = await supabase
+            const { data: investigaciones, error: errorInvestigaciones } = await supabaseServer
               .from('investigaciones')
               .select(`
                 id,
