@@ -265,7 +265,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           )}
 
           {/* Tab Content */}
-          <div className="mt-6">
+          <div>
             {activeTab === 'informacion' && (
               <div className="space-y-6">
                 {/* Información básica */}
@@ -319,13 +319,17 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     </div>
                   </Card>
 
-                  {/* Clasificación */}
+                  {/* Estado */}
                   <Card className="p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <BuildingIcon className="w-5 h-5 text-primary" />
-                      <Typography variant="h5">Clasificación</Typography>
+                      <Typography variant="h5">Estado</Typography>
                     </div>
                     <div className="space-y-3">
+                      <div>
+                        <Typography variant="caption" color="secondary">Estado</Typography>
+                        <Typography variant="body2">{empresaData.estado_nombre || 'Sin especificar'}</Typography>
+                      </div>
                       {empresaData.tamano_nombre && (
                         <div>
                           <Typography variant="caption" color="secondary">Tamaño</Typography>
@@ -338,33 +342,46 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                           <Typography variant="body2">{empresaData.relacion_nombre}</Typography>
                         </div>
                       )}
-                      {empresaData.producto_nombre && (
-                        <div>
-                          <Typography variant="caption" color="secondary">Producto Principal</Typography>
-                          <Typography variant="body2">{empresaData.producto_nombre}</Typography>
-                        </div>
-                      )}
                     </div>
                   </Card>
                 </div>
 
-                {/* Información de registro */}
-                <Card className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <CalendarIcon className="w-5 h-5 text-primary" />
-                    <Typography variant="h5">Registro</Typography>
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <Typography variant="caption" color="secondary">Fecha de creación</Typography>
-                      <Typography variant="body2">{formatearFecha(empresaData.created_at)}</Typography>
+                {/* Producto y registro */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Producto */}
+                  {empresaData.producto_nombre && (
+                    <Card className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <BuildingIcon className="w-5 h-5 text-primary" />
+                        <Typography variant="h5">Producto</Typography>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <Typography variant="caption" color="secondary">Producto Principal</Typography>
+                          <Typography variant="body2">{empresaData.producto_nombre}</Typography>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* Información de registro */}
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <CalendarIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Registro</Typography>
                     </div>
-                    <div>
-                      <Typography variant="caption" color="secondary">Última actualización</Typography>
-                      <Typography variant="body2">{formatearFecha(empresaData.updated_at)}</Typography>
+                    <div className="space-y-3">
+                      <div>
+                        <Typography variant="caption" color="secondary">Fecha de creación</Typography>
+                        <Typography variant="body2">{formatearFecha(empresaData.created_at)}</Typography>
+                      </div>
+                      <div>
+                        <Typography variant="caption" color="secondary">Última actualización</Typography>
+                        <Typography variant="body2">{formatearFecha(empresaData.updated_at)}</Typography>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </div>
             )}
 
@@ -408,10 +425,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 {/* Última participación */}
                 {empresaData.estadisticas.fechaUltimaParticipacion && (
                   <Card className="p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <CalendarIcon className="w-5 h-5 text-primary" />
-                      <Typography variant="h5">Última Participación</Typography>
-                    </div>
+                    <Typography variant="h5" className="mb-4">Última Participación</Typography>
                     <div className="space-y-3">
                       <div>
                         <Typography variant="caption" color="secondary">Fecha</Typography>
@@ -424,10 +438,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 {/* Gráfico de participaciones por mes */}
                 {Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
                   <Card className="p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <BarChartIcon className="w-5 h-5 text-primary" />
-                      <Typography variant="h5">Participaciones por Mes</Typography>
-                    </div>
+                    <Typography variant="h5" className="mb-4">Participaciones por Mes</Typography>
                     <div className="space-y-3">
                       {Object.entries(empresaData.estadisticas.participacionesPorMes)
                         .sort(([a], [b]) => b.localeCompare(a))
