@@ -73,7 +73,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     paises: [],
     kams: [],
     relaciones: [],
-    productos: []
+    productos: [],
+    industrias: [],
+    modalidades: []
   });
 
   // Estados para filtros y búsqueda
@@ -207,6 +209,14 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       const productosRes = await fetch('/api/productos');
       const productos = productosRes.ok ? await productosRes.json() : [];
       console.log('✅ Productos cargados:', productos.length);
+      
+      const industriasRes = await fetch('/api/industrias');
+      const industrias = industriasRes.ok ? await industriasRes.json() : [];
+      console.log('✅ Industrias cargadas:', industrias.length);
+      
+      const modalidadesRes = await fetch('/api/modalidades');
+      const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
+      console.log('✅ Modalidades cargadas:', modalidades.length);
 
       setFilterOptions({
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
@@ -214,7 +224,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
         kams: usuarios.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
-        productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
+        productos: productos.map((p: any) => ({ value: p.id, label: p.nombre })),
+        industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
+        modalidades: modalidades.map((m: any) => ({ value: m.id, label: m.nombre }))
       });
       
       console.log('✅ Opciones de filtros configuradas');

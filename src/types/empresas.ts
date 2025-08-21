@@ -52,4 +52,6 @@ export interface FilterOptions {
   kams: { value: string; label: string }[];
   relaciones: { value: string; label: string }[];
   productos: { value: string; label: string }[];
+  industrias: { value: string; label: string }[];
+  modalidades: { value: string; label: string }[];
 }
