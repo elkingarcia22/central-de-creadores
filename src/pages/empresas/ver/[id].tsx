@@ -889,23 +889,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     if (empresa.estado) {
       const { data: estado } = await supabaseServer
-        .from('estados')
+        .from('estado_empresa')
         .select('id, nombre')
         .eq('id', empresa.estado)
         .single();
       estadoData = estado;
     }
 
-    if (empresa['tamaño']) {
-      console.log('📏 SSR - Buscando tamaño con ID:', empresa['tamaño']);
+    if (empresa.tamaño) {
       const { data: tamano } = await supabaseServer
-        .from('tamanos')
+        .from('tamano_empresa')
         .select('id, nombre')
-        .eq('id', empresa['tamaño'])
+        .eq('id', empresa.tamaño)
         .single();
       tamanoData = tamano;
-      console.log('📏 SSR - Tamaño encontrado:', tamanoData);
     }
+    // if (empresa['tamaño']) {
+    //   console.log('📏 SSR - Buscando tamaño con ID:', empresa['tamaño']);
+    //   const { data: tamano } = await supabaseServer
+    //     .from('tamanos')
+    //     .select('id, nombre')
+    //     .eq('id', empresa['tamaño'])
+    //     .single();
+    //   tamanoData = tamano;
+    //   console.log('📏 SSR - Tamaño encontrado:', tamanoData);
+    // }
 
     if (empresa.relacion) {
       console.log('🤝 SSR - Buscando relación con ID:', empresa.relacion);
