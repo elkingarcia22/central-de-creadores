@@ -15,10 +15,8 @@ interface Empresa {
   descripcion?: string;
   kam_id?: string;
   pais_id?: string;
-  industria_id?: string;
   estado_id?: string;
   tamano_id?: string;
-  modalidad_id?: string;
   relacion_id?: string;
   producto_id?: string;
   productos_ids?: string[];
@@ -45,9 +43,7 @@ interface EmpresaSideModalProps {
   filterOptions: {
     estados: { value: string; label: string }[];
     paises: { value: string; label: string }[];
-    industrias: { value: string; label: string }[];
     tamanos: { value: string; label: string }[];
-    modalidades: { value: string; label: string }[];
     relaciones: { value: string; label: string }[];
     productos: { value: string; label: string }[];
   };
@@ -68,10 +64,8 @@ export default function EmpresaSideModal({
     descripcion: '',
     kam_id: '',
     pais_id: '',
-    industria_id: '',
     estado_id: '',
     tamano_id: '',
-    modalidad_id: '',
     relacion_id: '',
     producto_id: '',
     productos_ids: [],
@@ -89,10 +83,8 @@ export default function EmpresaSideModal({
         descripcion: empresa.descripcion || '',
         kam_id: empresa.kam_id || '',
         pais_id: empresa.pais_id || '',
-        industria_id: empresa.industria_id || '',
         estado_id: empresa.estado_id || '',
         tamano_id: empresa.tamano_id || '',
-        modalidad_id: empresa.modalidad_id || '',
         relacion_id: empresa.relacion_id || '',
         producto_id: empresa.producto_id || '',
         productos_ids: empresa.productos_ids || [],
@@ -104,10 +96,8 @@ export default function EmpresaSideModal({
         descripcion: '',
         kam_id: '',
         pais_id: '',
-        industria_id: '',
         estado_id: '',
         tamano_id: '',
-        modalidad_id: '',
         relacion_id: '',
         producto_id: '',
         productos_ids: [],
@@ -143,9 +133,7 @@ export default function EmpresaSideModal({
       newErrors.pais_id = 'El país es requerido';
     }
 
-    if (!formData.industria_id) {
-      newErrors.industria_id = 'La industria es requerida';
-    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -268,22 +256,6 @@ export default function EmpresaSideModal({
 
             <div>
               <Select
-                label="Industria"
-                value={formData.industria_id || ''}
-                onChange={(value) => handleInputChange('industria_id', value)}
-                options={[
-                  { value: '', label: 'Seleccionar industria' },
-                  ...filterOptions.industrias
-                ]}
-                placeholder="Selecciona una industria"
-                error={errors.industria_id}
-                required
-                fullWidth
-              />
-            </div>
-
-            <div>
-              <Select
                 label="Tamaño"
                 value={formData.tamano_id || ''}
                 onChange={(value) => handleInputChange('tamano_id', value)}
@@ -292,20 +264,6 @@ export default function EmpresaSideModal({
                   ...filterOptions.tamanos
                 ]}
                 placeholder="Selecciona un tamaño"
-                fullWidth
-              />
-            </div>
-
-            <div>
-              <Select
-                label="Modalidad"
-                value={formData.modalidad_id || ''}
-                onChange={(value) => handleInputChange('modalidad_id', value)}
-                options={[
-                  { value: '', label: 'Seleccionar modalidad' },
-                  ...filterOptions.modalidades
-                ]}
-                placeholder="Selecciona una modalidad"
                 fullWidth
               />
             </div>

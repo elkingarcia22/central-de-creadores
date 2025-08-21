@@ -33,19 +33,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             id,
             nombre
           ),
-          industria_info:industrias!empresas_industria_fkey(
-            id,
-            nombre
-          ),
           estado_info:estado_empresa!fk_empresas_estado(
             id,
             nombre
           ),
           tamano_info:tamano_empresa!fk_empresas_tamano(
-            id,
-            nombre
-          ),
-          modalidad_info:modalidades!fk_empresas_modalidad(
             id,
             nombre
           ),
@@ -99,19 +91,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             id,
             nombre
           ),
-          industria_info:industrias!empresas_industria_fkey(
-            id,
-            nombre
-          ),
           estado_info:estado_empresa!fk_empresas_estado(
             id,
             nombre
           ),
           tamano_info:tamano_empresa!fk_empresas_tamano(
-            id,
-            nombre
-          ),
-          modalidad_info:modalidades!fk_empresas_modalidad(
             id,
             nombre
           ),
@@ -200,47 +184,82 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         }
       }
 
-      // Transformar datos para incluir nombres de las relaciones
-      const empresasTransformadas = data?.map(empresa => ({
-        id: empresa.id,
-        nombre: empresa.nombre,
-        descripcion: empresa.descripcion,
-        // Información del KAM
-        kam_id: empresa.kam_id,
-        kam_nombre: empresa.kam?.nombre || null,
-        kam_email: empresa.kam?.correo || null,
-        kam_foto_url: empresa.kam?.foto_url || null,
-        // Información del país
-        pais_id: empresa.pais,
-        pais_nombre: empresa.pais_info?.nombre || null,
-        // Información de la industria
-        industria_id: empresa.industria,
-        industria_nombre: empresa.industria_info?.nombre || null,
-        // Información del estado
-        estado_id: empresa.estado,
-        estado_nombre: empresa.estado_info?.nombre || null,
-        // Información del tamaño
-        tamano_id: empresa.tamaño,
-        tamano_nombre: empresa.tamano_info?.nombre || null,
-        // Información de la modalidad
-        modalidad_id: empresa.modalidad,
-        modalidad_nombre: empresa.modalidad_info?.nombre || null,
-        // Información de la relación
-        relacion_id: empresa.relacion,
-        relacion_nombre: empresa.relacion_info?.nombre || null,
-        // Información del producto
-        producto_id: empresa.producto_id,
-        producto_nombre: empresa.producto_info?.nombre || null,
-        // Productos múltiples
-        productos_ids: productosPorEmpresa[empresa.id]?.map(p => p.id) || [],
-        productos_nombres: productosPorEmpresa[empresa.id]?.map(p => p.nombre) || [],
-        // Campos adicionales para compatibilidad
-        sector: empresa.industria_info?.nombre || null, // Usar industria como sector
-        tamano: empresa.tamano_info?.nombre || null,
-        activo: empresa.estado_info?.nombre === 'Activa' || false,
-        created_at: new Date().toISOString(), // Campo temporal
-        updated_at: new Date().toISOString() // Campo temporal
-      })) || [];
+      // Función para obtener el total de participaciones por empresa (solo finalizadas)
+      const obtenerParticipacionesPorEmpresa = async (empresaId: string) => {
+        try {
+          // Obtener el ID del estado "Finalizado"
+          const { data: estadosData } = await supabase
+            .from('estado_agendamiento_cat')
+            .select('id, nombre')
+            .ilike('nombre', '%finalizado%');
+          
+          const estadoFinalizadoId = estadosData?.[0]?.id;
+          
+          if (!estadoFinalizadoId) {
+            console.warn('No se encontró estado "Finalizado" en estado_agendamiento_cat');
+            return 0;
+          }
+          
+          // Contar reclutamientos finalizados donde participan participantes de esta empresa
+          const { count } = await supabase
+            .from('reclutamientos')
+            .select('id', { count: 'exact' })
+            .eq('estado_agendamiento', estadoFinalizadoId)
+            .not('participantes_id', 'is', null)
+            .in('participantes_id', 
+              supabase
+                .from('participantes')
+                .select('id')
+                .eq('empresa_id', empresaId)
+            );
+          
+          return count || 0;
+        } catch (error) {
+          console.error(`Error obteniendo participaciones para empresa ${empresaId}:`, error);
+          return 0;
+        }
+      };
+
+      // Transformar datos para incluir nombres de las relaciones y participaciones
+      const empresasTransformadas = await Promise.all(data?.map(async empresa => {
+        const participaciones = await obtenerParticipacionesPorEmpresa(empresa.id);
+        
+        return {
+          id: empresa.id,
+          nombre: empresa.nombre,
+          descripcion: empresa.descripcion,
+          // Información del KAM
+          kam_id: empresa.kam_id,
+          kam_nombre: empresa.kam?.nombre || null,
+          kam_email: empresa.kam?.correo || null,
+          kam_foto_url: empresa.kam?.foto_url || null,
+          // Información del país
+          pais_id: empresa.pais,
+          pais_nombre: empresa.pais_info?.nombre || null,
+          // Información del estado
+          estado_id: empresa.estado,
+          estado_nombre: empresa.estado_info?.nombre || null,
+          // Información del tamaño
+          tamano_id: empresa.tamaño,
+          tamano_nombre: empresa.tamano_info?.nombre || null,
+          // Información de la relación
+          relacion_id: empresa.relacion,
+          relacion_nombre: empresa.relacion_info?.nombre || null,
+          // Información del producto
+          producto_id: empresa.producto_id,
+          producto_nombre: empresa.producto_info?.nombre || null,
+          // Productos múltiples
+          productos_ids: productosPorEmpresa[empresa.id]?.map(p => p.id) || [],
+          productos_nombres: productosPorEmpresa[empresa.id]?.map(p => p.nombre) || [],
+          // Participaciones
+          participaciones: participaciones,
+          // Campos adicionales para compatibilidad
+          tamano: empresa.tamano_info?.nombre || null,
+          activo: empresa.estado_info?.nombre === 'Activa' || false,
+          created_at: new Date().toISOString(), // Campo temporal
+          updated_at: new Date().toISOString() // Campo temporal
+        };
+      }) || []);
 
       return res.status(200).json(empresasTransformadas);
     }
@@ -264,13 +283,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       nombre: empresaData.nombre,
       descripcion: empresaData.descripcion || null,
       pais: empresaData.pais_id || null,
-      industria: empresaData.industria_id || null,
       kam_id: empresaData.kam_id || null,
       producto_id: empresaData.producto_id || null, // Mantener para compatibilidad
       estado: empresaData.estado_id || null,
       relacion: empresaData.relacion_id || null,
-      tamaño: empresaData.tamano_id || null,
-      modalidad: empresaData.modalidad_id || null
+      tamaño: empresaData.tamano_id || null
     };
 
     const { data, error } = await supabase
@@ -282,19 +299,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
           id,
           nombre
         ),
-        industria_info:industrias!empresas_industria_fkey(
-          id,
-          nombre
-        ),
         estado_info:estado_empresa!fk_empresas_estado(
           id,
           nombre
         ),
         tamano_info:tamano_empresa!fk_empresas_tamano(
-          id,
-          nombre
-        ),
-        modalidad_info:modalidades!fk_empresas_modalidad(
           id,
           nombre
         ),
@@ -378,21 +387,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       kam_foto_url: kamInfo?.foto_url || null,
       pais_id: data.pais,
       pais_nombre: data.pais_info?.nombre || null,
-      industria_id: data.industria,
-      industria_nombre: data.industria_info?.nombre || null,
       estado_id: data.estado,
       estado_nombre: data.estado_info?.nombre || null,
       tamano_id: data.tamaño,
       tamano_nombre: data.tamano_info?.nombre || null,
-      modalidad_id: data.modalidad,
-      modalidad_nombre: data.modalidad_info?.nombre || null,
       relacion_id: data.relacion,
       relacion_nombre: data.relacion_info?.nombre || null,
       producto_id: data.producto_id,
       producto_nombre: data.producto_info?.nombre || null,
       productos_ids: productosInfo.map(p => p.id),
       productos_nombres: productosInfo.map(p => p.nombre),
-      sector: data.industria_info?.nombre || null,
       tamano: data.tamano_info?.nombre || null,
       activo: data.estado_info?.nombre === 'Activa' || false,
       created_at: data.created_at,
@@ -432,7 +436,6 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
       nombre: empresaData.nombre !== undefined ? empresaData.nombre : empresaActual.nombre,
       descripcion: empresaData.descripcion !== undefined ? empresaData.descripcion : empresaActual.descripcion,
       pais: empresaData.pais_id !== undefined ? empresaData.pais_id : empresaActual.pais,
-      industria: empresaData.industria_id !== undefined ? empresaData.industria_id : empresaActual.industria,
       kam_id: empresaData.kam_id !== undefined ? empresaData.kam_id : empresaActual.kam_id,
       producto_id: empresaData.producto_id !== undefined ? empresaData.producto_id : empresaActual.producto_id,
       estado: empresaData.estado_id !== undefined ? empresaData.estado_id : empresaActual.estado,
@@ -451,19 +454,11 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
           id,
           nombre
         ),
-        industria_info:industrias!empresas_industria_fkey(
-          id,
-          nombre
-        ),
         estado_info:estado_empresa!fk_empresas_estado(
           id,
           nombre
         ),
         tamano_info:tamano_empresa!fk_empresas_tamano(
-          id,
-          nombre
-        ),
-        modalidad_info:modalidades!fk_empresas_modalidad(
           id,
           nombre
         ),
@@ -508,19 +503,14 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
       kam_foto_url: kamInfo?.foto_url || null,
       pais_id: data.pais,
       pais_nombre: data.pais_info?.nombre || null,
-      industria_id: data.industria,
-      industria_nombre: data.industria_info?.nombre || null,
       estado_id: data.estado,
       estado_nombre: data.estado_info?.nombre || null,
       tamano_id: data.tamaño,
       tamano_nombre: data.tamano_info?.nombre || null,
-      modalidad_id: data.modalidad,
-      modalidad_nombre: data.modalidad_info?.nombre || null,
       relacion_id: data.relacion,
       relacion_nombre: data.relacion_info?.nombre || null,
       producto_id: data.producto_id,
       producto_nombre: data.producto_info?.nombre || null,
-      sector: data.industria_info?.nombre || null,
       tamano: data.tamano_info?.nombre || null,
       activo: data.estado_info?.nombre === 'Activa' || false,
       created_at: data.created_at,

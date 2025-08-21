@@ -57,18 +57,15 @@ interface Empresa {
   kam_foto_url?: string;
   pais_id?: string;
   pais_nombre?: string;
-  industria_id?: string;
-  industria_nombre?: string;
   estado_id?: string;
   estado_nombre?: string;
   tamano_id?: string;
   tamano_nombre?: string;
-  modalidad_id?: string;
-  modalidad_nombre?: string;
   relacion_id?: string;
   relacion_nombre?: string;
   producto_id?: string;
   producto_nombre?: string;
+  participaciones?: number;
   sector?: string;
   tamano?: string;
   activo?: boolean;
@@ -95,8 +92,6 @@ interface FilterValuesEmpresa {
   pais?: string;
   kam_id?: string;
   activo?: boolean;
-  industria?: string;
-  modalidad?: string;
   relacion?: string;
   producto?: string;
 }
@@ -107,8 +102,6 @@ interface FilterOptions {
   tamanos: { value: string; label: string }[];
   paises: { value: string; label: string }[];
   kams: { value: string; label: string }[];
-  industrias: { value: string; label: string }[];
-  modalidades: { value: string; label: string }[];
   relaciones: { value: string; label: string }[];
   productos: { value: string; label: string }[];
 }
@@ -135,8 +128,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     tamanos: [],
     paises: [],
     kams: [],
-    industrias: [],
-    modalidades: [],
     relaciones: [],
     productos: []
   });
@@ -151,8 +142,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     pais: 'todos',
     kam_id: 'todos',
     activo: undefined,
-    industria: 'todos',
-    modalidad: 'todos',
     relacion: 'todos',
     producto: 'todos'
   });
@@ -660,6 +649,27 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             options={filterOptions.paises}
             onSave={(newValue) => handleInlineUpdate(row.id, 'pais_id', newValue)}
           />
+        );
+      }
+    },
+    {
+      key: 'participaciones',
+      label: 'Participaciones',
+      sortable: true,
+      width: 'min-w-[140px]',
+      render: (value: any, row: any) => {
+        if (!row) {
+          return <div className="text-gray-400">Sin datos</div>;
+        }
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" size="sm">
+              {row.participaciones || 0}
+            </Badge>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              sesiones
+            </span>
+          </div>
         );
       }
     },
