@@ -923,54 +923,14 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
-  // Componente para el contenido del tab de Reclutamiento - INFORMACIÓN COMPLETA
+  // Componente para el contenido del tab de Reclutamiento - SOLO INFORMACIÓN DE RECLUTAMIENTO
   const ReclutamientoTabContent = memo(() => (
     <div className="space-y-6">
-      {/* Información básica del participante */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <UserIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información del Participante</Typography>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Typography variant="caption" color="secondary">Nombre</Typography>
-            <Typography variant="body2" className="font-medium">
-              {selectedParticipante.nombre || 'Sin nombre'}
-            </Typography>
-          </div>
-          
-          <div>
-            <Typography variant="caption" color="secondary">Email</Typography>
-            <Typography variant="body2">
-              {selectedParticipante.email || 'Sin email'}
-            </Typography>
-          </div>
-          
-          <div>
-            <Typography variant="caption" color="secondary">Tipo</Typography>
-            <div className="mt-1">
-              {getTipoParticipanteBadge(selectedParticipante)}
-            </div>
-          </div>
-          
-          {selectedParticipante.rol_empresa && (
-            <div>
-              <Typography variant="caption" color="secondary">Rol en Empresa</Typography>
-              <Typography variant="body2">
-                {selectedParticipante.rol_empresa}
-              </Typography>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Información completa del agendamiento */}
+      {/* Información del agendamiento */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <CalendarIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información Completa del Agendamiento</Typography>
+          <Typography variant="h5">Información del Agendamiento</Typography>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1023,16 +983,6 @@ const VerReclutamiento: NextPage = () => {
                'Sin responsable'}
             </Typography>
           </div>
-
-          {/* Información adicional del reclutamiento */}
-          {selectedParticipante.reclutamiento_id && (
-            <div>
-              <Typography variant="caption" color="secondary">ID del Reclutamiento</Typography>
-              <Typography variant="body2" className="font-mono text-xs">
-                {selectedParticipante.reclutamiento_id}
-              </Typography>
-            </div>
-          )}
 
           {selectedParticipante.duracion_sesion && (
             <div>
@@ -1127,167 +1077,37 @@ const VerReclutamiento: NextPage = () => {
         </div>
       </Card>
 
-      {/* Información adicional según el tipo */}
-      {selectedParticipante.tipo === 'externo' && (
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BuildingIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Información de Empresa</Typography>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {selectedParticipante.empresa_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Empresa</Typography>
-                <Typography variant="body2" className="font-medium">
-                  {selectedParticipante.empresa_nombre}
-                </Typography>
-              </div>
-            )}
-
-            {selectedParticipante.empresa_id && (
-              <div>
-                <Typography variant="caption" color="secondary">ID de la Empresa</Typography>
-                <Typography variant="body2" className="font-mono text-xs">
-                  {selectedParticipante.empresa_id}
-                </Typography>
-              </div>
-            )}
-            
-            {selectedParticipante.estado_calculado && (
-              <div>
-                <Typography variant="caption" color="secondary">Estado del Participante</Typography>
-                <div className="mt-1">
-                  <Chip
-                    variant={selectedParticipante.estado_calculado.estado === 'Enfriamiento' ? 'warning' : 'success'}
-                    size="sm"
-                    className="text-white"
-                  >
-                    {selectedParticipante.estado_calculado.estado}
-                  </Chip>
-                </div>
-              </div>
-            )}
-
-            {selectedParticipante.cantidad_participaciones && (
-              <div>
-                <Typography variant="caption" color="secondary">Cantidad de Participaciones</Typography>
-                <Typography variant="body2" className="font-medium">
-                  {selectedParticipante.cantidad_participaciones} sesiones
-                </Typography>
-              </div>
-            )}
-            
-            {selectedParticipante.productos_relacionados && selectedParticipante.productos_relacionados.length > 0 && (
-              <div className="md:col-span-2">
-                <Typography variant="caption" color="secondary">Productos Relacionados</Typography>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {selectedParticipante.productos_relacionados.map((producto: any, index: number) => (
-                    <Chip key={index} variant="secondary" size="sm">
-                      {producto}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
-
-      {/* Información de departamento para internos */}
-      {(selectedParticipante.tipo === 'interno' || selectedParticipante.tipo === 'friend_family') && selectedParticipante.departamento && (
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BuildingIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Información de Departamento</Typography>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Typography variant="caption" color="secondary">Departamento</Typography>
-              <Typography variant="body2" className="font-medium">
-                {typeof selectedParticipante.departamento === 'object' && selectedParticipante.departamento.nombre 
-                  ? selectedParticipante.departamento.nombre 
-                  : typeof selectedParticipante.departamento === 'string' 
-                    ? selectedParticipante.departamento 
-                    : 'Sin departamento'}
-              </Typography>
-            </div>
-
-            {selectedParticipante.departamento_id && (
-              <div>
-                <Typography variant="caption" color="secondary">ID del Departamento</Typography>
-                <Typography variant="body2" className="font-mono text-xs">
-                  {selectedParticipante.departamento_id}
-                </Typography>
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
-
-      {/* Información de dolores y necesidades */}
-      {selectedParticipante.dolores_necesidades && (
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <AlertTriangleIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Dolores y Necesidades</Typography>
-          </div>
-          
-          <Typography variant="body2">
-            {selectedParticipante.dolores_necesidades}
-          </Typography>
-        </Card>
-      )}
-
-      {/* Comentarios */}
-      {selectedParticipante.comentarios && (
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <FileTextIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Comentarios</Typography>
-          </div>
-          
-          <Typography variant="body2">
-            {selectedParticipante.comentarios}
-          </Typography>
-        </Card>
-      )}
-
-      {/* Información de fechas */}
+      {/* Información del reclutamiento */}
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
-          <ClockIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información de Fechas</Typography>
+          <ClipboardListIcon className="w-5 h-5 text-primary" />
+          <Typography variant="h5">Información del Reclutamiento</Typography>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedParticipante.created_at && (
+          {selectedParticipante.reclutamiento_id && (
             <div>
-              <Typography variant="caption" color="secondary">Fecha de Creación</Typography>
-              <Typography variant="body2">
-                {new Date(selectedParticipante.created_at).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+              <Typography variant="caption" color="secondary">ID del Reclutamiento</Typography>
+              <Typography variant="body2" className="font-mono text-xs">
+                {selectedParticipante.reclutamiento_id}
               </Typography>
             </div>
           )}
 
-          {selectedParticipante.updated_at && (
-            <div>
-              <Typography variant="caption" color="secondary">Última Actualización</Typography>
-              <Typography variant="body2">
-                {new Date(selectedParticipante.updated_at).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+          {selectedParticipante.dolores_necesidades && (
+            <div className="md:col-span-2">
+              <Typography variant="caption" color="secondary">Dolores y Necesidades</Typography>
+              <Typography variant="body2" className="mt-1">
+                {selectedParticipante.dolores_necesidades}
+              </Typography>
+            </div>
+          )}
+
+          {selectedParticipante.comentarios && (
+            <div className="md:col-span-2">
+              <Typography variant="caption" color="secondary">Comentarios</Typography>
+              <Typography variant="body2" className="mt-1">
+                {selectedParticipante.comentarios}
               </Typography>
             </div>
           )}
