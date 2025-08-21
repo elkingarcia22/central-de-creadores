@@ -869,22 +869,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   />
                 </div>
 
-                {/* Sector/Industria */}
-                <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Sector/Industria
-                  </Typography>
-                  <Select
-                    placeholder="Seleccionar sector..."
-                    options={[
-                      { value: 'todos', label: 'Todos' },
-                      ...(options.sectores || [])
-                    ]}
-                    value={(filters as FilterValuesEmpresa).sector || 'todos'}
-                    onChange={(value) => handleFilterChange('sector', value)}
-                    fullWidth
-                  />
-                </div>
+
 
                 {/* Tamaño */}
                 <div>
@@ -937,39 +922,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   />
                 </div>
 
-                {/* Industria */}
-                <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Industria
-                  </Typography>
-                  <Select
-                    placeholder="Seleccionar industria..."
-                    options={[
-                      { value: 'todos', label: 'Todos' },
-                      ...(options.industrias || [])
-                    ]}
-                    value={(filters as FilterValuesEmpresa).industria || 'todos'}
-                    onChange={(value) => handleFilterChange('industria', value)}
-                    fullWidth
-                  />
-                </div>
 
-                {/* Modalidad */}
-                <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Modalidad
-                  </Typography>
-                  <Select
-                    placeholder="Seleccionar modalidad..."
-                    options={[
-                      { value: 'todos', label: 'Todos' },
-                      ...(options.modalidades || [])
-                    ]}
-                    value={(filters as FilterValuesEmpresa).modalidad || 'todos'}
-                    onChange={(value) => handleFilterChange('modalidad', value)}
-                    fullWidth
-                  />
-                </div>
 
                 {/* Relación */}
                 <div>
