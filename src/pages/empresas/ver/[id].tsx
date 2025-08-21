@@ -38,12 +38,14 @@ import { formatearFecha } from '../../../utils/fechas';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): string => {
+  console.log('🔍 getEstadoColor llamado con:', estado);
   const estadoLower = estado.toLowerCase();
   if (estadoLower.includes('activo') || estadoLower.includes('activa')) return 'success';
   if (estadoLower.includes('inactivo') || estadoLower.includes('inactiva')) return 'warning';
   if (estadoLower.includes('pendiente')) return 'warning';
   if (estadoLower.includes('completado') || estadoLower.includes('finalizado')) return 'success';
   if (estadoLower.includes('cancelado') || estadoLower.includes('cancelada')) return 'danger';
+  console.log('🎨 Color asignado: default');
   return 'default';
 };
 
@@ -262,13 +264,21 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           <div className="space-y-3">
             <div>
               <Typography variant="caption" color="secondary">Estado</Typography>
-              {empresaData.estado_nombre ? (
-                <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
-                  {empresaData.estado_nombre}
-                </Chip>
-              ) : (
-                <Typography variant="body2">Sin especificar</Typography>
-              )}
+              {(() => {
+                console.log('🔍 Estado de empresa:', empresaData.estado_nombre);
+                if (empresaData.estado_nombre) {
+                  const color = getEstadoColor(empresaData.estado_nombre);
+                  console.log('🎨 Renderizando chip con color:', color);
+                  return (
+                    <Chip variant={color}>
+                      {empresaData.estado_nombre}
+                    </Chip>
+                  );
+                } else {
+                  console.log('⚠️ No hay estado, mostrando texto');
+                  return <Typography variant="body2">Sin especificar</Typography>;
+                }
+              })()}
             </div>
             {empresaData.tamano_nombre && (
               <div>
