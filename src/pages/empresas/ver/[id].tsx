@@ -50,13 +50,22 @@ const getEstadoColor = (estado: string): string => {
   return 'default';
 };
 
-const getRiesgoColor = (riesgo: string): string => {
-  const riesgoLower = riesgo.toLowerCase();
-  if (riesgoLower.includes('alto') || riesgoLower.includes('high')) return 'danger';
-  if (riesgoLower.includes('medio') || riesgoLower.includes('medium')) return 'warning';
-  if (riesgoLower.includes('bajo') || riesgoLower.includes('low')) return 'success';
-  return 'default';
-};
+  const getRiesgoColor = (riesgo: string): string => {
+    const riesgoLower = riesgo.toLowerCase();
+    if (riesgoLower.includes('alto') || riesgoLower.includes('high')) return 'danger';
+    if (riesgoLower.includes('medio') || riesgoLower.includes('medium')) return 'warning';
+    if (riesgoLower.includes('bajo') || riesgoLower.includes('low')) return 'success';
+    return 'default';
+  };
+
+  const getRelacionColor = (relacion: string): string => {
+    const relacionLower = relacion.toLowerCase();
+    if (relacionLower.includes('excelente')) return 'success';
+    if (relacionLower.includes('buena')) return 'success';
+    if (relacionLower.includes('regular')) return 'warning';
+    if (relacionLower.includes('mala') || relacionLower.includes('pobre')) return 'danger';
+    return 'default';
+  };
 
 interface EstadisticasEmpresa {
   totalParticipaciones: number;
@@ -385,16 +394,53 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 <Typography variant="body2">{empresaData.industria_nombre}</Typography>
               </div>
             )}
+          </div>
+        </Card>
+
+        {/* Clasificación */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BuildingIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Clasificación</Typography>
+          </div>
+          <div className="space-y-3">
             {empresaData.tamano_nombre && (
               <div>
                 <Typography variant="caption" color="secondary">Tamaño</Typography>
-                <Typography variant="body2">{empresaData.tamano_nombre}</Typography>
+                <Chip variant="default">
+                  {empresaData.tamano_nombre}
+                </Chip>
               </div>
             )}
             {empresaData.relacion_nombre && (
               <div>
                 <Typography variant="caption" color="secondary">Relación</Typography>
-                <Typography variant="body2">{empresaData.relacion_nombre}</Typography>
+                <Chip variant={getRelacionColor(empresaData.relacion_nombre)}>
+                  {empresaData.relacion_nombre}
+                </Chip>
+              </div>
+            )}
+            {empresaData.productos_ids && empresaData.productos_ids.length > 0 && (
+              <div>
+                <Typography variant="caption" color="secondary">Productos</Typography>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {empresaData.productos_ids.map((productoId: string) => {
+                    const producto = filterOptions.productos.find(p => p.value === productoId);
+                    return producto ? (
+                      <Chip key={productoId} variant="outline" size="sm">
+                        {producto.label}
+                      </Chip>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+            {empresaData.producto_id && !empresaData.productos_ids && (
+              <div>
+                <Typography variant="caption" color="secondary">Producto</Typography>
+                <Chip variant="outline">
+                  {empresaData.producto_nombre || 'Producto asignado'}
+                </Chip>
               </div>
             )}
           </div>
