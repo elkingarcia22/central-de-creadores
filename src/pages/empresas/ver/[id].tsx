@@ -16,6 +16,7 @@ import Badge from '../../../components/ui/Badge';
 import Chip from '../../../components/ui/Chip';
 import MetricCard from '../../../components/ui/MetricCard';
 import Tabs from '../../../components/ui/Tabs';
+import EmpresaSideModal from '../../../components/empresas/EmpresaSideModal';
 import { 
   BuildingIcon, 
   UserIcon, 
@@ -107,6 +108,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [empresaData, setEmpresaData] = useState<EmpresaDetallada>(empresa);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (empresa.id) {
@@ -179,6 +182,34 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
   const abrirInvestigacion = (investigacionId: string) => {
     window.open(`/investigaciones/ver/${investigacionId}`, '_blank');
+  };
+
+  const handleSaveEmpresa = async (empresaData: any) => {
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/empresas?id=${empresaData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(empresaData),
+      });
+
+      if (response.ok) {
+        const updatedEmpresa = await response.json();
+        setEmpresaData(prev => ({ ...prev, ...updatedEmpresa }));
+        setShowEditModal(false);
+        showSuccess('Empresa actualizada', 'Los cambios se han guardado correctamente');
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al actualizar la empresa');
+      }
+    } catch (error) {
+      console.error('Error actualizando empresa:', error);
+      showError('Error al actualizar la empresa');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const [activeTab, setActiveTab] = useState('informacion');
@@ -587,7 +618,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.push(`/empresas/editar/${empresaData.id}`)}
+                onClick={() => setShowEditModal(true)}
                 className="flex items-center space-x-2"
               >
                 <EditIcon className="w-4 h-4" />
@@ -634,6 +665,24 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
         </div>
       </div>
+
+      {/* Modal de edición */}
+      <EmpresaSideModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleSaveEmpresa}
+        empresa={empresaData}
+        usuarios={[]} // TODO: Cargar usuarios si es necesario
+        filterOptions={{
+          estados: [],
+          tamanos: [],
+          paises: [],
+          kams: [],
+          relaciones: [],
+          productos: []
+        }}
+        loading={saving}
+      />
     </Layout>
   );
 }
