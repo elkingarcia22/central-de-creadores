@@ -28,7 +28,7 @@ import InlineUserSelect from '../components/ui/InlineUserSelect';
 import EditableChip from '../components/ui/EditableChip';
 import EmpresaSideModal from '../components/empresas/EmpresaSideModal';
 import EmpresaViewModal from '../components/empresas/EmpresaViewModal';
-import EmpresaStatsPanel from '../components/empresas/EmpresaStatsPanel';
+
 import { 
   SearchIcon, 
   PlusIcon, 
@@ -98,7 +98,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [showStatsPanel, setShowStatsPanel] = useState(false);
+
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [empresaToDelete, setEmpresaToDelete] = useState<Empresa | null>(null);
 
@@ -701,15 +701,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
-          {
-            label: 'Estadísticas',
-            icon: <BarChartIcon className="w-4 h-4" />,
-            onClick: () => {
-              setSelectedEmpresa(row);
-              setShowStatsPanel(true);
-            },
-            className: 'text-popover-foreground hover:text-popover-foreground/80'
-          },
+
           {
             label: 'Editar',
             icon: <EditIcon className="w-4 h-4" />,
@@ -973,15 +965,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         empresa={selectedEmpresa}
       />
 
-      {/* Panel de estadísticas de empresa */}
-      <EmpresaStatsPanel
-        isOpen={showStatsPanel}
-        onClose={() => {
-          setShowStatsPanel(false);
-          setSelectedEmpresa(null);
-        }}
-        empresa={selectedEmpresa}
-      />
+
 
       {/* Modal de confirmación para eliminación masiva */}
       <ConfirmModal
