@@ -8,6 +8,7 @@ import Chip from './Chip';
 import MultiSelect from './MultiSelect';
 import Slider from './Slider';
 import Input from './Input';
+import UserSelect from './UserSelect';
 import { CloseIcon, FilterIcon, TrashIcon } from '../icons';
 
 // Interface específica para filtros de investigaciones
@@ -105,6 +106,7 @@ export interface FilterOptions {
   modalidades?: Array<{ value: string; label: string }>;
   relaciones?: Array<{ value: string; label: string }>;
   productos?: Array<{ value: string; label: string }>;
+  usuarios?: Array<{ id: string; full_name?: string; nombre?: string; email?: string; correo?: string; avatar_url?: string }>;
 }
 
 // Interface específica para filtros de participantes
@@ -910,14 +912,11 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <Typography variant="subtitle2" weight="medium" className="mb-2">
                     KAM
                   </Typography>
-                  <Select
-                    placeholder="Seleccionar KAM..."
-                    options={[
-                      { value: 'todos', label: 'Todos' },
-                      ...(options.kams || [])
-                    ]}
+                  <UserSelect
                     value={(filters as FilterValuesEmpresa).kam_id || 'todos'}
                     onChange={(value) => handleFilterChange('kam_id', value)}
+                    users={options.usuarios || []}
+                    placeholder="Seleccionar KAM..."
                     fullWidth
                   />
                 </div>
