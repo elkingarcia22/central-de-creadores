@@ -741,14 +741,14 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   // Métricas
   const metricas = useMemo(() => {
     const total = empresas.length;
-    const activas = empresas.filter(emp => emp.activo).length;
-    const inactivas = total - activas;
+    const empresasAlcanzadas = empresas.filter(emp => (emp.participaciones || 0) >= 1).length;
+    const retencionEmpresas = empresas.filter(emp => (emp.participaciones || 0) >= 2).length;
     const promedioPorKAM = total > 0 ? Math.round(total / Math.max(1, new Set(empresas.map(emp => emp.kam_id)).size)) : 0;
 
     return {
       total,
-      activas,
-      inactivas,
+      empresasAlcanzadas,
+      retencionEmpresas,
       promedioPorKAM
     };
   }, [empresas]);
@@ -803,10 +803,10 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <Typography variant="h4" className="text-foreground">
-                    {metricas.activas}
+                    {metricas.empresasAlcanzadas}
                   </Typography>
                   <Typography variant="body1" className="text-muted-foreground">
-                    Empresas Activas
+                    Empresas Alcanzadas
                   </Typography>
                 </div>
                 <div className="p-3 rounded-lg bg-success/10">
@@ -819,14 +819,14 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <Typography variant="h4" className="text-foreground">
-                    {metricas.inactivas}
+                    {metricas.retencionEmpresas}
                   </Typography>
                   <Typography variant="body1" className="text-muted-foreground">
-                    Empresas Inactivas
+                    Retención de Empresas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-warning/10">
-                  <AlertTriangleIcon className="w-6 h-6 text-warning" />
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <BarChartIcon className="w-6 h-6 text-primary" />
                 </div>
               </div>
             </Card>
