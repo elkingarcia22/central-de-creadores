@@ -694,7 +694,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             onClick: () => {
               setSelectedEmpresa(row);
               setShowViewModal(true);
-            }
+            },
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Editar',
@@ -702,14 +703,16 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             onClick: () => {
               setSelectedEmpresa(row);
               setShowEditModal(true);
-            }
+            },
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
           {
             label: 'Eliminar',
             icon: <TrashIcon className="w-4 h-4" />,
             onClick: () => {
               setEmpresaToDelete(row);
-            }
+            },
+            className: 'text-destructive hover:text-destructive/80'
           }
         ];
 
