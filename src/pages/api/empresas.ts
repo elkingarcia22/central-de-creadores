@@ -340,23 +340,30 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: 'ID de empresa es requerido' });
     }
 
-    // Validar datos requeridos
-    if (!empresaData.nombre) {
-      return res.status(400).json({ error: 'El nombre de la empresa es requerido' });
+    // Obtener empresa actual para validación y datos existentes
+    const { data: empresaActual, error: errorEmpresa } = await supabase
+      .from('empresas')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (errorEmpresa) {
+      console.error('Error obteniendo empresa actual:', errorEmpresa);
+      return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
-    // Preparar datos para actualización
+    // Preparar datos para actualización (permitir ediciones parciales)
     const datosActualizados = {
-      nombre: empresaData.nombre,
-      descripcion: empresaData.descripcion || null,
-      pais: empresaData.pais_id || null,
-      industria: empresaData.industria_id || null,
-      kam_id: empresaData.kam_id || null,
-      producto_id: empresaData.producto_id || null,
-      estado: empresaData.estado_id || null,
-      relacion: empresaData.relacion_id || null,
-      tamaño: empresaData.tamano_id || null,
-      modalidad: empresaData.modalidad_id || null
+      nombre: empresaData.nombre !== undefined ? empresaData.nombre : empresaActual.nombre,
+      descripcion: empresaData.descripcion !== undefined ? empresaData.descripcion : empresaActual.descripcion,
+      pais: empresaData.pais_id !== undefined ? empresaData.pais_id : empresaActual.pais,
+      industria: empresaData.industria_id !== undefined ? empresaData.industria_id : empresaActual.industria,
+      kam_id: empresaData.kam_id !== undefined ? empresaData.kam_id : empresaActual.kam_id,
+      producto_id: empresaData.producto_id !== undefined ? empresaData.producto_id : empresaActual.producto_id,
+      estado: empresaData.estado_id !== undefined ? empresaData.estado_id : empresaActual.estado,
+      relacion: empresaData.relacion_id !== undefined ? empresaData.relacion_id : empresaActual.relacion,
+      tamaño: empresaData.tamano_id !== undefined ? empresaData.tamano_id : empresaActual.tamaño,
+      modalidad: empresaData.modalidad_id !== undefined ? empresaData.modalidad_id : empresaActual.modalidad
     };
 
     const { data, error } = await supabase
