@@ -342,7 +342,7 @@ export default function CrearParticipanteExternoModal({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Nombre *"
+            label="Nombre"
             value={formData.nombre}
             onChange={(e) => setFormData(prev => ({
               ...prev,
@@ -367,7 +367,7 @@ export default function CrearParticipanteExternoModal({
 
         <div className="w-full">
           <Select
-            label="Rol en la Empresa *"
+            label="Rol en la Empresa"
             value={formData.rolEmpresaId}
             onChange={(value) => setFormData(prev => ({
               ...prev,
@@ -379,6 +379,7 @@ export default function CrearParticipanteExternoModal({
               label: r.nombre
             }))}
             disabled={loading}
+            required
             fullWidth
           />
         </div>

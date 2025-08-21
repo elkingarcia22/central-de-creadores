@@ -160,7 +160,7 @@ export default function CrearParticipanteFriendFamilyModal({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Nombre *"
+            label="Nombre"
             value={formData.nombre}
             onChange={(e) => setFormData(prev => ({
               ...prev,
@@ -171,7 +171,7 @@ export default function CrearParticipanteFriendFamilyModal({
             required
           />
           <Input
-            label="Email *"
+            label="Email"
             type="email"
             value={formData.email}
             onChange={(e) => setFormData(prev => ({
