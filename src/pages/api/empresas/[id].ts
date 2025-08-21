@@ -22,6 +22,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('id', id)
       .single();
 
+    console.log('🏢 Empresa obtenida:', empresa);
+    console.log('🏢 Campos de empresa:', {
+      tamano: empresa?.tamaño,
+      relacion: empresa?.relacion,
+      industria: empresa?.industria,
+      modalidad: empresa?.modalidad
+    });
+
     if (errorEmpresa || !empresa) {
       console.error('❌ Error obteniendo empresa:', errorEmpresa);
       return res.status(404).json({ error: 'Empresa no encontrada' });
@@ -65,21 +73,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa['tamaño']) {
+      console.log('📏 Buscando tamaño con ID:', empresa['tamaño']);
       const { data: tamano } = await supabaseServer
         .from('tamanos')
         .select('id, nombre')
         .eq('id', empresa['tamaño'])
         .single();
       tamanoData = tamano;
+      console.log('📏 Tamaño encontrado:', tamanoData);
     }
 
     if (empresa.relacion) {
+      console.log('🤝 Buscando relación con ID:', empresa.relacion);
       const { data: relacion } = await supabaseServer
         .from('relaciones')
         .select('id, nombre')
         .eq('id', empresa.relacion)
         .single();
       relacionData = relacion;
+      console.log('🤝 Relación encontrada:', relacionData);
     }
 
     if (empresa.modalidad) {
@@ -92,12 +104,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.industria) {
+      console.log('🏭 Buscando industria con ID:', empresa.industria);
       const { data: industria } = await supabaseServer
         .from('industrias')
         .select('id, nombre')
         .eq('id', empresa.industria)
         .single();
       industriaData = industria;
+      console.log('🏭 Industria encontrada:', industriaData);
     }
 
     if (empresa.producto_id) {
