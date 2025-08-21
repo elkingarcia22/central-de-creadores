@@ -600,10 +600,10 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         }
         return (
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" size="sm">
+            <span className="text-sm font-medium text-foreground">
               {row.participaciones || 0}
-            </Badge>
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            </span>
+            <span className="text-sm text-muted-foreground">
               sesiones
             </span>
           </div>
@@ -639,12 +639,16 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         if (!row) {
           return <div className="text-gray-400">Sin datos</div>;
         }
+        
+        const relacion = filterOptions.relaciones.find(r => r.value === row.relacion_id);
+        if (!relacion) {
+          return <div className="text-gray-400">Sin relación</div>;
+        }
+        
         return (
-          <InlineSelect
-            value={row.relacion_id}
-            options={filterOptions.relaciones}
-            onSave={(newValue) => handleInlineUpdate(row.id, 'relacion_id', newValue)}
-          />
+          <Chip variant="default" outlined size="sm">
+            {relacion.label}
+          </Chip>
         );
       }
     },
