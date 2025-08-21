@@ -24,6 +24,8 @@ interface EmpresaSideModalProps {
     tamanos: { value: string; label: string }[];
     relaciones: { value: string; label: string }[];
     productos: { value: string; label: string }[];
+    industrias: { value: string; label: string }[];
+    modalidades: { value: string; label: string }[];
   };
   loading?: boolean;
 }
@@ -45,6 +47,8 @@ export default function EmpresaSideModal({
     estado_id: '',
     tamano_id: '',
     relacion_id: '',
+    industria_id: '',
+    modalidad_id: '',
     producto_id: '',
     productos_ids: [],
     activo: true
@@ -79,6 +83,8 @@ export default function EmpresaSideModal({
         estado_id: empresa.estado_id || '',
         tamano_id: empresa.tamano_id || '',
         relacion_id: empresa.relacion_id || '',
+        industria_id: empresa.industria_id || '',
+        modalidad_id: empresa.modalidad_id || '',
         producto_id: empresa.producto_id || '',
         productos_ids: productos_ids,
         activo: empresa.activo
@@ -94,6 +100,8 @@ export default function EmpresaSideModal({
         estado_id: '',
         tamano_id: '',
         relacion_id: '',
+        industria_id: '',
+        modalidad_id: '',
         producto_id: '',
         productos_ids: [],
         activo: true
@@ -286,6 +294,34 @@ export default function EmpresaSideModal({
                 placeholder="Selecciona productos del catálogo"
                 fullWidth
                 maxDisplayed={3}
+              />
+            </div>
+
+            <div>
+              <Select
+                label="Industria"
+                value={formData.industria_id || ''}
+                onChange={(value) => handleInputChange('industria_id', value)}
+                options={[
+                  { value: '', label: 'Seleccionar industria' },
+                  ...filterOptions.industrias
+                ]}
+                placeholder="Selecciona una industria"
+                fullWidth
+              />
+            </div>
+
+            <div>
+              <Select
+                label="Modalidad"
+                value={formData.modalidad_id || ''}
+                onChange={(value) => handleInputChange('modalidad_id', value)}
+                options={[
+                  { value: '', label: 'Seleccionar modalidad' },
+                  ...filterOptions.modalidades
+                ]}
+                placeholder="Selecciona una modalidad"
+                fullWidth
               />
             </div>
           </div>
