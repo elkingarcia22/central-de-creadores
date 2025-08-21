@@ -154,7 +154,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_reclutamiento_nombre: inv.estado_reclutamiento_nombre,
         estado_reclutamiento_color: inv.estado_reclutamiento_color,
         fecha_sesion: inv.fecha_sesion,
-        participantes_reclutados: inv.participantes_actuales,
+        participantes_reclutados: inv.participantes_reclutados,
         progreso_reclutamiento: inv.progreso_reclutamiento,
         porcentaje_completitud: inv.progreso_porcentaje,
         riesgo_reclutamiento: riesgo_reclutamiento,
