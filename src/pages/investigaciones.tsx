@@ -892,7 +892,10 @@ export default function InvestigacionesPage() {
         }
         return (
           <div className="space-y-1">
-            <div className="font-medium text-gray-900 dark:text-gray-100">
+            <div 
+              className="font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary transition-colors"
+              onClick={() => router.push(`/investigaciones/ver/${row.id}`)}
+            >
               {row.nombre || 'Sin nombre'}
             </div>
             <div className="text-sm text-gray-500">
@@ -1320,9 +1323,21 @@ export default function InvestigacionesPage() {
           estados: estadosInvestigacion,
           tipos: tiposInvestigacion,
           periodos: periodos.map(p => ({ value: p.id, label: p.nombre })),
-          responsables: usuarios.map(u => ({ value: u.id, label: u.name || u.email || 'Usuario sin nombre' })),
-          implementadores: usuarios.map(u => ({ value: u.id, label: u.name || u.email || 'Usuario sin nombre' })),
-          creadores: usuarios.map(u => ({ value: u.id, label: u.name || u.email || 'Usuario sin nombre' })),
+          responsables: usuarios.map(u => ({ 
+            value: u.id, 
+            label: u.name || u.email || 'Usuario sin nombre',
+            avatar_url: u.avatar_url 
+          })),
+          implementadores: usuarios.map(u => ({ 
+            value: u.id, 
+            label: u.name || u.email || 'Usuario sin nombre',
+            avatar_url: u.avatar_url 
+          })),
+          creadores: usuarios.map(u => ({ 
+            value: u.id, 
+            label: u.name || u.email || 'Usuario sin nombre',
+            avatar_url: u.avatar_url 
+          })),
           nivelRiesgo: opcionesNivelRiesgo,
           seguimiento: [
             { value: 'todos', label: 'Todos' },

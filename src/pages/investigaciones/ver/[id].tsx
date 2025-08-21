@@ -539,17 +539,7 @@ const VerInvestigacion: NextPage = () => {
       {/* Información básica */}
       <Card className="p-6">
         <div className="mb-4">
-          <Typography variant="h3" className="mb-2">{investigacion?.nombre}</Typography>
-          <div className="flex items-center gap-3">
-            <Chip variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
-              {formatearEstado(investigacion?.estado || '')}
-            </Chip>
-            {investigacion?.tipo_investigacion_nombre && (
-              <Chip variant="secondary">
-                {investigacion.tipo_investigacion_nombre}
-              </Chip>
-            )}
-          </div>
+          <Typography variant="h3" className="mb-2">Descripción</Typography>
         </div>
         
         {investigacion?.descripcion && (
@@ -1150,11 +1140,18 @@ const VerInvestigacion: NextPage = () => {
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </Button>
-            <div>
-              <Typography variant="h2">Ver Investigación</Typography>
-              <Typography variant="body2" color="secondary">
-                Detalles completos de la investigación
-              </Typography>
+            <div className="flex items-center gap-4">
+              <Typography variant="h2">{investigacion?.nombre}</Typography>
+              <div className="flex items-center gap-3">
+                <Chip variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
+                  {formatearEstado(investigacion?.estado || '')}
+                </Chip>
+                {investigacion?.tipo_investigacion_nombre && (
+                  <Chip variant="secondary">
+                    {investigacion.tipo_investigacion_nombre}
+                  </Chip>
+                )}
+              </div>
             </div>
           </div>
 

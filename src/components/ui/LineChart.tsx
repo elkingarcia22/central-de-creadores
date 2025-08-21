@@ -269,12 +269,14 @@ const LineChart: React.FC<LineChartProps> = ({
                 stroke="#E5E7EB"
                 strokeWidth="1"
                 rx="4"
+                className="drop-shadow-lg"
               />
               <text
                 x={tooltip.x + 15}
                 y={tooltip.y - 15}
                 fontSize="12"
                 fill="#374151"
+                className="font-medium"
               >
                 {tooltip.data.label || tooltip.data.x}
               </text>

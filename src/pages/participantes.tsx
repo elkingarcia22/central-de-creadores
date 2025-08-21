@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -126,6 +126,32 @@ export default function ParticipantesPage() {
     total_participaciones_max: '',
     tiene_email: 'todos'
   });
+
+  // Estados para selección múltiple
+  const [selectedParticipantes, setSelectedParticipantes] = useState<string[]>([]);
+  const [clearTableSelection, setClearTableSelection] = useState(false);
+
+  // Callback para manejar cambios de selección
+  const handleSelectionChange = useCallback((selectedIds: string[]) => {
+    setSelectedParticipantes(selectedIds);
+  }, []);
+
+  // Acciones masivas
+  const bulkActions = [
+    {
+      label: 'Eliminar Seleccionados',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (selectedIds: string[]) => {
+        if (selectedIds.length === 0) {
+          return;
+        }
+        // Implementar eliminación masiva
+        console.log('Eliminando participantes:', selectedIds);
+      },
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+    }
+  ];
+
   const [filters, setFilters] = useState<FilterValuesParticipantes>({
     busqueda: '',
     tipo: 'todos',
@@ -196,6 +222,27 @@ export default function ParticipantesPage() {
           ...dataEstados.map((estado: any) => ({ value: estado.nombre, label: estado.nombre }))
         ]);
       }
+
+  // Callback para manejar cambios de selección
+  const handleSelectionChange = useCallback((selectedIds: string[]) => {
+    setSelectedParticipantes(selectedIds);
+  }, []);
+
+  // Acciones masivas
+  const bulkActions = [
+    {
+      label: 'Eliminar Seleccionados',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (selectedIds: string[]) => {
+        if (selectedIds.length === 0) {
+          return;
+        }
+        // Implementar eliminación masiva
+        console.log('Eliminando participantes:', selectedIds);
+      },
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
+    }
+  ];
 
       // Cargar roles de empresa
       const responseRoles = await fetch('/api/roles-empresa');
@@ -543,7 +590,10 @@ export default function ParticipantesPage() {
         }
         return (
           <div className="space-y-1">
-            <div className="font-medium text-gray-900 dark:text-gray-100">
+            <div 
+              className="font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary transition-colors"
+              onClick={() => router.push(`/participantes/${row.id}`)}
+            >
               {row.nombre || 'Sin nombre'}
             </div>
             {row.email && (
@@ -722,7 +772,10 @@ export default function ParticipantesPage() {
         }
         return (
           <div className="space-y-1">
-            <div className="font-medium text-gray-900 dark:text-gray-100">
+            <div 
+              className="font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary transition-colors"
+              onClick={() => router.push(`/participantes/${row.id}`)}
+            >
               {row.nombre || 'Sin nombre'}
             </div>
             {row.email && (
@@ -805,26 +858,7 @@ export default function ParticipantesPage() {
         );
       }
     },
-    {
-      key: 'created_at',
-      label: 'Fecha Registro',
-      sortable: true,
-      width: 'w-40',
-      render: (value: any, row: any) => {
-        if (!row || !row.created_at) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            {new Date(row.created_at).toLocaleDateString('es-ES', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })}
-          </div>
-        );
-      }
-    },
+
     {
       key: 'actions',
       label: 'Acciones',
@@ -885,7 +919,10 @@ export default function ParticipantesPage() {
         }
         return (
           <div className="space-y-1">
-            <div className="font-medium text-gray-900 dark:text-gray-100">
+            <div 
+              className="font-medium text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary transition-colors"
+              onClick={() => router.push(`/participantes/${row.id}`)}
+            >
               {row.nombre || 'Sin nombre'}
             </div>
             {row.email && (
@@ -960,26 +997,6 @@ export default function ParticipantesPage() {
         return (
           <div className="text-sm text-gray-700 dark:text-gray-300">
             {new Date(row.fecha_ultima_participacion).toLocaleDateString('es-ES', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })}
-          </div>
-        );
-      }
-    },
-    {
-      key: 'created_at',
-      label: 'Fecha Registro',
-      sortable: true,
-      width: 'w-40',
-      render: (value: any, row: any) => {
-        if (!row || !row.created_at) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            {new Date(row.created_at).toLocaleDateString('es-ES', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric'
@@ -1244,11 +1261,13 @@ export default function ParticipantesPage() {
                       loading={loading}
                       searchable={false}
                       filterable={false}
-                      selectable={false}
+                      selectable={true}
+                      onSelectionChange={handleSelectionChange}
                       onRowClick={handleVerParticipante}
                       emptyMessage="No se encontraron participantes externos"
                       loadingMessage="Cargando participantes externos..."
                       rowKey="id"
+                      bulkActions={bulkActions}
                     />
                   </div>
                 )
@@ -1298,11 +1317,13 @@ export default function ParticipantesPage() {
                       loading={loading}
                       searchable={false}
                       filterable={false}
-                      selectable={false}
+                      selectable={true}
+                      onSelectionChange={handleSelectionChange}
                       onRowClick={handleVerParticipante}
                       emptyMessage="No se encontraron participantes internos"
                       loadingMessage="Cargando participantes internos..."
                       rowKey="id"
+                      bulkActions={bulkActions}
                     />
                   </div>
                 )
@@ -1352,11 +1373,13 @@ export default function ParticipantesPage() {
                       loading={loading}
                       searchable={false}
                       filterable={false}
-                      selectable={false}
+                      selectable={true}
+                      onSelectionChange={handleSelectionChange}
                       onRowClick={handleVerParticipante}
                       emptyMessage="No se encontraron participantes friend & family"
                       loadingMessage="Cargando participantes friend & family..."
                       rowKey="id"
+                      bulkActions={bulkActions}
                     />
                   </div>
                 )

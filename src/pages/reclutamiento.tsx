@@ -530,7 +530,10 @@ export default function ReclutamientoPage() {
         (a.investigacion_nombre || '').localeCompare(b.investigacion_nombre || ''),
       render: (value: any, row: InvestigacionReclutamiento) => (
         <div className="space-y-2">
-          <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+          <div 
+            className="font-semibold text-gray-900 dark:text-gray-100 text-sm cursor-pointer hover:text-primary transition-colors"
+            onClick={() => router.push(`/investigaciones/ver/${row.investigacion_id}`)}
+          >
             {row.investigacion_nombre || 'Sin nombre'}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">

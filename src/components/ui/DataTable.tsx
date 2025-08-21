@@ -362,7 +362,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   return (
                     <tr 
                       key={rowId} 
-                      className={`group hover:bg-muted/50 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                      className={`group hover:bg-muted/50 transition-all duration-200 ease-in-out hover:scale-[1.01] ${onRowClick ? 'cursor-pointer' : ''}`}
                       onClick={(e) => {
                         // Solo ejecutar onRowClick si no se hizo clic en un elemento editable
                         if (onRowClick) {

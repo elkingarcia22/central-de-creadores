@@ -20,7 +20,7 @@ const Card: React.FC<CardProps> = ({
   padding = 'md',
   onClick
 }) => {
-  const baseClasses = 'rounded-lg transition-colors';
+  const baseClasses = 'rounded-lg transition-all duration-200 ease-in-out';
   
   const variantClasses = {
     default: 'bg-card text-card-foreground border border-slate-200 dark:border-slate-700',
@@ -35,7 +35,7 @@ const Card: React.FC<CardProps> = ({
     lg: 'p-6'
   };
   
-  const clickableClass = onClick ? 'cursor-pointer hover:bg-accent/50' : '';
+  const clickableClass = onClick ? 'cursor-pointer hover:bg-accent/50 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]' : '';
   
   return (
     <div

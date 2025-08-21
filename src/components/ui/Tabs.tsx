@@ -54,9 +54,9 @@ export const Tabs: React.FC<TabsProps> = ({
   const variantClasses = {
     default: {
       container: 'border-b border-border',
-      tab: `transition-all duration-200 font-medium ${sizeClasses[size]}`,
-      active: 'text-primary border-b-2 border-primary',
-      inactive: 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border',
+      tab: `transition-all duration-200 font-medium ${sizeClasses[size]} relative`,
+      active: 'text-primary border-b-2 border-primary bg-primary/5',
+      inactive: 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border hover:bg-muted/50',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },
     pills: {
@@ -93,6 +93,8 @@ export const Tabs: React.FC<TabsProps> = ({
                   tab.disabled ? currentVariant.disabled : currentVariant.inactive}
                 ${fullWidth ? 'flex-1' : ''}
                 flex items-center justify-center gap-2
+                focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2
+                rounded-t-lg
               `}
             >
               {tab.icon && (

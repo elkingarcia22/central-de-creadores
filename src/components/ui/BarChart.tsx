@@ -304,6 +304,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 stroke="#E5E7EB"
                 strokeWidth="1"
                 rx="4"
+                className="drop-shadow-lg"
               />
               <text
                 x={tooltip.x + 15}
@@ -311,6 +312,7 @@ const BarChart: React.FC<BarChartProps> = ({
                 fontSize="12"
                 fill="#374151"
                 fontWeight="500"
+                className="font-medium"
               >
                 {tooltip.data.label}
               </text>
