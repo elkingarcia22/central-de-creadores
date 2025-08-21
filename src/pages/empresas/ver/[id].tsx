@@ -847,6 +847,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     console.log('🏢 SSR - Empresa obtenida:', empresa);
+    console.log('🏢 SSR - Todos los campos de empresa:', Object.keys(empresa));
+    console.log('🏢 SSR - Campos específicos:', {
+      tamano: empresa?.tamaño,
+      relacion: empresa?.relacion,
+      industria: empresa?.industria,
+      modalidad: empresa?.modalidad,
+      tamano_id: empresa?.tamano_id,
+      relacion_id: empresa?.relacion_id,
+      industria_id: empresa?.industria_id,
+      modalidad_id: empresa?.modalidad_id
+    });
 
     // Obtener datos relacionados por separado
     let kamData = null;
