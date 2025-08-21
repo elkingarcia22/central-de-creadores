@@ -923,7 +923,7 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
-  // Componente para el contenido del tab de Reclutamiento - SOLO INFORMACIÓN DE RECLUTAMIENTO
+  // Componente para el contenido del tab de Reclutamiento - SOLO INFORMACIÓN DEL AGENDAMIENTO
   const ReclutamientoTabContent = memo(() => (
     <div className="space-y-6">
       {/* Información del agendamiento */}
@@ -1025,89 +1025,6 @@ const VerReclutamiento: NextPage = () => {
               <Typography variant="caption" color="secondary">Fecha de Creación</Typography>
               <Typography variant="body2">
                 {formatearFecha(selectedParticipante.fecha_creacion)}
-              </Typography>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Información de la investigación */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <ReclutamientoIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información de la Investigación</Typography>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedParticipante.investigacion_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Nombre de la Investigación</Typography>
-              <Typography variant="body2" className="font-medium">
-                {selectedParticipante.investigacion_nombre}
-              </Typography>
-            </div>
-          )}
-
-          {selectedParticipante.investigacion_id && (
-            <div>
-              <Typography variant="caption" color="secondary">ID de la Investigación</Typography>
-              <Typography variant="body2" className="font-mono text-xs">
-                {selectedParticipante.investigacion_id}
-              </Typography>
-            </div>
-          )}
-
-          {selectedParticipante.producto_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Producto</Typography>
-              <Typography variant="body2">
-                {selectedParticipante.producto_nombre}
-              </Typography>
-            </div>
-          )}
-
-          {selectedParticipante.periodo_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Período</Typography>
-              <Typography variant="body2">
-                {selectedParticipante.periodo_nombre}
-              </Typography>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Información del reclutamiento */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <ClipboardListIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información del Reclutamiento</Typography>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedParticipante.reclutamiento_id && (
-            <div>
-              <Typography variant="caption" color="secondary">ID del Reclutamiento</Typography>
-              <Typography variant="body2" className="font-mono text-xs">
-                {selectedParticipante.reclutamiento_id}
-              </Typography>
-            </div>
-          )}
-
-          {selectedParticipante.dolores_necesidades && (
-            <div className="md:col-span-2">
-              <Typography variant="caption" color="secondary">Dolores y Necesidades</Typography>
-              <Typography variant="body2" className="mt-1">
-                {selectedParticipante.dolores_necesidades}
-              </Typography>
-            </div>
-          )}
-
-          {selectedParticipante.comentarios && (
-            <div className="md:col-span-2">
-              <Typography variant="caption" color="secondary">Comentarios</Typography>
-              <Typography variant="body2" className="mt-1">
-                {selectedParticipante.comentarios}
               </Typography>
             </div>
           )}
