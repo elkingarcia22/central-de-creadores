@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../api/supabase';
+import { supabaseServer } from '../../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(`🔍 Obteniendo empresa: ${id}`);
 
     // Obtener información básica de la empresa
-    const { data: empresa, error: errorEmpresa } = await supabase
+    const { data: empresa, error: errorEmpresa } = await supabaseServer
       .from('empresas')
       .select('*')
       .eq('id', id)
@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let productoData = null;
 
     if (empresa.kam_id) {
-      const { data: kam } = await supabase
+      const { data: kam } = await supabaseServer
         .from('usuarios')
         .select('id, nombre, correo')
         .eq('id', empresa.kam_id)
@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.pais) {
-      const { data: pais } = await supabase
+      const { data: pais } = await supabaseServer
         .from('paises')
         .select('id, nombre')
         .eq('id', empresa.pais)
@@ -56,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.estado) {
-      const { data: estado } = await supabase
+      const { data: estado } = await supabaseServer
         .from('estados')
         .select('id, nombre')
         .eq('id', empresa.estado)
@@ -65,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa['tamaño']) {
-      const { data: tamano } = await supabase
+      const { data: tamano } = await supabaseServer
         .from('tamanos')
         .select('id, nombre')
         .eq('id', empresa['tamaño'])
@@ -74,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.relacion) {
-      const { data: relacion } = await supabase
+      const { data: relacion } = await supabaseServer
         .from('relaciones')
         .select('id, nombre')
         .eq('id', empresa.relacion)
@@ -83,7 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.modalidad) {
-      const { data: modalidad } = await supabase
+      const { data: modalidad } = await supabaseServer
         .from('modalidades')
         .select('id, nombre')
         .eq('id', empresa.modalidad)
@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.industria) {
-      const { data: industria } = await supabase
+      const { data: industria } = await supabaseServer
         .from('industrias')
         .select('id, nombre')
         .eq('id', empresa.industria)
@@ -101,7 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.producto_id) {
-      const { data: producto } = await supabase
+      const { data: producto } = await supabaseServer
         .from('productos')
         .select('id, nombre')
         .eq('id', empresa.producto_id)
@@ -112,14 +112,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Obtener productos relacionados desde la tabla de relación
     let productosRelacionados = [];
     if (empresa.id) {
-      const { data: productosEmpresa } = await supabase
+      const { data: productosEmpresa } = await supabaseServer
         .from('empresa_productos')
         .select('producto_id')
         .eq('empresa_id', empresa.id);
       
       if (productosEmpresa && productosEmpresa.length > 0) {
         const productoIds = productosEmpresa.map(p => p.producto_id);
-        const { data: productos } = await supabase
+        const { data: productos } = await supabaseServer
           .from('productos')
           .select('id, nombre')
           .in('id', productoIds);
