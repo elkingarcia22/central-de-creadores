@@ -519,7 +519,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       key: 'kam',
       label: 'KAM',
       sortable: false,
-      width: 'w-64',
+      width: 'min-w-[280px]',
       render: (value: any, row: any) => {
         if (!row) {
           return <div className="text-gray-400">Sin datos</div>;
