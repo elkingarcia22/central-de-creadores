@@ -4,6 +4,7 @@ import Typography from '../ui/Typography';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
+import Textarea from '../ui/Textarea';
 import { SaveIcon, XIcon } from '../icons';
 
 interface Empresa {
@@ -152,14 +153,37 @@ export default function EmpresaSideModal({
 
   const isEditing = !!empresa;
 
+  const footer = (
+    <div className="flex justify-end space-x-3">
+      <Button
+        variant="secondary"
+        onClick={onClose}
+        disabled={loading}
+      >
+        <XIcon className="w-4 h-4 mr-2" />
+        Cancelar
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleSave}
+        loading={loading}
+        disabled={loading}
+      >
+        <SaveIcon className="w-4 h-4 mr-2" />
+        {isEditing ? 'Actualizar' : 'Crear'}
+      </Button>
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
       title={isEditing ? 'Editar Empresa' : 'Crear Empresa'}
       size="lg"
+      footer={footer}
     >
-      <div className="space-y-6">
+      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
         {/* Información básica */}
         <div className="space-y-4">
           <Typography variant="h4" weight="semibold">
@@ -167,27 +191,25 @@ export default function EmpresaSideModal({
           </Typography>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Nombre de la Empresa *
-            </label>
             <Input
+              label="Nombre de la Empresa"
               value={formData.nombre || ''}
               onChange={(e) => handleInputChange('nombre', e.target.value)}
               placeholder="Ingresa el nombre de la empresa"
               error={errors.nombre}
+              required
+              fullWidth
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Descripción
-            </label>
-            <textarea
+            <Textarea
+              label="Descripción"
               value={formData.descripcion || ''}
               onChange={(e) => handleInputChange('descripcion', e.target.value)}
               placeholder="Describe la empresa"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               rows={3}
+              fullWidth
             />
           </div>
         </div>
@@ -199,10 +221,8 @@ export default function EmpresaSideModal({
           </Typography>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              KAM Asignado
-            </label>
             <Select
+              label="KAM Asignado"
               value={formData.kam_id || ''}
               onChange={(value) => handleInputChange('kam_id', value)}
               options={[
@@ -213,6 +233,7 @@ export default function EmpresaSideModal({
                 })) : [])
               ]}
               placeholder="Selecciona un KAM"
+              fullWidth
             />
           </div>
         </div>
@@ -225,10 +246,8 @@ export default function EmpresaSideModal({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                País *
-              </label>
               <Select
+                label="País"
                 value={formData.pais_id || ''}
                 onChange={(value) => handleInputChange('pais_id', value)}
                 options={[
@@ -237,14 +256,14 @@ export default function EmpresaSideModal({
                 ]}
                 placeholder="Selecciona un país"
                 error={errors.pais_id}
+                required
+                fullWidth
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Industria *
-              </label>
               <Select
+                label="Industria"
                 value={formData.industria_id || ''}
                 onChange={(value) => handleInputChange('industria_id', value)}
                 options={[
@@ -253,14 +272,14 @@ export default function EmpresaSideModal({
                 ]}
                 placeholder="Selecciona una industria"
                 error={errors.industria_id}
+                required
+                fullWidth
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Tamaño
-              </label>
               <Select
+                label="Tamaño"
                 value={formData.tamano_id || ''}
                 onChange={(value) => handleInputChange('tamano_id', value)}
                 options={[
@@ -268,14 +287,13 @@ export default function EmpresaSideModal({
                   ...filterOptions.tamanos
                 ]}
                 placeholder="Selecciona un tamaño"
+                fullWidth
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Modalidad
-              </label>
               <Select
+                label="Modalidad"
                 value={formData.modalidad_id || ''}
                 onChange={(value) => handleInputChange('modalidad_id', value)}
                 options={[
@@ -283,14 +301,13 @@ export default function EmpresaSideModal({
                   ...filterOptions.modalidades
                 ]}
                 placeholder="Selecciona una modalidad"
+                fullWidth
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Relación
-              </label>
               <Select
+                label="Relación"
                 value={formData.relacion_id || ''}
                 onChange={(value) => handleInputChange('relacion_id', value)}
                 options={[
@@ -298,14 +315,13 @@ export default function EmpresaSideModal({
                   ...filterOptions.relaciones
                 ]}
                 placeholder="Selecciona una relación"
+                fullWidth
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Producto
-              </label>
               <Select
+                label="Producto"
                 value={formData.producto_id || ''}
                 onChange={(value) => handleInputChange('producto_id', value)}
                 options={[
@@ -313,6 +329,7 @@ export default function EmpresaSideModal({
                   ...filterOptions.productos
                 ]}
                 placeholder="Selecciona un producto"
+                fullWidth
               />
             </div>
           </div>
@@ -325,10 +342,8 @@ export default function EmpresaSideModal({
           </Typography>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Estado de la Empresa
-            </label>
             <Select
+              label="Estado de la Empresa"
               value={formData.estado_id || ''}
               onChange={(value) => handleInputChange('estado_id', value)}
               options={[
@@ -336,32 +351,14 @@ export default function EmpresaSideModal({
                 ...filterOptions.estados
               ]}
               placeholder="Selecciona un estado"
+              fullWidth
             />
           </div>
 
 
         </div>
 
-        {/* Botones */}
-        <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
-            <XIcon className="w-4 h-4 mr-2" />
-            Cancelar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            loading={loading}
-          >
-            <SaveIcon className="w-4 h-4 mr-2" />
-            {isEditing ? 'Actualizar' : 'Crear'}
-          </Button>
-        </div>
-      </div>
+      </form>
     </SideModal>
   );
 }
