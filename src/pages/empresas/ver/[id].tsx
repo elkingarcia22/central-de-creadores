@@ -101,6 +101,7 @@ interface Participante {
 interface EmpresaDetallada extends Empresa {
   estadisticas?: EstadisticasEmpresa;
   participantes?: Participante[];
+  productos_nombres?: string[];
 }
 
 interface EmpresaVerPageProps {
@@ -407,15 +408,11 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             <div>
               <Typography variant="caption" color="secondary">Productos</Typography>
               <div className="flex flex-wrap gap-2 mt-1">
-                {empresaData.productos_ids.map((productoId: string) => {
-                  const producto = filterOptions.productos.find(p => p.value === productoId);
-                  return producto ? (
+                {empresaData.productos_ids.map((productoId: string, index: number) => {
+                  const productoNombre = empresaData.productos_nombres?.[index];
+                  return (
                     <Chip key={productoId} variant="outline" size="sm">
-                      {producto.label}
-                    </Chip>
-                  ) : (
-                    <Chip key={productoId} variant="outline" size="sm">
-                      Producto ID: {productoId}
+                      {productoNombre || `Producto ID: ${productoId}`}
                     </Chip>
                   );
                 })}
