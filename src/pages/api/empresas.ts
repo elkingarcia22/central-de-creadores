@@ -200,18 +200,30 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             return 0;
           }
           
+          // Primero obtener los IDs de participantes de esta empresa
+          const { data: participantes, error: errorParticipantes } = await supabase
+            .from('participantes')
+            .select('id')
+            .eq('empresa_id', empresaId);
+          
+          if (errorParticipantes) {
+            console.error(`Error obteniendo participantes para empresa ${empresaId}:`, errorParticipantes);
+            return 0;
+          }
+          
+          if (!participantes || participantes.length === 0) {
+            return 0;
+          }
+          
+          const participanteIds = participantes.map(p => p.id);
+          
           // Contar reclutamientos finalizados donde participan participantes de esta empresa
           const { count } = await supabase
             .from('reclutamientos')
             .select('id', { count: 'exact' })
             .eq('estado_agendamiento', estadoFinalizadoId)
             .not('participantes_id', 'is', null)
-            .in('participantes_id', 
-              supabase
-                .from('participantes')
-                .select('id')
-                .eq('empresa_id', empresaId)
-            );
+            .in('participantes_id', participanteIds);
           
           return count || 0;
         } catch (error) {
