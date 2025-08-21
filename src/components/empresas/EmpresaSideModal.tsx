@@ -18,7 +18,7 @@ interface Empresa {
   modalidad_id?: string;
   relacion_id?: string;
   producto_id?: string;
-  activo: boolean;
+  activo?: boolean;
 }
 
 interface Usuario {
@@ -202,7 +202,7 @@ export default function EmpresaSideModal({
               onChange={(value) => handleInputChange('kam_id', value)}
               options={[
                 { value: '', label: 'Seleccionar KAM' },
-                ...usuarios.map(u => ({
+                ...usuarios.filter(u => u.activo !== false).map(u => ({
                   value: u.id,
                   label: u.nombre || u.correo || 'Sin nombre'
                 }))
@@ -334,18 +334,7 @@ export default function EmpresaSideModal({
             />
           </div>
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="activo"
-              checked={formData.activo}
-              onChange={(e) => handleInputChange('activo', e.target.checked)}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            <label htmlFor="activo" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-              Empresa activa
-            </label>
-          </div>
+
         </div>
 
         {/* Botones */}

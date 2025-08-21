@@ -1,129 +1,88 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+import { supabase } from '../../../src/api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
-    try {
-      const { participante_id } = req.query;
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
-      if (!participante_id) {
-        return res.status(400).json({ error: 'participante_id es requerido' });
-      }
+  const { participanteId, email } = req.query;
 
-      console.log('🔍 Obteniendo estadísticas de participante:', participante_id);
+  if (!participanteId && !email) {
+    return res.status(400).json({ error: 'Se requiere participanteId o email' });
+  }
 
-      // Obtener total de participaciones (reclutamientos actuales)
-      console.log('🔍 Buscando reclutamientos actuales para participante:', participante_id);
-      const { data: reclutamientosActuales, error: errorReclutamientos } = await supabase
-        .from('reclutamientos')
-        .select('id')
-        .eq('participantes_id', participante_id);
+  try {
+    let participanteQuery = supabase
+      .from('participantes')
+      .select('*');
 
-      console.log('📊 Reclutamientos actuales encontrados:', reclutamientosActuales?.length || 0);
-
-      if (errorReclutamientos) {
-        console.error('Error obteniendo reclutamientos actuales:', errorReclutamientos);
-        return res.status(500).json({ error: 'Error obteniendo estadísticas' });
-      }
-
-      // Obtener participaciones históricas activas (solo las que aún existen)
-      console.log('🔍 Buscando participaciones históricas activas...');
-      const { data: participacionesHistoricas, error: errorHistoricas } = await supabase
-        .from('historial_participacion_participantes')
-        .select('id, fecha_participacion, estado_sesion')
-        .eq('participante_id', participante_id)
-        .eq('estado_sesion', 'completada');
-
-      console.log('📊 Participaciones históricas activas encontradas:', participacionesHistoricas?.length || 0);
-      console.log('❌ Error participaciones históricas:', errorHistoricas);
-
-      if (errorHistoricas) {
-        console.error('Error obteniendo participaciones históricas:', errorHistoricas);
-        // No retornamos error aquí, solo continuamos con los datos de reclutamientos
-      }
-
-      // Calcular total de participaciones (solo actuales)
-      const totalParticipaciones = reclutamientosActuales?.length || 0;
-      console.log('📊 Total participaciones actuales calculado:', totalParticipaciones);
-      console.log('📊 - Reclutamientos actuales:', reclutamientosActuales?.length || 0);
-      console.log('📊 - Participaciones históricas (no contadas):', participacionesHistoricas?.length || 0);
-
-      // Obtener información de la última sesión con datos de la investigación
-      console.log('🔍 Buscando última sesión...');
-      const { data: ultimaSesion, error: errorUltima } = await supabase
-        .from('reclutamientos')
-        .select(`
-          id,
-          fecha_sesion,
-          investigacion_id,
-          estado_agendamiento
-        `)
-        .eq('participantes_id', participante_id)
-        .order('fecha_sesion', { ascending: false })
-        .limit(1);
-
-      console.log('📊 Datos de última sesión:', ultimaSesion);
-      console.log('❌ Error última sesión:', errorUltima);
-
-      if (errorUltima) {
-        console.error('Error obteniendo última sesión:', errorUltima);
-        return res.status(500).json({ error: 'Error obteniendo estadísticas' });
-      }
-
-      // Obtener información de la investigación si hay última sesión
-      let investigacionInfo = null;
-      if (ultimaSesion && ultimaSesion.length > 0) {
-        console.log('🔍 Obteniendo información de la investigación:', ultimaSesion[0].investigacion_id);
-        const { data: investigacion, error: errorInvestigacion } = await supabase
-          .from('investigaciones')
-          .select('id, nombre, descripcion')
-          .eq('id', ultimaSesion[0].investigacion_id)
-          .single();
-
-        console.log('📊 Datos de investigación:', investigacion);
-        console.log('❌ Error investigación:', errorInvestigacion);
-
-        if (!errorInvestigacion && investigacion) {
-          investigacionInfo = {
-            id: investigacion.id,
-            nombre: investigacion.nombre,
-            descripcion: investigacion.descripcion
-          };
-        }
-      }
-
-      const estadisticas = {
-        total_participaciones: totalParticipaciones,
-        participaciones_historicas: participacionesHistoricas?.length || 0,
-        ultima_sesion: ultimaSesion && ultimaSesion.length > 0 ? {
-          fecha: ultimaSesion[0].fecha_sesion,
-          investigacion: investigacionInfo ? investigacionInfo.nombre : 'Investigación ID: ' + ultimaSesion[0].investigacion_id
-        } : null,
-        ultima_investigacion: investigacionInfo
-      };
-
-      console.log('✅ Estadísticas obtenidas:', estadisticas);
-      console.log('🔍 ultima_investigacion:', estadisticas.ultima_investigacion);
-
-      res.status(200).json({
-        success: true,
-        estadisticas
-      });
-
-    } catch (error) {
-      console.error('Error obteniendo estadísticas de participante:', error);
-      res.status(500).json({ 
-        error: 'Error interno del servidor',
-        details: error instanceof Error ? error.message : 'Error desconocido'
-      });
+    if (participanteId) {
+      participanteQuery = participanteQuery.eq('id', participanteId);
+    } else if (email) {
+      participanteQuery = participanteQuery.eq('email', email);
     }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).json({ error: `Método ${req.method} no permitido` });
+
+    const { data: participante, error: participanteError } = await participanteQuery.single();
+
+    if (participanteError || !participante) {
+      return res.status(404).json({ error: 'Participante no encontrado' });
+    }
+
+    // Obtener todas las participaciones del participante
+    const { data: participaciones, error: participacionesError } = await supabase
+      .from('participantes')
+      .select(`
+        id,
+        reclutamiento_id,
+        fecha_sesion,
+        hora_sesion,
+        estado_agendamiento,
+        reclutamientos!inner(
+          id,
+          investigacion_id,
+          investigaciones(
+            id,
+            nombre,
+            producto_nombre,
+            periodo_nombre
+          )
+        )
+      `)
+      .eq('email', participante.email)
+      .not('fecha_sesion', 'is', null)
+      .order('fecha_sesion', { ascending: false });
+
+    if (participacionesError) {
+      console.error('Error obteniendo participaciones:', participacionesError);
+      return res.status(500).json({ error: 'Error obteniendo participaciones' });
+    }
+
+    // Calcular estadísticas
+    const total_participaciones = participaciones?.length || 0;
+    const ultima_sesion = participaciones?.[0]?.fecha_sesion || null;
+    const ultima_investigacion = participaciones?.[0]?.reclutamientos?.investigaciones || null;
+
+    // Para participantes externos, estructurar la última sesión
+    let ultima_sesion_formateada = null;
+    if (participante.tipo === 'externo' && ultima_sesion) {
+      ultima_sesion_formateada = {
+        fecha: ultima_sesion,
+        investigacion: ultima_investigacion?.nombre || 'Investigación sin nombre'
+      };
+    }
+
+    const estadisticas = {
+      total_participaciones,
+      ultima_sesion: participante.tipo === 'externo' ? ultima_sesion_formateada : ultima_sesion,
+      ultima_investigacion,
+      participaciones: participaciones || []
+    };
+
+    return res.status(200).json(estadisticas);
+
+  } catch (error) {
+    console.error('Error en API estadisticas-participante:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 } 
