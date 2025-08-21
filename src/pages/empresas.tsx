@@ -645,8 +645,28 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           return <div className="text-gray-400">Sin relación</div>;
         }
         
+        // Función para obtener el color del chip según la relación
+        const getRelacionChipVariant = (relacionNombre: string) => {
+          switch (relacionNombre.toLowerCase()) {
+            case 'excelente':
+              return 'success';
+            case 'buena':
+              return 'accent-emerald';
+            case 'regular':
+              return 'warning';
+            case 'mala':
+              return 'danger';
+            case 'muy mala':
+              return 'danger';
+            default:
+              return 'default';
+          }
+        };
+        
+        const chipVariant = getRelacionChipVariant(relacion.label);
+        
         return (
-          <Chip variant="default" outlined size="sm">
+          <Chip variant={chipVariant} size="sm">
             {relacion.label}
           </Chip>
         );
