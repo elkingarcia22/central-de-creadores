@@ -78,9 +78,13 @@ interface Empresa {
 
 interface Usuario {
   id: string;
-  nombre: string;
-  correo: string;
-  activo: boolean;
+  full_name?: string;
+  nombre?: string;
+  email?: string;
+  correo?: string;
+  avatar_url?: string;
+  roles?: string[];
+  activo?: boolean;
 }
 
 interface FilterValuesEmpresa {
@@ -493,16 +497,22 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         }
         
         return (
-          <div className="flex items-center gap-2">
-            <SimpleAvatar
-              src={row.kam_foto_url || null}
-              fallbackText={row.kam_nombre || 'Sin asignar'}
-              size="sm"
-            />
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              {row.kam_nombre || 'Sin asignar'}
-            </span>
-          </div>
+          <InlineUserSelect
+            value={row.kam_id}
+            options={usuarios.filter(u => u.activo !== false).map(u => ({
+              value: u.id,
+              label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre',
+              email: u.email || u.correo,
+              avatar_url: u.avatar_url
+            }))}
+            onSave={(newValue) => handleInlineUpdate(row.id, 'kam_id', newValue)}
+            currentUser={{
+              name: row.kam_nombre,
+              email: row.kam_email,
+              avatar_url: row.kam_foto_url
+            }}
+            placeholder="Sin asignar"
+          />
         );
       }
     },
