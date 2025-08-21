@@ -378,7 +378,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     try {
       setSaving(true);
       const isEditing = !!selectedEmpresa;
-      const url = '/api/empresas';
+      const url = isEditing ? `/api/empresas?id=${selectedEmpresa.id}` : '/api/empresas';
       const method = isEditing ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -696,26 +696,31 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
 
   return (
     <>
-      <Layout>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Typography variant="h2" className="text-left">
-                Empresas
-              </Typography>
-              <Typography variant="body1" className="text-muted-foreground">
-                Gestiona las empresas de tu portafolio
-              </Typography>
+      <Layout rol={rolSeleccionado}>
+        <div className="py-10 px-4">
+          <div className="max-w-6xl mx-auto space-y-6">
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Typography variant="h2" color="title" weight="bold">
+                    Empresas
+                  </Typography>
+                  <Typography variant="subtitle1" color="secondary">
+                    Gestiona las empresas de tu portafolio
+                  </Typography>
+                </div>
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  variant="primary"
+                  size="md"
+                  className="flex items-center gap-2"
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  Crear Empresa
+                </Button>
+              </div>
             </div>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Crear Empresa
-            </Button>
-          </div>
 
           {/* Métricas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -834,6 +839,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               rowKey="id"
               bulkActions={bulkActions}
             />
+          </div>
           </div>
         </div>
       </Layout>
