@@ -98,7 +98,6 @@ interface FilterValuesEmpresa {
 
 interface FilterOptions {
   estados: { value: string; label: string }[];
-  sectores: { value: string; label: string }[];
   tamanos: { value: string; label: string }[];
   paises: { value: string; label: string }[];
   kams: { value: string; label: string }[];
@@ -124,7 +123,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     estados: [],
-    sectores: [],
     tamanos: [],
     paises: [],
     kams: [],
@@ -290,8 +288,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         emp?.nombre?.toLowerCase().includes(termino) ||
         emp?.descripcion?.toLowerCase().includes(termino) ||
         emp?.kam_nombre?.toLowerCase().includes(termino) ||
-        emp?.pais_nombre?.toLowerCase().includes(termino) ||
-        emp?.industria_nombre?.toLowerCase().includes(termino)
+        emp?.pais_nombre?.toLowerCase().includes(termino)
       );
     }
     
@@ -300,10 +297,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       filtradas = filtradas.filter(emp => emp?.estado_nombre === filters.estado);
     }
     
-    // Filtrar por sector/industria
-    if (filters.sector && filters.sector !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.industria_id === filters.sector);
-    }
+
     
     // Filtrar por tamaño
     if (filters.tamano && filters.tamano !== 'todos') {
@@ -946,12 +940,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         type="empresa"
         options={{
           estados: filterOptions.estados,
-          sectores: filterOptions.sectores,
           tamanos: filterOptions.tamanos,
           paises: filterOptions.paises,
           kams: filterOptions.kams,
-          industrias: filterOptions.industrias,
-          modalidades: filterOptions.modalidades,
           relaciones: filterOptions.relaciones,
           productos: filterOptions.productos
         }}
