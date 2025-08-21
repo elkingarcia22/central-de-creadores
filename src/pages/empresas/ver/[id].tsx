@@ -827,23 +827,178 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/api/empresas/${id}`);
+    // Importar directamente la función de la API
+    const { supabaseServer } = await import('../../../api/supabase');
     
-    if (!response.ok) {
+    console.log(`🔍 SSR - Obteniendo empresa: ${id}`);
+
+    // Obtener información básica de la empresa
+    const { data: empresa, error: errorEmpresa } = await supabaseServer
+      .from('empresas')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (errorEmpresa || !empresa) {
+      console.error('❌ SSR - Error obteniendo empresa:', errorEmpresa);
       return {
         notFound: true
       };
     }
 
-    const empresa = await response.json();
+    console.log('🏢 SSR - Empresa obtenida:', empresa);
+
+    // Obtener datos relacionados por separado
+    let kamData = null;
+    let paisData = null;
+    let estadoData = null;
+    let tamanoData = null;
+    let relacionData = null;
+    let modalidadData = null;
+    let industriaData = null;
+    let productoData = null;
+
+    if (empresa.kam_id) {
+      const { data: kam } = await supabaseServer
+        .from('usuarios')
+        .select('id, nombre, correo')
+        .eq('id', empresa.kam_id)
+        .single();
+      kamData = kam;
+    }
+
+    if (empresa.pais) {
+      const { data: pais } = await supabaseServer
+        .from('paises')
+        .select('id, nombre')
+        .eq('id', empresa.pais)
+        .single();
+      paisData = pais;
+    }
+
+    if (empresa.estado) {
+      const { data: estado } = await supabaseServer
+        .from('estados')
+        .select('id, nombre')
+        .eq('id', empresa.estado)
+        .single();
+      estadoData = estado;
+    }
+
+    if (empresa['tamaño']) {
+      console.log('📏 SSR - Buscando tamaño con ID:', empresa['tamaño']);
+      const { data: tamano } = await supabaseServer
+        .from('tamanos')
+        .select('id, nombre')
+        .eq('id', empresa['tamaño'])
+        .single();
+      tamanoData = tamano;
+      console.log('📏 SSR - Tamaño encontrado:', tamanoData);
+    }
+
+    if (empresa.relacion) {
+      console.log('🤝 SSR - Buscando relación con ID:', empresa.relacion);
+      const { data: relacion } = await supabaseServer
+        .from('relaciones')
+        .select('id, nombre')
+        .eq('id', empresa.relacion)
+        .single();
+      relacionData = relacion;
+      console.log('🤝 SSR - Relación encontrada:', relacionData);
+    }
+
+    if (empresa.modalidad) {
+      const { data: modalidad } = await supabaseServer
+        .from('modalidades')
+        .select('id, nombre')
+        .eq('id', empresa.modalidad)
+        .single();
+      modalidadData = modalidad;
+    }
+
+    if (empresa.industria) {
+      console.log('🏭 SSR - Buscando industria con ID:', empresa.industria);
+      const { data: industria } = await supabaseServer
+        .from('industrias')
+        .select('id, nombre')
+        .eq('id', empresa.industria)
+        .single();
+      industriaData = industria;
+      console.log('🏭 SSR - Industria encontrada:', industriaData);
+    }
+
+    if (empresa.producto_id) {
+      const { data: producto } = await supabaseServer
+        .from('productos')
+        .select('id, nombre')
+        .eq('id', empresa.producto_id)
+        .single();
+      productoData = producto;
+    }
+
+    // Obtener productos relacionados desde la tabla de relación
+    let productosRelacionados = [];
+    if (empresa.id) {
+      const { data: productosEmpresa } = await supabaseServer
+        .from('empresa_productos')
+        .select('producto_id')
+        .eq('empresa_id', empresa.id);
+      
+      if (productosEmpresa && productosEmpresa.length > 0) {
+        const productoIds = productosEmpresa.map(p => p.producto_id);
+        const { data: productos } = await supabaseServer
+          .from('productos')
+          .select('id, nombre')
+          .in('id', productoIds);
+        productosRelacionados = productos || [];
+      }
+    }
+
+    // Formatear respuesta
+    const empresaFormateada = {
+      id: empresa.id,
+      nombre: empresa.nombre,
+      descripcion: empresa.descripcion,
+      kam_id: empresa.kam_id,
+      kam_nombre: kamData?.nombre,
+      kam_email: kamData?.correo,
+      pais_id: empresa.pais,
+      pais_nombre: paisData?.nombre,
+      estado_id: empresa.estado,
+      estado_nombre: estadoData?.nombre,
+      tamano_id: empresa['tamaño'],
+      tamano_nombre: tamanoData?.nombre,
+      relacion_id: empresa.relacion,
+      relacion_nombre: relacionData?.nombre,
+      modalidad_id: empresa.modalidad,
+      modalidad_nombre: modalidadData?.nombre,
+      industria_id: empresa.industria,
+      industria_nombre: industriaData?.nombre,
+      producto_id: empresa.producto_id,
+      producto_nombre: productoData?.nombre,
+      productos_ids: productosRelacionados.map(p => p.id),
+      productos_nombres: productosRelacionados.map(p => p.nombre),
+      activo: empresa.activo,
+      created_at: empresa.created_at,
+      updated_at: empresa.updated_at
+    };
+
+    console.log(`✅ SSR - Empresa formateada: ${empresaFormateada.nombre}`);
+    console.log('📊 SSR - Campos relacionados:', {
+      tamano_nombre: empresaFormateada.tamano_nombre,
+      relacion_nombre: empresaFormateada.relacion_nombre,
+      industria_nombre: empresaFormateada.industria_nombre,
+      modalidad_nombre: empresaFormateada.modalidad_nombre,
+      productos_ids: empresaFormateada.productos_ids
+    });
 
     return {
       props: {
-        empresa
+        empresa: empresaFormateada
       }
     };
   } catch (error) {
-    console.error('Error en SSR:', error);
+    console.error('❌ SSR - Error en getServerSideProps:', error);
     return {
       notFound: true
     };
