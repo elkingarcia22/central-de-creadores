@@ -1,6 +1,5 @@
 import React from 'react';
-import Select from './Select';
-import SimpleAvatar from './SimpleAvatar';
+import UserSelectorWithAvatar from './UserSelectorWithAvatar';
 
 interface User {
   id: string;
@@ -28,22 +27,27 @@ export default function UserSelect({
   fullWidth = false,
   disabled = false
 }: UserSelectProps) {
-  const options = [
-    { value: 'todos', label: 'Todos' },
-    ...users.map(user => ({
-      value: user.id,
-      label: `${user.full_name || user.nombre || user.email || user.correo || 'Sin nombre'} ${user.avatar_url ? '👤' : ''}`
-    }))
-  ];
+  // Convertir usuarios al formato esperado por UserSelectorWithAvatar
+  const userOptions = users.map(user => ({
+    id: user.id,
+    full_name: user.full_name || user.nombre || 'Sin nombre',
+    email: user.email || user.correo || 'sin-email@ejemplo.com',
+    avatar_url: user.avatar_url || undefined
+  }));
+
+  // Pasar el valor tal como está, incluyendo 'todos'
+  const selectedValue = value;
 
   return (
-    <Select
-      value={value || 'todos'}
-      onChange={onChange}
-      options={options}
-      placeholder={placeholder}
-      fullWidth={fullWidth}
-      disabled={disabled}
-    />
+    <div className={fullWidth ? 'w-full' : ''}>
+      <UserSelectorWithAvatar
+        value={selectedValue}
+        onChange={onChange}
+        users={userOptions}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={fullWidth ? 'w-full' : ''}
+      />
+    </div>
   );
 }

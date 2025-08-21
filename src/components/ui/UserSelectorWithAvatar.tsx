@@ -49,6 +49,12 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
     return users.filter(user => user && user.id && (user.full_name || user.email));
   }, [users]);
 
+  // Función para manejar selección de "Todos"
+  const handleSelectAll = () => {
+    onChange('todos');
+    setIsOpen(false);
+  };
+
   // Manejo de clic fuera del componente
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -165,6 +171,20 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
                     <div className="w-32 h-3 bg-muted animate-pulse rounded"></div>
                   </div>
                 </>
+              ) : value === 'todos' ? (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                    <UserIcon className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground truncate">
+                      Todos
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      Mostrar todas las empresas
+                    </div>
+                  </div>
+                </>
               ) : selectedUser ? (
                 <>
                   {renderUserAvatar(selectedUser)}
@@ -218,6 +238,43 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
 
               {/* Lista de usuarios */}
               <div className="py-1 max-h-64 overflow-y-auto scrollbar-dropdown">
+                {/* Opción "Todos" */}
+                <button
+                  type="button"
+                  onClick={handleSelectAll}
+                  className={`
+                    w-full px-4 py-3 text-left transition-all duration-150
+                    hover:bg-accent-solid
+                    focus:outline-none focus:bg-accent-solid
+                    ${value === 'todos' 
+                      ? 'bg-primary/10 border-r-2 border-primary' 
+                      : 'bg-popover-solid'
+                    }
+                    border-b border-border
+                  `}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                      <UserIcon className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-sm font-medium text-popover-foreground">
+                          Todos
+                        </h4>
+                        {value === 'todos' && (
+                          <div className="flex-shrink-0">
+                            <CheckIcon className="w-4 h-4 text-primary" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Mostrar todas las empresas
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
                 {usersToShow.map((user, index) => (
                   <button
                     key={user.id}

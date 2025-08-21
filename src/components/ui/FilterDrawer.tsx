@@ -212,13 +212,10 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       onFiltersChange({
         busqueda: '',
         estado: 'todos',
-        sector: 'todos',
         tamano: 'todos',
         pais: 'todos',
         kam_id: 'todos',
-        activo: true,
-        industria: 'todos',
-        modalidad: 'todos',
+        activo: undefined,
         relacion: 'todos',
         producto: 'todos'
       } as FilterValuesEmpresa);
