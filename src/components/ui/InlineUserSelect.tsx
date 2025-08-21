@@ -45,17 +45,28 @@ const UserAvatar: React.FC<{
 
   if (avatar_url) {
     return (
-      <img
-        src={avatar_url}
-        alt={displayName}
-        className={`${sizeClasses[size]} rounded-full object-cover border border-gray-200 dark:border-gray-600`}
-        onError={e => {
-          const target = e.target as HTMLImageElement;
-          target.style.display = 'none';
-          const fallback = target.nextElementSibling as HTMLElement;
-          if (fallback) fallback.style.display = 'flex';
-        }}
-      />
+      <div className="relative">
+        <img
+          src={avatar_url}
+          alt={displayName}
+          className={`${sizeClasses[size]} rounded-full object-cover border border-gray-200 dark:border-gray-600`}
+          onError={e => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = target.nextElementSibling as HTMLElement;
+            if (fallback) fallback.style.display = 'flex';
+          }}
+        />
+        <div
+          className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-medium text-white absolute inset-0`}
+          style={{
+            backgroundColor: `hsl(${displayName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360}, 70%, 50%)`,
+            display: 'none'
+          }}
+        >
+          {initials}
+        </div>
+      </div>
     );
   }
 
