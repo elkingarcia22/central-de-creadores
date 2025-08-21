@@ -242,7 +242,37 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const { data, error } = await supabase
       .from('empresas')
       .insert([datosEmpresa])
-      .select()
+      .select(`
+        *,
+        pais_info:paises!empresas_pais_fkey(
+          id,
+          nombre
+        ),
+        industria_info:industrias!empresas_industria_fkey(
+          id,
+          nombre
+        ),
+        estado_info:estado_empresa!fk_empresas_estado(
+          id,
+          nombre
+        ),
+        tamano_info:tamano_empresa!fk_empresas_tamano(
+          id,
+          nombre
+        ),
+        modalidad_info:modalidades!fk_empresas_modalidad(
+          id,
+          nombre
+        ),
+        relacion_info:relacion_empresa!fk_empresas_relacion(
+          id,
+          nombre
+        ),
+        producto_info:productos!empresas_producto_id_fkey(
+          id,
+          nombre
+        )
+      `)
       .single();
 
     if (error) {
@@ -250,7 +280,51 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error al crear la empresa' });
     }
 
-    return res.status(201).json(data);
+    // Obtener información del KAM desde usuarios
+    let kamInfo = null;
+    if (data.kam_id) {
+      const { data: kamData, error: kamError } = await supabase
+        .from('usuarios')
+        .select('id, nombre, correo, foto_url')
+        .eq('id', data.kam_id)
+        .single();
+      
+      if (!kamError && kamData) {
+        kamInfo = kamData;
+      }
+    }
+
+    // Transformar datos para mantener consistencia con handleGet
+    const empresaTransformada = {
+      id: data.id,
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      kam_id: data.kam_id,
+      kam_nombre: kamInfo?.nombre || null,
+      kam_email: kamInfo?.correo || null,
+      kam_foto_url: kamInfo?.foto_url || null,
+      pais_id: data.pais,
+      pais_nombre: data.pais_info?.nombre || null,
+      industria_id: data.industria,
+      industria_nombre: data.industria_info?.nombre || null,
+      estado_id: data.estado,
+      estado_nombre: data.estado_info?.nombre || null,
+      tamano_id: data.tamaño,
+      tamano_nombre: data.tamano_info?.nombre || null,
+      modalidad_id: data.modalidad,
+      modalidad_nombre: data.modalidad_info?.nombre || null,
+      relacion_id: data.relacion,
+      relacion_nombre: data.relacion_info?.nombre || null,
+      producto_id: data.producto_id,
+      producto_nombre: data.producto_info?.nombre || null,
+      sector: data.industria_info?.nombre || null,
+      tamano: data.tamano_info?.nombre || null,
+      activo: data.estado_info?.nombre === 'Activa' || false,
+      created_at: data.created_at,
+      updated_at: data.updated_at
+    };
+
+    return res.status(201).json(empresaTransformada);
   } catch (error) {
     console.error('Error en la API:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
@@ -289,7 +363,37 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
       .from('empresas')
       .update(datosActualizados)
       .eq('id', id)
-      .select()
+      .select(`
+        *,
+        pais_info:paises!empresas_pais_fkey(
+          id,
+          nombre
+        ),
+        industria_info:industrias!empresas_industria_fkey(
+          id,
+          nombre
+        ),
+        estado_info:estado_empresa!fk_empresas_estado(
+          id,
+          nombre
+        ),
+        tamano_info:tamano_empresa!fk_empresas_tamano(
+          id,
+          nombre
+        ),
+        modalidad_info:modalidades!fk_empresas_modalidad(
+          id,
+          nombre
+        ),
+        relacion_info:relacion_empresa!fk_empresas_relacion(
+          id,
+          nombre
+        ),
+        producto_info:productos!empresas_producto_id_fkey(
+          id,
+          nombre
+        )
+      `)
       .single();
 
     if (error) {
@@ -297,7 +401,51 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error al actualizar la empresa' });
     }
 
-    return res.status(200).json(data);
+    // Obtener información del KAM desde usuarios
+    let kamInfo = null;
+    if (data.kam_id) {
+      const { data: kamData, error: kamError } = await supabase
+        .from('usuarios')
+        .select('id, nombre, correo, foto_url')
+        .eq('id', data.kam_id)
+        .single();
+      
+      if (!kamError && kamData) {
+        kamInfo = kamData;
+      }
+    }
+
+    // Transformar datos para mantener consistencia con handleGet
+    const empresaTransformada = {
+      id: data.id,
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      kam_id: data.kam_id,
+      kam_nombre: kamInfo?.nombre || null,
+      kam_email: kamInfo?.correo || null,
+      kam_foto_url: kamInfo?.foto_url || null,
+      pais_id: data.pais,
+      pais_nombre: data.pais_info?.nombre || null,
+      industria_id: data.industria,
+      industria_nombre: data.industria_info?.nombre || null,
+      estado_id: data.estado,
+      estado_nombre: data.estado_info?.nombre || null,
+      tamano_id: data.tamaño,
+      tamano_nombre: data.tamano_info?.nombre || null,
+      modalidad_id: data.modalidad,
+      modalidad_nombre: data.modalidad_info?.nombre || null,
+      relacion_id: data.relacion,
+      relacion_nombre: data.relacion_info?.nombre || null,
+      producto_id: data.producto_id,
+      producto_nombre: data.producto_info?.nombre || null,
+      sector: data.industria_info?.nombre || null,
+      tamano: data.tamano_info?.nombre || null,
+      activo: data.estado_info?.nombre === 'Activa' || false,
+      created_at: data.created_at,
+      updated_at: data.updated_at
+    };
+
+    return res.status(200).json(empresaTransformada);
   } catch (error) {
     console.error('Error en la API:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
