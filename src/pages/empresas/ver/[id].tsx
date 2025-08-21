@@ -192,13 +192,24 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       }));
       console.log('📦 Productos mapeados:', productosMapped);
 
+      // Cargar industrias y modalidades
+      const industriasRes = await fetch('/api/industrias');
+      const industrias = industriasRes.ok ? await industriasRes.json() : [];
+      console.log('🏭 Industrias cargadas:', industrias.length);
+      
+      const modalidadesRes = await fetch('/api/modalidades');
+      const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
+      console.log('📋 Modalidades cargadas:', modalidades.length);
+
       const filterOptionsData = {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
         kams: kamsMapped,
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
-        productos: productosMapped
+        productos: productosMapped,
+        industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
+        modalidades: modalidades.map((m: any) => ({ value: m.id, label: m.nombre }))
       };
 
       console.log('📋 FilterOptions configuradas:', filterOptionsData);
