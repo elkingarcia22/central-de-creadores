@@ -235,6 +235,32 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
+  // Función para cargar estadísticas del participante
+  const cargarEstadisticasParticipante = async (participante: any) => {
+    if (!participante) return;
+    
+    try {
+      setLoadingEstadisticas(true);
+      setEstadisticasParticipante(null);
+      
+      const response = await fetch(`/api/estadisticas-participante?email=${encodeURIComponent(participante.email)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Estadísticas del participante cargadas:', data);
+        setEstadisticasParticipante(data);
+      } else {
+        console.error('❌ Error cargando estadísticas:', response.statusText);
+        setEstadisticasParticipante(null);
+      }
+    } catch (error) {
+      console.error('❌ Error cargando estadísticas:', error);
+      setEstadisticasParticipante(null);
+    } finally {
+      setLoadingEstadisticas(false);
+    }
+  };
+
   // Cargar participantes cuando el ID esté disponible
   useEffect(() => {
     if (id) {
@@ -348,6 +374,14 @@ const VerReclutamiento: NextPage = () => {
       actualizarYcargarReclutamiento();
     }
   }, [id, isEditing, actualizarYcargarReclutamiento]);
+
+  // Cargar estadísticas del participante cuando se cambie al tab de participante
+  useEffect(() => {
+    if (modalActiveTab === 'participante' && selectedParticipante) {
+      console.log('🔄 Cambiando a tab participante, cargando estadísticas...');
+      cargarEstadisticasParticipante(selectedParticipante);
+    }
+  }, [modalActiveTab, selectedParticipante]);
 
   // Cargar los datos completos de la investigación cuando tengamos el reclutamiento
   useEffect(() => {
@@ -1400,9 +1434,202 @@ const VerReclutamiento: NextPage = () => {
             )}
           </Card>
         )}
+
+        {/* Información básica de la empresa */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <BuildingIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Información de la Empresa</Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {selectedParticipante.empresa_nombre && (
+              <div>
+                <Typography variant="caption" color="secondary">Nombre de la Empresa</Typography>
+                <Typography variant="body2" className="font-medium">
+                  {selectedParticipante.empresa_nombre}
+                </Typography>
+              </div>
+            )}
+
+            {selectedParticipante.empresa_id && (
+              <div>
+                <Typography variant="caption" color="secondary">ID de la Empresa</Typography>
+                <Typography variant="body2" className="font-mono text-xs">
+                  {selectedParticipante.empresa_id}
+                </Typography>
+              </div>
+            )}
+
+            {selectedParticipante.rol_empresa && (
+              <div>
+                <Typography variant="caption" color="secondary">Rol en la Empresa</Typography>
+                <Typography variant="body2">
+                  {selectedParticipante.rol_empresa}
+                </Typography>
+              </div>
+            )}
+
+            {selectedParticipante.cargo && (
+              <div>
+                <Typography variant="caption" color="secondary">Cargo</Typography>
+                <Typography variant="body2">
+                  {selectedParticipante.cargo}
+                </Typography>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* Estado del participante */}
+        {selectedParticipante.estado_calculado && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangleIcon className="w-5 h-5 text-primary" />
+              <Typography variant="h5">Estado del Participante</Typography>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Typography variant="caption" color="secondary">Estado Actual</Typography>
+                <div className="mt-1">
+                  <Chip
+                    variant={selectedParticipante.estado_calculado.estado === 'Enfriamiento' ? 'warning' : 'success'}
+                    size="sm"
+                    className="text-white"
+                  >
+                    {selectedParticipante.estado_calculado.estado}
+                  </Chip>
+                </div>
+              </div>
+
+              {selectedParticipante.cantidad_participaciones && (
+                <div>
+                  <Typography variant="caption" color="secondary">Cantidad de Participaciones</Typography>
+                  <Typography variant="body2" className="font-medium">
+                    {selectedParticipante.cantidad_participaciones} sesiones
+                  </Typography>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Productos relacionados */}
+        {selectedParticipante.productos_relacionados && selectedParticipante.productos_relacionados.length > 0 && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <BuildingIcon className="w-5 h-5 text-primary" />
+              <Typography variant="h5">Productos Relacionados</Typography>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {selectedParticipante.productos_relacionados.map((producto: any, index: number) => (
+                <Chip key={index} variant="secondary" size="sm">
+                  {producto}
+                </Chip>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Información de contacto */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <EmailIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Información de Contacto</Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Typography variant="caption" color="secondary">Email</Typography>
+              <Typography variant="body2">
+                {selectedParticipante.email || 'Sin email'}
+              </Typography>
+            </div>
+
+            {selectedParticipante.telefono && (
+              <div>
+                <Typography variant="caption" color="secondary">Teléfono</Typography>
+                <Typography variant="body2">
+                  {selectedParticipante.telefono}
+                </Typography>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* Información adicional */}
+        {selectedParticipante.dolores_necesidades && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangleIcon className="w-5 h-5 text-warning" />
+              <Typography variant="h5">Dolores y Necesidades</Typography>
+            </div>
+            
+            <Typography variant="body2">
+              {selectedParticipante.dolores_necesidades}
+            </Typography>
+          </Card>
+        )}
+
+        {selectedParticipante.comentarios && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FileTextIcon className="w-5 h-5 text-primary" />
+              <Typography variant="h5">Comentarios</Typography>
+            </div>
+            
+            <Typography variant="body2">
+              {selectedParticipante.comentarios}
+            </Typography>
+          </Card>
+        )}
+
+        {/* Información de fechas */}
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <ClockIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5">Información de Fechas</Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {selectedParticipante.created_at && (
+              <div>
+                <Typography variant="caption" color="secondary">Fecha de Creación</Typography>
+                <Typography variant="body2">
+                  {new Date(selectedParticipante.created_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Typography>
+              </div>
+            )}
+
+            {selectedParticipante.updated_at && (
+              <div>
+                <Typography variant="caption" color="secondary">Última Actualización</Typography>
+                <Typography variant="body2">
+                  {new Date(selectedParticipante.updated_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Typography>
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
     );
   });
+
+
 
   const EmptyState: React.FC<{
     icon: React.ReactNode; 
@@ -2329,6 +2556,19 @@ const VerReclutamiento: NextPage = () => {
                         <UserIcon className="w-4 h-4" />
                         <span>Participante</span>
                       </button>
+                      {selectedParticipante?.tipo === 'externo' && (
+                        <button
+                          onClick={() => setModalActiveTab('empresa')}
+                          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                            modalActiveTab === 'empresa'
+                              ? 'text-primary border-b-2 border-primary'
+                              : 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border'
+                          }`}
+                        >
+                          <BuildingIcon className="w-4 h-4" />
+                          <span>Empresa</span>
+                        </button>
+                      )}
                     </div>
 
                     {/* Tab Content - Solo reclutamiento y participante */}
@@ -2338,6 +2578,9 @@ const VerReclutamiento: NextPage = () => {
                       </div>
                       <div className={modalActiveTab === 'participante' ? 'block' : 'hidden'}>
                         <ParticipanteTabContent />
+                      </div>
+                      <div className={modalActiveTab === 'empresa' ? 'block' : 'hidden'}>
+                        <EmpresaTabContent />
                       </div>
                     </div>
                   </div>

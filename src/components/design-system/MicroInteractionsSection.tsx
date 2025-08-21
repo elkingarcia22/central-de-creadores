@@ -76,7 +76,8 @@ const MicroInteractionsSection: React.FC = () => {
       sections: [
         { id: "notifications", name: "Notificaciones" },
         { id: "modals", name: "Modales" },
-        { id: "forms", name: "Formularios" }
+        { id: "forms", name: "Formularios" },
+        { id: "component-interactions", name: "Interacciones de Componentes" }
       ]
     },
     {
@@ -127,15 +128,15 @@ const MicroInteractionsSection: React.FC = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <Typography variant="h4" weight="bold" color="primary" className="mb-2">60+</Typography>
+                <Typography variant="h4" weight="bold" color="primary" className="mb-2">80+</Typography>
                 <Typography variant="body2" color="secondary">Animaciones CSS</Typography>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <Typography variant="h4" weight="bold" color="success" className="mb-2">8</Typography>
+                <Typography variant="h4" weight="bold" color="success" className="mb-2">10</Typography>
                 <Typography variant="body2" color="secondary">Hooks React</Typography>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <Typography variant="h4" weight="bold" color="warning" className="mb-2">12</Typography>
+                <Typography variant="h4" weight="bold" color="warning" className="mb-2">15</Typography>
                 <Typography variant="body2" color="secondary">Categorías</Typography>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
@@ -296,6 +297,245 @@ const MicroInteractionsSection: React.FC = () => {
       );
     }
 
+    // Animaciones de Contadores
+    if (activeSection === 'counter-animations') {
+      return (
+        <div className="space-y-6">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Animaciones de Contadores
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Animaciones para mostrar números que van de 0 al valor final con efectos visuales.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Contador Básico
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-3xl font-bold text-primary mb-2">1,234</div>
+                    <Typography variant="body2" color="secondary">Usuarios Activos</Typography>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      Animación: 0 → 1234
+                    </div>
+                  </div>
+                  
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-3xl font-bold text-green-600 mb-2">$1.5M</div>
+                    <Typography variant="body2" color="secondary">Ingresos</Typography>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      Formateo: K, M
+                    </div>
+                  </div>
+                  
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-3xl font-bold text-yellow-600 mb-2">95%</div>
+                    <Typography variant="body2" color="secondary">Satisfacción</Typography>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      Easing: ease-out
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Características
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Animación Suave</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Transición de 0 al valor final con easing cubic-bezier
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Formateo Automático</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Conversión automática a K, M para números grandes
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Efecto Pulse</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Animación pulse durante el conteo para feedback visual
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Duración Configurable</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Tiempo de animación personalizable (default: 2000ms)
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Callback onComplete</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Función ejecutada cuando termina la animación
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                      <div>
+                        <Typography variant="body1" weight="medium">Prefijos/Sufijos</Typography>
+                        <Typography variant="body2" color="secondary">
+                          Soporte para $, %, € y otros símbolos
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Animaciones de Charts
+    if (activeSection === 'chart-animations') {
+      return (
+        <div className="space-y-6">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Animaciones de Charts
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Animaciones para gráficos que mejoran la experiencia visual y la comprensión de datos.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Line Chart Animations
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Entrada Progresiva</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Los puntos aparecen secuencialmente conectados por líneas
+                    </Typography>
+                    <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                        <Typography variant="caption" color="secondary">Animación de entrada</Typography>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      useAnimationFrame + easing
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Hover Effects</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Tooltips dinámicos y resaltado de puntos al hacer hover
+                    </Typography>
+                    <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-4 h-4 bg-primary rounded-full animate-pulse mx-auto mb-2"></div>
+                        <Typography variant="caption" color="secondary">Hover para tooltip</Typography>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      onMouseMove + tooltip
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Bar Chart Animations
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Crecimiento de Barras</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Las barras crecen desde 0 hasta su altura final
+                    </Typography>
+                    <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
+                      <div className="flex items-end space-x-2 h-20">
+                        <div className="w-8 bg-blue-500 rounded-t transition-all duration-1000" style={{height: '60%'}}></div>
+                        <div className="w-8 bg-green-500 rounded-t transition-all duration-1000" style={{height: '80%'}}></div>
+                        <div className="w-8 bg-yellow-500 rounded-t transition-all duration-1000" style={{height: '40%'}}></div>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      CSS transitions + transform
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Staggered Animation</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Las barras aparecen con retraso secuencial
+                    </Typography>
+                    <div className="h-32 bg-gray-100 rounded flex items-center justify-center">
+                      <div className="flex items-end space-x-2 h-20">
+                        <div className="w-8 bg-blue-500 rounded-t animate-pulse"></div>
+                        <div className="w-8 bg-green-500 rounded-t animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-8 bg-yellow-500 rounded-t animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      animation-delay + CSS
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Características Comunes
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Loading States</Typography>
+                    <Typography variant="body2" color="secondary">
+                      Spinners durante la carga de datos
+                    </Typography>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Responsive</Typography>
+                    <Typography variant="body2" color="secondary">
+                      Animaciones adaptadas a diferentes tamaños
+                    </Typography>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Performance</Typography>
+                    <Typography variant="body2" color="secondary">
+                      Optimizadas con requestAnimationFrame
+                    </Typography>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
     // Notificaciones
     if (activeSection === 'notifications') {
       return (
@@ -408,6 +648,131 @@ const MicroInteractionsSection: React.FC = () => {
                   value="email-invalido"
                   readOnly
                 />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Interacciones de Componentes
+    if (activeSection === 'component-interactions') {
+      return (
+        <div className="space-y-6">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Interacciones de Componentes
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Micro-interacciones implementadas en los componentes básicos del sistema.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Checkbox & RadioButton
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Hover Effects</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Escala suave al hacer hover y click
+                    </Typography>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-5 h-5 border-2 border-gray-300 rounded hover:scale-105 transition-transform cursor-pointer"></div>
+                      <span className="text-sm">Hover para ver efecto</span>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      hover:scale-105 active:scale-95
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Icon Animations</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Iconos que aparecen con animación suave
+                    </Typography>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-5 h-5 border-2 border-primary bg-primary rounded relative">
+                        <div className="absolute inset-0 flex items-center justify-center text-white text-xs animate-pulse">✓</div>
+                      </div>
+                      <span className="text-sm">Check animado</span>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      opacity-100 scale-100 transition-all
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Accordion
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Icon Rotation</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Iconos que rotan al abrir/cerrar
+                    </Typography>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 text-gray-400 transition-transform duration-200 rotate-180">▼</div>
+                      <span className="text-sm">Icono rotado (abierto)</span>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      transition-transform duration-200
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Height Animation</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Contenido que aparece/desaparece suavemente
+                    </Typography>
+                    <div className="h-20 bg-gray-100 rounded flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-8 h-8 bg-primary rounded animate-pulse mx-auto mb-1"></div>
+                        <Typography variant="caption" color="secondary">max-h-96 → max-h-0</Typography>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      transition-all duration-300 ease-in-out
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Button & Card Interactions
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Button Hover</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Efectos de elevación y sombra
+                    </Typography>
+                    <button className="px-4 py-2 bg-primary text-white rounded hover:shadow-lg transition-shadow">
+                      Hover me
+                    </button>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      hover:shadow-lg transition-shadow
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <Typography variant="body1" weight="medium" className="mb-2">Card Hover</Typography>
+                    <Typography variant="body2" color="secondary" className="mb-3">
+                      Elevación y cambio de borde
+                    </Typography>
+                    <div className="p-4 border rounded-lg hover:shadow-md hover:border-primary/30 transition-all cursor-pointer">
+                      <Typography variant="body2">Card con hover</Typography>
+                    </div>
+                    <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
+                      hover:shadow-md hover:border-primary/30
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>

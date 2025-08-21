@@ -32,7 +32,7 @@ import {
   MoreVerticalIcon, 
   EditIcon, 
   CopyIcon, 
-  FileTextIcon, 
+  BuildingIcon, 
   LinkIcon, 
   BarChartIcon, 
   TrashIcon, 
@@ -43,46 +43,61 @@ import {
   AlertTriangleIcon, 
   CheckCircleIcon, 
   ClipboardListIcon, 
-  InfoIcon 
+  InfoIcon,
+  XIcon,
+  SaveIcon,
+  CalendarIcon,
+  PhoneIcon,
+  EmailIcon
 } from '../components/icons';
+import { formatearFecha } from '../utils/fechas';
 
-// Interfaces
+// Interfaces para empresas
 interface Empresa {
   id: string;
   nombre: string;
   descripcion?: string;
+  // Información del KAM
   kam_id?: string;
   kam_nombre?: string;
   kam_email?: string;
-  kam_foto_url?: string;
+  // Información del país
   pais_id?: string;
   pais_nombre?: string;
+  // Información de la industria
   industria_id?: string;
   industria_nombre?: string;
+  // Información del estado
   estado_id?: string;
   estado_nombre?: string;
+  // Información del tamaño
   tamano_id?: string;
   tamano_nombre?: string;
+  // Información de la modalidad
   modalidad_id?: string;
   modalidad_nombre?: string;
+  // Información de la relación
   relacion_id?: string;
   relacion_nombre?: string;
+  // Información del producto
   producto_id?: string;
   producto_nombre?: string;
+  // Campos adicionales para compatibilidad
   sector?: string;
   tamano?: string;
-  activo?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Usuario {
   id: string;
-  nombre: string;
-  correo: string;
-  activo: boolean;
+  nombre: string | null;
+  correo: string | null;
+  foto_url: string | null;
 }
 
+// Tipos para filtros
 interface FilterValuesEmpresa {
   busqueda?: string;
   estado?: string;
@@ -176,11 +191,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     if (initialEmpresas.length > 0) {
       console.log('✅ Empresas ya cargadas desde SSR:', initialEmpresas.length);
       setLoading(false);
-      // Cargar usuarios y opciones de filtros en el cliente
-      Promise.all([
-        cargarUsuarios(),
-        cargarOpcionesFiltros()
-      ]);
     } else {
       cargarDatos();
     }
@@ -292,7 +302,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     } catch (error) {
       console.error('❌ Error cargando opciones de filtros:', error);
     }
-  };
+
 
   // Función para filtrar empresas
   const filtrarEmpresas = useCallback((empresas: Empresa[], searchTerm: string, filters: FilterValuesEmpresa) => {
@@ -348,7 +358,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     return filtrarEmpresas(empresas, searchTerm, filters);
   }, [empresas, searchTerm, filters, filtrarEmpresas]);
 
-  // Contar filtros activos
+  // Función para contar filtros activos
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.estado && filters.estado !== 'todos') count++;
@@ -360,17 +370,69 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     return count;
   };
 
-  // Handlers
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-  };
+  // Handlers para filtros
+  const handleOpenFilters = () => setShowFilterDrawer(true);
+  const handleCloseFilters = () => setShowFilterDrawer(false);
 
   const handleFiltersChange = (newFilters: FilterValuesEmpresa) => {
     setFilters(newFilters);
   };
 
-  const handleCloseFilters = () => {
-    setShowFilterDrawer(false);
+  // Handlers para acciones
+  const handleCreateEmpresa = () => {
+    setFormData({});
+    setShowCreateModal(true);
+  };
+
+  const handleEditEmpresa = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setFormData(empresa);
+    setShowEditModal(true);
+  };
+
+  const handleViewEmpresa = (empresa: Empresa) => {
+    setSelectedEmpresa(empresa);
+    setShowViewModal(true);
+  };
+
+  const handleDeleteEmpresa = (empresa: Empresa) => {
+    setEmpresaToDelete(empresa);
+  };
+
+  const handleDuplicateEmpresa = (empresa: Empresa) => {
+    const empresaDuplicada = {
+      ...empresa,
+      id: '',
+      nombre: `${empresa.nombre} (Copia)`,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    setFormData(empresaDuplicada);
+    setShowCreateModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!empresaToDelete) return;
+    
+    try {
+      setSaving(true);
+      const response = await fetch(`/api/empresas?id=${empresaToDelete.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        showSuccess('Empresa eliminada correctamente');
+        setEmpresas(prev => prev.filter(emp => emp.id !== empresaToDelete.id));
+        setEmpresaToDelete(null);
+      } else {
+        showError('Error al eliminar la empresa');
+      }
+    } catch (error) {
+      console.error('Error eliminando empresa:', error);
+      showError('Error al eliminar la empresa');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSaveEmpresa = async (data: Partial<Empresa>) => {
@@ -437,30 +499,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     } catch (error) {
       console.error('Error actualizando empresa:', error);
       showError('Error al actualizar la empresa');
-    }
-  };
-
-  const confirmDelete = async () => {
-    if (!empresaToDelete) return;
-    
-    try {
-      setSaving(true);
-      const response = await fetch(`/api/empresas?id=${empresaToDelete.id}`, {
-        method: 'DELETE'
-      });
-      
-      if (response.ok) {
-        showSuccess('Empresa eliminada correctamente');
-        setEmpresas(prev => prev.filter(emp => emp.id !== empresaToDelete.id));
-        setEmpresaToDelete(null);
-      } else {
-        showError('Error al eliminar la empresa');
-      }
-    } catch (error) {
-      console.error('Error eliminando empresa:', error);
-      showError('Error al eliminar la empresa');
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -623,75 +661,58 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         );
       }
     },
+
     {
       key: 'actions',
       label: 'Acciones',
       sortable: false,
-      width: 'w-16',
+      width: 'min-w-[120px]',
       render: (value: any, row: any) => {
         if (!row) {
           return <div className="text-gray-400">Sin datos</div>;
         }
-        
-        const actions = [
-          {
-            label: 'Ver',
-            icon: <EyeIcon className="w-4 h-4" />,
-            onClick: () => {
-              setSelectedEmpresa(row);
-              setShowViewModal(true);
-            }
-          },
-          {
-            label: 'Editar',
-            icon: <EditIcon className="w-4 h-4" />,
-            onClick: () => {
-              setSelectedEmpresa(row);
-              setShowEditModal(true);
-            }
-          },
-          {
-            label: 'Eliminar',
-            icon: <TrashIcon className="w-4 h-4" />,
-            onClick: () => {
-              setEmpresaToDelete(row);
-            }
-          }
-        ];
-
         return (
-          <ActionsMenu actions={actions} />
+          <ActionsMenu
+            actions={[
+              {
+                label: 'Ver detalles',
+                icon: <EyeIcon className="w-4 h-4" />,
+                onClick: () => handleViewEmpresa(row)
+              },
+              {
+                label: 'Editar',
+                icon: <EditIcon className="w-4 h-4" />,
+                onClick: () => handleEditEmpresa(row)
+              },
+              {
+                label: 'Duplicar',
+                icon: <CopyIcon className="w-4 h-4" />,
+                onClick: () => handleDuplicateEmpresa(row)
+              },
+                             {
+                 label: 'Eliminar',
+                 icon: <TrashIcon className="w-4 h-4" />,
+                 onClick: () => handleDeleteEmpresa(row),
+                 className: 'text-red-600 hover:text-red-700'
+               }
+            ]}
+          />
         );
       }
     }
   ];
 
-  // Acciones en lote
+  // Acciones grupales
   const bulkActions = [
     {
       label: 'Eliminar seleccionadas',
       icon: <TrashIcon className="w-4 h-4" />,
-      onClick: () => {
-        // Implementar eliminación en lote
-        showWarning('Función de eliminación en lote no implementada');
+      onClick: (selectedIds: string[]) => {
+        // Implementar eliminación masiva
+        console.log('Eliminar empresas:', selectedIds);
       }
     }
   ];
-
-  // Métricas
-  const metricas = useMemo(() => {
-    const total = empresas.length;
-    const activas = empresas.filter(emp => emp.activo).length;
-    const inactivas = total - activas;
-    const promedioPorKAM = total > 0 ? Math.round(total / Math.max(1, new Set(empresas.map(emp => emp.kam_id)).size)) : 0;
-
-    return {
-      total,
-      activas,
-      inactivas,
-      promedioPorKAM
-    };
-  }, [empresas]);
 
   return (
     <>
@@ -700,140 +721,140 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <Typography variant="h2" className="text-left">
+              <Typography variant="h2" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
                 Empresas
               </Typography>
-              <Typography variant="body1" className="text-muted-foreground">
+              <Typography variant="body1" color="secondary">
                 Gestiona las empresas de tu portafolio
               </Typography>
             </div>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Crear Empresa
-            </Button>
+            
+                         <Button
+               variant="primary"
+               onClick={handleCreateEmpresa}
+               className="flex items-center gap-2"
+             >
+               <PlusIcon className="w-4 h-4" />
+               Crear Empresa
+             </Button>
           </div>
 
           {/* Métricas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="p-4">
+            {/* Total Empresas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
-                    {metricas.total}
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.length}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body2" color="secondary">
                     Total Empresas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <EmpresasIcon className="w-6 h-6 text-primary" />
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-primary/10'}`}>
+                  <BuildingIcon className="w-6 h-6 text-primary" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Empresas Activas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
-                    {metricas.activas}
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.filter(emp => emp.activo).length}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body2" color="secondary">
                     Empresas Activas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-success/10">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
                   <CheckCircleIcon className="w-6 h-6 text-success" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Empresas Inactivas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
-                    {metricas.inactivas}
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {empresas.filter(emp => !emp.activo).length}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body2" color="secondary">
                     Empresas Inactivas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-warning/10">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
                   <AlertTriangleIcon className="w-6 h-6 text-warning" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Promedio por KAM */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
-                    {metricas.promedioPorKAM}
+                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    {usuarios.length > 0 ? Math.round(empresas.length / usuarios.length) : 0}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body2" color="secondary">
                     Promedio por KAM
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-secondary/10">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
                   <UserIcon className="w-6 h-6 text-secondary" />
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Filtros y búsqueda */}
-          <Card className="p-4 mb-6">
+          {/* Barra de búsqueda y filtro */}
+          <Card variant="elevated" padding="md" className="mb-6">
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               <div className="flex-1 relative">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-                    <SearchIcon className="w-5 h-5" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Buscar empresas..."
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+                <Input
+                  placeholder="Buscar empresas..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant="secondary"
-                  onClick={() => setShowFilterDrawer(true)}
+                  variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                  onClick={handleOpenFilters}
                   className="relative flex items-center gap-2"
                 >
                   <FilterIcon className="w-4 h-4" />
                   Filtros Avanzados
                   {getActiveFiltersCount() > 0 && (
-                    <Badge variant="secondary" className="ml-1">
+                    <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                       {getActiveFiltersCount()}
-                    </Badge>
+                    </span>
                   )}
                 </Button>
               </div>
             </div>
           </Card>
 
-          {/* Tabla */}
-          <div className="space-y-4">
-            <DataTable
-              data={empresasFiltradas}
-              columns={columns}
-              loading={loading}
-              searchable={false}
-              filterable={false}
-              selectable={true}
-              onSelectionChange={setSelectedEmpresas}
-              emptyMessage="No se encontraron empresas"
-              loadingMessage="Cargando empresas..."
-              rowKey="id"
-              bulkActions={bulkActions}
-            />
-          </div>
+          {/* Tabla de empresas */}
+          <DataTable
+            data={empresasFiltradas}
+            columns={columns}
+            loading={loading}
+            searchable={false}
+            filterable={false}
+            selectable={true}
+            onSelectionChange={setSelectedEmpresas}
+            emptyMessage="No se encontraron empresas"
+            loadingMessage="Cargando empresas..."
+            rowKey="id"
+            bulkActions={bulkActions}
+          />
         </div>
       </Layout>
 
@@ -870,30 +891,30 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         }}
       />
 
-      {/* Modales de creación/edición/vista */}
-      <EmpresaSideModal
-        isOpen={showCreateModal || showEditModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          setShowEditModal(false);
-          setSelectedEmpresa(null);
-          setFormData({});
-        }}
-        onSave={handleSaveEmpresa}
-        empresa={selectedEmpresa}
-        usuarios={usuarios}
-        filterOptions={filterOptions}
-        loading={saving}
-      />
+             {/* Modales de creación/edición/vista */}
+       <EmpresaSideModal
+         isOpen={showCreateModal || showEditModal}
+         onClose={() => {
+           setShowCreateModal(false);
+           setShowEditModal(false);
+           setSelectedEmpresa(null);
+           setFormData({});
+         }}
+         onSave={handleSaveEmpresa}
+         empresa={selectedEmpresa}
+         usuarios={usuarios}
+         filterOptions={filterOptions}
+         loading={saving}
+       />
 
-      <EmpresaViewModal
-        isOpen={showViewModal}
-        onClose={() => {
-          setShowViewModal(false);
-          setSelectedEmpresa(null);
-        }}
-        empresa={selectedEmpresa}
-      />
+       <EmpresaViewModal
+         isOpen={showViewModal}
+         onClose={() => {
+           setShowViewModal(false);
+           setSelectedEmpresa(null);
+         }}
+         empresa={selectedEmpresa}
+       />
     </>
   );
 }
