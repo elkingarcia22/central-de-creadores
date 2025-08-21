@@ -169,6 +169,37 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json({ error: 'Error al obtener empresas' });
       }
 
+      // Obtener productos múltiples para todas las empresas
+      const empresaIds = data?.map(e => e.id) || [];
+      let productosPorEmpresa = {};
+      
+      if (empresaIds.length > 0) {
+        const { data: productosData, error: productosError } = await supabase
+          .from('empresa_productos')
+          .select(`
+            empresa_id,
+            producto_id,
+            productos!empresa_productos_producto_id_fkey(
+              id,
+              nombre
+            )
+          `)
+          .in('empresa_id', empresaIds);
+
+        if (!productosError && productosData) {
+          productosPorEmpresa = productosData.reduce((acc, p) => {
+            if (!acc[p.empresa_id]) {
+              acc[p.empresa_id] = [];
+            }
+            acc[p.empresa_id].push({
+              id: p.producto_id,
+              nombre: p.productos?.nombre
+            });
+            return acc;
+          }, {});
+        }
+      }
+
       // Transformar datos para incluir nombres de las relaciones
       const empresasTransformadas = data?.map(empresa => ({
         id: empresa.id,
@@ -200,6 +231,9 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         // Información del producto
         producto_id: empresa.producto_id,
         producto_nombre: empresa.producto_info?.nombre || null,
+        // Productos múltiples
+        productos_ids: productosPorEmpresa[empresa.id]?.map(p => p.id) || [],
+        productos_nombres: productosPorEmpresa[empresa.id]?.map(p => p.nombre) || [],
         // Campos adicionales para compatibilidad
         sector: empresa.industria_info?.nombre || null, // Usar industria como sector
         tamano: empresa.tamano_info?.nombre || null,
@@ -232,7 +266,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       pais: empresaData.pais_id || null,
       industria: empresaData.industria_id || null,
       kam_id: empresaData.kam_id || null,
-      producto_id: empresaData.producto_id || null,
+      producto_id: empresaData.producto_id || null, // Mantener para compatibilidad
       estado: empresaData.estado_id || null,
       relacion: empresaData.relacion_id || null,
       tamaño: empresaData.tamano_id || null,
@@ -280,6 +314,23 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error al crear la empresa' });
     }
 
+    // Manejar múltiples productos si se proporcionan
+    if (empresaData.productos_ids && Array.isArray(empresaData.productos_ids) && empresaData.productos_ids.length > 0) {
+      const productosData = empresaData.productos_ids.map(productoId => ({
+        empresa_id: data.id,
+        producto_id: productoId
+      }));
+
+      const { error: productosError } = await supabase
+        .from('empresa_productos')
+        .insert(productosData);
+
+      if (productosError) {
+        console.error('Error insertando productos de empresa:', productosError);
+        // No fallar la creación de la empresa si falla la inserción de productos
+      }
+    }
+
     // Obtener información del KAM desde usuarios
     let kamInfo = null;
     if (data.kam_id) {
@@ -291,6 +342,28 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       
       if (!kamError && kamData) {
         kamInfo = kamData;
+      }
+    }
+
+    // Obtener productos asociados
+    let productosInfo = [];
+    if (data.id) {
+      const { data: productosData, error: productosError } = await supabase
+        .from('empresa_productos')
+        .select(`
+          producto_id,
+          productos!empresa_productos_producto_id_fkey(
+            id,
+            nombre
+          )
+        `)
+        .eq('empresa_id', data.id);
+
+      if (!productosError && productosData) {
+        productosInfo = productosData.map(p => ({
+          id: p.producto_id,
+          nombre: p.productos?.nombre
+        }));
       }
     }
 
@@ -317,6 +390,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       relacion_nombre: data.relacion_info?.nombre || null,
       producto_id: data.producto_id,
       producto_nombre: data.producto_info?.nombre || null,
+      productos_ids: productosInfo.map(p => p.id),
+      productos_nombres: productosInfo.map(p => p.nombre),
       sector: data.industria_info?.nombre || null,
       tamano: data.tamano_info?.nombre || null,
       activo: data.estado_info?.nombre === 'Activa' || false,

@@ -158,6 +158,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   });
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   const [selectedEmpresas, setSelectedEmpresas] = useState<string[]>([]);
+  const [bulkDeleteEmpresas, setBulkDeleteEmpresas] = useState<string[]>([]);
+  const [clearTableSelection, setClearTableSelection] = useState(false);
 
   // Estados para modales
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -496,6 +498,78 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     }
   };
 
+  // Callback para manejar cambios de selección
+  const handleSelectionChange = useCallback((selectedIds: string[]) => {
+    setSelectedEmpresas(selectedIds);
+  }, []);
+
+  // Función para manejar la eliminación masiva
+  const handleBulkDelete = async () => {
+    if (bulkDeleteEmpresas.length === 0) return;
+
+    console.log('Eliminando empresas:', bulkDeleteEmpresas);
+    
+    const resultados = {
+      exitosos: [] as string[],
+      fallidos: [] as { empresaId: string; error: string }[]
+    };
+    
+    // Eliminar empresas una por una y manejar errores individualmente
+    for (const empresaId of bulkDeleteEmpresas) {
+      try {
+        const response = await fetch(`/api/empresas?id=${empresaId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const result = await response.json();
+          const errorMessage = result.error || result.detail || 'Error desconocido';
+          resultados.fallidos.push({ empresaId, error: errorMessage });
+          console.error(`Error eliminando empresa ${empresaId}:`, errorMessage);
+        } else {
+          resultados.exitosos.push(empresaId);
+          console.log(`Empresa ${empresaId} eliminada exitosamente`);
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        resultados.fallidos.push({ empresaId, error: errorMessage });
+        console.error(`Error eliminando empresa ${empresaId}:`, errorMessage);
+      }
+    }
+    
+    // Mostrar resultados
+    if (resultados.exitosos.length > 0) {
+      showSuccess(
+        'Empresas eliminadas',
+        `Se han eliminado ${resultados.exitosos.length} empresa${resultados.exitosos.length > 1 ? 's' : ''} correctamente`
+      );
+    }
+    
+    if (resultados.fallidos.length > 0) {
+      const errores = resultados.fallidos.map(f => f.error).join(', ');
+      showWarning(
+        'Algunas empresas no se pudieron eliminar',
+        `No se pudieron eliminar ${resultados.fallidos.length} empresa${resultados.fallidos.length > 1 ? 's' : ''}: ${errores}`
+      );
+    }
+    
+    // Limpiar estados y recargar datos
+    setBulkDeleteEmpresas([]);
+    setSelectedEmpresas([]);
+    setClearTableSelection(true);
+    
+    // Recargar empresas
+    cargarEmpresas();
+    
+    // Limpiar flag de selección después de un momento
+    setTimeout(() => {
+      setClearTableSelection(false);
+    }, 100);
+  };
+
   // Definición de las columnas
   const columns = [
     {
@@ -704,15 +778,18 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     }
   ];
 
-  // Acciones en lote
+  // Acciones masivas
   const bulkActions = [
     {
-      label: 'Eliminar seleccionadas',
+      label: 'Eliminar Seleccionadas',
       icon: <TrashIcon className="w-4 h-4" />,
-      onClick: () => {
-        // Implementar eliminación en lote
-        showWarning('Función de eliminación en lote no implementada');
-      }
+      onClick: (selectedIds: string[]) => {
+        if (selectedIds.length === 0) {
+          return;
+        }
+        setBulkDeleteEmpresas(selectedIds);
+      },
+      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
     }
   ];
 
@@ -870,11 +947,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               searchable={false}
               filterable={false}
               selectable={true}
-              onSelectionChange={setSelectedEmpresas}
+              onSelectionChange={handleSelectionChange}
               emptyMessage="No se encontraron empresas"
               loadingMessage="Cargando empresas..."
               rowKey="id"
               bulkActions={bulkActions}
+              clearSelection={clearTableSelection}
             />
           </div>
           </div>
@@ -937,6 +1015,19 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           setSelectedEmpresa(null);
         }}
         empresa={selectedEmpresa}
+      />
+
+      {/* Modal de confirmación para eliminación masiva */}
+      <ConfirmModal
+        isOpen={bulkDeleteEmpresas.length > 0}
+        onClose={() => setBulkDeleteEmpresas([])}
+        onConfirm={handleBulkDelete}
+        title="Eliminar Empresas"
+        message={`¿Estás seguro de que quieres eliminar ${bulkDeleteEmpresas.length} empresa${bulkDeleteEmpresas.length !== 1 ? 's' : ''}? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="error"
+        loading={saving}
       />
     </>
   );

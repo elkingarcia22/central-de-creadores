@@ -4,6 +4,7 @@ import Typography from '../ui/Typography';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
+import MultiSelect from '../ui/MultiSelect';
 import Textarea from '../ui/Textarea';
 import UserSelectorWithAvatar from '../ui/UserSelectorWithAvatar';
 import { SaveIcon, XIcon } from '../icons';
@@ -20,6 +21,7 @@ interface Empresa {
   modalidad_id?: string;
   relacion_id?: string;
   producto_id?: string;
+  productos_ids?: string[];
   activo?: boolean;
 }
 
@@ -72,6 +74,7 @@ export default function EmpresaSideModal({
     modalidad_id: '',
     relacion_id: '',
     producto_id: '',
+    productos_ids: [],
     activo: true
   });
 
@@ -92,6 +95,7 @@ export default function EmpresaSideModal({
         modalidad_id: empresa.modalidad_id || '',
         relacion_id: empresa.relacion_id || '',
         producto_id: empresa.producto_id || '',
+        productos_ids: empresa.productos_ids || [],
         activo: empresa.activo
       });
     } else {
@@ -106,6 +110,7 @@ export default function EmpresaSideModal({
         modalidad_id: '',
         relacion_id: '',
         producto_id: '',
+        productos_ids: [],
         activo: true
       });
     }
@@ -320,16 +325,14 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
-              <Select
-                label="Producto"
-                value={formData.producto_id || ''}
-                onChange={(value) => handleInputChange('producto_id', value)}
-                options={[
-                  { value: '', label: 'Seleccionar producto' },
-                  ...filterOptions.productos
-                ]}
-                placeholder="Selecciona un producto"
+              <MultiSelect
+                label="Catálogo de Productos"
+                value={formData.productos_ids || []}
+                onChange={(value) => handleInputChange('productos_ids', value)}
+                options={filterOptions.productos}
+                placeholder="Selecciona productos del catálogo"
                 fullWidth
+                maxDisplayed={3}
               />
             </div>
           </div>
