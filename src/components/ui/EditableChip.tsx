@@ -67,19 +67,13 @@ export default function EditableChip({
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div 
+      onClick={() => !disabled && setIsEditing(true)}
+      className={`${!disabled ? 'cursor-pointer hover:opacity-80' : ''} transition-opacity`}
+    >
       <Chip variant={chipVariant} size={size}>
         {currentOption?.label || 'Sin relación'}
       </Chip>
-      {!disabled && (
-        <button
-          onClick={() => setIsEditing(true)}
-          className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-          title="Editar"
-        >
-          <EditIcon className="w-3 h-3" />
-        </button>
-      )}
     </div>
   );
 }
