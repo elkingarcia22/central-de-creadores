@@ -1,29 +1,156 @@
 import React from 'react';
 import { Typography } from './index';
 
+/**
+ * Props del componente RadioButton
+ * 
+ * @interface RadioButtonProps
+ * @description Interfaz que define las propiedades del componente RadioButton
+ */
 export interface RadioButtonProps {
-  /** Estado del radio button */
+  /** 
+   * Estado del radio button (seleccionado/no seleccionado)
+   * @default false
+   * @example
+   * ```tsx
+   * <RadioButton checked={true} onChange={handleChange} />
+   * ```
+   */
   checked?: boolean;
-  /** Etiqueta del radio button */
+  
+  /** 
+   * Etiqueta del radio button
+   * @example
+   * ```tsx
+   * <RadioButton label="Opción A" onChange={handleChange} />
+   * ```
+   */
   label?: string;
-  /** Descripción adicional */
+  
+  /** 
+   * Descripción adicional debajo de la etiqueta
+   * @example
+   * ```tsx
+   * <RadioButton 
+   *   label="Plan Básico"
+   *   description="Ideal para usuarios individuales"
+   *   onChange={handleChange}
+   * />
+   * ```
+   */
   description?: string;
-  /** Deshabilitado */
+  
+  /** 
+   * Deshabilita el radio button
+   * @default false
+   * @example
+   * ```tsx
+   * <RadioButton disabled={true} label="Opción no disponible" />
+   * ```
+   */
   disabled?: boolean;
-  /** Tamaño del radio button */
+  
+  /** 
+   * Tamaño del radio button
+   * @default 'md'
+   * @example
+   * ```tsx
+   * <RadioButton size="lg" label="Radio button grande" />
+   * ```
+   */
   size?: 'sm' | 'md' | 'lg';
-  /** Callback cuando cambia el estado */
+  
+  /** 
+   * Callback ejecutado cuando cambia el estado
+   * @param checked - Nuevo estado del radio button
+   * @example
+   * ```tsx
+   * <RadioButton onChange={(checked) => console.log('Seleccionado:', checked)} />
+   * ```
+   */
   onChange?: (checked: boolean) => void;
-  /** Clases CSS adicionales */
+  
+  /** 
+   * Clases CSS adicionales para personalización
+   * @example
+   * ```tsx
+   * <RadioButton className="my-custom-class" />
+   * ```
+   */
   className?: string;
-  /** ID del input */
+  
+  /** 
+   * ID único del input (para accesibilidad)
+   * @example
+   * ```tsx
+   * <RadioButton id="plan-basic" label="Plan Básico" />
+   * ```
+   */
   id?: string;
-  /** Nombre del input */
+  
+  /** 
+   * Nombre del input (para agrupar radio buttons)
+   * @example
+   * ```tsx
+   * <RadioButton name="plan-type" label="Plan Básico" />
+   * ```
+   */
   name?: string;
-  /** Valor del input */
+  
+  /** 
+   * Valor del input (para formularios)
+   * @example
+   * ```tsx
+   * <RadioButton value="basic" label="Plan Básico" />
+   * ```
+   */
   value?: string;
 }
 
+/**
+ * Componente RadioButton
+ * 
+ * @description Componente de radio button con soporte para accesibilidad y micro-interacciones
+ * 
+ * @example
+ * ```tsx
+ * // Radio button básico
+ * <RadioButton 
+ *   label="Opción A" 
+ *   onChange={handleChange} 
+ * />
+ * 
+ * // Radio button con descripción
+ * <RadioButton 
+ *   label="Plan Básico"
+ *   description="Ideal para usuarios individuales"
+ *   onChange={handleChange}
+ * />
+ * 
+ * // Radio button seleccionado
+ * <RadioButton 
+ *   checked={true}
+ *   label="Plan Premium"
+ *   onChange={handleChange}
+ * />
+ * 
+ * // Radio button deshabilitado
+ * <RadioButton 
+ *   disabled={true}
+ *   label="Opción no disponible"
+ * />
+ * 
+ * // Grupo de radio buttons
+ * <div>
+ *   <RadioButton name="plan" value="basic" label="Plan Básico" />
+ *   <RadioButton name="plan" value="premium" label="Plan Premium" />
+ *   <RadioButton name="plan" value="enterprise" label="Plan Enterprise" />
+ * </div>
+ * ```
+ * 
+ * @param props - Propiedades del componente
+ * @returns Componente RadioButton renderizado
+ */
 const RadioButton: React.FC<RadioButtonProps> = ({
   checked = false,
   label,

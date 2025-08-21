@@ -236,7 +236,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       const response = await fetch('/api/usuarios');
       if (response.ok) {
         const data = await response.json();
-        setUsuarios(data || []);
+        // La API devuelve { usuarios: [...] }, necesitamos extraer el array
+        setUsuarios(data?.usuarios || []);
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);

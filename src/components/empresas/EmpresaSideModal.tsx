@@ -23,8 +23,13 @@ interface Empresa {
 
 interface Usuario {
   id: string;
-  nombre: string | null;
-  correo: string | null;
+  full_name?: string | null;
+  nombre?: string | null;
+  email?: string | null;
+  correo?: string | null;
+  avatar_url?: string | null;
+  roles?: string[];
+  activo?: boolean;
 }
 
 interface EmpresaSideModalProps {
@@ -202,10 +207,10 @@ export default function EmpresaSideModal({
               onChange={(value) => handleInputChange('kam_id', value)}
               options={[
                 { value: '', label: 'Seleccionar KAM' },
-                ...usuarios.filter(u => u.activo !== false).map(u => ({
+                ...(Array.isArray(usuarios) ? usuarios.filter(u => u.activo !== false).map(u => ({
                   value: u.id,
-                  label: u.nombre || u.correo || 'Sin nombre'
-                }))
+                  label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre'
+                })) : [])
               ]}
               placeholder="Selecciona un KAM"
             />
