@@ -525,6 +525,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           return <div className="text-gray-400">Sin datos</div>;
         }
         
+        // Buscar el usuario actual del KAM para obtener datos actualizados
+        const currentKamUser = usuarios.find(u => u.id === row.kam_id);
+        
         return (
           <InlineUserSelect
             value={row.kam_id}
@@ -536,9 +539,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             }))}
             onSave={(newValue) => handleInlineUpdate(row.id, 'kam_id', newValue)}
             currentUser={{
-              name: row.kam_nombre,
-              email: row.kam_email,
-              avatar_url: row.kam_foto_url
+              name: currentKamUser?.full_name || currentKamUser?.nombre || row.kam_nombre,
+              email: currentKamUser?.email || currentKamUser?.correo || row.kam_email,
+              avatar_url: currentKamUser?.avatar_url || row.kam_foto_url
             }}
             placeholder="Sin asignar"
           />
