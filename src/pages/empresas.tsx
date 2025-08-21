@@ -458,7 +458,35 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         setEmpresas(prev => prev.filter(emp => emp.id !== empresaToDelete.id));
         setEmpresaToDelete(null);
       } else {
-        showError('Error al eliminar la empresa');
+        const errorData = await response.json();
+        
+        if (response.status === 409) {
+          // Error de dependencias
+          const details = errorData.details;
+          let errorMessage = errorData.error + '\n\n';
+          
+          if (details.type === 'participantes_externos') {
+            errorMessage += `📋 Participantes externos asociados: ${details.count}\n`;
+            errorMessage += `👥 Participantes:\n`;
+            details.participantes.forEach((p: any) => {
+              errorMessage += `   • ${p.nombre} (${p.email})\n`;
+            });
+            errorMessage += `\n💡 Acción requerida: Elimina o reasigna estos participantes antes de eliminar la empresa.`;
+          } else if (details.type === 'reclutamientos') {
+            errorMessage += `📅 Reclutamientos asociados: ${details.count}\n`;
+            errorMessage += `🎯 Reclutamientos:\n`;
+            details.reclutamientos.forEach((r: any) => {
+              if (r.participante) {
+                errorMessage += `   • Reclutamiento ${r.id} - ${r.participante.nombre} (${r.participante.email})\n`;
+              }
+            });
+            errorMessage += `\n💡 Acción requerida: Elimina estos reclutamientos antes de eliminar la empresa.`;
+          }
+          
+          showError(errorMessage);
+        } else {
+          showError(errorData.error || 'Error al eliminar la empresa');
+        }
       }
     } catch (error) {
       console.error('Error eliminando empresa:', error);

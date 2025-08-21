@@ -467,16 +467,92 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ error: 'ID de empresa es requerido' });
     }
 
-    const { error } = await supabase
+    // Verificar dependencias antes de eliminar
+    console.log(`🔍 Verificando dependencias para empresa ${id}...`);
+
+    // 1. Verificar si hay participantes externos usando esta empresa
+    const { data: participantes, error: participantesError } = await supabase
+      .from('participantes')
+      .select('id, nombre, email')
+      .eq('empresa_id', id);
+
+    if (participantesError) {
+      console.error('Error verificando participantes:', participantesError);
+      return res.status(500).json({ error: 'Error al verificar dependencias' });
+    }
+
+    if (participantes && participantes.length > 0) {
+      console.log(`❌ Empresa tiene ${participantes.length} participantes externos asociados`);
+      return res.status(409).json({ 
+        error: 'No se puede eliminar la empresa',
+        details: {
+          type: 'participantes_externos',
+          count: participantes.length,
+          message: `Esta empresa tiene ${participantes.length} participante(s) externo(s) asociado(s). Debes eliminar o reasignar estos participantes antes de eliminar la empresa.`,
+          participantes: participantes.map(p => ({ id: p.id, nombre: p.nombre, email: p.email }))
+        }
+      });
+    }
+
+    // 2. Verificar si hay reclutamientos que usan esta empresa (a través de participantes)
+    const { data: reclutamientos, error: reclutamientosError } = await supabase
+      .from('reclutamientos')
+      .select(`
+        id,
+        participantes_id,
+        participantes:participantes!reclutamientos_participantes_id_fkey(
+          id,
+          nombre,
+          email,
+          empresa_id
+        )
+      `)
+      .not('participantes_id', 'is', null);
+
+    if (reclutamientosError) {
+      console.error('Error verificando reclutamientos:', reclutamientosError);
+      return res.status(500).json({ error: 'Error al verificar dependencias' });
+    }
+
+    // Filtrar reclutamientos que usan participantes de esta empresa
+    const reclutamientosConEmpresa = reclutamientos?.filter(r => 
+      r.participantes && r.participantes.empresa_id === id
+    ) || [];
+
+    if (reclutamientosConEmpresa.length > 0) {
+      console.log(`❌ Empresa tiene ${reclutamientosConEmpresa.length} reclutamiento(s) asociado(s)`);
+      return res.status(409).json({ 
+        error: 'No se puede eliminar la empresa',
+        details: {
+          type: 'reclutamientos',
+          count: reclutamientosConEmpresa.length,
+          message: `Esta empresa tiene ${reclutamientosConEmpresa.length} reclutamiento(s) asociado(s). Debes eliminar estos reclutamientos antes de eliminar la empresa.`,
+          reclutamientos: reclutamientosConEmpresa.map(r => ({ 
+            id: r.id, 
+            participante: r.participantes ? { 
+              id: r.participantes.id, 
+              nombre: r.participantes.nombre, 
+              email: r.participantes.email 
+            } : null 
+          }))
+        }
+      });
+    }
+
+    console.log(`✅ No se encontraron dependencias, procediendo a eliminar empresa ${id}`);
+
+    // Si no hay dependencias, proceder con la eliminación
+    const { error: deleteError } = await supabase
       .from('empresas')
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Error eliminando empresa:', error);
+    if (deleteError) {
+      console.error('Error eliminando empresa:', deleteError);
       return res.status(500).json({ error: 'Error al eliminar la empresa' });
     }
 
+    console.log(`✅ Empresa ${id} eliminada correctamente`);
     return res.status(200).json({ message: 'Empresa eliminada correctamente' });
   } catch (error) {
     console.error('Error en la API:', error);
