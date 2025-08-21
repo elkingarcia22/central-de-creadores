@@ -129,37 +129,51 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
   const cargarDatosModal = async () => {
     try {
+      console.log('🔄 Cargando datos del modal...');
+      
       // Cargar usuarios
       const usuariosRes = await fetch('/api/usuarios');
       const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
+      console.log('👥 Usuarios cargados:', usuariosData.length);
       
       // Cargar catálogos
       const estadosRes = await fetch('/api/estados');
       const estados = estadosRes.ok ? await estadosRes.json() : [];
+      console.log('🏷️ Estados cargados:', estados.length);
       
       const tamanosRes = await fetch('/api/tamanos');
       const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
+      console.log('📏 Tamaños cargados:', tamanos.length);
       
       const paisesRes = await fetch('/api/paises');
       const paises = paisesRes.ok ? await paisesRes.json() : [];
+      console.log('🌍 Países cargados:', paises.length);
       
       const relacionesRes = await fetch('/api/relaciones-empresa');
       const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
+      console.log('🤝 Relaciones cargadas:', relaciones.length);
       
       const productosRes = await fetch('/api/productos');
       const productos = productosRes.ok ? await productosRes.json() : [];
+      console.log('📦 Productos cargados:', productos.length);
 
-      setUsuarios(usuariosData);
-      setFilterOptions({
+      const filterOptionsData = {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
         kams: usuariosData.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
-      });
+      };
+
+      console.log('📋 FilterOptions configuradas:', filterOptionsData);
+      
+      setUsuarios(usuariosData);
+      setFilterOptions(filterOptionsData);
+      
+      console.log('✅ Datos del modal cargados exitosamente');
     } catch (error) {
-      console.error('Error cargando datos del modal:', error);
+      console.error('❌ Error cargando datos del modal:', error);
     }
   };
 
@@ -713,6 +727,13 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       </div>
 
       {/* Modal de edición */}
+      {showEditModal && (
+        <>
+          {console.log('🔍 Modal abierto, empresaData:', empresaData)}
+          {console.log('🔍 Modal abierto, usuarios:', usuarios.length)}
+          {console.log('🔍 Modal abierto, filterOptions:', filterOptions)}
+        </>
+      )}
       <EmpresaSideModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
