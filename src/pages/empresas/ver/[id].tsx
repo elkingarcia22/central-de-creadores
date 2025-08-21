@@ -133,6 +133,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       
       // Cargar usuarios
       const usuariosRes = await fetch('/api/usuarios');
+      console.log('📡 Response usuarios status:', usuariosRes.status);
       const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
       console.log('👥 Usuarios cargados:', usuariosData);
       console.log('👥 Tipo de usuariosData:', typeof usuariosData);
@@ -140,6 +141,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       
       // Verificar que usuariosData sea un array
       const usuariosArray = Array.isArray(usuariosData) ? usuariosData : [];
+      console.log('👥 UsuariosArray final:', usuariosArray.length);
       
       // Cargar catálogos - usar APIs correctas
       const estadosRes = await fetch('/api/estados-empresa');
@@ -159,16 +161,30 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       console.log('🤝 Relaciones cargadas:', relaciones.length);
       
       const productosRes = await fetch('/api/productos');
+      console.log('📡 Response productos status:', productosRes.status);
       const productos = productosRes.ok ? await productosRes.json() : [];
-      console.log('📦 Productos cargados:', productos.length);
+      console.log('📦 Productos cargados:', productos);
+      console.log('📦 Productos length:', productos.length);
+
+      const kamsMapped = usuariosArray.map((u: any) => ({ 
+        value: u.id, 
+        label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' 
+      }));
+      console.log('👥 KAMs mapeados:', kamsMapped);
+
+      const productosMapped = productos.map((p: any) => ({ 
+        value: p.id, 
+        label: p.nombre 
+      }));
+      console.log('📦 Productos mapeados:', productosMapped);
 
       const filterOptionsData = {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
-        kams: usuariosArray.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
+        kams: kamsMapped,
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
-        productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
+        productos: productosMapped
       };
 
       console.log('📋 FilterOptions configuradas:', filterOptionsData);
