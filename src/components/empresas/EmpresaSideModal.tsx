@@ -8,31 +8,9 @@ import MultiSelect from '../ui/MultiSelect';
 import Textarea from '../ui/Textarea';
 import UserSelectorWithAvatar from '../ui/UserSelectorWithAvatar';
 import { SaveIcon, XIcon } from '../icons';
+import { Empresa, Usuario } from '../../types/empresas';
 
-interface Empresa {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  kam_id?: string;
-  pais_id?: string;
-  estado_id?: string;
-  tamano_id?: string;
-  relacion_id?: string;
-  producto_id?: string;
-  productos_ids?: string[];
-  activo?: boolean;
-}
 
-interface Usuario {
-  id: string;
-  full_name?: string | null;
-  nombre?: string | null;
-  email?: string | null;
-  correo?: string | null;
-  avatar_url?: string | null;
-  roles?: string[];
-  activo?: boolean;
-}
 
 interface EmpresaSideModalProps {
   isOpen: boolean;

@@ -4,32 +4,9 @@ import Typography from '../ui/Typography';
 import Badge from '../ui/Badge';
 import { BuildingIcon, UserIcon, MapPinIcon, CalendarIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
+import { Empresa } from '../../types/empresas';
 
-interface Empresa {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  kam_id?: string;
-  kam_nombre?: string;
-  kam_email?: string;
-  pais_id?: string;
-  pais_nombre?: string;
-  industria_id?: string;
-  industria_nombre?: string;
-  estado_id?: string;
-  estado_nombre?: string;
-  tamano_id?: string;
-  tamano_nombre?: string;
-  modalidad_id?: string;
-  modalidad_nombre?: string;
-  relacion_id?: string;
-  relacion_nombre?: string;
-  producto_id?: string;
-  producto_nombre?: string;
-  activo: boolean;
-  created_at: string;
-  updated_at: string;
-}
+
 
 interface EmpresaViewModalProps {
   isOpen: boolean;

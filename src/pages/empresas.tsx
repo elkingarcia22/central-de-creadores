@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
+import { Empresa, Usuario, FilterValuesEmpresa, FilterOptions } from '../types/empresas';
 
 import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
@@ -46,64 +47,7 @@ import {
   InfoIcon 
 } from '../components/icons';
 
-// Interfaces
-interface Empresa {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  kam_id?: string;
-  kam_nombre?: string;
-  kam_email?: string;
-  kam_foto_url?: string;
-  pais_id?: string;
-  pais_nombre?: string;
-  estado_id?: string;
-  estado_nombre?: string;
-  tamano_id?: string;
-  tamano_nombre?: string;
-  relacion_id?: string;
-  relacion_nombre?: string;
-  producto_id?: string;
-  producto_nombre?: string;
-  participaciones?: number;
-  sector?: string;
-  tamano?: string;
-  activo?: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
 
-interface Usuario {
-  id: string;
-  full_name?: string;
-  nombre?: string;
-  email?: string;
-  correo?: string;
-  avatar_url?: string;
-  roles?: string[];
-  activo?: boolean;
-}
-
-interface FilterValuesEmpresa {
-  busqueda?: string;
-  estado?: string;
-  sector?: string;
-  tamano?: string;
-  pais?: string;
-  kam_id?: string;
-  activo?: boolean;
-  relacion?: string;
-  producto?: string;
-}
-
-interface FilterOptions {
-  estados: { value: string; label: string }[];
-  tamanos: { value: string; label: string }[];
-  paises: { value: string; label: string }[];
-  kams: { value: string; label: string }[];
-  relaciones: { value: string; label: string }[];
-  productos: { value: string; label: string }[];
-}
 
 interface EmpresasPageProps {
   initialEmpresas: Empresa[];
@@ -135,7 +79,6 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const [filters, setFilters] = useState<FilterValuesEmpresa>({
     busqueda: '',
     estado: 'todos',
-    sector: 'todos',
     tamano: 'todos',
     pais: 'todos',
     kam_id: 'todos',
@@ -294,7 +237,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     
     // Filtrar por estado
     if (filters.estado && filters.estado !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.estado_nombre === filters.estado);
+      filtradas = filtradas.filter(emp => emp?.estado_id === filters.estado);
     }
     
 
@@ -319,6 +262,16 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       filtradas = filtradas.filter(emp => emp?.activo === filters.activo);
     }
     
+    // Filtrar por relación
+    if (filters.relacion && filters.relacion !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.relacion_id === filters.relacion);
+    }
+    
+    // Filtrar por producto
+    if (filters.producto && filters.producto !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.producto_id === filters.producto);
+    }
+    
     return filtradas;
   }, []);
 
@@ -331,11 +284,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.estado && filters.estado !== 'todos') count++;
-    if (filters.sector && filters.sector !== 'todos') count++;
     if (filters.tamano && filters.tamano !== 'todos') count++;
     if (filters.pais && filters.pais !== 'todos') count++;
     if (filters.kam_id && filters.kam_id !== 'todos') count++;
     if (filters.activo !== undefined) count++;
+    if (filters.relacion && filters.relacion !== 'todos') count++;
+    if (filters.producto && filters.producto !== 'todos') count++;
     return count;
   };
 
