@@ -54,8 +54,12 @@ export default function EmpresaSideModal({
 
   // Actualizar formData cuando cambie la empresa
   useEffect(() => {
+    console.log('🔍 EmpresaSideModal - empresa recibida:', empresa);
+    console.log('🔍 EmpresaSideModal - usuarios recibidos:', usuarios.length);
+    console.log('🔍 EmpresaSideModal - filterOptions recibidas:', filterOptions);
+    
     if (empresa) {
-      setFormData({
+      const newFormData = {
         id: empresa.id,
         nombre: empresa.nombre || '',
         descripcion: empresa.descripcion || '',
@@ -67,7 +71,9 @@ export default function EmpresaSideModal({
         producto_id: empresa.producto_id || '',
         productos_ids: empresa.productos_ids || [],
         activo: empresa.activo
-      });
+      };
+      console.log('🔍 EmpresaSideModal - formData configurado:', newFormData);
+      setFormData(newFormData);
     } else {
       setFormData({
         nombre: '',
@@ -83,7 +89,7 @@ export default function EmpresaSideModal({
       });
     }
     setErrors({});
-  }, [empresa]);
+  }, [empresa, usuarios, filterOptions]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
