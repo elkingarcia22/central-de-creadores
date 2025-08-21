@@ -1,12 +1,12 @@
 {
-  "last_sync": "2025-08-20T08:01:02.323Z",
+  "last_sync": "2025-08-21T03:09:22.715Z",
   "results": {
     "design-system": {
       "success": true,
       "mcp": "design-system",
       "data": {
         "components": {
-          "total_components": 112,
+          "total_components": 133,
           "components": [
             "BottomNav.tsx",
             "DashboardLayout.tsx",
@@ -26,8 +26,12 @@
             "ElevationSection.tsx",
             "EstadosSection.tsx",
             "IconsSection.tsx",
+            "MicroInteractionsDemo.tsx",
+            "MicroInteractionsSection.tsx",
             "SpacingSection.tsx",
             "TypographySection.tsx",
+            "EmpresaSideModal.tsx",
+            "EmpresaViewModal.tsx",
             "EmpresasTable.tsx",
             "index.tsx",
             "ActividadesTab.tsx",
@@ -38,18 +42,24 @@
             "login-icons.tsx",
             "PermisosModal.tsx",
             "RolModal.tsx",
+            "Accordion.tsx",
             "ActionsMenu-backup.tsx",
             "ActionsMenu.tsx",
             "AgregarParticipanteModal.tsx",
+            "Alert.tsx",
             "AsignarAgendamientoModal.tsx",
             "Badge.tsx",
+            "BarChart.tsx",
             "Button.tsx",
+            "Calendar.tsx",
             "Card.tsx",
+            "Checkbox.tsx",
             "Chip-backup.tsx",
             "Chip.tsx",
             "ConfirmModal.tsx",
             "ConfirmarEliminacionModal.tsx",
             "ConvertirSeguimientoModal.tsx",
+            "Counter.tsx",
             "CrearParticipanteExternoModal.tsx",
             "CrearParticipanteFriendFamilyModal.tsx",
             "CrearParticipanteInternoModal.tsx",
@@ -58,7 +68,9 @@
             "DatePicker.tsx",
             "DepartamentoSelect.tsx",
             "DepartamentoSelector.tsx",
+            "Divider.tsx",
             "DonutChart.tsx",
+            "DragDropZone.tsx",
             "EditarParticipanteModal.tsx",
             "EditarReclutamientoModal.tsx",
             "EditarResponsableAgendamientoModal.tsx",
@@ -70,9 +82,14 @@
             "InlineEdit.tsx",
             "InlineUserSelect.tsx",
             "Input.tsx",
+            "KanbanBoard.tsx",
+            "KanbanBoardSimple.tsx",
+            "KanbanBoardTest.tsx",
             "Layout.tsx",
             "LayoutSimple.tsx",
+            "LineChart.tsx",
             "LinkModal.tsx",
+            "List.tsx",
             "MetricCard.tsx",
             "MobileNavigation.tsx",
             "Modal.tsx",
@@ -80,6 +97,7 @@
             "NavigationItem-backup.tsx",
             "NavigationItem.tsx",
             "ProgressBar.tsx",
+            "RadioButton.tsx",
             "RolSelector-backup.tsx",
             "RolSelector.tsx",
             "SeguimientoModal.tsx",
@@ -99,11 +117,14 @@
             "Sidebar-working.tsx",
             "Sidebar.tsx",
             "SimpleAvatar.tsx",
+            "Skeleton.tsx",
             "Slider.tsx",
             "Switch.tsx",
             "Tabs.tsx",
             "Textarea.tsx",
             "TimePicker.tsx",
+            "Timeline.tsx",
+            "TimelineTest.tsx",
             "Toast.tsx",
             "ToastContainer.tsx",
             "Tooltip.tsx",
@@ -154,20 +175,20 @@
           ]
         }
       },
-      "timestamp": "2025-08-20T08:00:49.041Z"
+      "timestamp": "2025-08-21T03:09:12.358Z"
     },
     "code-structure": {
       "success": true,
       "mcp": "code-structure",
       "data": {
         "structure": {
-          "total_files": 352,
+          "total_files": 393,
           "total_directories": 47,
           "file_types": {
-            ".ts": 129,
-            ".tsx": 180,
+            ".ts": 143,
+            ".tsx": 205,
             ".swp": 1,
-            ".backup": 5,
+            ".backup": 6,
             ".backup2": 1,
             ".backup3": 1,
             ".backup4": 1,
@@ -178,7 +199,7 @@
             ".png": 10,
             ".svg": 5,
             ".avif": 1,
-            ".css": 7
+            ".css": 8
           },
           "directories": [
             "api",
@@ -288,7 +309,7 @@
           "total_dependencies": 37
         }
       },
-      "timestamp": "2025-08-20T08:00:49.103Z"
+      "timestamp": "2025-08-21T03:09:12.467Z"
     },
     "testing-qa": {
       "success": true,
@@ -354,14 +375,14 @@
         },
         "coverage": {
           "coverage_exists": false,
-          "coverage_path": "/Users/elkinmac/Documents/central-de-creadores/coverage"
+          "coverage_path": "../../coverage"
         },
         "issues": {
           "eslint_configured": false,
           "linting_enabled": false
         }
       },
-      "timestamp": "2025-08-20T08:00:51.255Z"
+      "timestamp": "2025-08-21T03:09:14.358Z"
     },
     "supabase": {
       "success": true,
@@ -387,7 +408,7 @@
             "probar-internos-sin-created-at.sql",
             "refresh-schema.sql"
           ],
-          "total_files": 692
+          "total_files": 704
         },
         "tables": {
           "total_tables": 6,
@@ -413,10 +434,12 @@
           ]
         },
         "policies": {
-          "total_policies": 33,
+          "total_policies": 35,
           "policy_files": [
             "advanced-rls-policies.sql",
             "clean-and-setup-rls.sql",
+            "corregir-rls-usuarios-final.sql",
+            "corregir-rls-usuarios.sql",
             "create-rls-libretos.sql",
             "deshabilitar-rls-actividades.sql",
             "deshabilitar-rls-catalogos-libretos.sql",
@@ -451,13 +474,12 @@
           ]
         },
         "data": {
-          "total_data_files": 6,
+          "total_data_files": 5,
           "data_files": [
             "insertar-datos-prueba-reclutamientos.sql",
             "insertar-datos-roles-empresa.sql",
             "insertar-empresas-prueba.sql",
             "insertar-empresas-simple.sql",
-            "insertar-productos-prueba.sql",
             "verificar-y-insertar-reclutamientos.sql"
           ]
         },
@@ -469,7 +491,7 @@
           ]
         }
       },
-      "timestamp": "2025-08-20T08:01:02.323Z"
+      "timestamp": "2025-08-21T03:09:22.714Z"
     }
   },
   "summary": {
