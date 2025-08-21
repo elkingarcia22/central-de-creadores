@@ -110,12 +110,58 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [empresaData, setEmpresaData] = useState<EmpresaDetallada>(empresa);
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [filterOptions, setFilterOptions] = useState({
+    estados: [],
+    tamanos: [],
+    paises: [],
+    kams: [],
+    relaciones: [],
+    productos: []
+  });
 
   useEffect(() => {
     if (empresa.id) {
       cargarEstadisticas(empresa.id);
     }
+    cargarDatosModal();
   }, [empresa.id]);
+
+  const cargarDatosModal = async () => {
+    try {
+      // Cargar usuarios
+      const usuariosRes = await fetch('/api/usuarios');
+      const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
+      
+      // Cargar catálogos
+      const estadosRes = await fetch('/api/estados');
+      const estados = estadosRes.ok ? await estadosRes.json() : [];
+      
+      const tamanosRes = await fetch('/api/tamanos');
+      const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
+      
+      const paisesRes = await fetch('/api/paises');
+      const paises = paisesRes.ok ? await paisesRes.json() : [];
+      
+      const relacionesRes = await fetch('/api/relaciones-empresa');
+      const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
+      
+      const productosRes = await fetch('/api/productos');
+      const productos = productosRes.ok ? await productosRes.json() : [];
+
+      setUsuarios(usuariosData);
+      setFilterOptions({
+        estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
+        tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
+        paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
+        kams: usuariosData.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
+        relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
+        productos: productos.map((p: any) => ({ value: p.id, label: p.nombre }))
+      });
+    } catch (error) {
+      console.error('Error cargando datos del modal:', error);
+    }
+  };
 
   const cargarEstadisticas = async (empresaId: string) => {
     setLoading(true);
@@ -672,15 +718,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         onClose={() => setShowEditModal(false)}
         onSave={handleSaveEmpresa}
         empresa={empresaData}
-        usuarios={[]} // TODO: Cargar usuarios si es necesario
-        filterOptions={{
-          estados: [],
-          tamanos: [],
-          paises: [],
-          kams: [],
-          relaciones: [],
-          productos: []
-        }}
+        usuarios={usuarios}
+        filterOptions={filterOptions}
         loading={saving}
       />
     </Layout>
