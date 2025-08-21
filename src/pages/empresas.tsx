@@ -697,8 +697,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             label: 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
             onClick: () => {
-              setSelectedEmpresa(row);
-              setShowViewModal(true);
+              router.push(`/empresas/ver/${row.id}`);
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
