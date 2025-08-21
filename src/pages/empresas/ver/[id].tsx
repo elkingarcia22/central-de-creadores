@@ -243,7 +243,13 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           <div className="space-y-3">
             <div>
               <Typography variant="caption" color="secondary">Estado</Typography>
-              <Typography variant="body2">{empresaData.estado_nombre || 'Sin especificar'}</Typography>
+              {empresaData.estado_nombre ? (
+                <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
+                  {empresaData.estado_nombre}
+                </Chip>
+              ) : (
+                <Typography variant="body2">Sin especificar</Typography>
+              )}
             </div>
             {empresaData.tamano_nombre && (
               <div>
