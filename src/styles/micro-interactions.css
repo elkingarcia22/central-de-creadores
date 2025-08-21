@@ -1,0 +1,519 @@
+/* ====================================
+   MICRO-INTERACCIONES Y ANIMACIONES
+   ==================================== */
+
+/* Variables de animación */
+:root {
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ====================================
+   ANIMACIONES DE ENTRADA
+   ==================================== */
+
+/* Fade In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s var(--smooth);
+}
+
+.fade-in-delay-1 { animation-delay: 0.1s; }
+.fade-in-delay-2 { animation-delay: 0.2s; }
+.fade-in-delay-3 { animation-delay: 0.3s; }
+
+/* Slide In */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-left { animation: slideInLeft 0.4s var(--smooth); }
+.slide-in-right { animation: slideInRight 0.4s var(--smooth); }
+.slide-in-up { animation: slideInUp 0.4s var(--smooth); }
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.3s var(--elastic);
+}
+
+/* ====================================
+   HOVER EFFECTS
+   ==================================== */
+
+/* Card Hover */
+.card-hover {
+  transition: all var(--transition-normal) var(--smooth);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Hover */
+.btn-hover {
+  transition: all var(--transition-fast) var(--smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-slow) var(--smooth);
+}
+
+.btn-hover:hover::before {
+  left: 100%;
+}
+
+.btn-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Input Focus */
+.input-focus {
+  transition: all var(--transition-normal) var(--smooth);
+}
+
+.input-focus:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ====================================
+   LOADING ANIMATIONS
+   ==================================== */
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulse {
+  animation: pulse 2s var(--smooth) infinite;
+}
+
+/* Bounce */
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.bounce {
+  animation: bounce 1s var(--bounce);
+}
+
+/* ====================================
+   NOTIFICATION ANIMATIONS
+   ==================================== */
+
+/* Toast Slide In */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-slide-in {
+  animation: toastSlideIn 0.3s var(--elastic);
+}
+
+/* Notification Pop */
+@keyframes notificationPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.notification-pop {
+  animation: notificationPop 0.4s var(--elastic);
+}
+
+/* ====================================
+   PAGE TRANSITIONS
+   ==================================== */
+
+/* Page Fade */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-fade-in {
+  animation: pageFadeIn 0.5s var(--smooth);
+}
+
+/* Stagger Children */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s var(--smooth) forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ====================================
+   INTERACTIVE ELEMENTS
+   ==================================== */
+
+/* Ripple Effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Checkbox Animation */
+.checkbox-animated {
+  transition: all var(--transition-fast) var(--smooth);
+}
+
+.checkbox-animated:checked {
+  transform: scale(1.1);
+  animation: bounce 0.3s var(--bounce);
+}
+
+/* Switch Toggle */
+.switch-toggle {
+  transition: all var(--transition-fast) var(--smooth);
+}
+
+.switch-toggle:checked {
+  transform: translateX(100%);
+}
+
+/* ====================================
+   DATA VISUALIZATION
+   ==================================== */
+
+/* Progress Bar Fill */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width, 0%);
+  }
+}
+
+.progress-fill {
+  animation: progressFill 1s var(--smooth) forwards;
+}
+
+/* Chart Animations */
+@keyframes chartBarGrow {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--bar-height, 0%);
+  }
+}
+
+.chart-bar {
+  animation: chartBarGrow 0.8s var(--elastic) forwards;
+}
+
+/* ====================================
+   FORM INTERACTIONS
+   ==================================== */
+
+/* Form Field Focus */
+.form-field {
+  transition: all var(--transition-normal) var(--smooth);
+}
+
+.form-field:focus-within {
+  transform: translateY(-2px);
+}
+
+.form-field:focus-within .form-label {
+  color: var(--primary-color, #3B82F6);
+  transform: translateY(-2px) scale(0.9);
+}
+
+/* Validation States */
+.form-field.valid {
+  border-color: var(--success-color, #10B981);
+  animation: validationSuccess 0.3s var(--elastic);
+}
+
+.form-field.error {
+  border-color: var(--error-color, #EF4444);
+  animation: validationError 0.3s var(--elastic);
+}
+
+@keyframes validationSuccess {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes validationError {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ====================================
+   NAVIGATION EFFECTS
+   ==================================== */
+
+/* Menu Item Hover */
+.menu-item {
+  transition: all var(--transition-fast) var(--smooth);
+  position: relative;
+}
+
+.menu-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color, #3B82F6);
+  transition: all var(--transition-normal) var(--smooth);
+  transform: translateX(-50%);
+}
+
+.menu-item:hover::after {
+  width: 100%;
+}
+
+.menu-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Breadcrumb Animation */
+.breadcrumb-item {
+  transition: all var(--transition-fast) var(--smooth);
+}
+
+.breadcrumb-item:hover {
+  transform: scale(1.05);
+}
+
+/* ====================================
+   MODAL ANIMATIONS
+   ==================================== */
+
+/* Modal Backdrop */
+@keyframes modalBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-backdrop {
+  animation: modalBackdropFade 0.3s var(--smooth);
+}
+
+/* Modal Content */
+@keyframes modalContentSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-content {
+  animation: modalContentSlide 0.4s var(--elastic);
+}
+
+/* ====================================
+   TABLE INTERACTIONS
+   ==================================== */
+
+/* Table Row Hover */
+.table-row {
+  transition: all var(--transition-fast) var(--smooth);
+}
+
+.table-row:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  transform: scale(1.01);
+}
+
+/* Sort Animation */
+.sort-arrow {
+  transition: transform var(--transition-fast) var(--smooth);
+}
+
+.sort-arrow.asc {
+  transform: rotate(180deg);
+}
+
+.sort-arrow.desc {
+  transform: rotate(0deg);
+}
+
+/* ====================================
+   UTILITY CLASSES
+   ==================================== */
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .card-hover:hover {
+    box-shadow: 0 0 0 2px currentColor;
+  }
+  
+  .btn-hover:hover {
+    box-shadow: 0 0 0 2px currentColor;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .card-hover:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .btn-hover:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}

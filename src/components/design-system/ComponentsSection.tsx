@@ -36,8 +36,32 @@ import {
   DatePicker,
   TimePicker,
   MultiSelect,
-  Switch
+  Switch,
+  DragDropZone,
+  Calendar,
+  KanbanBoard,
+  Timeline,
+  KanbanBoardTest,
+  TimelineTest,
+  KanbanBoardSimple,
+  Alert,
+  Skeleton,
+  SkeletonText,
+  SkeletonAvatar,
+  SkeletonCard,
+  Divider,
+  List,
+  Checkbox,
+  CheckboxGroup,
+  RadioButton,
+  RadioGroup,
+  Accordion,
+  LineChart,
+  BarChart,
+  Counter,
+  CounterGroup
 } from '../ui';
+import MicroInteractionsDemo from './MicroInteractionsDemo';
 import { 
   getEstadoReclutamientoVariant, 
   getEstadoReclutamientoText,
@@ -71,7 +95,8 @@ import {
   AlertTriangleIcon,
   XIcon,
   MoreVerticalIcon,
-  ClockIcon
+  ClockIcon,
+  FileIcon
 } from '../icons';
 
 const ComponentsSection: React.FC = () => {
@@ -131,6 +156,8 @@ const ComponentsSection: React.FC = () => {
         { id: "textarea", name: "Textarea" },
         { id: "select", name: "Select" },
         { id: "switch", name: "Switch" },
+        { id: "checkbox", name: "Checkbox" },
+        { id: "radio-button", name: "Radio Button" },
         { id: "date-picker", name: "Date Picker" },
         { id: "time-picker", name: "Time Picker" },
         { id: "multi-select", name: "Multi Select" }
@@ -144,7 +171,10 @@ const ComponentsSection: React.FC = () => {
         { id: "chip", name: "Chip" },
         { id: "progress-bar", name: "Progress Bar" },
         { id: "toast", name: "Toast" },
-        { id: "tooltip", name: "Tooltip" }
+        { id: "tooltip", name: "Tooltip" },
+        { id: "alert", name: "Alert" },
+        { id: "skeleton", name: "Skeleton" },
+        { id: "divider", name: "Divider" }
       ]
     },
     {
@@ -155,7 +185,40 @@ const ComponentsSection: React.FC = () => {
         { id: "data-table", name: "Data Table" },
         { id: "metric-card", name: "Metric Card" },
         { id: "empty-state", name: "Empty State" },
-        { id: "donut-chart", name: "Donut Chart" }
+        { id: "list", name: "List" },
+        { id: "counter", name: "Counter" }
+      ]
+    },
+    {
+      id: "charts",
+      name: "Charts",
+      components: [
+        { id: "donut-chart", name: "Donut Chart" },
+        { id: "line-chart", name: "Line Chart" },
+        { id: "bar-chart", name: "Bar Chart" }
+      ]
+    },
+    {
+      id: "navigation",
+      name: "Navegación",
+      components: [
+        { id: "tabs", name: "Tabs" },
+        { id: "sidebar", name: "Sidebar" },
+        { id: "top-navigation", name: "Top Navigation" },
+        { id: "mobile-navigation", name: "Mobile Navigation" },
+        { id: "user-menu", name: "User Menu" },
+        { id: "navigation-item", name: "Navigation Item" },
+        { id: "accordion", name: "Accordion" }
+      ]
+    },
+    {
+      id: "data-management",
+      name: "Gestión de Datos",
+      components: [
+        { id: "drag-drop-zone", name: "Drag & Drop Zone" },
+        { id: "calendar", name: "Calendar" },
+        { id: "kanban-board", name: "Kanban Board" },
+        { id: "timeline", name: "Timeline" }
       ]
     },
     {
@@ -7922,11 +7985,11 @@ const ComponentsSection: React.FC = () => {
       return renderSelectComponent();
     }
     
-    if (activeComponent === 'switch') {
-      return renderSwitchComponent();
-    }
-    
-    if (activeComponent === 'tabs') {
+          if (activeComponent === 'switch') {
+        return renderSwitchComponent();
+      }
+      
+      if (activeComponent === 'tabs') {
       return (
         <div className="space-y-8">
           {/* Descripción */}
@@ -8570,7 +8633,942 @@ const ComponentsSection: React.FC = () => {
       );
     }
 
+    // Componentes Avanzados
+    if (activeComponent === 'drag-drop-zone') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Drag & Drop Zone
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente especializado para arrastrar y soltar archivos con validación, preview y estados de carga.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Básico
+                </Typography>
+                <DragDropZone
+                  accept={['image/*', 'application/pdf']}
+                  maxSize={5 * 1024 * 1024}
+                  maxFiles={5}
+                  dropText="Arrastra archivos aquí o haz clic para seleccionar"
+                  onFilesAdded={(files) => console.log('Archivos agregados:', files)}
+                />
+              </div>
 
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Compacto
+                </Typography>
+                <DragDropZone
+                  variant="compact"
+                  accept={['*/*']}
+                  maxFiles={3}
+                  dropText="Sube archivos"
+                />
+              </div>
+
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Con Error
+                </Typography>
+                <DragDropZone
+                  error="Error al cargar archivos. Intenta de nuevo."
+                  accept={['image/*']}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (activeComponent === 'calendar') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Calendar
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente de calendario tipo Google Calendar con múltiples vistas y gestión de eventos.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Vista de Mes
+                </Typography>
+                <Calendar
+                  events={[
+                    {
+                      id: '1',
+                      title: 'Reunión de equipo',
+                      start: new Date(2024, 0, 15, 10, 0),
+                      end: new Date(2024, 0, 15, 11, 0),
+                      color: 'primary'
+                    },
+                    {
+                      id: '2',
+                      title: 'Presentación cliente',
+                      start: new Date(2024, 0, 16, 14, 0),
+                      end: new Date(2024, 0, 16, 15, 30),
+                      color: 'success'
+                    }
+                  ]}
+                  view="month"
+                  onEventClick={(event) => console.log('Evento clickeado:', event)}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (activeComponent === 'kanban-board') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Kanban Board
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Tablero Kanban para gestión de tareas con drag & drop, prioridades y estados.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Tablero de Tareas
+                </Typography>
+                <KanbanBoardSimple
+                  columns={[
+                    {
+                      id: 'todo',
+                      title: 'Por Hacer',
+                      color: '#3B82F6',
+                      tasks: [
+                        {
+                          id: '1',
+                          title: 'Diseñar mockups',
+                          description: 'Crear mockups para la nueva funcionalidad',
+                          status: 'todo',
+                          priority: 'high',
+                          assignee: { id: '1', name: 'Juan Pérez' },
+                          dueDate: new Date(2024, 0, 20),
+                          tags: ['diseño', 'UI'],
+                          createdAt: new Date(),
+                          updatedAt: new Date()
+                        }
+                      ]
+                    },
+                    {
+                      id: 'in-progress',
+                      title: 'En Progreso',
+                      color: '#F59E0B',
+                      tasks: [
+                        {
+                          id: '2',
+                          title: 'Implementar API',
+                          description: 'Desarrollar endpoints para el backend',
+                          status: 'in-progress',
+                          priority: 'urgent',
+                          assignee: { id: '2', name: 'María García' },
+                          dueDate: new Date(2024, 0, 18),
+                          tags: ['backend', 'API'],
+                          createdAt: new Date(),
+                          updatedAt: new Date()
+                        }
+                      ]
+                    },
+                    {
+                      id: 'done',
+                      title: 'Completado',
+                      color: '#10B981',
+                      tasks: []
+                    }
+                  ]}
+                  onTaskClick={(task) => console.log('Tarea clickeada:', task)}
+                  onTaskMove={(taskId, fromStatus, toStatus) => console.log('Tarea movida:', taskId, fromStatus, toStatus)}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (activeComponent === 'timeline') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Timeline
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente de línea de tiempo para mostrar eventos cronológicos con estados y metadatos.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Timeline de Eventos
+                </Typography>
+                <TimelineTest />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (activeComponent === 'micro-interactions-demo') {
+      return (
+        <Card className="p-6 text-center">
+          <Typography variant="body1" color="secondary">
+            Las micro-interacciones ahora tienen su propia pestaña dedicada en el sistema de diseño.
+          </Typography>
+        </Card>
+      );
+    }
+
+    // Alert Component
+    if (activeComponent === 'alert') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Alert
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para mostrar alertas y notificaciones con diferentes variantes y estados.
+            </Typography>
+            
+            <div className="space-y-4">
+              <Alert variant="info" title="Información">
+                Esta es una alerta informativa con un título y contenido descriptivo.
+              </Alert>
+              
+              <Alert variant="success" title="Éxito">
+                La operación se completó exitosamente. Los cambios han sido guardados.
+              </Alert>
+              
+              <Alert variant="warning" title="Advertencia">
+                Ten cuidado con esta acción. Podría tener consecuencias inesperadas.
+              </Alert>
+              
+              <Alert variant="error" title="Error">
+                Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.
+              </Alert>
+              
+              <Alert variant="info" closable onClose={() => console.log('Alert closed')}>
+                Esta alerta se puede cerrar haciendo clic en el botón X.
+              </Alert>
+              
+              <Alert 
+                variant="success" 
+                title="Con Acciones"
+                actions={
+                  <div className="flex space-x-2">
+                    <Button size="sm" variant="outline">Cancelar</Button>
+                    <Button size="sm">Confirmar</Button>
+                  </div>
+                }
+              >
+                Esta alerta incluye botones de acción personalizados.
+              </Alert>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Skeleton Component
+    if (activeComponent === 'skeleton') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Skeleton
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componentes para mostrar estados de carga con animaciones de skeleton.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Variantes Básicas
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">Text</Typography>
+                    <Skeleton variant="text" width="100%" />
+                  </div>
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">Circular</Typography>
+                    <Skeleton variant="circular" width={40} height={40} />
+                  </div>
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">Rectangular</Typography>
+                    <Skeleton variant="rectangular" width={100} height={60} />
+                  </div>
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">Rounded</Typography>
+                    <Skeleton variant="rounded" width={100} height={60} />
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Componentes Especializados
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">SkeletonText</Typography>
+                    <SkeletonText lines={3} />
+                  </div>
+                  <div>
+                    <Typography variant="body2" color="secondary" className="mb-2">SkeletonAvatar</Typography>
+                    <div className="flex space-x-2">
+                      <SkeletonAvatar size="sm" />
+                      <SkeletonAvatar size="md" />
+                      <SkeletonAvatar size="lg" />
+                      <SkeletonAvatar size="xl" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  SkeletonCard
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Divider Component
+    if (activeComponent === 'divider') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Divider
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para separar contenido con diferentes estilos y orientaciones.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Orientación Horizontal
+                </Typography>
+                <div className="space-y-4">
+                  <div>Contenido arriba</div>
+                  <Divider />
+                  <div>Contenido abajo</div>
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Con Texto
+                </Typography>
+                <Divider>O</Divider>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Variantes
+                </Typography>
+                <div className="space-y-4">
+                  <Divider variant="solid" />
+                  <Divider variant="dashed" />
+                  <Divider variant="dotted" />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Colores
+                </Typography>
+                <div className="space-y-4">
+                  <Divider color="default" />
+                  <Divider color="primary" />
+                  <Divider color="secondary" />
+                  <Divider color="muted" />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Espaciado
+                </Typography>
+                <div className="space-y-4">
+                  <Divider spacing="none" />
+                  <Divider spacing="sm" />
+                  <Divider spacing="md" />
+                  <Divider spacing="lg" />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Orientación Vertical
+                </Typography>
+                <div className="flex items-center space-x-4 h-20">
+                  <span>Izquierda</span>
+                  <Divider orientation="vertical" />
+                  <span>Derecha</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // List Component
+    if (activeComponent === 'list') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              List
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para mostrar listas de elementos con avatares, badges y acciones.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Lista Básica
+                </Typography>
+                <List
+                  items={[
+                    {
+                      id: '1',
+                      title: 'Juan Pérez',
+                      subtitle: 'Desarrollador Frontend',
+                      description: 'Especializado en React y TypeScript',
+                      avatar: 'https://via.placeholder.com/40',
+                      badge: 'Activo',
+                      badgeVariant: 'success'
+                    },
+                    {
+                      id: '2',
+                      title: 'María García',
+                      subtitle: 'Diseñadora UX',
+                      description: 'Experiencia en diseño de interfaces',
+                      avatar: 'https://via.placeholder.com/40',
+                      badge: 'Ausente',
+                      badgeVariant: 'warning'
+                    },
+                    {
+                      id: '3',
+                      title: 'Carlos López',
+                      subtitle: 'Product Manager',
+                      description: 'Gestión de productos digitales',
+                      avatar: 'https://via.placeholder.com/40',
+                      badge: 'Ocupado',
+                      badgeVariant: 'danger'
+                    }
+                  ]}
+                  title="Equipo de Desarrollo"
+                  subtitle="Miembros activos del proyecto"
+                />
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Lista con Acciones
+                </Typography>
+                <List
+                  items={[
+                    {
+                      id: '1',
+                      title: 'Proyecto Alpha',
+                      subtitle: 'En desarrollo',
+                      description: 'Aplicación web para gestión de tareas',
+                      badge: 'En progreso',
+                      badgeVariant: 'primary',
+                      actions: (
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">Ver</Button>
+                          <Button size="sm">Editar</Button>
+                        </div>
+                      )
+                    },
+                    {
+                      id: '2',
+                      title: 'Proyecto Beta',
+                      subtitle: 'Completado',
+                      description: 'Sistema de reportes y analytics',
+                      badge: 'Completado',
+                      badgeVariant: 'success',
+                      actions: (
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">Ver</Button>
+                          <Button size="sm">Descargar</Button>
+                        </div>
+                      )
+                    }
+                  ]}
+                  variant="bordered"
+                />
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Lista con Iconos
+                </Typography>
+                <List
+                  items={[
+                    {
+                      id: '1',
+                      title: 'Documento de Especificaciones',
+                      subtitle: 'PDF • 2.3 MB',
+                      icon: <FileIcon className="w-5 h-5" />,
+                      actions: <Button size="sm" variant="outline">Descargar</Button>
+                    },
+                    {
+                      id: '2',
+                      title: 'Presentación del Proyecto',
+                      subtitle: 'PPTX • 1.8 MB',
+                      icon: <FileIcon className="w-5 h-5" />,
+                      actions: <Button size="sm" variant="outline">Descargar</Button>
+                    }
+                  ]}
+                  showAvatars={false}
+                  showIcons={true}
+                  variant="striped"
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Checkbox Component
+    if (activeComponent === 'checkbox') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Checkbox
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para selecciones múltiples con diferentes estados y tamaños.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Estados Básicos
+                </Typography>
+                <div className="space-y-3">
+                  <Checkbox label="Checkbox normal" />
+                  <Checkbox label="Checkbox marcado" checked />
+                  <Checkbox label="Checkbox indeterminado" indeterminate />
+                  <Checkbox label="Checkbox deshabilitado" disabled />
+                  <Checkbox label="Checkbox deshabilitado marcado" checked disabled />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Tamaños
+                </Typography>
+                <div className="space-y-3">
+                  <Checkbox label="Checkbox pequeño" size="sm" />
+                  <Checkbox label="Checkbox mediano" size="md" />
+                  <Checkbox label="Checkbox grande" size="lg" />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Con Descripción
+                </Typography>
+                <div className="space-y-3">
+                  <Checkbox 
+                    label="Acepto los términos y condiciones" 
+                    description="Al marcar esta casilla, confirmas que has leído y aceptas nuestros términos de servicio."
+                  />
+                  <Checkbox 
+                    label="Recibir notificaciones por email" 
+                    description="Te enviaremos actualizaciones importantes sobre tu cuenta."
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Grupo de Checkboxes
+                </Typography>
+                <CheckboxGroup
+                  options={[
+                    { id: '1', label: 'React', value: 'react' },
+                    { id: '2', label: 'Vue', value: 'vue' },
+                    { id: '3', label: 'Angular', value: 'angular' },
+                    { id: '4', label: 'Svelte', value: 'svelte' }
+                  ]}
+                  selectedValues={['react', 'vue']}
+                  onChange={(values) => console.log('Seleccionados:', values)}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Radio Button Component
+    if (activeComponent === 'radio-button') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Radio Button
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para selección única con diferentes estados y tamaños.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Estados Básicos
+                </Typography>
+                <div className="space-y-3">
+                  <RadioButton label="Radio normal" />
+                  <RadioButton label="Radio seleccionado" checked />
+                  <RadioButton label="Radio deshabilitado" disabled />
+                  <RadioButton label="Radio deshabilitado seleccionado" checked disabled />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Tamaños
+                </Typography>
+                <div className="space-y-3">
+                  <RadioButton label="Radio pequeño" size="sm" />
+                  <RadioButton label="Radio mediano" size="md" />
+                  <RadioButton label="Radio grande" size="lg" />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Con Descripción
+                </Typography>
+                <div className="space-y-3">
+                  <RadioButton 
+                    label="Plan Básico" 
+                    description="Perfecto para proyectos pequeños. Incluye 5GB de almacenamiento."
+                  />
+                  <RadioButton 
+                    label="Plan Pro" 
+                    description="Ideal para equipos. Incluye 50GB de almacenamiento y soporte prioritario."
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Grupo de Radio Buttons
+                </Typography>
+                <RadioGroup
+                  options={[
+                    { id: '1', label: 'Opción 1', value: 'option1' },
+                    { id: '2', label: 'Opción 2', value: 'option2' },
+                    { id: '3', label: 'Opción 3', value: 'option3' }
+                  ]}
+                  selectedValue="option2"
+                  onChange={(value) => console.log('Seleccionado:', value)}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Accordion Component
+    if (activeComponent === 'accordion') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Accordion
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para organizar contenido en secciones colapsables.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Accordion Básico
+                </Typography>
+                <Accordion
+                  items={[
+                    {
+                      id: '1',
+                      title: '¿Qué es Central de Creadores?',
+                      content: 'Central de Creadores es una plataforma integral para la gestión de proyectos creativos, investigación de usuarios y reclutamiento de participantes.'
+                    },
+                    {
+                      id: '2',
+                      title: '¿Cómo funciona el sistema de reclutamiento?',
+                      content: 'Nuestro sistema de reclutamiento te permite encontrar y gestionar participantes para tus investigaciones de manera eficiente y organizada.'
+                    },
+                    {
+                      id: '3',
+                      title: '¿Qué tipos de proyectos puedo crear?',
+                      content: 'Puedes crear proyectos de investigación de usuarios, estudios de usabilidad, entrevistas, encuestas y más.'
+                    }
+                  ]}
+                />
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Accordion con Múltiples Abiertos
+                </Typography>
+                <Accordion
+                  items={[
+                    {
+                      id: '1',
+                      title: 'Características Principales',
+                      content: 'Gestión de proyectos, reclutamiento de participantes, análisis de datos, reportes automáticos.'
+                    },
+                    {
+                      id: '2',
+                      title: 'Integraciones',
+                      content: 'Integración con herramientas populares como Figma, Notion, Slack y más.'
+                    },
+                    {
+                      id: '3',
+                      title: 'Soporte',
+                      content: 'Soporte técnico 24/7, documentación completa y comunidad activa.'
+                    }
+                  ]}
+                  allowMultiple
+                  defaultOpen={['1']}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Line Chart Component
+    if (activeComponent === 'line-chart') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Line Chart
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Gráfico de líneas con animaciones y micro-interacciones.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Gráfico de Línea Básico
+                </Typography>
+                <LineChart
+                  data={[
+                    { x: 'Ene', y: 10 },
+                    { x: 'Feb', y: 25 },
+                    { x: 'Mar', y: 15 },
+                    { x: 'Abr', y: 30 },
+                    { x: 'May', y: 20 },
+                    { x: 'Jun', y: 35 }
+                  ]}
+                  title="Ventas Mensuales"
+                  subtitle="Evolución de ventas en el primer semestre"
+                  width={500}
+                  height={300}
+                />
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Gráfico con Área
+                </Typography>
+                <LineChart
+                  data={[
+                    { x: 'Lun', y: 5 },
+                    { x: 'Mar', y: 12 },
+                    { x: 'Mié', y: 8 },
+                    { x: 'Jue', y: 18 },
+                    { x: 'Vie', y: 15 },
+                    { x: 'Sáb', y: 22 },
+                    { x: 'Dom', y: 10 }
+                  ]}
+                  title="Actividad Semanal"
+                  showArea
+                  color="#10B981"
+                  width={500}
+                  height={300}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Bar Chart Component
+    if (activeComponent === 'bar-chart') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Bar Chart
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Gráfico de barras con animaciones y micro-interacciones.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Gráfico de Barras Vertical
+                </Typography>
+                <BarChart
+                  data={[
+                    { label: 'React', value: 45 },
+                    { label: 'Vue', value: 25 },
+                    { label: 'Angular', value: 20 },
+                    { label: 'Svelte', value: 10 }
+                  ]}
+                  title="Popularidad de Frameworks"
+                  subtitle="Porcentaje de uso en 2024"
+                  width={500}
+                  height={300}
+                />
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Gráfico de Barras Horizontal
+                </Typography>
+                <BarChart
+                  data={[
+                    { label: 'Diseño', value: 80, color: '#3B82F6' },
+                    { label: 'Desarrollo', value: 90, color: '#10B981' },
+                    { label: 'Testing', value: 70, color: '#F59E0B' },
+                    { label: 'Deploy', value: 85, color: '#EF4444' }
+                  ]}
+                  title="Progreso del Proyecto"
+                  orientation="horizontal"
+                  width={500}
+                  height={300}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    // Counter Component
+    if (activeComponent === 'counter') {
+      return (
+        <div className="space-y-8">
+          <Card className="p-6">
+            <Typography variant="h3" weight="bold" className="mb-4">
+              Counter
+            </Typography>
+            <Typography variant="body1" color="secondary" className="mb-6">
+              Componente para mostrar números con animación de conteo.
+            </Typography>
+            
+            <div className="space-y-6">
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Contadores Individuales
+                </Typography>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Counter
+                    value={1234}
+                    title="Usuarios Activos"
+                    description="En los últimos 30 días"
+                    color="primary"
+                  />
+                  <Counter
+                    value={567}
+                    title="Proyectos Creados"
+                    description="Este año"
+                    color="success"
+                  />
+                  <Counter
+                    value={89}
+                    title="Tasa de Éxito"
+                    suffix="%"
+                    description="Proyectos completados"
+                    color="warning"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Typography variant="h4" weight="semibold" className="mb-3">
+                  Grupo de Contadores
+                </Typography>
+                <CounterGroup
+                  counters={[
+                    {
+                      id: '1',
+                      value: 1500000,
+                      title: 'Ingresos',
+                      prefix: '$',
+                      color: 'success'
+                    },
+                    {
+                      id: '2',
+                      value: 2500,
+                      title: 'Clientes',
+                      color: 'primary'
+                    },
+                    {
+                      id: '3',
+                      value: 95,
+                      title: 'Satisfacción',
+                      suffix: '%',
+                      color: 'info'
+                    }
+                  ]}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
 
     return (
       <Card className="p-6 text-center">

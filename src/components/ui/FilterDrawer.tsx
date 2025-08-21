@@ -123,11 +123,26 @@ export interface FilterValuesParticipantes {
   tiene_productos?: string | 'todos';
 }
 
+// Interface específica para filtros de empresas
+export interface FilterValuesEmpresa {
+  busqueda?: string;
+  estado?: string | 'todos';
+  sector?: string | 'todos';
+  tamano?: string | 'todos';
+  pais?: string | 'todos';
+  kam_id?: string | 'todos';
+  activo?: boolean;
+  industria?: string | 'todos';
+  modalidad?: string | 'todos';
+  relacion?: string | 'todos';
+  producto?: string | 'todos';
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa) => void;
   options: FilterOptions;
   className?: string;
   type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa';
@@ -191,6 +206,20 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         tiene_email: 'todos',
         tiene_productos: 'todos'
       } as FilterValuesParticipantes);
+    } else if (type === 'empresa') {
+      onFiltersChange({
+        busqueda: '',
+        estado: 'todos',
+        sector: 'todos',
+        tamano: 'todos',
+        pais: 'todos',
+        kam_id: 'todos',
+        activo: true,
+        industria: 'todos',
+        modalidad: 'todos',
+        relacion: 'todos',
+        producto: 'todos'
+      } as FilterValuesEmpresa);
     } else {
       onFiltersChange({
         estados: [],
@@ -255,6 +284,18 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (partFilters.total_participaciones_max) count++;
       if (partFilters.tiene_email && partFilters.tiene_email !== 'todos') count++;
       if (partFilters.tiene_productos && partFilters.tiene_productos !== 'todos') count++;
+    } else if (type === 'empresa') {
+      const empFilters = filters as FilterValuesEmpresa;
+      if (empFilters.estado && empFilters.estado !== 'todos') count++;
+      if (empFilters.sector && empFilters.sector !== 'todos') count++;
+      if (empFilters.tamano && empFilters.tamano !== 'todos') count++;
+      if (empFilters.pais && empFilters.pais !== 'todos') count++;
+      if (empFilters.kam_id && empFilters.kam_id !== 'todos') count++;
+      if (empFilters.activo !== undefined) count++;
+      if (empFilters.industria && empFilters.industria !== 'todos') count++;
+      if (empFilters.modalidad && empFilters.modalidad !== 'todos') count++;
+      if (empFilters.relacion && empFilters.relacion !== 'todos') count++;
+      if (empFilters.producto && empFilters.producto !== 'todos') count++;
     } else {
       const recFilters = filters as FilterValuesReclutamiento;
       if (recFilters.estados.length > 0) count++;
@@ -807,6 +848,162 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     />
                   </div>
                 )}
+              </>
+            ) : type === 'empresa' ? (
+              // Filtros específicos para empresas
+              <>
+                {/* Estado */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Estado
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar estado..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.estados || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).estado || 'todos'}
+                    onChange={(value) => handleFilterChange('estado', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Sector/Industria */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Sector/Industria
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar sector..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.sectores || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).sector || 'todos'}
+                    onChange={(value) => handleFilterChange('sector', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Tamaño */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Tamaño
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar tamaño..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.tamanos || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).tamano || 'todos'}
+                    onChange={(value) => handleFilterChange('tamano', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* País */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    País
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar país..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.paises || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).pais || 'todos'}
+                    onChange={(value) => handleFilterChange('pais', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* KAM */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    KAM
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar KAM..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.kams || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).kam_id || 'todos'}
+                    onChange={(value) => handleFilterChange('kam_id', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Industria */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Industria
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar industria..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.industrias || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).industria || 'todos'}
+                    onChange={(value) => handleFilterChange('industria', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Modalidad */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Modalidad
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar modalidad..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.modalidades || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).modalidad || 'todos'}
+                    onChange={(value) => handleFilterChange('modalidad', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Relación */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Relación
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar relación..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.relaciones || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).relacion || 'todos'}
+                    onChange={(value) => handleFilterChange('relacion', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Producto */}
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Producto
+                  </Typography>
+                  <Select
+                    placeholder="Seleccionar producto..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.productos || [])
+                    ]}
+                    value={(filters as FilterValuesEmpresa).producto || 'todos'}
+                    onChange={(value) => handleFilterChange('producto', value)}
+                    fullWidth
+                  />
+                </div>
               </>
             ) : (
               // Filtros por defecto o para otros tipos
