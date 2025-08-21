@@ -201,17 +201,15 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                   <BuildingIcon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    {empresaData.nombre}
-                  </Typography>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Badge variant={empresaData.activo ? 'success' : 'warning'}>
+                  <Typography variant="h3" className="mb-2">{empresaData.nombre}</Typography>
+                  <div className="flex items-center gap-3">
+                    <Chip variant={empresaData.activo ? 'success' : 'warning'}>
                       {empresaData.activo ? 'Activa' : 'Inactiva'}
-                    </Badge>
+                    </Chip>
                     {empresaData.estado_nombre && (
-                      <Badge variant={getEstadoColor(empresaData.estado_nombre)}>
+                      <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
                         {empresaData.estado_nombre}
-                      </Badge>
+                      </Chip>
                     )}
                   </div>
                 </div>
@@ -270,124 +268,100 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           <div className="mt-6">
             {activeTab === 'informacion' && (
               <div className="space-y-6">
-                {/* Descripción */}
-                {empresaData.descripcion && (
-                  <Card>
-                    <Typography variant="h4" weight="semibold" className="mb-3">
-                      Descripción
-                    </Typography>
-                    <Typography variant="body1" color="secondary">
-                      {empresaData.descripcion}
-                    </Typography>
-                  </Card>
-                )}
+                {/* Información básica */}
+                <Card className="p-6">
+                  <div className="mb-4">
+                    <Typography variant="h3" className="mb-2">{empresaData.nombre}</Typography>
+                    <div className="flex items-center gap-3">
+                      <Chip variant={empresaData.activo ? 'success' : 'warning'}>
+                        {empresaData.activo ? 'Activa' : 'Inactiva'}
+                      </Chip>
+                      {empresaData.estado_nombre && (
+                        <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
+                          {empresaData.estado_nombre}
+                        </Chip>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {empresaData.descripcion && (
+                    <div className="mb-4">
+                      <Typography variant="subtitle2" className="mb-2">Descripción</Typography>
+                      <Typography variant="body1" color="secondary">
+                        {empresaData.descripcion}
+                      </Typography>
+                    </div>
+                  )}
+                </Card>
 
-                {/* Información de contacto */}
-                <Card>
-                  <Typography variant="h4" weight="semibold" className="mb-4">
-                    Información de Contacto
-                  </Typography>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                      <UserIcon className="w-5 h-5 text-gray-400" />
+                {/* Detalles de la empresa */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Información de contacto */}
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <UserIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Contacto</Typography>
+                    </div>
+                    <div className="space-y-3">
                       <div>
-                        <Typography variant="body2" color="secondary">
-                          KAM Asignado
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {empresaData.kam_nombre || 'Sin asignar'}
-                        </Typography>
+                        <Typography variant="caption" color="secondary">KAM Asignado</Typography>
+                        <Typography variant="body2">{empresaData.kam_nombre || 'Sin asignar'}</Typography>
                         {empresaData.kam_email && (
-                          <Typography variant="body2" color="secondary">
+                          <Typography variant="caption" color="secondary" className="block">
                             {empresaData.kam_email}
                           </Typography>
                         )}
                       </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <MapPinIcon className="w-5 h-5 text-gray-400" />
                       <div>
-                        <Typography variant="body2" color="secondary">
-                          País
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {empresaData.pais_nombre || 'Sin especificar'}
-                        </Typography>
+                        <Typography variant="caption" color="secondary">País</Typography>
+                        <Typography variant="body2">{empresaData.pais_nombre || 'Sin especificar'}</Typography>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
 
-                {/* Clasificación */}
-                <Card>
-                  <Typography variant="h4" weight="semibold" className="mb-4">
-                    Clasificación
-                  </Typography>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {empresaData.tamano_nombre && (
-                      <div>
-                        <Typography variant="body2" color="secondary">
-                          Tamaño
-                        </Typography>
-                        <Badge variant="default">
-                          {empresaData.tamano_nombre}
-                        </Badge>
-                      </div>
-                    )}
-
-                    {empresaData.relacion_nombre && (
-                      <div>
-                        <Typography variant="body2" color="secondary">
-                          Relación
-                        </Typography>
-                        <Chip variant="default" size="sm">
-                          {empresaData.relacion_nombre}
-                        </Chip>
-                      </div>
-                    )}
-
-                    {empresaData.producto_nombre && (
-                      <div>
-                        <Typography variant="body2" color="secondary">
-                          Producto Principal
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {empresaData.producto_nombre}
-                        </Typography>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+                  {/* Clasificación */}
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <BuildingIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Clasificación</Typography>
+                    </div>
+                    <div className="space-y-3">
+                      {empresaData.tamano_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Tamaño</Typography>
+                          <Typography variant="body2">{empresaData.tamano_nombre}</Typography>
+                        </div>
+                      )}
+                      {empresaData.relacion_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Relación</Typography>
+                          <Typography variant="body2">{empresaData.relacion_nombre}</Typography>
+                        </div>
+                      )}
+                      {empresaData.producto_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Producto Principal</Typography>
+                          <Typography variant="body2">{empresaData.producto_nombre}</Typography>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </div>
 
                 {/* Información de registro */}
-                <Card>
-                  <Typography variant="h4" weight="semibold" className="mb-4">
-                    Información de Registro
-                  </Typography>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-3">
-                      <CalendarIcon className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <Typography variant="body2" color="secondary">
-                          Fecha de Creación
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {formatearFecha(empresaData.created_at)}
-                        </Typography>
-                      </div>
+                <Card className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <CalendarIcon className="w-5 h-5 text-primary" />
+                    <Typography variant="h5">Registro</Typography>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Typography variant="caption" color="secondary">Fecha de creación</Typography>
+                      <Typography variant="body2">{formatearFecha(empresaData.created_at)}</Typography>
                     </div>
-
-                    <div className="flex items-center space-x-3">
-                      <CalendarIcon className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <Typography variant="body2" color="secondary">
-                          Última Actualización
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {formatearFecha(empresaData.updated_at)}
-                        </Typography>
-                      </div>
+                    <div>
+                      <Typography variant="caption" color="secondary">Última actualización</Typography>
+                      <Typography variant="body2">{formatearFecha(empresaData.updated_at)}</Typography>
                     </div>
                   </div>
                 </Card>
@@ -433,16 +407,15 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                 {/* Última participación */}
                 {empresaData.estadisticas.fechaUltimaParticipacion && (
-                  <Card>
-                    <div className="flex items-center space-x-3">
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
                       <CalendarIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Última Participación</Typography>
+                    </div>
+                    <div className="space-y-3">
                       <div>
-                        <Typography variant="body2" color="secondary">
-                          Última Participación
-                        </Typography>
-                        <Typography variant="body1" weight="medium">
-                          {formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
-                        </Typography>
+                        <Typography variant="caption" color="secondary">Fecha</Typography>
+                        <Typography variant="body2">{formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}</Typography>
                       </div>
                     </div>
                   </Card>
@@ -450,10 +423,11 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                 {/* Gráfico de participaciones por mes */}
                 {Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
-                  <Card>
-                    <Typography variant="h4" weight="semibold" className="mb-4">
-                      Participaciones por Mes
-                    </Typography>
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <BarChartIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Participaciones por Mes</Typography>
+                    </div>
                     <div className="space-y-3">
                       {Object.entries(empresaData.estadisticas.participacionesPorMes)
                         .sort(([a], [b]) => b.localeCompare(a))
@@ -498,16 +472,16 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     
                     <div className="space-y-4">
                       {empresaData.estadisticas.investigaciones.map((investigacion) => (
-                        <Card key={investigacion.id} className="hover:shadow-md transition-shadow">
+                        <Card key={investigacion.id} className="p-6 hover:shadow-md transition-shadow">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
                                 <Typography variant="body1" weight="semibold">
                                   {investigacion.nombre}
                                 </Typography>
-                                <Badge variant={getEstadoColor(investigacion.estado)}>
+                                <Chip variant={getEstadoColor(investigacion.estado)}>
                                   {investigacion.estado}
-                                </Badge>
+                                </Chip>
                                 <Chip variant={getRiesgoColor(investigacion.riesgo_automatico)} size="sm">
                                   {investigacion.riesgo_automatico}
                                 </Chip>
@@ -564,7 +538,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {empresaData.participantes.map((participante) => (
-                        <Card key={participante.id} className="hover:shadow-md transition-shadow">
+                        <Card key={participante.id} className="p-6 hover:shadow-md transition-shadow">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <Typography variant="body1" weight="medium" className="mb-2">
@@ -586,9 +560,9 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                               </div>
                             </div>
                             
-                            <Badge variant="default">
+                            <Chip variant="default">
                               {participante.total_participaciones > 0 ? 'Activo' : 'Sin participación'}
-                            </Badge>
+                            </Chip>
                           </div>
                         </Card>
                       ))}
