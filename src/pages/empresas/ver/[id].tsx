@@ -31,7 +31,8 @@ import {
   EditIcon,
   BarChartIcon,
   HistoryIcon,
-  InfoIcon
+  InfoIcon,
+  ConfiguracionesIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
@@ -296,7 +297,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                 {/* Detalles de la empresa */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Información de contacto */}
+                  {/* Contacto */}
                   <Card className="p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <UserIcon className="w-5 h-5 text-primary" />
@@ -315,6 +316,24 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                       <div>
                         <Typography variant="caption" color="secondary">País</Typography>
                         <Typography variant="body2">{empresaData.pais_nombre || 'Sin especificar'}</Typography>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Fechas */}
+                  <Card className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <CalendarIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Fechas</Typography>
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <Typography variant="caption" color="secondary">Fecha de creación</Typography>
+                        <Typography variant="body2">{formatearFecha(empresaData.created_at)}</Typography>
+                      </div>
+                      <div>
+                        <Typography variant="caption" color="secondary">Última actualización</Typography>
+                        <Typography variant="body2">{formatearFecha(empresaData.updated_at)}</Typography>
                       </div>
                     </div>
                   </Card>
@@ -344,41 +363,32 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                       )}
                     </div>
                   </Card>
-                </div>
 
-                {/* Producto y registro */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Producto */}
-                  {empresaData.producto_nombre && (
-                    <Card className="p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <BuildingIcon className="w-5 h-5 text-primary" />
-                        <Typography variant="h5">Producto</Typography>
-                      </div>
-                      <div className="space-y-3">
-                        <div>
-                          <Typography variant="caption" color="secondary">Producto Principal</Typography>
-                          <Typography variant="body2">{empresaData.producto_nombre}</Typography>
-                        </div>
-                      </div>
-                    </Card>
-                  )}
-
-                  {/* Información de registro */}
+                  {/* Configuración */}
                   <Card className="p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <CalendarIcon className="w-5 h-5 text-primary" />
-                      <Typography variant="h5">Registro</Typography>
+                      <ConfiguracionesIcon className="w-5 h-5 text-primary" />
+                      <Typography variant="h5">Configuración</Typography>
                     </div>
                     <div className="space-y-3">
-                      <div>
-                        <Typography variant="caption" color="secondary">Fecha de creación</Typography>
-                        <Typography variant="body2">{formatearFecha(empresaData.created_at)}</Typography>
-                      </div>
-                      <div>
-                        <Typography variant="caption" color="secondary">Última actualización</Typography>
-                        <Typography variant="body2">{formatearFecha(empresaData.updated_at)}</Typography>
-                      </div>
+                      {empresaData.producto_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Producto</Typography>
+                          <Typography variant="body2">{empresaData.producto_nombre}</Typography>
+                        </div>
+                      )}
+                      {empresaData.modalidad_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Modalidad</Typography>
+                          <Typography variant="body2">{empresaData.modalidad_nombre}</Typography>
+                        </div>
+                      )}
+                      {empresaData.industria_nombre && (
+                        <div>
+                          <Typography variant="caption" color="secondary">Industria</Typography>
+                          <Typography variant="body2">{empresaData.industria_nombre}</Typography>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </div>
