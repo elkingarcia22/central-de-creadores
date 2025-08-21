@@ -54,6 +54,18 @@ export default function EmpresaSideModal({
     activo: true
   });
 
+  // Verificar que filterOptions tenga todas las propiedades necesarias
+  const safeFilterOptions = {
+    estados: filterOptions?.estados || [],
+    tamanos: filterOptions?.tamanos || [],
+    paises: filterOptions?.paises || [],
+    kams: filterOptions?.kams || [],
+    relaciones: filterOptions?.relaciones || [],
+    productos: filterOptions?.productos || [],
+    industrias: filterOptions?.industrias || [],
+    modalidades: filterOptions?.modalidades || []
+  };
+
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   // Actualizar formData cuando cambie la empresa
@@ -248,7 +260,7 @@ export default function EmpresaSideModal({
                 onChange={(value) => handleInputChange('pais_id', value)}
                 options={[
                   { value: '', label: 'Seleccionar país' },
-                  ...filterOptions.paises
+                  ...safeFilterOptions.paises
                 ]}
                 placeholder="Selecciona un país"
                 error={errors.pais_id}
@@ -264,7 +276,7 @@ export default function EmpresaSideModal({
                 onChange={(value) => handleInputChange('tamano_id', value)}
                 options={[
                   { value: '', label: 'Seleccionar tamaño' },
-                  ...filterOptions.tamanos
+                  ...safeFilterOptions.tamanos
                 ]}
                 placeholder="Selecciona un tamaño"
                 fullWidth
@@ -278,7 +290,7 @@ export default function EmpresaSideModal({
                 onChange={(value) => handleInputChange('relacion_id', value)}
                 options={[
                   { value: '', label: 'Seleccionar relación' },
-                  ...filterOptions.relaciones
+                  ...safeFilterOptions.relaciones
                 ]}
                 placeholder="Selecciona una relación"
                 fullWidth
@@ -290,7 +302,7 @@ export default function EmpresaSideModal({
                 label="Catálogo de Productos"
                 value={formData.productos_ids || []}
                 onChange={(value) => handleInputChange('productos_ids', value)}
-                options={filterOptions.productos}
+                options={safeFilterOptions.productos}
                 placeholder="Selecciona productos del catálogo"
                 fullWidth
                 maxDisplayed={3}
@@ -304,7 +316,7 @@ export default function EmpresaSideModal({
                 onChange={(value) => handleInputChange('industria_id', value)}
                 options={[
                   { value: '', label: 'Seleccionar industria' },
-                  ...filterOptions.industrias
+                  ...safeFilterOptions.industrias
                 ]}
                 placeholder="Selecciona una industria"
                 fullWidth
@@ -318,7 +330,7 @@ export default function EmpresaSideModal({
                 onChange={(value) => handleInputChange('modalidad_id', value)}
                 options={[
                   { value: '', label: 'Seleccionar modalidad' },
-                  ...filterOptions.modalidades
+                  ...safeFilterOptions.modalidades
                 ]}
                 placeholder="Selecciona una modalidad"
                 fullWidth
@@ -340,7 +352,7 @@ export default function EmpresaSideModal({
               onChange={(value) => handleInputChange('estado_id', value)}
               options={[
                 { value: '', label: 'Seleccionar estado' },
-                ...filterOptions.estados
+                ...safeFilterOptions.estados
               ]}
               placeholder="Selecciona un estado"
               fullWidth
