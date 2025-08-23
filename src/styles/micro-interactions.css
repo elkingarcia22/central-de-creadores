@@ -536,21 +536,21 @@
 }
 
 /* ====================================
-   TABLE INTERACTIONS
+   TABLE INTERACTIONS - DISABLED
    ==================================== */
 
-/* Table Row Hover */
-.table-row {
+/* Table Row Hover - Disabled to preserve existing interactions */
+/* .table-row {
   transition: all var(--transition-fast) var(--smooth);
 }
 
 .table-row:hover {
   background-color: rgba(59, 130, 246, 0.05);
   transform: scale(1.01);
-}
+} */
 
-/* Sort Animation */
-.sort-arrow {
+/* Sort Animation - Disabled to preserve existing interactions */
+/* .sort-arrow {
   transition: transform var(--transition-fast) var(--smooth);
 }
 
@@ -560,7 +560,7 @@
 
 .sort-arrow.desc {
   transform: rotate(0deg);
-}
+} */
 
 /* ====================================
    UTILITY CLASSES

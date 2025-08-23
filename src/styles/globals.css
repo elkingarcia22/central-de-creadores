@@ -1,5 +1,5 @@
 @import "./design-tokens.css";
-@import "./micro-interactions.css";
+/* @import "./micro-interactions.css"; */
 
 @tailwind base;
 @tailwind components;
