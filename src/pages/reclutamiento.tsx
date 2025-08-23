@@ -6,7 +6,8 @@ import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
 
-import { Layout, Typography, Card, Button, DataTable, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
+import { Layout, Typography, Card, Button, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
+import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';
@@ -793,9 +794,9 @@ export default function ReclutamientoPage() {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
               <div>
-                <Typography variant="h2" color="title" weight="bold">
-                  Reclutamiento
-                </Typography>
+                            <Typography variant="h2" color="title" weight="semibold">
+              Reclutamiento
+            </Typography>
                 <Typography variant="subtitle1" color="secondary">
                   Gestionar el reclutamiento de participantes para investigaciones por agendar
                 </Typography>

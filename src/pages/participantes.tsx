@@ -10,7 +10,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import DataTable from '../components/ui/DataTable';
+import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
 import ActionsMenu from '../components/ui/ActionsMenu';
 import Tabs from '../components/ui/Tabs';
 import FilterDrawer from '../components/ui/FilterDrawer';
@@ -1074,9 +1074,9 @@ export default function ParticipantesPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h2" color="title" weight="bold">
-                  Participantes
-                </Typography>
+                            <Typography variant="h2" color="title" weight="semibold">
+              Participantes
+            </Typography>
                 <Typography variant="subtitle1" color="secondary">
                   Gestionar participantes de investigaciones
                 </Typography>

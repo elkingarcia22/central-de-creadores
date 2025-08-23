@@ -13,7 +13,7 @@ import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
-import DataTable from '../components/ui/DataTable';
+import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
 import Input from '../components/ui/Input';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import Badge from '../components/ui/Badge';
@@ -782,9 +782,9 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    Empresas
-                  </Typography>
+                              <Typography variant="h2" color="title" weight="semibold">
+              Empresas
+            </Typography>
                   <Typography variant="subtitle1" color="secondary">
                     Gestiona las empresas de tu portafolio
                   </Typography>
