@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from './Select';
 import { UserIcon, CloseIcon, CheckIcon } from '../icons';
+import { useInlineEdit } from '../../contexts/InlineEditContext';
 
 interface UserOption {
   value: string;
@@ -10,6 +11,7 @@ interface UserOption {
 }
 
 interface InlineUserSelectProps {
+  id: string; // ID único para identificar este elemento
   value: string | null;
   options: UserOption[];
   onSave: (newValue: string | null) => void;
@@ -126,6 +128,7 @@ const UserDisplay: React.FC<{
 
 // Componente principal
 const InlineUserSelect: React.FC<InlineUserSelectProps> = ({
+  id,
   value,
   options,
   onSave,
@@ -134,8 +137,9 @@ const InlineUserSelect: React.FC<InlineUserSelectProps> = ({
   className = '',
   currentUser
 }) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const { isEditing, startEditing, stopEditing } = useInlineEdit();
   const [tempValue, setTempValue] = useState(value);
+  const editing = isEditing(id);
 
   // Actualizar tempValue cuando cambie el value externo
   useEffect(() => {
@@ -145,13 +149,13 @@ const InlineUserSelect: React.FC<InlineUserSelectProps> = ({
   // Manejar guardado
   const handleSave = () => {
     onSave(tempValue);
-    setIsEditing(false);
+    stopEditing();
   };
 
   // Manejar cancelación
   const handleCancel = () => {
     setTempValue(value); // Restaurar valor original
-    setIsEditing(false);
+    stopEditing();
     onCancel?.();
   };
 
@@ -183,7 +187,7 @@ const InlineUserSelect: React.FC<InlineUserSelectProps> = ({
     }))
   ];
 
-  if (isEditing) {
+  if (editing) {
     // Modo edición con botones de confirmar y cancelar
     return (
       <div className={`flex items-center gap-2 ${className}`}>
@@ -221,7 +225,7 @@ const InlineUserSelect: React.FC<InlineUserSelectProps> = ({
   return (
     <div
       className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-2 py-1 -mx-2 -my-1 transition-colors ${className}`}
-      onClick={() => setIsEditing(true)}
+      onClick={() => startEditing(id)}
       title="Clic para editar"
       data-inline-edit="true"
     >

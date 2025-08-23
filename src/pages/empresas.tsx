@@ -547,6 +547,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         
         return (
           <InlineUserSelect
+            id={`kam-${row.id}`}
             value={row.kam_id}
             options={usuarios.filter(u => u.activo !== false).map(u => ({
               value: u.id,

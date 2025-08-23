@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useUser } from '../../contexts/UserContext';
 import { usePermisos } from '../../hooks/usePermisos';
+import { InlineEditProvider } from '../../contexts/InlineEditContext';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -184,14 +185,15 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
-      {/* Modal de edición de perfil */}
-      <PerfilPersonalModal
-        usuario={userProfile}
-        isOpen={editModalOpen}
-        onSave={handleSaveProfile}
-        onClose={handleCloseEditModal}
-      />
+    <InlineEditProvider>
+      <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
+        {/* Modal de edición de perfil */}
+        <PerfilPersonalModal
+          usuario={userProfile}
+          isOpen={editModalOpen}
+          onSave={handleSaveProfile}
+          onClose={handleCloseEditModal}
+        />
       {/* Navegación móvil */}
       <MobileNavigation
         items={currentMenu}
@@ -220,6 +222,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         </main>
       </div>
     </div>
+    </InlineEditProvider>
   );
 }; 
 

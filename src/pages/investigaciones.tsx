@@ -920,6 +920,7 @@ export default function InvestigacionesPage() {
         
         return (
           <InlineUserSelect
+            id={`responsable-${row.id}`}
             value={row.responsable_id}
             options={usuarios.map(u => ({ value: u.id, label: u.name || u.email || 'Sin nombre', email: u.email, avatar_url: u.avatar_url }))}
             currentUser={usuarioResponsable ? {
