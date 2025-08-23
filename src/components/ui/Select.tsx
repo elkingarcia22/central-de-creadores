@@ -80,8 +80,8 @@ const Select: React.FC<SelectProps> = ({
     const dropdownWidth = Math.max(rect.width, 280);
     
     // Calcular espacio disponible
-    const spaceBelow = viewportHeight - rect.bottom - 10;
-    const spaceAbove = rect.top - 10;
+    const spaceBelow = viewportHeight - rect.bottom - 2;
+    const spaceAbove = rect.top - 2;
     
     // Determinar posición vertical
     const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
@@ -97,7 +97,7 @@ const Select: React.FC<SelectProps> = ({
 
     return {
       position: 'fixed' as const,
-      top: showAbove ? `${rect.top - dropdownHeight - 5}px` : `${rect.bottom + 5}px`,
+      top: showAbove ? `${rect.top - dropdownHeight - 2}px` : `${rect.bottom + 2}px`,
       left: `${left}px`,
       width: `${dropdownWidth}px`,
       maxHeight: `${Math.min(300, showAbove ? spaceAbove : spaceBelow)}px`,

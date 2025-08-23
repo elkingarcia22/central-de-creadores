@@ -21,7 +21,7 @@ const SmartDropdown: React.FC<SmartDropdownProps> = ({
   children,
   dropdownHeight = 300,
   dropdownWidth = 280,
-  padding = 10,
+  padding = 2,
   minWidth = 200,
   maxWidth = 400,
   className = '',

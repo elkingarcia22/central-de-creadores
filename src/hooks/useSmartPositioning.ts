@@ -23,7 +23,7 @@ export const useSmartPositioning = () => {
     elementRef,
     dropdownHeight = 300,
     dropdownWidth = 280,
-    padding = 10,
+    padding = 2,
     minWidth = 200,
     maxWidth = 400
   }: SmartPositioningOptions): Position => {
@@ -48,8 +48,8 @@ export const useSmartPositioning = () => {
     );
     
     // Calcular espacio disponible
-    const spaceBelow = viewportHeight - rect.bottom - padding;
-    const spaceAbove = rect.top - padding;
+    const spaceBelow = viewportHeight - rect.bottom - 2;
+    const spaceAbove = rect.top - 2;
     
     // Determinar posición vertical
     const showAbove = spaceBelow < finalDropdownHeight && spaceAbove > spaceBelow;
@@ -66,8 +66,8 @@ export const useSmartPositioning = () => {
     return {
       position: 'fixed',
       top: showAbove 
-        ? `${rect.top - finalDropdownHeight - padding}px` 
-        : `${rect.bottom + padding}px`,
+        ? `${rect.top - finalDropdownHeight - 2}px` 
+        : `${rect.bottom + 2}px`,
       left: `${left}px`,
       width: `${finalDropdownWidth}px`,
       maxHeight: `${Math.min(
