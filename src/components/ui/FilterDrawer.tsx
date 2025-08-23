@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Button from './Button';
 import Select from './Select';
-import DatePicker from '../../mcp-system/mcp-design-system/src/components/composite/DatePicker';
+import DatePicker from '../../../mcp-system/mcp-design-system/src/components/composite/DatePicker';
 import Typography from './Typography';
 import Chip from './Chip';
 import MultiSelect from './MultiSelect';
