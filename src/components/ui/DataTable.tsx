@@ -211,7 +211,7 @@ const DataTable: React.FC<DataTableProps> = ({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-4 relative ${className}`}>
       {/* Toolbar - Solo para búsqueda y filtros */}
       {(searchable || filterable) && (
         <Card className="p-4">
