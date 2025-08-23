@@ -39,9 +39,9 @@ const DesignSystemPage: React.FC = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
               <div>
-                <Typography variant="h2" color="title" weight="bold">
-                  Sistema de Diseño
-                </Typography>
+                        <Typography variant="h2" color="title" weight="semibold">
+          Sistema de Diseño
+        </Typography>
                 <Typography variant="subtitle1" color="secondary">
                   Plataforma visual de componentes, colores y patrones de diseño
                 </Typography>

@@ -190,9 +190,9 @@ export default function DashboardPage() {
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Header */}
           <div className="mb-8">
-            <Typography variant="h1" color="title" weight="bold" className="mb-2">
-              Dashboard
-            </Typography>
+                            <Typography variant="h2" color="title" weight="semibold" className="mb-2">
+                  Dashboard
+                </Typography>
             <Typography variant="subtitle1" color="secondary" className="capitalize">
               Bienvenido, {rolSeleccionado}
             </Typography>

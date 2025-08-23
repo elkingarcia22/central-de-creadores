@@ -105,9 +105,9 @@ export default function MetricasPage() {
                   <MetricasIcon className="w-8 h-8 text-destructive" />
                 </div>
                 <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    Métricas
-                  </Typography>
+                              <Typography variant="h2" color="title" weight="semibold">
+              Métricas
+            </Typography>
                   <Typography variant="subtitle1" color="secondary">
                     Análisis y reportes de rendimiento
                   </Typography>

@@ -599,9 +599,9 @@ export default function GestionUsuariosPage() {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
               <div>
-                <Typography variant="h1" color="title" weight="bold">
-                  Gestión de Usuarios
-                </Typography>
+                            <Typography variant="h2" color="title" weight="semibold">
+              Gestión de Usuarios
+            </Typography>
                 <Typography variant="subtitle1" color="secondary">
                   Administra los usuarios de la plataforma
                 </Typography>

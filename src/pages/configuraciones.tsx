@@ -142,7 +142,7 @@ export default function ConfiguracionesPage() {
                 <ConfiguracionesIcon className="w-8 h-8 text-gray-600" />
               </div>
               <div>
-                <Typography variant="h1" color="title" weight="bold">
+                <Typography variant="h2" color="title" weight="semibold">
                   Configuraciones
                 </Typography>
                 <Typography variant="subtitle1" color="secondary">

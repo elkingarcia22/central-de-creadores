@@ -127,9 +127,9 @@ export default function SesionesPage() {
                   <SesionesIcon className="w-8 h-8 text-warning" />
                 </div>
                 <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    Sesiones
-                  </Typography>
+                              <Typography variant="h2" color="title" weight="semibold">
+              Sesiones
+            </Typography>
                   <Typography variant="subtitle1" color="secondary">
                     Gestionar sesiones de investigación y testing
                   </Typography>

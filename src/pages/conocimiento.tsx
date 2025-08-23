@@ -118,7 +118,7 @@ export default function ConocimientoPage() {
                 <ConocimientoIcon className="w-8 h-8 text-info" />
               </div>
               <div>
-                <Typography variant="h2" color="title" weight="bold">
+                <Typography variant="h2" color="title" weight="semibold">
                   Conocimiento
                 </Typography>
                 <Typography variant="subtitle1" color="secondary">

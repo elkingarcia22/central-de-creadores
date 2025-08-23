@@ -221,7 +221,7 @@ export default function RolesPermisosPage() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Typography variant="h2" color="title" weight="bold" className="mb-2">
+            <Typography variant="h2" color="title" weight="semibold" className="mb-2">
               Sistema de Roles y Permisos
             </Typography>
             <Typography variant="subtitle1" color="secondary">

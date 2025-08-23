@@ -269,9 +269,9 @@ export default function Login() {
     <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background`}>
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-                        <Typography variant="h2" color="title" weight="bold" className="mb-2 w-full text-center whitespace-nowrap sm:whitespace-normal">
-            Central de Creadores
-          </Typography>
+                                    <Typography variant="h2" color="title" weight="semibold" className="mb-2 w-full text-center whitespace-nowrap sm:whitespace-normal">
+              Central de Creadores
+            </Typography>
           <Typography variant="subtitle1" color="secondary" className="w-full text-center whitespace-normal break-words">
             Plataforma de investigación de usuarios
           </Typography>
