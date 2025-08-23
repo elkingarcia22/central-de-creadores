@@ -209,7 +209,10 @@ export const InlineDate: React.FC<InlineDateProps> = ({
           type={type}
           value={formatInputDate(tempValue)}
           onChange={(e) => setTempValue(e.target.value)}
-          className="w-full px-2 py-1 text-sm border rounded dark:bg-gray-800 dark:border-gray-600"
+          className="w-full px-3 py-1.5 text-sm bg-input border border-border text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring focus:ring-offset-0 rounded-lg transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            colorScheme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+          }}
         />
       )}
     />
