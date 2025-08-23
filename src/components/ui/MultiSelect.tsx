@@ -241,7 +241,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {/* Dropdown personalizado */}
         {isOpen && (
           <div 
-            className="absolute z-50 bg-popover-solid border border-border rounded-xl shadow-xl overflow-hidden transition-all duration-200 ease-in-out transform origin-top"
+            className="absolute z-50 bg-popover-solid border border-border rounded-xl shadow-xl overflow-x-hidden overflow-y-visible transition-all duration-200 ease-in-out transform origin-top"
             style={(() => {
               if (!containerRef.current) return { top: '100%', left: 0, right: 0, marginTop: '8px' };
               

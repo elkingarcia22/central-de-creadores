@@ -100,7 +100,7 @@ export const Modal: React.FC<ModalProps> = ({
         aria-labelledby={title ? 'modal-title' : undefined}
       >
         {/* Modal Content */}
-        <div className="bg-card rounded-lg shadow-xl w-full max-h-full overflow-hidden">
+        <div className="bg-card rounded-lg shadow-xl w-full max-h-full overflow-x-hidden overflow-y-visible">
           {/* Header */}
           {(title || showCloseButton) && (
             <div className="flex items-center justify-between p-6 border-b border-border">
