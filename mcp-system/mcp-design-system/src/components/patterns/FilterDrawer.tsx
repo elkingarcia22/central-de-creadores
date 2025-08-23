@@ -248,7 +248,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-x-hidden overflow-y-visible">
+    <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"

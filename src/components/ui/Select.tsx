@@ -234,7 +234,7 @@ const Select: React.FC<SelectProps> = ({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute w-full mt-1 bg-background border border-border rounded-md shadow-lg overflow-x-hidden overflow-y-visible z-50"
+          className="absolute w-full mt-1 bg-background border border-border rounded-md shadow-lg overflow-hidden z-50"
           style={{
             top: '100%',
             left: 0,

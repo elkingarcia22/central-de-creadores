@@ -228,7 +228,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
               onClick={() => setIsOpen(false)}
             />
             
-            <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl shadow-xl overflow-x-hidden overflow-y-visible transition-all duration-200 ease-in-out transform origin-top">
+            <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl shadow-xl overflow-hidden transition-all duration-200 ease-in-out transform origin-top">
               {/* Header de la lista */}
               <div className="sticky top-0 bg-muted-solid px-4 py-2 border-b border-border">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -323,7 +323,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
         
         {/* Mensaje cuando no hay usuarios */}
         {isOpen && usersToShow.length === 0 && !loading && (
-                      <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl shadow-xl overflow-x-hidden overflow-y-visible">
+          <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl shadow-xl overflow-hidden">
             <div className="px-4 py-6 text-center">
               <UserIcon className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">No hay usuarios disponibles</p>
