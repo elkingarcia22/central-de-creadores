@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDownIcon, SearchIcon, CheckIcon } from '../icons';
 
 // Función cn para combinar clases CSS
@@ -231,16 +232,11 @@ const Select: React.FC<SelectProps> = ({
       </button>
 
       {/* Dropdown */}
-      {isOpen && (
+      {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="absolute w-full mt-1 bg-background border border-border rounded-md shadow-lg overflow-hidden z-[9999]"
-          style={{
-            top: '100%',
-            left: 0,
-            right: 0,
-            maxHeight: '300px'
-          }}
+          className="fixed bg-background border border-border rounded-md shadow-lg overflow-hidden z-[9999]"
+          style={getDropdownPosition()}
         >
           {/* Search input */}
           {searchable && (
@@ -291,7 +287,8 @@ const Select: React.FC<SelectProps> = ({
               ))
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
