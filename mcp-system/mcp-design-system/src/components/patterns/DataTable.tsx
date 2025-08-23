@@ -227,7 +227,7 @@ const DataTable: React.FC<DataTableProps> = ({
       )}
 
       {/* Tabla */}
-      <Card className="overflow-x-hidden overflow-y-visible">
+      <Card className="overflow-hidden">
         {/* Barra de acciones masivas integrada */}
         {selectable && selectedRows.size > 0 && bulkActions.length > 0 && (
           <div className="px-4 py-3 bg-muted/50 border-b border-border">
@@ -276,7 +276,7 @@ const DataTable: React.FC<DataTableProps> = ({
           </div>
         )}
         
-        <div className="overflow-x-auto overflow-y-visible scrollbar-horizontal">
+        <div className="overflow-x-auto scrollbar-horizontal">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-muted sticky top-0 z-10">
               <tr>
