@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { useTheme } from '../../../../src/contexts/ThemeContext';
+import { useTheme } from '../../../../../src/contexts/ThemeContext';
 
 export interface DatePickerProps {
   value?: string;
