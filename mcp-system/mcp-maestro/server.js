@@ -93,6 +93,60 @@ if (AUTO_CONFIG.autoMode) {
 }
 
 
+  
+// CONFIGURACIÓN AUTOMÁTICA INYECTADA
+const AUTO_CONFIG = {
+  "autoMode": true,
+  "skipConfirmations": true,
+  "autoExecute": true,
+  "autoCommit": true,
+  "autoBackup": true,
+  "silentMode": true,
+  "autoRecoverContext": true,
+  "autoSync": true,
+  "autoActivateGitHub": true,
+  "forceAuto": true,
+  "noPrompts": true,
+  "skipAllConfirmations": true
+};
+
+// Modificar comportamiento para modo automático
+if (AUTO_CONFIG.autoMode) {
+  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
+  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
+  console.log(chalk.cyan('✅ Auto-commit activado'));
+  console.log(chalk.cyan('✅ Auto-backup activado'));
+  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
+}
+
+
+  
+// CONFIGURACIÓN AUTOMÁTICA INYECTADA
+const AUTO_CONFIG = {
+  "autoMode": true,
+  "skipConfirmations": true,
+  "autoExecute": true,
+  "autoCommit": true,
+  "autoBackup": true,
+  "silentMode": true,
+  "autoRecoverContext": true,
+  "autoSync": true,
+  "autoActivateGitHub": true,
+  "forceAuto": true,
+  "noPrompts": true,
+  "skipAllConfirmations": true
+};
+
+// Modificar comportamiento para modo automático
+if (AUTO_CONFIG.autoMode) {
+  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
+  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
+  console.log(chalk.cyan('✅ Auto-commit activado'));
+  console.log(chalk.cyan('✅ Auto-backup activado'));
+  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
+}
+
+
   constructor() {
     // CONFIGURACIÓN AUTOMÁTICA
     this.AUTO_CONFIG = {

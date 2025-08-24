@@ -266,12 +266,6 @@ export default function SesionesPage() {
                       >
                         {getEstadoSesionText(sesion.estado)}
                       </Chip>
-                      <Chip 
-                        variant={getTipoColor(sesion.tipo)}
-                        size="sm"
-                      >
-                        {sesion.tipo}
-                      </Chip>
                     </div>
                     <Typography variant="body1" color="secondary" className="mb-3">
                       {sesion.descripcion}

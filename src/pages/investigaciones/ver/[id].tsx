@@ -1146,11 +1146,6 @@ const VerInvestigacion: NextPage = () => {
                 <Chip variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
                   {formatearEstado(investigacion?.estado || '')}
                 </Chip>
-                {investigacion?.tipo_investigacion_nombre && (
-                  <Chip variant="secondary">
-                    {investigacion.tipo_investigacion_nombre}
-                  </Chip>
-                )}
               </div>
             </div>
           </div>

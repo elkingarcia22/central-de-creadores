@@ -316,17 +316,11 @@ export default function MetricasPage() {
                           {reporte.titulo}
                         </Typography>
                         <Chip 
-                          variant={getTipoColor(reporte.tipo)}
+                          variant={getEstadoMetricaVariant(reporte.estado)}
                           size="sm"
                         >
-                          {reporte.tipo}
+                          {getEstadoMetricaText(reporte.estado)}
                         </Chip>
-                                            <Chip 
-                      variant={getEstadoMetricaVariant(reporte.estado)}
-                      size="sm"
-                    >
-                      {getEstadoMetricaText(reporte.estado)}
-                    </Chip>
                       </div>
                       <Typography variant="body1" color="secondary" className="mb-3">
                         {reporte.descripcion}

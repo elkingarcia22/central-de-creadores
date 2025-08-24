@@ -245,17 +245,11 @@ export default function ConocimientoPage() {
                           {articulo.titulo}
                         </Typography>
                         <Chip 
-                          variant={getCategoriaColor(articulo.categoria)}
+                          variant={getEstadoConocimientoVariant(articulo.estado)}
                           size="sm"
                         >
-                          {articulo.categoria}
+                          {getEstadoConocimientoText(articulo.estado)}
                         </Chip>
-                                            <Chip 
-                      variant={getEstadoConocimientoVariant(articulo.estado)}
-                      size="sm"
-                    >
-                      {getEstadoConocimientoText(articulo.estado)}
-                    </Chip>
                       </div>
                       <Typography variant="body1" color="secondary" className="mb-3">
                         {articulo.descripcion}

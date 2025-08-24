@@ -706,14 +706,9 @@ export default function AgregarParticipanteModal({
                     <span className="text-sm font-medium">{participante.email}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Tipo:</span>
-                  <Chip 
-                    variant={getTipoParticipanteVariant(participante.tipo)}
-                    size="sm"
-                  >
-                    {getTipoParticipanteText(participante.tipo)}
-                  </Chip>
+                  <span className="text-sm font-medium">{getTipoParticipanteText(participante.tipo)}</span>
                 </div>
                 {participante.empresa_nombre && (
                   <div className="flex justify-between">

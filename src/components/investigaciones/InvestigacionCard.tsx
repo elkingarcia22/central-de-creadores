@@ -70,12 +70,6 @@ export function InvestigacionCard({
           >
             {investigacion.estado || 'Sin estado'}
           </Chip>
-          <Chip 
-            variant="info"
-            size="sm"
-          >
-            {investigacion.tipo_investigacion_nombre || 'Sin tipo'}
-          </Chip>
         </div>
       </div>
 

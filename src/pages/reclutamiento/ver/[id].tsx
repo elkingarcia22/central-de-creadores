@@ -2301,12 +2301,9 @@ const VerReclutamiento: NextPage = () => {
                         });
                         
                         return (
-                          <>
-                            <h3 className="text-lg font-semibold text-foreground">
-                              {nombreFinal}
-                            </h3>
-                            {tipoBadge}
-                          </>
+                          <h3 className="text-lg font-semibold text-foreground">
+                            {nombreFinal}
+                          </h3>
                         );
                       })()}
                     </div>

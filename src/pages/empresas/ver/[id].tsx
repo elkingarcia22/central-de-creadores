@@ -589,9 +589,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                       <Chip variant={getEstadoColor(investigacion.estado)}>
                         {investigacion.estado}
                       </Chip>
-                      <Chip variant={getRiesgoColor(investigacion.riesgo_automatico)} size="sm">
-                        {investigacion.riesgo_automatico}
-                      </Chip>
                     </div>
                     
                     {investigacion.descripcion && (
@@ -732,9 +729,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               <div className="flex items-center gap-4">
                 <Typography variant="h3">{empresaData.nombre}</Typography>
                 <div className="flex items-center gap-3">
-                  <Chip variant={empresaData.activo ? 'success' : 'warning'}>
-                    {empresaData.activo ? 'Activa' : 'Inactiva'}
-                  </Chip>
                   {empresaData.estado_nombre && (
                     <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
                       {empresaData.estado_nombre}
