@@ -1,0 +1,37 @@
+{
+  "mcp_maestro": {
+    "version": "1.0.0",
+    "proyecto": "central-de-creadores",
+    "configuracion": {
+      "auto_backup": true,
+      "confirmar_cambios": true,
+      "crear_rama_por_feature": true,
+      "formato_commit": "conventional"
+    },
+    "comandos_rapidos": {
+      "status": "git status --short",
+      "add_all": "git add .",
+      "commit": "git commit -m",
+      "push": "git push",
+      "pull": "git pull",
+      "undo": "git checkout -- .",
+      "log": "git log --oneline -10"
+    },
+    "ramas_protegidas": ["main", "master", "develop"],
+    "archivos_importantes": [
+      "src/pages/api/empresas/[id].ts",
+      "package.json",
+      "next.config.js",
+      "tsconfig.json"
+    ],
+    "workflow": {
+      "antes_de_commit": [
+        "npm run lint",
+        "npm run type-check"
+      ],
+      "despues_de_commit": [
+        "echo 'Commit realizado exitosamente'"
+      ]
+    }
+  }
+}
