@@ -1,0 +1,27 @@
+{
+  "mcpMaestro": {
+    "autoMode": true,
+    "skipConfirmations": true,
+    "autoExecute": true,
+    "autoCommit": true,
+    "autoBackup": true
+  },
+  "ai": {
+    "defaultProvider": "gemini",
+    "fallbackProvider": "openai",
+    "autoFallback": true,
+    "skipConfirmation": true
+  },
+  "execution": {
+    "autoMode": true,
+    "skipPrompts": true,
+    "autoProceed": true,
+    "silentMode": true
+  },
+  "git": {
+    "autoCommit": true,
+    "autoPush": true,
+    "skipConfirmation": true,
+    "silentMode": true
+  }
+}
