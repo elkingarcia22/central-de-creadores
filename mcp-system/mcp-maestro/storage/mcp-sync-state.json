@@ -1,5 +1,5 @@
 {
-  "last_sync": "2025-08-23T16:40:26.205Z",
+  "last_sync": "2025-08-24T20:00:17.000Z",
   "results": {
     "design-system": {
       "success": true,
@@ -179,18 +179,18 @@
           ]
         }
       },
-      "timestamp": "2025-08-23T16:40:16.643Z"
+      "timestamp": "2025-08-24T20:00:04.357Z"
     },
     "code-structure": {
       "success": true,
       "mcp": "code-structure",
       "data": {
         "structure": {
-          "total_files": 403,
+          "total_files": 402,
           "total_directories": 50,
           "file_types": {
             ".ts": 147,
-            ".tsx": 211,
+            ".tsx": 210,
             ".swp": 1,
             ".backup": 6,
             ".backup2": 1,
@@ -316,14 +316,14 @@
           "total_dependencies": 37
         }
       },
-      "timestamp": "2025-08-23T16:40:16.727Z"
+      "timestamp": "2025-08-24T20:00:04.464Z"
     },
     "testing-qa": {
       "success": true,
       "mcp": "testing-qa",
       "data": {
         "tests": {
-          "total_tests": 48,
+          "total_tests": 50,
           "test_files": [
             "index.spec.d.ts",
             "index.spec.js",
@@ -372,12 +372,15 @@
             "index.spec.d.ts",
             "index.spec.js",
             "index.spec.js.map",
-            "index.test.js"
+            "index.test.js",
+            "tsconfig.cjs.spec.json",
+            "tsconfig.types.spec.json"
           ],
           "test_types": {
             ".ts": 12,
             ".js": 24,
-            ".map": 12
+            ".map": 12,
+            ".json": 2
           }
         },
         "coverage": {
@@ -389,7 +392,7 @@
           "linting_enabled": false
         }
       },
-      "timestamp": "2025-08-23T16:40:18.589Z"
+      "timestamp": "2025-08-24T20:00:06.307Z"
     },
     "supabase": {
       "success": true,
@@ -498,7 +501,7 @@
           ]
         }
       },
-      "timestamp": "2025-08-23T16:40:26.204Z"
+      "timestamp": "2025-08-24T20:00:17.000Z"
     }
   },
   "summary": {
