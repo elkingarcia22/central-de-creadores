@@ -21,6 +21,7 @@ import {
   ReclutamientoIcon,
   AlertTriangleIcon,
   CheckCircleIcon,
+  InfoIcon,
   FilterIcon,
   BarChartIcon,
   ClipboardListIcon,
@@ -30,7 +31,7 @@ import {
   LoadingIcon
 } from '../components/icons';
 import { obtenerEstadosReclutamiento } from '../api/supabase-investigaciones';
-import { getRiesgoBadgeVariant, getRiesgoText } from '../utils/riesgoUtils';
+import { getRiesgoBadgeVariant, getRiesgoText, getRiesgoIconName } from '../utils/riesgoUtils';
 import { getEstadoInvestigacionVariant, getEstadoInvestigacionText, getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../utils/estadoUtils';
 
 // Tipos para la estructura de datos
@@ -680,14 +681,63 @@ export default function ReclutamientoPage() {
         };
         return getPrioridadRiesgo(b.riesgo_reclutamiento) - getPrioridadRiesgo(a.riesgo_reclutamiento);
       },
-      render: (value: any, row: InvestigacionReclutamiento) => (
-        <Chip 
-          variant={getRiesgoBadgeVariant(row.riesgo_reclutamiento || 'bajo')}
-          size="sm"
-        >
-          {getRiesgoText((row.riesgo_reclutamiento || 'bajo') as any)}
-        </Chip>
-      )
+      render: (value: any, row: InvestigacionReclutamiento) => {
+        // Función para obtener el texto del tooltip de riesgo de reclutamiento
+        const getTooltipText = (row: InvestigacionReclutamiento): string => {
+          if (!row.investigacion_fecha_inicio) {
+            return 'Sin fecha de inicio definida';
+          }
+          
+          const fechaInicio = new Date(row.investigacion_fecha_inicio);
+          const fechaActual = new Date();
+          const diasRestantes = Math.ceil((fechaInicio.getTime() - fechaActual.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diasRestantes < 0) {
+            return `Vencida hace ${Math.abs(diasRestantes)} días`;
+          } else if (diasRestantes <= 7) {
+            return `Faltan ${diasRestantes} días para el inicio del reclutamiento`;
+          } else if (diasRestantes <= 14) {
+            return `Faltan ${diasRestantes} días para el inicio del reclutamiento`;
+          } else {
+            return `Faltan ${diasRestantes} días para el inicio del reclutamiento`;
+          }
+        };
+
+        const tooltipText = getTooltipText(row);
+        const badgeVariant = getRiesgoBadgeVariant(row.riesgo_reclutamiento || 'bajo');
+        const iconName = getRiesgoIconName(row.riesgo_reclutamiento || 'bajo');
+
+        // Mapeo de iconos por nombre
+        const iconMap: { [key: string]: any } = {
+          AlertTriangleIcon: <AlertTriangleIcon className="w-4 h-4" />,
+          ExclamationTriangleIcon: <InfoIcon className="w-4 h-4" />,
+          CheckCircleIcon: <CheckCircleIcon className="w-4 h-4" />,
+          QuestionMarkCircleIcon: <InfoIcon className="w-4 h-4" />
+        };
+
+        const icon = iconMap[iconName] || <InfoIcon className="w-4 h-4" />;
+
+        return (
+          <div 
+            className="flex items-center cursor-help chip-group relative"
+            title={tooltipText}
+          >
+            <Chip 
+              variant={badgeVariant} 
+              size="sm"
+              icon={icon}
+              className="whitespace-nowrap chip-group-hover:opacity-80 transition-opacity"
+            >
+              {getRiesgoText((row.riesgo_reclutamiento || 'bajo') as any)}
+            </Chip>
+            {/* Tooltip personalizado */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 chip-group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+              {tooltipText}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+        );
+      }
     },
     {
       key: 'acciones',

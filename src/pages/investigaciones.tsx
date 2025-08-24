@@ -127,7 +127,7 @@ const calcularNivelRiesgo = (investigacion: any): {
       return {
         nivel: 'alto',
         diasRestantes,
-        descripcion: `La fecha de inicio del reclutamiento ya pasó hace ${Math.abs(diasRestantes)} días`
+        descripcion: `Vencida hace ${Math.abs(diasRestantes)} días`
       };
     } else if (diasRestantes < 14) {
       return {
