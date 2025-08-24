@@ -70,7 +70,7 @@ class UnifiedAISystem {
 
   async analyzeWithGemini(prompt, options = {}) {
     const apiKey = this.config.GEMINI_API_KEY;
-    const model = options.model || this.config.GEMINI_MODEL || 'gemini-pro';
+    const model = options.model || this.config.GEMINI_MODEL || 'gemini-1.5-flash';
     
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: 'POST',
@@ -84,10 +84,21 @@ class UnifiedAISystem {
       })
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Gemini Error: ${errorData.error?.message || 'Error desconocido'}`);
+    }
+
     const data = await response.json();
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!responseText) {
+      throw new Error('Respuesta vacía de Gemini');
+    }
+
     return {
       provider: 'gemini',
-      response: data.candidates[0]?.content?.parts[0]?.text
+      response: responseText
     };
   }
 

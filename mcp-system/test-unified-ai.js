@@ -15,8 +15,16 @@ async function test() {
     console.log(chalk.cyan('   Gemini: ' + stats.geminiConfigured));
     console.log(chalk.cyan('   Actual: ' + stats.currentProvider));
 
-    const result = await ai.analyzeWithAI('Responde solo con "OK" si funciona');
+    if (!stats.geminiConfigured && !stats.openaiConfigured) {
+      console.log(chalk.red('❌ No hay API Keys configuradas'));
+      return;
+    }
+
+    console.log(chalk.blue('\n🧪 Probando análisis con IA...'));
+    const result = await ai.analyzeWithAI('Responde solo con "OK" si puedes leer este mensaje');
+    
     console.log(chalk.green('✅ Funciona con: ' + result.provider));
+    console.log(chalk.cyan('🤖 Respuesta: ' + result.response));
     
   } catch (error) {
     console.log(chalk.red('❌ Error: ' + error.message));
