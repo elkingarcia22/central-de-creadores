@@ -7,7 +7,7 @@ import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
 
 import { Layout, Typography, Card, Button, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
-import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
+import DataTable from '../components/ui/DataTable';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';

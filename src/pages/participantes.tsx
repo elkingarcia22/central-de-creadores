@@ -10,7 +10,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
+import DataTable from '../components/ui/DataTable';
 import ActionsMenu from '../components/ui/ActionsMenu';
 import Tabs from '../components/ui/Tabs';
 import FilterDrawer from '../components/ui/FilterDrawer';

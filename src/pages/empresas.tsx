@@ -13,7 +13,7 @@ import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
-import DataTable from '../../mcp-system/mcp-design-system/src/components/patterns/DataTable';
+import DataTable from '../components/ui/DataTable';
 import Input from '../components/ui/Input';
 import ConfirmModal from '../components/ui/ConfirmModal';
 import Badge from '../components/ui/Badge';
