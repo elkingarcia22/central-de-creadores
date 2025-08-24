@@ -4,7 +4,7 @@
     "proyecto": "central-de-creadores",
     "configuracion": {
       "auto_backup": true,
-      "confirmar_cambios": true,
+      "confirmar_cambios": false,
       "crear_rama_por_feature": true,
       "formato_commit": "conventional"
     },
@@ -17,7 +17,11 @@
       "undo": "git checkout -- .",
       "log": "git log --oneline -10"
     },
-    "ramas_protegidas": ["main", "master", "develop"],
+    "ramas_protegidas": [
+      "main",
+      "master",
+      "develop"
+    ],
     "archivos_importantes": [
       "src/pages/api/empresas/[id].ts",
       "package.json",

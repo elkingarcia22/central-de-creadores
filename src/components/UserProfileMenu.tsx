@@ -79,7 +79,7 @@ export default function UserProfileMenu() {
       </Button>
 
       {isOpen && (
-        <Card className="absolute right-0 mt-2 w-64 shadow-lg z-50 border border-gray-200 dark:border-gray-700">
+        <Card className="absolute right-0 mt-2 w-64  z-50 border border-gray-200 dark:border-gray-700">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <SimpleAvatar

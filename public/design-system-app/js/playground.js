@@ -235,7 +235,7 @@ const playgroundStyles = `
 
 .component-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
 }
 
 .component-item:active {

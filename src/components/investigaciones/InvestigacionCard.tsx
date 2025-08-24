@@ -44,7 +44,7 @@ export function InvestigacionCard({
 
   return (
     <Card 
-      className={`transition-all duration-200 hover:shadow-lg ${
+      className={`transition-all duration-200 hover: ${
         onClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-800/50' : ''
       }`}
       onClick={onClick}

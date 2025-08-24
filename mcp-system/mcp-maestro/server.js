@@ -26,6 +26,7 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import chalk from 'chalk';
 import { ContextManager } from './tools/context-manager.js';
 import { MCPDispatcher } from './tools/mcp-dispatcher.js';
 import { SessionManager } from './tools/session-manager.js';
@@ -38,7 +39,59 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class MCPMaestroServer {
+  
+// CONFIGURACIÓN AUTOMÁTICA INYECTADA
+const AUTO_CONFIG = {
+  "autoMode": true,
+  "skipConfirmations": true,
+  "autoExecute": true,
+  "autoCommit": true,
+  "autoBackup": true,
+  "silentMode": true,
+  "autoRecoverContext": true,
+  "autoSync": true,
+  "autoActivateGitHub": true,
+  "forceAuto": true,
+  "noPrompts": true,
+  "skipAllConfirmations": true
+};
+
+// Modificar comportamiento para modo automático
+if (AUTO_CONFIG.autoMode) {
+  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
+  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
+  console.log(chalk.cyan('✅ Auto-commit activado'));
+  console.log(chalk.cyan('✅ Auto-backup activado'));
+  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
+}
+
+
   constructor() {
+    // CONFIGURACIÓN AUTOMÁTICA
+    this.AUTO_CONFIG = {
+      "autoMode": true,
+      "skipConfirmations": true,
+      "autoExecute": true,
+      "autoCommit": true,
+      "autoBackup": true,
+      "silentMode": true,
+      "autoRecoverContext": true,
+      "autoSync": true,
+      "autoActivateGitHub": true,
+      "forceAuto": true,
+      "noPrompts": true,
+      "skipAllConfirmations": true
+    };
+
+    // Modificar comportamiento para modo automático
+    if (this.AUTO_CONFIG.autoMode) {
+      console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
+      console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
+      console.log(chalk.cyan('✅ Auto-commit activado'));
+      console.log(chalk.cyan('✅ Auto-backup activado'));
+      console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
+    }
+
     this.server = new Server(
       {
         name: 'mcp-maestro',

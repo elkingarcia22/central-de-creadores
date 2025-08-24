@@ -235,7 +235,7 @@ const Select: React.FC<SelectProps> = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="fixed bg-background border border-border rounded-md shadow-lg overflow-hidden z-[9999]"
+          className="fixed bg-background border border-border rounded-md  overflow-hidden z-[9999]"
           style={getDropdownPosition()}
         >
           {/* Search input */}

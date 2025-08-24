@@ -1885,7 +1885,7 @@ const VerReclutamiento: NextPage = () => {
               return (
                 <Card 
                   key={`${participante.id}-${index}`}
-                  className="transition-all duration-200 hover:shadow-lg"
+                  className="transition-all duration-200 hover:"
                 >
                   {/* Header con acciones en la parte superior derecha */}
                   <div className="flex items-start justify-between mb-4">
@@ -1964,7 +1964,7 @@ const VerReclutamiento: NextPage = () => {
             return (
               <Card 
                 key={`${participante.id}-${index}`}
-                className="transition-all duration-200 hover:shadow-lg"
+                className="transition-all duration-200 hover:"
               >
                 {/* Header con acciones en la parte superior derecha */}
                 <div className="flex items-start justify-between mb-4">
@@ -2184,7 +2184,7 @@ const VerReclutamiento: NextPage = () => {
             
             {/* Modal estático sin animaciones */}
             <div 
-              className="fixed top-0 right-0 bottom-0 max-w-lg w-full bg-card shadow-xl"
+              className="fixed top-0 right-0 bottom-0 max-w-lg w-full bg-card "
               style={{ height: '100vh' }}
               role="dialog"
               aria-modal="true"

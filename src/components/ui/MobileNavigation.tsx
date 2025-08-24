@@ -92,7 +92,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
       {isOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
-          <div className="fixed inset-y-0 left-0 w-80 bg-card border-r border-border shadow-xl">
+          <div className="fixed inset-y-0 left-0 w-80 bg-card border-r border-border ">
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <Typography variant="h6" className="font-bold text-foreground">

@@ -752,11 +752,11 @@ const MicroInteractionsSection: React.FC = () => {
                     <Typography variant="body2" color="secondary" className="mb-3">
                       Efectos de elevación y sombra
                     </Typography>
-                    <button className="px-4 py-2 bg-primary text-white rounded hover:shadow-lg transition-shadow">
+                    <button className="px-4 py-2 bg-primary text-white rounded hover: transition-colors">
                       Hover me
                     </button>
                     <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
-                      hover:shadow-lg transition-shadow
+                      hover: transition-colors
                     </div>
                   </div>
                   
@@ -765,11 +765,11 @@ const MicroInteractionsSection: React.FC = () => {
                     <Typography variant="body2" color="secondary" className="mb-3">
                       Elevación y cambio de borde
                     </Typography>
-                    <div className="p-4 border rounded-lg hover:shadow-md hover:border-primary/30 transition-all cursor-pointer">
+                    <div className="p-4 border rounded-lg hover: hover:border-primary/30 transition-all cursor-pointer">
                       <Typography variant="body2">Card con hover</Typography>
                     </div>
                     <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono">
-                      hover:shadow-md hover:border-primary/30
+                      hover: hover:border-primary/30
                     </div>
                   </div>
                 </div>

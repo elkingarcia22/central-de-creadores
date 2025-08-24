@@ -94,7 +94,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
           className={`
             fixed z-[9999]
             bg-popover border border-border
-            rounded-lg shadow-lg
+            rounded-lg 
             py-1
           `}
           style={{

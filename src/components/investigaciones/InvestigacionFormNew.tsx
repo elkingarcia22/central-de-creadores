@@ -202,7 +202,7 @@ export function InvestigacionFormNew({
               type="date"
               value={formData.fecha_inicio}
               onChange={(e) => handleChange('fecha_inicio', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               required
             />
             {errors.fecha_inicio && (
@@ -218,7 +218,7 @@ export function InvestigacionFormNew({
               type="date"
               value={formData.fecha_fin}
               onChange={(e) => handleChange('fecha_fin', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               required
             />
             {errors.fecha_fin && (
@@ -358,7 +358,7 @@ export function InvestigacionFormNew({
             value={formData.libreto}
             onChange={(e) => handleChange('libreto', e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Describe el libreto o guión de la investigación..."
           />
         </div>
@@ -371,7 +371,7 @@ export function InvestigacionFormNew({
             value={formData.notas_seguimiento}
             onChange={(e) => handleChange('notas_seguimiento', e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Notas adicionales sobre el seguimiento..."
           />
         </div>

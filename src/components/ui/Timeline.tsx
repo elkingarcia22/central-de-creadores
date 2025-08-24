@@ -281,7 +281,7 @@ const Timeline: React.FC<TimelineProps> = ({
         <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200" />
         
         {/* Punto de evento */}
-        <div className="absolute left-4 top-4 w-4 h-4 rounded-full border-2 border-white bg-white shadow-sm">
+        <div className="absolute left-4 top-4 w-4 h-4 rounded-full border-2 border-white bg-white ">
           {getEventIcon(event.type, event.status)}
         </div>
         
@@ -291,7 +291,7 @@ const Timeline: React.FC<TimelineProps> = ({
             variant="outlined"
             className={`
               p-4 cursor-pointer transition-all duration-200
-              hover:shadow-md hover:border-primary/30
+              hover: hover:border-primary/30
               ${getEventColor(event.type)}
             `}
             onClick={() => onEventClick?.(event)}

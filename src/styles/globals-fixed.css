@@ -568,14 +568,12 @@ body {
 /* === MEJORAS DE DROPDOWN Y Z-INDEX === */
 @layer components {
   .dropdown-content {
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    border: 1px solid #F1F5F9,
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
   
   .dark .dropdown-content {
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.25),
+    border: 1px solid #F1F5F9,
       0 4px 6px -2px rgba(0, 0, 0, 0.15);
   }
 }
@@ -603,7 +601,7 @@ html {
   }
   
   .dropdown-container {
-    @apply bg-popover border border-border shadow-xl;
+    @apply bg-popover border border-border ;
   }
   
   .dropdown-header {

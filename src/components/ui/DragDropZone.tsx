@@ -342,7 +342,7 @@ const DragDropZone: React.FC<DragDropZoneProps> = ({
                   variant="outlined"
                   className={`
                     p-3 cursor-pointer transition-all duration-200
-                    hover:shadow-md hover:border-primary/30
+                    hover: hover:border-primary/30
                     ${file.status === 'error' ? 'border-red-200 bg-red-50' : ''}
                     ${file.status === 'success' ? 'border-green-200 bg-green-50' : ''}
                   `}

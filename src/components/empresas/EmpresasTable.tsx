@@ -136,7 +136,7 @@ export default function EmpresasTable({
       {empresas.map((empresa) => (
         <div 
           key={empresa.id}
-          className="border border-border rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+          className="border border-border rounded-lg p-6 hover: transition-colors duration-200"
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">

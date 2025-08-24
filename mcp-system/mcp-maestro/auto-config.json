@@ -1,0 +1,14 @@
+{
+  "autoMode": true,
+  "skipConfirmations": true,
+  "autoExecute": true,
+  "autoCommit": true,
+  "autoBackup": true,
+  "silentMode": true,
+  "autoRecoverContext": true,
+  "autoSync": true,
+  "autoActivateGitHub": true,
+  "forceAuto": true,
+  "noPrompts": true,
+  "skipAllConfirmations": true
+}

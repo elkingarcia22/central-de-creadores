@@ -481,15 +481,11 @@ body {
 /* === MEJORAS DE DROPDOWN Y Z-INDEX === */
 @layer components {
   .dropdown-content {
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.1),
-      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #F1F5F9;
   }
   
   .dark .dropdown-content {
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.25),
-      0 4px 6px -2px rgba(0, 0, 0, 0.15);
+    border: 1px solid #334155;
   }
 }
 
@@ -516,7 +512,7 @@ html {
   }
   
   .dropdown-container {
-    @apply bg-popover border border-border shadow-xl;
+    @apply bg-popover border border-border;
   }
   
   .dropdown-header {
@@ -555,5 +551,14 @@ html {
   
   .dark .bg-accent-solid {
     background-color: rgb(63 63 70) !important; /* zinc-700 en modo oscuro */
+  }
+  
+  /* === ESTILOS PARA CHIP DE RIESGO INDEPENDIENTE === */
+  .chip-group:hover .chip-group-hover\:opacity-80 {
+    opacity: 0.8;
+  }
+  
+  .chip-group:hover .chip-group-hover\:opacity-100 {
+    opacity: 1;
   }
 }

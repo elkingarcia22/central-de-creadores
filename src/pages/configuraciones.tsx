@@ -159,7 +159,7 @@ export default function ConfiguracionesPage() {
                 key={index}
                 variant="elevated" 
                 padding="lg"
-                className="hover:shadow-lg transition-shadow duration-200"
+                className="transition-all duration-200"
               >
                 <div className="space-y-4">
                   {/* Header */}

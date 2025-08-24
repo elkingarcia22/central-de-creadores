@@ -147,7 +147,7 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
 
       {isOpen && (
         <div className={`
-          absolute z-50 mt-1 rounded-md shadow-lg min-w-[120px]
+          absolute z-50 mt-1 rounded-md  min-w-[120px]
           ${theme === 'dark' ? 'bg-gray-800 border border-gray-600' : 'bg-white border border-gray-200'}
           ${isSidebar ? 'left-0' : 'left-0 right-0'}
         `}>

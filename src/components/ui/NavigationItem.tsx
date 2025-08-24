@@ -86,7 +86,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         
         {/* Submenú cuando está abierto (expandido o contraído) */}
         {open && subMenu && (
-          <div className={`${isCollapsed ? 'absolute left-full top-0 ml-2 bg-card border border-slate-200 dark:border-zinc-700 rounded-md shadow-lg z-50 min-w-48' : 'ml-8 mt-1'} space-y-1`}>
+          <div className={`${isCollapsed ? 'absolute left-full top-0 ml-2 bg-card border border-slate-100 dark:border-zinc-700 rounded-md  z-50 min-w-48' : 'ml-8 mt-1'} space-y-1`}>
             {subMenu.map((subItem, index) => (
               <NavigationItem
                 key={subItem.href}

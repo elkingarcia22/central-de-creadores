@@ -405,7 +405,7 @@ const Calendar: React.FC<CalendarProps> = ({
           <Card
             key={event.id}
             variant="outlined"
-            className="p-3 cursor-pointer hover:shadow-md transition-all duration-200"
+            className="p-3 cursor-pointer hover: transition-all duration-200"
             onClick={() => onEventClick?.(event)}
           >
             <div className="flex items-start justify-between">

@@ -23,9 +23,9 @@ const Card: React.FC<CardProps> = ({
   const baseClasses = 'rounded-lg transition-all duration-200 ease-in-out';
   
   const variantClasses = {
-    default: 'bg-card text-card-foreground border border-slate-200 dark:border-slate-700',
-    elevated: 'bg-card text-card-foreground shadow-md',
-    outlined: 'bg-background border border-slate-200 dark:border-slate-700 text-foreground'
+    default: 'bg-card text-card-foreground border border-slate-100 dark:border-slate-800',
+    elevated: 'bg-card text-card-foreground border border-slate-100 dark:border-slate-800',
+    outlined: 'bg-background border border-slate-100 dark:border-slate-800 text-foreground'
   };
   
   const paddingClasses = {
@@ -35,7 +35,7 @@ const Card: React.FC<CardProps> = ({
     lg: 'p-6'
   };
   
-  const clickableClass = onClick ? 'cursor-pointer hover:bg-accent/50 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]' : '';
+  const clickableClass = onClick ? 'cursor-pointer hover:bg-accent/30 hover:border-slate-100 dark:hover:border-slate-800 hover:scale-[1.01] active:scale-[0.99]' : '';
   
   return (
     <div

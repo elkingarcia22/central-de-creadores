@@ -62,7 +62,7 @@ export const Tabs: React.FC<TabsProps> = ({
     pills: {
       container: 'bg-muted rounded-lg p-1',
       tab: `transition-all duration-200 font-medium rounded-md ${sizeClasses[size]}`,
-      active: 'text-primary-foreground bg-primary shadow-sm',
+      active: 'text-primary-foreground bg-primary ',
       inactive: 'text-muted-foreground hover:text-foreground hover:bg-muted',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },

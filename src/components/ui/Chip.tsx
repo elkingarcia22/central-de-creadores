@@ -31,7 +31,7 @@ const Chip: React.FC<ChipProps> = ({
   const { theme } = useTheme();
 
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 ease-in-out';
-  const clickableClasses = onClick ? 'cursor-pointer hover:scale-105 active:scale-95 hover:shadow-sm' : '';
+  const clickableClasses = onClick ? 'cursor-pointer hover:scale-105 active:scale-95 hover:' : '';
   const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
   const roundedClasses = rounded ? 'rounded-full' : 'rounded-lg';
 

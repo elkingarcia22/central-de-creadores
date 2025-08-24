@@ -47,13 +47,13 @@ const BottomNav: React.FC<BottomNavProps> = ({ userName, userEmail, userImage, r
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-between px-4 py-2 md:px-8 md:py-3">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700  flex items-center justify-between px-4 py-2 md:px-8 md:py-3">
       {/* Perfil y dropdown de rol */}
       <div className="flex items-center space-x-3">
         <img
           src={userImage || 'https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff'}
           alt="Foto de perfil"
-          className="w-9 h-9 rounded-full object-cover border border-gray-200 shadow-sm"
+          className="w-9 h-9 rounded-full object-cover border border-gray-200 "
         />
         <div className="flex flex-col">
           <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs truncate max-w-[90px]">
@@ -75,7 +75,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ userName, userEmail, userImage, r
             </svg>
           </button>
           {dropdownOpen && (
-            <div className="absolute left-0 mt-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+            <div className="absolute left-0 mt-2 w-32 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md  z-50">
               {roles.map((rol) => (
                 <button
                   key={rol}

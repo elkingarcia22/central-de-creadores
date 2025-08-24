@@ -43,7 +43,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -52,7 +52,7 @@
 
 .spacing-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
 }
 
 .spacing-visual {
@@ -112,7 +112,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
     text-align: center;
 }
 
@@ -145,7 +145,7 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
     margin: 20px 0;
 }
 

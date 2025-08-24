@@ -113,7 +113,7 @@ export default function DepartamentoSelector({
   }, {} as Record<string, Departamento[]>);
 
   const baseClasses = `
-    relative w-full bg-background border rounded-md shadow-sm
+    relative w-full bg-background border rounded-md 
     focus-within:ring-2 focus-within:ring-primary focus-within:border-primary
     ${error ? 'border-destructive' : 'border-border'}
     ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -153,7 +153,7 @@ export default function DepartamentoSelector({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md  max-h-60 overflow-hidden">
           {/* Barra de búsqueda */}
           <div className="p-2 border-b border-border">
             <div className="relative">

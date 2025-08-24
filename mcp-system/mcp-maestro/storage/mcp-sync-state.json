@@ -1,5 +1,5 @@
 {
-  "last_sync": "2025-08-24T21:29:10.997Z",
+  "last_sync": "2025-08-24T22:33:22.311Z",
   "results": {
     "design-system": {
       "success": true,
@@ -179,7 +179,7 @@
           ]
         }
       },
-      "timestamp": "2025-08-24T21:29:00.087Z"
+      "timestamp": "2025-08-24T22:33:10.972Z"
     },
     "code-structure": {
       "success": true,
@@ -316,7 +316,7 @@
           "total_dependencies": 37
         }
       },
-      "timestamp": "2025-08-24T21:29:00.187Z"
+      "timestamp": "2025-08-24T22:33:11.157Z"
     },
     "testing-qa": {
       "success": true,
@@ -385,14 +385,14 @@
         },
         "coverage": {
           "coverage_exists": false,
-          "coverage_path": "../../coverage"
+          "coverage_path": "/Users/elkinmac/Documents/central-de-creadores/coverage"
         },
         "issues": {
           "eslint_configured": false,
           "linting_enabled": false
         }
       },
-      "timestamp": "2025-08-24T21:29:02.209Z"
+      "timestamp": "2025-08-24T22:33:13.271Z"
     },
     "supabase": {
       "success": true,
@@ -501,7 +501,7 @@
           ]
         }
       },
-      "timestamp": "2025-08-24T21:29:10.997Z"
+      "timestamp": "2025-08-24T22:33:22.311Z"
     }
   },
   "summary": {

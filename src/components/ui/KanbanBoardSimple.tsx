@@ -92,7 +92,7 @@ const KanbanBoardSimple: React.FC<KanbanBoardSimpleProps> = ({
         variant="outlined"
         className={`
           mb-3 cursor-pointer transition-all duration-200
-          hover:shadow-md hover:border-primary/30
+          hover: hover:border-primary/30
           ${isOverdue ? 'border-red-200 bg-red-50' : ''}
         `}
         onClick={() => onTaskClick?.(task)}

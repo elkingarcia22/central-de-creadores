@@ -225,8 +225,8 @@ const Checkbox: React.FC<CheckboxProps> = ({
             ${disabled 
               ? 'bg-gray-100 border-gray-300 cursor-not-allowed' 
               : checked || indeterminate
-                ? 'bg-primary border-primary shadow-sm'
-                : 'bg-white border-gray-300 hover:border-primary hover:shadow-sm'
+                ? 'bg-primary border-primary '
+                : 'bg-white border-gray-300 hover:border-primary hover:'
             }
             ${disabled ? '' : 'hover:scale-105 active:scale-95'}
           `}

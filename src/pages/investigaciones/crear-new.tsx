@@ -130,7 +130,7 @@ const CrearInvestigacionPage: NextPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-card rounded-lg shadow-sm p-6">
+            <div className="bg-card rounded-lg  p-6">
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -163,7 +163,7 @@ const CrearInvestigacionPage: NextPage = () => {
           </div>
 
           {/* Formulario */}
-          <div className="bg-card rounded-lg shadow-sm p-6">
+          <div className="bg-card rounded-lg  p-6">
             <InvestigacionFormNew
               periodos={periodos}
               productos={productos}

@@ -64,7 +64,7 @@ export default function MetricCard({
 
   return (
     <Card 
-      className={`transition-all duration-200 hover:shadow-lg ${
+      className={`transition-all duration-200 ${
         onClick ? 'cursor-pointer hover:scale-105' : ''
       } ${className}`}
       onClick={onClick}

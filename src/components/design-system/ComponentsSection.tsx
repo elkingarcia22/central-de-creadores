@@ -3872,7 +3872,7 @@ const ComponentsSection: React.FC = () => {
               {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+                  <div className="relative bg-white rounded-lg  max-w-md w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Información Importante</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)}>
@@ -3908,7 +3908,7 @@ const ComponentsSection: React.FC = () => {
               {isConfirmModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsConfirmModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-sm w-full">
+                  <div className="relative bg-white rounded-lg  max-w-sm w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Confirmar Eliminación</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsConfirmModalOpen(false)}>
@@ -3940,7 +3940,7 @@ const ComponentsSection: React.FC = () => {
               {isFormModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsFormModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+                  <div className="relative bg-white rounded-lg  max-w-lg w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Crear Nuevo Usuario</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsFormModalOpen(false)}>
@@ -4167,7 +4167,7 @@ const ComponentsSection: React.FC = () => {
               {isSideModalOpen && (
                 <div className="fixed inset-0 z-50 flex">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsSideModalOpen(false)} />
-                  <div className="relative bg-white shadow-xl w-96 h-full flex flex-col">
+                  <div className="relative bg-white  w-96 h-full flex flex-col">
                     <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
                       <Typography variant="h5" weight="semibold">Panel Lateral</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsSideModalOpen(false)}>
@@ -4220,7 +4220,7 @@ const ComponentsSection: React.FC = () => {
               {isSettingsModalOpen && (
                 <div className="fixed inset-0 z-50 flex">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsSettingsModalOpen(false)} />
-                  <div className="relative bg-white shadow-xl w-96 h-full flex flex-col">
+                  <div className="relative bg-white  w-96 h-full flex flex-col">
                     <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
                       <Typography variant="h5" weight="semibold">Configuración del Sistema</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsSettingsModalOpen(false)}>
@@ -4308,7 +4308,7 @@ const ComponentsSection: React.FC = () => {
               {isUserDetailsModalOpen && (
                 <div className="fixed inset-0 z-50 flex">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsUserDetailsModalOpen(false)} />
-                  <div className="relative bg-white shadow-xl w-96 h-full flex flex-col">
+                  <div className="relative bg-white  w-96 h-full flex flex-col">
                     <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
                       <Typography variant="h5" weight="semibold">Detalles del Usuario</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsUserDetailsModalOpen(false)}>
@@ -4570,7 +4570,7 @@ const ComponentsSection: React.FC = () => {
               {isDeleteModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsDeleteModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+                  <div className="relative bg-white rounded-lg  max-w-md w-full">
                     <div className="p-6">
                       <div className="flex items-start gap-3 mb-4">
                         <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -4607,7 +4607,7 @@ const ComponentsSection: React.FC = () => {
               {isArchiveModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsArchiveModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+                  <div className="relative bg-white rounded-lg  max-w-md w-full">
                     <div className="p-6">
                       <div className="flex items-start gap-3 mb-4">
                         <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -4644,7 +4644,7 @@ const ComponentsSection: React.FC = () => {
               {isPublishModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsPublishModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+                  <div className="relative bg-white rounded-lg  max-w-md w-full">
                     <div className="p-6">
                       <div className="flex items-start gap-3 mb-4">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -4742,7 +4742,7 @@ const ComponentsSection: React.FC = () => {
               {isLinksModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsLinksModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+                  <div className="relative bg-white rounded-lg  max-w-lg w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Enlaces del Proyecto</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsLinksModalOpen(false)}>
@@ -4804,7 +4804,7 @@ const ComponentsSection: React.FC = () => {
               {isResourcesModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsResourcesModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+                  <div className="relative bg-white rounded-lg  max-w-lg w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Recursos de Investigación</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsResourcesModalOpen(false)}>
@@ -4875,7 +4875,7 @@ const ComponentsSection: React.FC = () => {
               {isReferencesModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsReferencesModalOpen(false)} />
-                  <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+                  <div className="relative bg-white rounded-lg  max-w-lg w-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Typography variant="h5" weight="semibold">Referencias Bibliográficas</Typography>
                       <Button variant="ghost" size="sm" onClick={() => setIsReferencesModalOpen(false)}>
@@ -5812,7 +5812,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                         <EditIcon className="w-4 h-4" />
@@ -5834,7 +5834,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                         <EditIcon className="w-4 h-4" />
@@ -5861,7 +5861,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                         <EditIcon className="w-4 h-4" />
@@ -5895,7 +5895,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                         <EditIcon className="w-4 h-4" />
@@ -5923,7 +5923,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                         <EditIcon className="w-4 h-4" />
@@ -5965,7 +5965,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-3 h-3" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-40 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-40 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-3 py-1.5 text-left hover:bg-muted flex items-center gap-2 text-sm">
                         <EditIcon className="w-3 h-3" />
@@ -5987,7 +5987,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="lg">
                     <MoreVerticalIcon className="w-5 h-5" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-56 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-2">
                       <button className="w-full px-4 py-3 text-left hover:bg-muted flex items-center gap-3">
                         <EditIcon className="w-5 h-5" />
@@ -6015,7 +6015,7 @@ const ComponentsSection: React.FC = () => {
                   <Button variant="ghost" size="sm">
                     <MoreVerticalIcon className="w-4 h-4" />
                   </Button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                     <div className="py-1">
                       <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -6074,7 +6074,7 @@ const ComponentsSection: React.FC = () => {
                             <Button variant="ghost" size="sm">
                               <MoreVerticalIcon className="w-4 h-4" />
                             </Button>
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                               <div className="py-1">
                                 <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                                   <EditIcon className="w-4 h-4" />
@@ -6115,7 +6115,7 @@ const ComponentsSection: React.FC = () => {
                     <Button variant="ghost" size="sm">
                       <MoreVerticalIcon className="w-4 h-4" />
                     </Button>
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                       <div className="py-1">
                         <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                           <EditIcon className="w-4 h-4" />
@@ -6158,7 +6158,7 @@ const ComponentsSection: React.FC = () => {
                       <Button variant="ghost" size="sm">
                         <MoreVerticalIcon className="w-4 h-4" />
                       </Button>
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                         <div className="py-1">
                           <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                             <EditIcon className="w-4 h-4" />
@@ -6274,7 +6274,7 @@ const ComponentsSection: React.FC = () => {
                     <Button variant="outline" size="sm">
                       <MoreVerticalIcon className="w-4 h-4" />
                     </Button>
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                       <div className="py-1">
                         <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                           <SaveIcon className="w-4 h-4" />
@@ -6315,7 +6315,7 @@ const ComponentsSection: React.FC = () => {
                     <Button variant="outline" size="sm">
                       <MoreVerticalIcon className="w-4 h-4" />
                     </Button>
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                       <div className="py-1">
                         <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                           <CheckCircleIcon className="w-4 h-4" />
@@ -6505,7 +6505,7 @@ const ComponentsSection: React.FC = () => {
                       <Button variant="outline" size="sm">
                         <MoreVerticalIcon className="w-4 h-4" />
                       </Button>
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                         <div className="py-1">
                           <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                             <SaveIcon className="w-4 h-4" />
@@ -6548,7 +6548,7 @@ const ComponentsSection: React.FC = () => {
                       <Button variant="outline" size="sm">
                         <MoreVerticalIcon className="w-4 h-4" />
                       </Button>
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                         <div className="py-1">
                           <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                             <SaveIcon className="w-4 h-4" />
@@ -6595,7 +6595,7 @@ const ComponentsSection: React.FC = () => {
                       <Button variant="outline" size="sm">
                         <MoreVerticalIcon className="w-4 h-4" />
                       </Button>
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg shadow-lg z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-background border border-muted rounded-lg  z-50">
                         <div className="py-1">
                           <button className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2">
                             <SaveIcon className="w-4 h-4" />
@@ -6710,7 +6710,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="relative">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/2 h-2 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6731,7 +6731,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="relative">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/2 h-2 bg-success rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                     <div className="flex justify-between mt-1">
@@ -6756,8 +6756,8 @@ const ComponentsSection: React.FC = () => {
                   <div className="relative">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/2 h-2 bg-warning rounded-full relative ml-1/4">
-                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white shadow-md"></div>
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white "></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6786,7 +6786,7 @@ const ComponentsSection: React.FC = () => {
                     <div className="relative">
                       <div className="w-full h-2 bg-muted rounded-full">
                         <div className="w-1/2 h-2 bg-primary rounded-full relative">
-                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                         </div>
                       </div>
                     </div>
@@ -6803,7 +6803,7 @@ const ComponentsSection: React.FC = () => {
                     <div className="relative">
                       <div className="w-full h-2 bg-muted rounded-full">
                         <div className="w-1/2 h-2 bg-muted rounded-full relative">
-                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-muted rounded-full border-2 border-white shadow-md"></div>
+                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-muted rounded-full border-2 border-white "></div>
                         </div>
                       </div>
                     </div>
@@ -6820,7 +6820,7 @@ const ComponentsSection: React.FC = () => {
                     <div className="relative">
                       <div className="w-full h-2 bg-muted rounded-full">
                         <div className="w-1/2 h-2 bg-primary rounded-full relative animate-pulse">
-                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                         </div>
                       </div>
                     </div>
@@ -6844,7 +6844,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-3/4 h-2 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6854,7 +6854,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-2/3 h-2 bg-success rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6864,7 +6864,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/2 h-2 bg-warning rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6874,7 +6874,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/4 h-2 bg-error rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-error rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-error rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6889,7 +6889,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-1 bg-muted rounded-full">
                       <div className="w-1/2 h-1 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary rounded-full border border-white shadow-sm"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-primary rounded-full border border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6899,7 +6899,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-1/2 h-2 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6909,7 +6909,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="max-w-md">
                     <div className="w-full h-3 bg-muted rounded-full">
                       <div className="w-1/2 h-3 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-primary rounded-full border-2 border-white shadow-lg"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-primary rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -6940,7 +6940,7 @@ const ComponentsSection: React.FC = () => {
                     <div className="relative">
                       <div className="w-full h-2 bg-muted rounded-full">
                         <div className="w-3/4 h-2 bg-primary rounded-full relative">
-                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                         </div>
                       </div>
                     </div>
@@ -6962,8 +6962,8 @@ const ComponentsSection: React.FC = () => {
                     <div className="relative">
                       <div className="w-full h-2 bg-muted rounded-full">
                         <div className="w-1/2 h-2 bg-success rounded-full relative ml-1/4">
-                          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white shadow-md"></div>
-                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white shadow-md"></div>
+                          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white "></div>
+                          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-success rounded-full border-2 border-white "></div>
                         </div>
                       </div>
                     </div>
@@ -6989,7 +6989,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="relative">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-4/5 h-2 bg-warning rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-warning rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -7014,7 +7014,7 @@ const ComponentsSection: React.FC = () => {
                   <div className="relative">
                     <div className="w-full h-2 bg-muted rounded-full">
                       <div className="w-2/3 h-2 bg-primary rounded-full relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-white "></div>
                       </div>
                     </div>
                   </div>
@@ -7134,7 +7134,7 @@ const ComponentsSection: React.FC = () => {
           <div className="space-y-4">
             <div>
               <Typography variant="h4" weight="semibold" className="mb-2">Card Interactivo</Typography>
-              <Card className="p-4 cursor-pointer hover:shadow-lg transition-shadow">
+              <Card className="p-4 cursor-pointer hover: transition-colors">
                 <Typography variant="h5" weight="semibold" className="mb-2">Card Clickeable</Typography>
                 <Typography variant="body1" color="secondary">
                   Este card tiene efectos hover y es interactivo.

@@ -116,14 +116,14 @@ const Slider: React.FC<SliderProps> = ({
           
           {/* Thumb indicators */}
           <div
-            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"
+            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white "
             style={{
               left: `${((localValue[0] - min) / (max - min)) * 100}%`,
               transform: 'translate(-50%, -50%)'
             }}
           />
           <div
-            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg"
+            className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white "
             style={{
               left: `${((localValue[1] - min) / (max - min)) * 100}%`,
               transform: 'translate(-50%, -50%)'

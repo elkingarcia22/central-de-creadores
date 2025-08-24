@@ -269,7 +269,7 @@ const LineChart: React.FC<LineChartProps> = ({
                 stroke="#E5E7EB"
                 strokeWidth="1"
                 rx="4"
-                className="drop-shadow-lg"
+                className="drop-"
               />
               <text
                 x={tooltip.x + 15}

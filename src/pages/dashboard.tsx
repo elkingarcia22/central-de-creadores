@@ -276,7 +276,7 @@ export default function DashboardPage() {
                   key={index}
                   variant="elevated" 
                   padding="lg" 
-                  className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+                  className="hover: transition-colors duration-200 cursor-pointer"
                   onClick={() => router.push(item.href)}
                 >
                   <div className="text-center space-y-4">

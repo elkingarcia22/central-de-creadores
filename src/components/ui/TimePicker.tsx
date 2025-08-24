@@ -150,7 +150,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-muted rounded-lg shadow-lg z-50">
+        <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-muted rounded-lg  z-50">
           <div className="p-3">
             <div className="flex gap-2">
               {/* Hour Column */}

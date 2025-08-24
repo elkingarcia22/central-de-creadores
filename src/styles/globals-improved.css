@@ -99,7 +99,6 @@
   /* Cards optimizadas */
   .card-base {
     @apply bg-surface-primary border border-border-primary;
-    @apply shadow-sm;
     @apply transition-colors duration-200;
   }
   

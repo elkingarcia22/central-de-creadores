@@ -170,7 +170,7 @@ function generateCSS() {
     border-radius: 8px;
     padding: 20px;
     background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F1F5F9;
 }
 
 /* Alert Styles */

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-08-24T22:45:02.151Z",
+  "status": "AUTO_MODE_FORCED",
+  "config": {
+    "autoMode": true,
+    "skipConfirmations": true,
+    "autoExecute": true,
+    "autoCommit": true,
+    "autoBackup": true,
+    "silentMode": true,
+    "autoRecoverContext": true,
+    "autoSync": true,
+    "autoActivateGitHub": true,
+    "forceAuto": true,
+    "noPrompts": true,
+    "skipAllConfirmations": true
+  },
+  "message": "MCP Maestro configurado para NO pedir confirmaciones"
+}

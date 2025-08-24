@@ -40,7 +40,7 @@ export default function DiagnosticoPermisos() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg p-4 shadow-lg max-w-md z-50">
+    <div className="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg p-4  max-w-md z-50">
       <h3 className="font-bold text-sm mb-2">🔍 Diagnóstico de Permisos</h3>
       <div className="text-xs space-y-1">
         <div><strong>Usuario:</strong> {diagnosticInfo.usuario.nombre}</div>

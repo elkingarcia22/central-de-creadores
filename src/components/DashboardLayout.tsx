@@ -205,7 +205,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
       <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)}></div>
                   <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-card">
-          <div className="flex h-16 items-center justify-between px-4 border-b border-slate-200 dark:border-zinc-700">
+          <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100 dark:border-zinc-700">
             <span className="text-base font-semibold text-title">Central de creadores</span>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -239,9 +239,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
 
       {/* Sidebar para desktop */}
       <div className={`hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
-        <div className="flex flex-col flex-grow bg-card border-r border-slate-200 dark:border-zinc-700">
+        <div className="flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700">
           {/* Cabecera del sidebar SIEMPRE visible */}
-          <div className="flex h-16 items-center px-4 border-b border-slate-200 dark:border-zinc-700 justify-between">
+          <div className="flex h-16 items-center px-4 border-b border-slate-100 dark:border-zinc-700 justify-between">
             {/* Título solo si está expandido */}
             {!sidebarCollapsed && (
               <span className="text-base font-semibold text-title transition-all duration-300">Central de creadores</span>
@@ -315,7 +315,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
             ))}
           </nav>
           {/* UserProfileMenu en la parte inferior */}
-          <div className="border-t border-slate-200 dark:border-zinc-700 p-4">
+          <div className="border-t border-slate-100 dark:border-zinc-700 p-4">
             <UserProfileMenu />
           </div>
         </div>
@@ -324,7 +324,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
       {/* Contenido principal */}
       <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         {/* Header móvil */}
-        <div className="lg:hidden bg-card border-b border-slate-200 dark:border-zinc-700 px-4 py-3 flex items-center justify-between">
+        <div className="lg:hidden bg-card border-b border-slate-100 dark:border-zinc-700 px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"

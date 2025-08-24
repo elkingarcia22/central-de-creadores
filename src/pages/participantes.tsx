@@ -1096,7 +1096,7 @@ export default function ParticipantesPage() {
                 </Button>
                 
                 {showDropdown && (
-                  <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg  z-50">
                     <div className="py-1">
                       <button
                         onClick={() => {

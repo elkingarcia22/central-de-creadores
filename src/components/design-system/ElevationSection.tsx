@@ -4,10 +4,10 @@ import { Typography, Card } from '../ui';
 const ElevationSection: React.FC = () => {
   const elevations = [
     { name: 'shadow-none', className: 'shadow-none', description: 'Sin elevación' },
-    { name: 'shadow-sm', className: 'shadow-sm', description: 'Elevación pequeña' },
-    { name: 'shadow-md', className: 'shadow-md', description: 'Elevación media' },
-    { name: 'shadow-lg', className: 'shadow-lg', description: 'Elevación grande' },
-    { name: 'shadow-xl', className: 'shadow-xl', description: 'Elevación extra grande' },
+    { name: '', className: '', description: 'Elevación pequeña' },
+    { name: '', className: '', description: 'Elevación media' },
+    { name: '', className: '', description: 'Elevación grande' },
+    { name: '', className: '', description: 'Elevación extra grande' },
     { name: 'shadow-2xl', className: 'shadow-2xl', description: 'Elevación doble extra grande' },
     { name: 'shadow-inner', className: 'shadow-inner', description: 'Elevación interna' },
     { name: 'shadow-custom-popover', className: 'shadow-custom-popover', description: 'Elevación personalizada para popovers' },

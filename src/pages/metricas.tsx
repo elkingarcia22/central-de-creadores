@@ -306,7 +306,7 @@ export default function MetricasPage() {
                 key={reporte.id}
                 variant="elevated" 
                 padding="lg"
-                className="hover:shadow-lg transition-shadow duration-200"
+                className="hover: transition-colors duration-200"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">

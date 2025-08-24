@@ -129,7 +129,7 @@ export default function GestionUsuariosPage() {
             <div className="relative w-12 h-12 flex-shrink-0">
               {/* Avatar de respaldo con iniciales (siempre presente) */}
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm"
+                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm "
                 style={{ backgroundColor }}
               >
                 {initials}
@@ -140,7 +140,7 @@ export default function GestionUsuariosPage() {
                 <img
                   src={avatarUrl}
                   alt={displayName}
-                  className="absolute top-0 left-0 w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-sm z-20"
+                  className="absolute top-0 left-0 w-12 h-12 rounded-full object-cover border-2 border-gray-200  z-20"
                   style={{ 
                     display: 'block',
                     opacity: 1,

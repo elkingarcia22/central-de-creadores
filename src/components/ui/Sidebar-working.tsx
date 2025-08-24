@@ -49,8 +49,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const displayName = user?.name || user?.email || 'Usuario';
 
   return (
-    <div className={`flex flex-col flex-grow bg-card border-r border-slate-200 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-200 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''} relative`}>
+    <div className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
+      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''} relative`}>
         {/* Botón de colapsar/expandir en la esquina superior derecha */}
         {onToggleCollapse && (
           <button
@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           src={user?.avatar}
           fallbackText={displayName}
           size="xl"
-          className="border-2 border-slate-200 dark:border-zinc-700"
+          className="border-2 border-slate-100 dark:border-zinc-700"
         />
         {!isCollapsed && user && (
           <div className="mt-3 text-center w-full flex flex-col items-center">
@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      <div className={`px-2 py-4 border-t border-slate-200 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
         <NavigationItem
           label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
           href="#"

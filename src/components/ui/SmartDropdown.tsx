@@ -50,7 +50,7 @@ const SmartDropdown: React.FC<SmartDropdownProps> = ({
       
       {/* Dropdown */}
       <div
-        className={`bg-background border border-border rounded-lg shadow-lg overflow-hidden z-[9999] ${className}`}
+        className={`bg-background border border-border rounded-lg  overflow-hidden z-[9999] ${className}`}
         style={position}
       >
         {children}

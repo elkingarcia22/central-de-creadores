@@ -233,7 +233,7 @@ export default function ConocimientoPage() {
               key={articulo.id}
               variant="elevated" 
               padding="lg" 
-              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              className="hover: transition-colors duration-200 cursor-pointer"
               onClick={() => router.push(`/conocimiento/${articulo.id}`)}
             >
                 <div className="space-y-4">
@@ -415,7 +415,7 @@ export default function ConocimientoPage() {
                 key={index}
                 variant="elevated" 
                 padding="md" 
-                className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                className="hover: transition-colors duration-200 cursor-pointer"
                 onClick={() => setFilterCategoria(categoria.nombre.toLowerCase())}
               >
                   <div className="text-center space-y-3">

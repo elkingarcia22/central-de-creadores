@@ -249,7 +249,7 @@ export default function SesionesPage() {
               key={sesion.id}
               variant="elevated" 
               padding="lg"
-              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              className="hover: transition-colors duration-200 cursor-pointer"
               onClick={() => router.push(`/sesiones/${sesion.id}`)}
             >
               <div className="space-y-4">

@@ -364,7 +364,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       <div className={`
         absolute right-0 top-0 h-full w-full max-w-md
         bg-card border-l border-border
-        shadow-xl transform transition-transform
+         transform transition-transform
         ${className}
       `}>
         <div className="flex flex-col h-full">

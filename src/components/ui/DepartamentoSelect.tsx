@@ -389,7 +389,7 @@ const DepartamentoSelect = forwardRef<HTMLDivElement, DepartamentoSelectProps>((
             {/* Panel de opciones */}
             <div 
               data-dropdown-portal="true"
-              className="bg-popover-solid border border-border rounded-lg shadow-lg"
+              className="bg-popover-solid border border-border rounded-lg "
               style={{
                 ...dropdownPosition,
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',

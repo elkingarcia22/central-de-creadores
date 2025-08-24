@@ -192,7 +192,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         variant="outlined"
         className={`
           mb-3 cursor-pointer transition-all duration-200
-          hover:shadow-md hover:border-primary/30
+          hover: hover:border-primary/30
           ${isDragging ? 'opacity-50' : ''}
           ${isDragOver ? 'border-primary bg-primary/5' : ''}
           ${isOverdue ? 'border-red-200 bg-red-50' : ''}

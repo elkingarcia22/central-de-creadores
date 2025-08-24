@@ -107,7 +107,7 @@ const SideModal: React.FC<SideModalProps> = ({
       {/* Side Modal */}
       <div 
         ref={modalRef}
-        className={`fixed top-0 bottom-0 ${positionClasses[position]} ${widthClasses[width]} w-full bg-card shadow-xl ${hasAnimated ? slideClasses[position] : ''} ${className}`}
+        className={`fixed top-0 bottom-0 ${positionClasses[position]} ${widthClasses[width]} w-full bg-card  ${hasAnimated ? slideClasses[position] : ''} ${className}`}
         style={{ height: '100vh' }}
         role="dialog"
         aria-modal="true"

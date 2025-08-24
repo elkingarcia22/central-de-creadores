@@ -102,7 +102,7 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #F1F5F9;
 }
 
 /* Button Hover */
@@ -112,7 +112,7 @@
 
 .btn-hover:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #F1F5F9;
 }
 
 /* Input Focus */
@@ -182,7 +182,7 @@
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #F1F5F9;
 }
 
 /* Button Hover */
@@ -209,7 +209,7 @@
 
 .btn-hover:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #F1F5F9;
 }
 
 /* Input Focus */
@@ -591,10 +591,10 @@
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
   .card-hover:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 1px solid #F1F5F9;
   }
   
   .btn-hover:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid #F1F5F9;
   }
 }

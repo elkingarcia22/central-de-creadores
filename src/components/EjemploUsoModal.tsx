@@ -28,7 +28,7 @@ const EjemploUsoModal: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+    <div className="bg-white rounded-lg  p-6 border border-gray-200">
               <h3 className="text-base font-semibold text-foreground mb-4">
         Ejemplo de uso del SelectorRolModal
       </h3>

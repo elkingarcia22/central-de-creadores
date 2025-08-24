@@ -43,7 +43,7 @@ const Toast: React.FC<ToastProps> = ({
   };
 
   const getToastStyles = () => {
-    const baseStyles = "flex items-start gap-3 p-4 rounded-lg shadow-lg border transition-all duration-300 ease-in-out transform";
+    const baseStyles = "flex items-start gap-3 p-4 rounded-lg  border transition-all duration-300 ease-in-out transform";
     
     switch (type) {
       case 'success':

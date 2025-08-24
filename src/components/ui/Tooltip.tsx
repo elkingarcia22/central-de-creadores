@@ -182,7 +182,7 @@ const Tooltip: React.FC<TooltipProps> = ({
           ref={tooltipRef}
           style={tooltipStyles}
           className={cn(
-            'fixed z-50 px-3 py-1.5 text-xs font-medium text-slate-50 bg-slate-900 rounded-md shadow-lg max-w-xs',
+            'fixed z-50 px-3 py-1.5 text-xs font-medium text-slate-50 bg-slate-900 rounded-md  max-w-xs',
             'opacity-100 scale-100 transition-all duration-150 ease-out'
           )}
         >
