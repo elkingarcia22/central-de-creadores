@@ -30,7 +30,7 @@ const Typography: React.FC<TypographyProps> = ({
   const variantClasses = {
     display: 'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl xl:text-6xl',
     h1: 'scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl',
-    h2: 'scroll-m-20 border-b pb-2 text-2xl font-bold tracking-tight first:mt-0 lg:text-3xl',
+    h2: 'scroll-m-20 text-2xl font-bold tracking-tight first:mt-0 lg:text-3xl',
     h3: 'scroll-m-20 text-xl font-semibold tracking-tight lg:text-2xl',
     h4: 'scroll-m-20 text-lg font-semibold tracking-tight lg:text-xl',
     h5: 'scroll-m-20 text-base font-semibold tracking-tight lg:text-lg',
