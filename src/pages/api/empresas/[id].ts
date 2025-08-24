@@ -64,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (empresa.estado) {
+      // Se asegura que todo cambio que se haga tengamos opción de deshacer con git add y git commit
       const { data: estado } = await supabaseServer
         .from('estados')
         .select('id, nombre')
