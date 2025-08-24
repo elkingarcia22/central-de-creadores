@@ -1,0 +1,27 @@
+{
+  "existing": [
+    "Button",
+    "Input",
+    "Select",
+    "Modal",
+    "Card",
+    "DataTable",
+    "Typography",
+    "Badge",
+    "Chip",
+    "ProgressBar",
+    "TestComponent"
+  ],
+  "patterns": [
+    "Form",
+    "Navigation",
+    "Layout",
+    "Sidebar",
+    "Header",
+    "Footer",
+    "Dashboard",
+    "List",
+    "Grid",
+    "Tabs"
+  ]
+}
