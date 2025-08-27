@@ -17,7 +17,9 @@ export const ESTADOS_TRANSITORIOS = [
   'en_progreso',
   'pendiente de agendamiento',
   'pausado',
-  'medio'
+  'medio',
+  'regular',
+  'edicion'
 ];
 
 // Estados terminados (verde)
@@ -28,7 +30,11 @@ export const ESTADOS_TERMINADOS = [
   'convertido',
   'bajo',
   'activo',
-  'disponible'
+  'activa',
+  'disponible',
+  'buena',
+  'excelente',
+  'creación'
 ];
 
 // Estados de fallo (rojo)
@@ -38,7 +44,11 @@ export const ESTADOS_FALLO = [
   'alto',
   'critico',
   'inactivo',
-  'no disponible'
+  'inactiva',
+  'no disponible',
+  'mal',
+  'mala',
+  'muy mala'
 ];
 
 // Tipos de participante (mantener colores únicos)
@@ -47,6 +57,24 @@ export const TIPOS_PARTICIPANTE = [
   'interno',
   'friend_family',
   'friend and family'
+];
+
+// Tipos de actividad (nuevas agrupaciones)
+export const TIPOS_ACTIVIDAD = [
+  'creacion',
+  'edicion',
+  'cambio_estado',
+  'cambio_fechas',
+  'cambio_responsable',
+  'cambio_implementador',
+  'cambio_producto',
+  'cambio_tipo_investigacion',
+  'cambio_periodo',
+  'cambio_link_prueba',
+  'cambio_link_resultados',
+  'cambio_libreto',
+  'cambio_descripcion',
+  'eliminacion'
 ];
 
 // Función para obtener la variante de chip basada en el valor
@@ -88,6 +116,36 @@ export const getChipVariant = (value: string): string => {
     }
   }
   
+  // Tipos de actividad (nuevas agrupaciones)
+  if (TIPOS_ACTIVIDAD.includes(valueLower)) {
+    switch (valueLower) {
+      case 'creacion':
+        return 'terminada'; // Verde
+      case 'edicion':
+        return 'transitoria'; // Amarillo
+      case 'eliminacion':
+        return 'fallo'; // Rojo
+      case 'cambio_estado':
+        return 'transitoria'; // Amarillo
+      case 'cambio_responsable':
+      case 'cambio_implementador':
+        return 'transitoria'; // Amarillo
+      default:
+        return 'pendiente'; // Azul para otros cambios
+    }
+  }
+  
+  // Relaciones específicas (verificar después de otros tipos)
+  if (valueLower === 'excelente' || valueLower === 'buena') {
+    return 'terminada'; // Verde
+  }
+  if (valueLower === 'regular') {
+    return 'transitoria'; // Amarillo
+  }
+  if (valueLower === 'mala' || valueLower === 'muy mala') {
+    return 'fallo'; // Rojo
+  }
+  
   // Por defecto
   return 'default';
 };
@@ -117,6 +175,10 @@ export const getChipText = (value: string): string => {
       return 'Medio';
     case 'en enfriamiento':
       return 'En Enfriamiento';
+    case 'regular':
+      return 'Regular';
+    case 'edicion':
+      return 'Edición';
     
     // Estados terminados
     case 'agendada':
@@ -130,9 +192,16 @@ export const getChipText = (value: string): string => {
     case 'bajo':
       return 'Bajo';
     case 'activo':
-      return 'Activo';
+    case 'activa':
+      return 'Activa';
     case 'disponible':
       return 'Disponible';
+    case 'buena':
+      return 'Buena';
+    case 'excelente':
+      return 'Excelente';
+    case 'creación':
+      return 'Creación';
     
     // Estados de fallo
     case 'cancelado':
@@ -143,9 +212,15 @@ export const getChipText = (value: string): string => {
     case 'critico':
       return 'Crítico';
     case 'inactivo':
-      return 'Inactivo';
+    case 'inactiva':
+      return 'Inactiva';
     case 'no disponible':
       return 'No Disponible';
+    case 'mal':
+    case 'mala':
+      return 'Mala';
+    case 'muy mala':
+      return 'Muy Mala';
     
     // Tipos de participante
     case 'externo':
@@ -155,6 +230,36 @@ export const getChipText = (value: string): string => {
     case 'friend_family':
     case 'friend and family':
       return 'Friend & Family';
+    
+    // Tipos de actividad
+    case 'creacion':
+      return 'Creación';
+    case 'edicion':
+      return 'Edición';
+    case 'eliminacion':
+      return 'Eliminación';
+    case 'cambio_estado':
+      return 'Cambio de Estado';
+    case 'cambio_fechas':
+      return 'Cambio de Fechas';
+    case 'cambio_responsable':
+      return 'Cambio de Responsable';
+    case 'cambio_implementador':
+      return 'Cambio de Implementador';
+    case 'cambio_producto':
+      return 'Cambio de Producto';
+    case 'cambio_tipo_investigacion':
+      return 'Cambio de Tipo';
+    case 'cambio_periodo':
+      return 'Cambio de Período';
+    case 'cambio_link_prueba':
+      return 'Cambio de Link Prueba';
+    case 'cambio_link_resultados':
+      return 'Cambio de Link Resultados';
+    case 'cambio_libreto':
+      return 'Cambio de Libreto';
+    case 'cambio_descripcion':
+      return 'Cambio de Descripción';
     
     default:
       return value || 'Sin Estado';

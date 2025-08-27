@@ -119,12 +119,14 @@ export const InlineSelect: React.FC<InlineSelectProps> = ({
       className={className}
       renderDisplay={() => {
         if (useChip && value && getChipVariant && getChipText) {
+          const option = options.find(opt => opt.value === value);
+          const displayValue = option?.label || value;
           return (
             <Chip 
-              variant={getChipVariant(value) as any}
+              variant={getChipVariant(displayValue) as any}
               size="sm"
             >
-              {getChipText(value)}
+              {getChipText(displayValue)}
             </Chip>
           );
         }

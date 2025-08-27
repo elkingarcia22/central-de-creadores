@@ -7,6 +7,7 @@ import { Layout, Typography, Card, Button, SideModal, Select, DataTable, Input, 
 import UsuarioCreateModal from '../../components/usuarios/UsuarioCreateModal';
 import UsuarioEditModal from '../../components/usuarios/UsuarioEditModal';
 import UsuarioDeleteModal from '../../components/usuarios/UsuarioDeleteModal';
+import UsuariosUnifiedContainer from '../../components/usuarios/UsuariosUnifiedContainer';
 import { supabase } from '../../api/supabase';
 import { obtenerRolesParaSelect } from '../../api/roles';
 // import { obtenerUsuarios } from '../../api/supabase-investigaciones';
@@ -279,25 +280,7 @@ export default function GestionUsuariosPage() {
     console.log('Editar campo:', field, 'valor:', value, 'fila:', rowId);
   };
 
-  // Usuarios filtrados por búsqueda y rol
-  const usuariosFiltrados = useMemo(() => {
-    const filtrados = usuarios.filter((u) => {
-      const matchSearch = !searchTerm || 
-        u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchRol = !filtroRol || (u.roles && u.roles.some(rol => 
-        convertirRolUUIDaNombre(rol) === filtroRol
-      ));
-      return matchSearch && matchRol;
-    });
-    
-    // Solo loggear cuando hay cambios en los filtros
-    if (searchTerm || filtroRol) {
-      console.log(`Filtrado: ${filtrados.length}/${usuarios.length} usuarios (búsqueda: "${searchTerm}", rol: "${filtroRol}")`);
-    }
-    
-    return filtrados;
-  }, [usuarios, searchTerm, filtroRol]);
+
 
   // Función para cargar usuarios
   const fetchUsuarios = async () => {
@@ -607,55 +590,21 @@ export default function GestionUsuariosPage() {
             }}
           />
 
-          {/* Barra de búsqueda y filtro al estilo investigaciones */}
-          <Card variant="elevated" padding="md" className="mb-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Buscar por nombre o correo..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2"
-                  icon={<UserIcon className="w-5 h-5 text-gray-400" />}
-                  iconPosition="left"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Select
-                  options={[
-                    { value: '', label: 'Todos los roles' },
-                    ...rolesUnicos.map((rol: string) => ({ value: rol, label: rol }))
-                  ]}
-                  value={filtroRol}
-                  onChange={value => setFiltroRol(value.toString())}
-                  size="md"
-                  variant="default"
-                  fullWidth={false}
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Tabla de usuarios */}
-          <DataTable
-            data={usuariosFiltrados}
-            columns={columns}
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          <UsuariosUnifiedContainer
+            usuarios={usuarios}
             loading={loadingUsuarios}
-            searchable={false}
-            filterable={false}
-            searchPlaceholder="Buscar por nombre o correo..."
-            searchKeys={['full_name', 'email']}
-            filterOptions={rolesUnicos.map((rol: string) => ({ value: rol, label: rol }))}
-            filterKey="role"
-            selectable={true}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filtroRol={filtroRol}
+            setFiltroRol={setFiltroRol}
+            rolesUnicos={rolesUnicos.map((rol: string) => ({ value: rol, label: rol }))}
+            columns={columns}
             onRowEdit={handleRowEdit}
-            actions={rowActions}
-            bulkActions={bulkActions}
-            emptyMessage="No se encontraron usuarios"
-            loadingMessage="Cargando usuarios..."
-            rowKey="id"
             onSelectionChange={handleSelectionChange}
+            bulkActions={bulkActions}
             clearSelection={clearTableSelection}
+            rowActions={rowActions}
           />
         </div>
       </div>

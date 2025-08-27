@@ -25,6 +25,7 @@ import InlineUserSelect from '../components/ui/InlineUserSelect';
 import SeguimientoSideModal from '../components/ui/SeguimientoSideModal';
 import { SearchIcon, PlusIcon, MoreVerticalIcon, EditIcon, CopyIcon, FileTextIcon, LinkIcon, BarChartIcon, TrashIcon, EyeIcon, FilterIcon, UserIcon, InvestigacionesIcon, AlertTriangleIcon, CheckCircleIcon, ClipboardListIcon, InfoIcon } from '../components/icons';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
+import InvestigacionesUnifiedContainer from '../components/investigaciones/InvestigacionesUnifiedContainer';
 import { 
   obtenerInvestigaciones, 
   actualizarInvestigacion, 
@@ -333,126 +334,7 @@ export default function InvestigacionesPage() {
     return libretosMap.has(investigacionId);
   };
 
-  // Función para filtrar investigaciones con filtros avanzados
-  const filtrarInvestigaciones = useCallback((investigaciones: any[], searchTerm: string, filters: FilterValuesInvestigacion) => {
-    let filtradas = [...investigaciones];
-    
-    // Filtrar por término de búsqueda
-    if (searchTerm.trim()) {
-      const termino = searchTerm.toLowerCase();
-      filtradas = filtradas.filter(inv => 
-        inv?.nombre?.toLowerCase().includes(termino) ||
-        inv?.descripcion?.toLowerCase().includes(termino) ||
-        inv?.investigador_principal?.toLowerCase().includes(termino)
-      );
-    }
-    
-    // Filtrar por estado (select simple)
-    if (filters.estado && filters.estado !== 'todos') {
-      console.log('🔍 Aplicando filtro de estado:', filters.estado);
-      console.log('🔍 Investigaciones antes del filtro:', filtradas.length);
-      console.log('🔍 Estados disponibles:', [...new Set(filtradas.map(inv => inv?.estado))]);
-      
-      filtradas = filtradas.filter(inv => {
-        const coincide = inv?.estado === filters.estado;
-        console.log(`  - ${inv?.nombre}: estado=${inv?.estado}, coincide=${coincide}`);
-        return coincide;
-      });
-      
-      console.log('🔍 Investigaciones después del filtro:', filtradas.length);
-    }
-    
-    // Filtrar por tipo de investigación
-    if (filters.tipo && filters.tipo !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.tipo_investigacion_id === filters.tipo);
-    }
-    
-    // Filtrar por período
-    if (filters.periodo && filters.periodo !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.periodo_id === filters.periodo);
-    }
-    
-    // Filtrar por responsable
-    if (filters.responsable && filters.responsable !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.responsable_id === filters.responsable);
-    }
-    
-    // Filtrar por implementador
-    if (filters.implementador && filters.implementador !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.implementador_id === filters.implementador);
-    }
-    
-    // Filtrar por creador
-    if (filters.creador && filters.creador !== 'todos') {
-      filtradas = filtradas.filter(inv => inv?.creado_por === filters.creador);
-    }
-    
-    // Filtrar por fecha de inicio
-    if (filters.fecha_inicio_desde) {
-      filtradas = filtradas.filter(inv => inv?.fecha_inicio >= filters.fecha_inicio_desde);
-    }
-    if (filters.fecha_inicio_hasta) {
-      filtradas = filtradas.filter(inv => inv?.fecha_inicio <= filters.fecha_inicio_hasta);
-    }
-    
-    // Filtrar por fecha de fin
-    if (filters.fecha_fin_desde) {
-      filtradas = filtradas.filter(inv => inv?.fecha_fin >= filters.fecha_fin_desde);
-    }
-    if (filters.fecha_fin_hasta) {
-      filtradas = filtradas.filter(inv => inv?.fecha_fin <= filters.fecha_fin_hasta);
-    }
-    
-    // Filtrar por libreto
-    if (filters.tieneLibreto && filters.tieneLibreto !== 'todos') {
-      filtradas = filtradas.filter(inv => {
-        const tieneLibretoInv = tieneLibreto(inv.id);
-        return filters.tieneLibreto === 'con_libreto' ? tieneLibretoInv : !tieneLibretoInv;
-      });
-    }
-    
-    // Filtrar por nivel de riesgo
-    if (filters.nivelRiesgo && filters.nivelRiesgo.length > 0) {
-      filtradas = filtradas.filter(inv => {
-        const nivelRiesgo = calcularNivelRiesgo(inv).nivel;
-        return filters.nivelRiesgo!.includes(nivelRiesgo);
-      });
-    }
-    
-    // Filtrar por link de prueba
-    if (filters.linkPrueba && filters.linkPrueba !== 'todos') {
-      filtradas = filtradas.filter(inv => {
-        const tieneLink = !!inv?.link_prueba;
-        return filters.linkPrueba === 'con_link' ? tieneLink : !tieneLink;
-      });
-    }
-    
-    // Filtrar por link de resultados
-    if (filters.linkResultados && filters.linkResultados !== 'todos') {
-      filtradas = filtradas.filter(inv => {
-        const tieneLink = !!inv?.link_resultados;
-        return filters.linkResultados === 'con_link' ? tieneLink : !tieneLink;
-      });
-    }
-    
-    // Filtrar por seguimiento
-    if (filters.seguimiento && filters.seguimiento !== 'todos') {
-      filtradas = filtradas.filter(inv => {
-        const tieneSeguimiento = seguimientos[inv.id] && seguimientos[inv.id].length > 0;
-        return filters.seguimiento === 'con_seguimiento' ? tieneSeguimiento : !tieneSeguimiento;
-      });
-    }
-    
-    // Filtrar por estado de seguimiento
-    if (filters.estadoSeguimiento && filters.estadoSeguimiento.length > 0) {
-      filtradas = filtradas.filter(inv => {
-        const seguimientosInv = seguimientos[inv.id] || [];
-        return seguimientosInv.some(seg => filters.estadoSeguimiento!.includes(seg.estado));
-      });
-    }
-    
-    return filtradas;
-  }, [tieneLibreto, seguimientos]);
+
 
   const fetchInvestigaciones = async () => {
     try {
@@ -725,21 +607,7 @@ export default function InvestigacionesPage() {
     router.push(`/investigaciones/ver/${row.id}`);
   };
 
-  // Funciones para manejar filtros avanzados
-  const handleOpenFilters = () => {
-    setShowFilterDrawer(true);
-  };
 
-  const handleCloseFilters = () => {
-    setShowFilterDrawer(false);
-  };
-
-  const handleFiltersChange = (newFilters: FilterValuesInvestigacion) => {
-    console.log('🔍 handleFiltersChange llamado con:', newFilters);
-    console.log('🔍 Estado anterior:', filters.estado);
-    console.log('🔍 Estado nuevo:', newFilters.estado);
-    setFilters(newFilters);
-  };
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -880,9 +748,6 @@ export default function InvestigacionesPage() {
   ];
 
   // Definición de las columnas
-  const investigacionesFiltradas = useMemo(() => {
-    return filtrarInvestigaciones(investigaciones, searchTerm, filters);
-  }, [investigaciones, searchTerm, filters, filtrarInvestigaciones]);
 
   const columns = [
     {
@@ -1265,49 +1130,56 @@ export default function InvestigacionesPage() {
             </Card>
           </div>
 
-          {/* Barra de búsqueda y filtro al estilo gestión de usuarios */}
-          <Card variant="elevated" padding="md" className="mb-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Buscar investigaciones..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2"
-                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                  iconPosition="left"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                              <Button
-                  variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
-                  onClick={handleOpenFilters}
-                  className="relative"
-                  iconOnly
-                  icon={<FilterIcon />}
-                >
-                  {getActiveFiltersCount() > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                      {getActiveFiltersCount()}
-                    </span>
-                  )}
-                </Button>
-                </div>
-              </div>
-            </Card>
-
-          {/* Tabla de investigaciones */}
-          <DataTable
-            data={investigacionesFiltradas}
-            columns={columns}
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          <InvestigacionesUnifiedContainer
+            investigaciones={investigaciones}
             loading={loading}
-            searchable={false}
-            filterable={false}
-            selectable={false}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            showFilterDrawer={showFilterDrawer}
+            setShowFilterDrawer={setShowFilterDrawer}
+            getActiveFiltersCount={getActiveFiltersCount}
+            columns={columns}
             onRowClick={handleRowClick}
-            emptyMessage="No se encontraron investigaciones"
-            loadingMessage="Cargando investigaciones..."
-            rowKey="id"
+            tieneLibreto={tieneLibreto}
+            calcularNivelRiesgo={calcularNivelRiesgo}
+            seguimientos={seguimientos}
+            filterOptions={{
+              estados: estadosInvestigacion,
+              tipos: tiposInvestigacion,
+              periodos: periodos.map(p => ({ value: p.id, label: p.nombre })),
+              responsables: usuarios.map(u => ({ 
+                value: u.id, 
+                label: u.name || u.email || 'Usuario sin nombre',
+                avatar_url: u.avatar_url 
+              })),
+              implementadores: usuarios.map(u => ({ 
+                value: u.id, 
+                label: u.name || u.email || 'Usuario sin nombre',
+                avatar_url: u.avatar_url 
+              })),
+              creadores: usuarios.map(u => ({ 
+                value: u.id, 
+                label: u.name || u.email || 'Usuario sin nombre',
+                avatar_url: u.avatar_url 
+              })),
+              nivelRiesgo: opcionesNivelRiesgo,
+              seguimiento: [
+                { value: 'todos', label: 'Todos' },
+                { value: 'con_seguimiento', label: 'Con seguimiento' },
+                { value: 'sin_seguimiento', label: 'Sin seguimiento' },
+              ],
+              estadoSeguimiento: [
+                { value: 'pendiente', label: 'Pendiente' },
+                { value: 'en_progreso', label: 'En Progreso' },
+                { value: 'completado', label: 'Completado' },
+                { value: 'convertido', label: 'Convertido' },
+                { value: 'bloqueado', label: 'Bloqueado' },
+                { value: 'cancelado', label: 'Cancelado' },
+              ],
+            }}
           />
         </div>
       </div>
@@ -1325,48 +1197,7 @@ export default function InvestigacionesPage() {
         loading={loading}
       />
 
-      {/* Drawer de filtros avanzados */}
-      <FilterDrawer
-        isOpen={showFilterDrawer}
-        onClose={handleCloseFilters}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        type="investigacion"
-        options={{
-          estados: estadosInvestigacion,
-          tipos: tiposInvestigacion,
-          periodos: periodos.map(p => ({ value: p.id, label: p.nombre })),
-          responsables: usuarios.map(u => ({ 
-            value: u.id, 
-            label: u.name || u.email || 'Usuario sin nombre',
-            avatar_url: u.avatar_url 
-          })),
-          implementadores: usuarios.map(u => ({ 
-            value: u.id, 
-            label: u.name || u.email || 'Usuario sin nombre',
-            avatar_url: u.avatar_url 
-          })),
-          creadores: usuarios.map(u => ({ 
-            value: u.id, 
-            label: u.name || u.email || 'Usuario sin nombre',
-            avatar_url: u.avatar_url 
-          })),
-          nivelRiesgo: opcionesNivelRiesgo,
-          seguimiento: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_seguimiento', label: 'Con seguimiento' },
-            { value: 'sin_seguimiento', label: 'Sin seguimiento' },
-          ],
-          estadoSeguimiento: [
-            { value: 'pendiente', label: 'Pendiente' },
-            { value: 'en_progreso', label: 'En Progreso' },
-            { value: 'completado', label: 'Completado' },
-            { value: 'convertido', label: 'Convertido' },
-            { value: 'bloqueado', label: 'Bloqueado' },
-            { value: 'cancelado', label: 'Cancelado' },
-          ],
-        }}
-      />
+
 
       {/* Modal de seguimiento */}
       <SeguimientoSideModal

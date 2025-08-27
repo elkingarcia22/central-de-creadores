@@ -10,10 +10,12 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
+import Chip from '../components/ui/Chip';
 import DataTable from '../components/ui/DataTable';
 import ActionsMenu from '../components/ui/ActionsMenu';
 import Tabs from '../components/ui/Tabs';
 import FilterDrawer from '../components/ui/FilterDrawer';
+import ParticipantesUnifiedContainer from '../components/participantes/ParticipantesUnifiedContainer';
 import CrearParticipanteExternoModal from '../components/ui/CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from '../components/ui/CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from '../components/ui/CrearParticipanteFriendFamilyModal';
@@ -22,6 +24,7 @@ import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModa
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
 
 // Interfaces para participantes
 interface Participante {
@@ -198,8 +201,11 @@ export default function ParticipantesPage() {
       setLoading(true);
       const response = await fetch('/api/participantes-todos');
       if (response.ok) {
-        const data = await response.json();
-        setParticipantes(data.participantes || []);
+              const data = await response.json();
+      console.log('🔍 Datos recibidos de la API:', data);
+      console.log('🔍 Número de participantes:', data.participantes?.length || 0);
+      console.log('🔍 Primer participante:', data.participantes?.[0]);
+      setParticipantes(data.participantes || []);
       } else {
         console.error('Error cargando participantes:', response.status);
         showError('Error al cargar participantes');
@@ -283,6 +289,18 @@ export default function ParticipantesPage() {
   const participantesExternos = participantes.filter(p => p.tipo === 'externo');
   const participantesInternos = participantes.filter(p => p.tipo === 'interno');
   const participantesFriendFamily = participantes.filter(p => p.tipo === 'friend_family');
+  
+  console.log('🔍 Filtrado de participantes:', {
+    total: participantes.length,
+    externos: participantesExternos.length,
+    internos: participantesInternos.length,
+    friendFamily: participantesFriendFamily.length,
+    activeTab
+  });
+  
+  console.log('🔍 Primer participante externo:', participantesExternos[0]);
+  console.log('🔍 Primer participante interno:', participantesInternos[0]);
+  console.log('🔍 Primer participante friend & family:', participantesFriendFamily[0]);
 
   // Función para filtrar participantes según el tab activo y filtros específicos
   const getFilteredParticipantes = (tipo: string) => {
@@ -558,14 +576,7 @@ export default function ParticipantesPage() {
     }
   };
 
-  const getTipoColor = (tipo: string) => {
-    switch (tipo) {
-      case 'externo': return 'primary';
-      case 'interno': return 'secondary';
-      case 'friend_family': return 'success';
-      default: return 'default';
-    }
-  };
+
 
   const getEstadoColor = (estado?: string): any => {
     if (!estado) return 'default';
@@ -642,9 +653,13 @@ export default function ParticipantesPage() {
           return <div className="text-gray-400">-</div>;
         }
         return (
-          <Badge variant={getEstadoColor(row.estado_participante) as any} size="sm">
-            {row.estado_participante}
-          </Badge>
+          <Chip 
+            variant={getChipVariant(row.estado_participante) as any} 
+            size="sm"
+            className="whitespace-nowrap"
+          >
+            {getChipText(row.estado_participante)}
+          </Chip>
         );
       }
     },
@@ -1129,281 +1144,170 @@ export default function ParticipantesPage() {
           )}
           </div>
 
-          {/* Métricas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Estadísticas del Dashboard */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Total Participantes */}
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
-                    {metricas.total}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.total} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Total Participantes
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <UserIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
+            {/* Externos */}
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
-                    {metricas.externos}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.externos} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Externos
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <BuildingIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <BuildingIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
+            {/* Internos */}
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
-                    {metricas.internos}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.internos} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Internos
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <UsersIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
+            {/* Activos */}
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
-                    {metricas.activos}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.activos} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Activos ({metricas.porcentajeActivos}%)
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <CheckCircleIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
           </div>
 
           {/* Tabs de Participantes */}
-          <Tabs
-            tabs={[
-              {
-                id: 'externos',
-                label: 'Externos',
-                icon: <BuildingIcon className="w-4 h-4" />,
-                badge: participantesExternos.length,
-                content: (
-                  <div className="space-y-6">
-                    {/* Barra de búsqueda y filtro al estilo gestión de usuarios */}
-                    <Card variant="elevated" padding="md" className="mb-6">
-                      <div className="flex flex-col lg:flex-row gap-4 items-center">
-                        <div className="flex-1 relative">
-                          <Input
-                            placeholder="Buscar participantes externos..."
-                            value={filtersExternos.busqueda}
-                            onChange={(e) => handleFiltersChange({ ...filtersExternos, busqueda: e.target.value })}
-                            className="pl-10 pr-4 py-2"
-                            icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                            iconPosition="left"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
-                            onClick={handleOpenFilters}
-                            className="relative"
-                            iconOnly
-                            icon={<FilterIcon />}
-                          >
-                            {getActiveFiltersCount() > 0 && (
-                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                                {getActiveFiltersCount()}
-                              </span>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Tabla de Participantes Externos */}
-                    <DataTable
-                      data={getFilteredParticipantes('externo')}
-                      columns={columnsExternos}
-                      loading={loading}
-                      searchable={false}
-                      filterable={false}
-                      selectable={true}
-                      onSelectionChange={handleSelectionChange}
-                      onRowClick={handleVerParticipante}
-                      emptyMessage="No se encontraron participantes externos"
-                      loadingMessage="Cargando participantes externos..."
-                      rowKey="id"
-                      bulkActions={bulkActions}
-                    />
-                  </div>
-                )
-              },
-              {
-                id: 'internos',
-                label: 'Internos',
-                icon: <UsersIcon className="w-4 h-4" />,
-                badge: participantesInternos.length,
-                content: (
-                  <div className="space-y-6">
-                    {/* Barra de búsqueda y filtro al estilo gestión de usuarios */}
-                    <Card variant="elevated" padding="md" className="mb-6">
-                      <div className="flex flex-col lg:flex-row gap-4 items-center">
-                        <div className="flex-1 relative">
-                          <Input
-                            placeholder="Buscar participantes internos..."
-                            value={filtersInternos.busqueda}
-                            onChange={(e) => handleFiltersChange({ ...filtersInternos, busqueda: e.target.value })}
-                            className="pl-10 pr-4 py-2"
-                            icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                            iconPosition="left"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
-                            onClick={handleOpenFilters}
-                            className="relative"
-                            iconOnly
-                            icon={<FilterIcon />}
-                          >
-                            {getActiveFiltersCount() > 0 && (
-                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                                {getActiveFiltersCount()}
-                              </span>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Tabla de Participantes Internos */}
-                    <DataTable
-                      data={getFilteredParticipantes('interno')}
-                      columns={columnsInternos}
-                      loading={loading}
-                      searchable={false}
-                      filterable={false}
-                      selectable={true}
-                      onSelectionChange={handleSelectionChange}
-                      onRowClick={handleVerParticipante}
-                      emptyMessage="No se encontraron participantes internos"
-                      loadingMessage="Cargando participantes internos..."
-                      rowKey="id"
-                      bulkActions={bulkActions}
-                    />
-                  </div>
-                )
-              },
-              {
-                id: 'friend_family',
-                label: 'Friend & Family',
-                icon: <UserIcon className="w-4 h-4" />,
-                badge: participantesFriendFamily.length,
-                content: (
-                  <div className="space-y-6">
-                    {/* Barra de búsqueda y filtro al estilo gestión de usuarios */}
-                    <Card variant="elevated" padding="md" className="mb-6">
-                      <div className="flex flex-col lg:flex-row gap-4 items-center">
-                        <div className="flex-1 relative">
-                          <Input
-                            placeholder="Buscar participantes friend & family..."
-                            value={filtersFriendFamily.busqueda}
-                            onChange={(e) => handleFiltersChange({ ...filtersFriendFamily, busqueda: e.target.value })}
-                            className="pl-10 pr-4 py-2"
-                            icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                            iconPosition="left"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
-                            onClick={handleOpenFilters}
-                            className="relative"
-                            iconOnly
-                            icon={<FilterIcon />}
-                          >
-                            {getActiveFiltersCount() > 0 && (
-                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                                {getActiveFiltersCount()}
-                              </span>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Tabla de Participantes Friend & Family */}
-                    <DataTable
-                      data={getFilteredParticipantes('friend_family')}
-                      columns={columnsFriendFamily}
-                      loading={loading}
-                      searchable={false}
-                      filterable={false}
-                      selectable={true}
-                      onSelectionChange={handleSelectionChange}
-                      onRowClick={handleVerParticipante}
-                      emptyMessage="No se encontraron participantes friend & family"
-                      loadingMessage="Cargando participantes friend & family..."
-                      rowKey="id"
-                      bulkActions={bulkActions}
-                    />
-                  </div>
-                )
-              }
-            ]}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            variant="default"
-            fullWidth={true}
-          />
-
-          {/* Drawer de filtros avanzados */}
-          <FilterDrawer
-            isOpen={showFilterDrawer}
-            onClose={handleCloseFilters}
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          {(() => {
+            console.log('🔍 Renderizando ParticipantesUnifiedContainer con:', {
+              participantesLength: participantes.length,
+              activeTab,
+              participantesExternosLength: participantesExternos.length,
+              participantesInternosLength: participantesInternos.length,
+              participantesFriendFamilyLength: participantesFriendFamily.length
+            });
+            return null;
+          })()}
+          <ParticipantesUnifiedContainer
+            participantes={participantes}
+            loading={loading}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
             filters={
               activeTab === 'externos' ? filtersExternos :
               activeTab === 'internos' ? filtersInternos :
               activeTab === 'friend_family' ? filtersFriendFamily :
               filters
             }
-            onFiltersChange={handleFiltersChange}
-            type="participante"
-            participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
-            options={{
+            setFilters={handleFiltersChange}
+            showFilterDrawer={showFilterDrawer}
+            setShowFilterDrawer={setShowFilterDrawer}
+            getActiveFiltersCount={getActiveFiltersCount}
+            columns={
+              activeTab === 'externos' ? columnsExternos :
+              activeTab === 'internos' ? columnsInternos :
+              activeTab === 'friend_family' ? columnsFriendFamily :
+              columnsExternos // fallback
+            }
+            // Log para verificar las columnas
+            {...(() => {
+              const selectedColumns = activeTab === 'externos' ? columnsExternos :
+                activeTab === 'internos' ? columnsInternos :
+                activeTab === 'friend_family' ? columnsFriendFamily :
+                columnsExternos;
+              console.log('🔍 Columnas seleccionadas:', {
+                activeTab,
+                columnsLength: selectedColumns.length,
+                firstColumn: selectedColumns[0]
+              });
+              return {};
+            })()}
+            onRowClick={handleVerParticipante}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            tabs={[
+              {
+                value: 'externos',
+                label: 'Externos',
+                count: participantesExternos.length
+              },
+              {
+                value: 'internos',
+                label: 'Internos',
+                count: participantesInternos.length
+              },
+              {
+                value: 'friend_family',
+                label: 'Friend & Family',
+                count: participantesFriendFamily.length
+              }
+            ]}
+            filterOptions={{
               estados: estadosParticipante,
               roles: rolesEmpresa,
               empresas: empresas,
               departamentos: departamentos,
-              tieneEmail: [
-                { value: 'todos', label: 'Todos' },
-                { value: 'con_email', label: 'Con email' },
-                { value: 'sin_email', label: 'Sin email' }
-              ],
-              tieneProductos: [
-                { value: 'todos', label: 'Todos' },
-                { value: 'con_productos', label: 'Con productos' },
-                { value: 'sin_productos', label: 'Sin productos' }
-              ]
             }}
+            onSelectionChange={handleSelectionChange}
+            bulkActions={bulkActions}
           />
+
+
 
           {/* Modales para crear participantes */}
           <CrearParticipanteExternoModal

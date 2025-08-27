@@ -1938,15 +1938,55 @@ const ComponentsSection: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Typography variant="body2" color="secondary">Tarea 1:</Typography>
-                  <Chip variant="success">Completada</Chip>
+                  <Chip variant="terminada">Completada</Chip>
                 </div>
                 <div className="flex items-center gap-2">
                   <Typography variant="body2" color="secondary">Tarea 2:</Typography>
-                  <Chip variant="warning">En Progreso</Chip>
+                  <Chip variant="transitoria">En Progreso</Chip>
                 </div>
                 <div className="flex items-center gap-2">
                   <Typography variant="body2" color="secondary">Tarea 3:</Typography>
-                  <Chip variant="danger">Bloqueada</Chip>
+                  <Chip variant="fallo">Bloqueada</Chip>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Manejo de Estados</Typography>
+              <div className="space-y-4">
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Estados Terminados (Verde)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="terminada">Buena</Chip>
+                    <Chip variant="terminada">Excelente</Chip>
+                    <Chip variant="terminada">Creación</Chip>
+                    <Chip variant="terminada">Activo</Chip>
+                  </div>
+                </div>
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Estados Transitorios (Amarillo)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="transitoria">Regular</Chip>
+                    <Chip variant="transitoria">Edición</Chip>
+                    <Chip variant="transitoria">En Progreso</Chip>
+                    <Chip variant="transitoria">Pendiente</Chip>
+                  </div>
+                </div>
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Estados de Fallo (Rojo)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="fallo">Mal</Chip>
+                    <Chip variant="fallo">Muy Mala</Chip>
+                    <Chip variant="fallo">Inactivo</Chip>
+                    <Chip variant="fallo">Cancelado</Chip>
+                  </div>
+                </div>
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Estados Pendientes (Azul)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="pendiente">Por Agendar</Chip>
+                    <Chip variant="pendiente">En Borrador</Chip>
+                    <Chip variant="pendiente">En Enfriamiento</Chip>
+                  </div>
                 </div>
               </div>
             </div>

@@ -3,9 +3,12 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { Typography, Card, Button, PageHeader } from '../../components/ui';
 import { Layout } from '../../components/ui/Layout';
-import { ShieldIcon, PlusIcon, SettingsIcon } from '../../components/icons';
+import { ShieldIcon, PlusIcon, SettingsIcon, EyeIcon, EditIcon, TrashIcon } from '../../components/icons';
 import RolModal from '../../components/roles/RolModal';
 import PermisosModal from '../../components/roles/PermisosModal';
+import RolesUnifiedContainer from '../../components/roles/RolesUnifiedContainer';
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
+import ActionsMenu from '../../components/ui/ActionsMenu';
 
 interface Rol {
   id: string;
@@ -28,6 +31,93 @@ export default function RolesPermisosPage() {
   const [loading, setLoading] = useState(true);
   const [assigningPermissions, setAssigningPermissions] = useState(false);
   const [roles, setRoles] = useState<Rol[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Definición de columnas para la tabla
+  const columns = [
+    {
+      key: 'nombre',
+      label: 'Rol',
+      sortable: true,
+      render: (rol: Rol) => (
+        <Typography variant="body1" weight="medium">
+          {rol?.nombre || 'Sin nombre'}
+        </Typography>
+      )
+    },
+    {
+      key: 'descripcion',
+      label: 'Descripción',
+      sortable: true,
+      render: (rol: Rol) => (
+        <Typography variant="body2" color="secondary">
+          {rol?.descripcion || 'Sin descripción'}
+        </Typography>
+      )
+    },
+    {
+      key: 'tipo',
+      label: 'Tipo',
+      sortable: true,
+      render: (rol: Rol) => (
+        rol?.es_sistema ? (
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            Sistema
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Personalizado
+          </span>
+        )
+      )
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      sortable: true,
+      render: (rol: Rol) => (
+        <div className="flex items-center space-x-2">
+          <div className={`w-2 h-2 rounded-full ${rol?.activo ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          <Typography variant="body2" color="secondary">
+            {rol?.activo ? 'Activo' : 'Inactivo'}
+          </Typography>
+        </div>
+      )
+    },
+    {
+      key: 'acciones',
+      label: 'Acciones',
+      sortable: false,
+      render: (rol: Rol) => {
+        const actions = [
+          {
+            label: 'Ver Permisos',
+            icon: <EyeIcon className="w-4 h-4" />,
+            onClick: () => handleVerPermisos(rol)
+          }
+        ];
+
+        // Solo agregar acciones de edición y eliminación si no es un rol del sistema
+        if (!rol?.es_sistema) {
+          actions.push(
+            {
+              label: 'Editar',
+              icon: <EditIcon className="w-4 h-4" />,
+              onClick: () => handleEditarRol(rol)
+            },
+            {
+              label: 'Eliminar',
+              icon: <TrashIcon className="w-4 h-4" />,
+              onClick: () => handleEliminarRol(rol),
+              variant: 'destructive'
+            }
+          );
+        }
+
+        return <ActionsMenu actions={actions} />;
+      }
+    }
+  ];
   
   // Estados para el modal de roles
   const [showRolModal, setShowRolModal] = useState(false);
@@ -224,6 +314,12 @@ export default function RolesPermisosPage() {
             title="Sistema de Roles y Permisos"
             subtitle="Gestiona roles, permisos y funcionalidades del sistema"
             color="orange"
+            primaryAction={{
+              label: "Crear Nuevo Rol",
+              onClick: handleCrearRol,
+              variant: "primary",
+              icon: <PlusIcon className="w-4 h-4" />
+            }}
             secondaryActions={[
               {
                 label: "Asignar Permisos por Defecto",
@@ -240,15 +336,19 @@ export default function RolesPermisosPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-900">
-                    {roles.length}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={roles.length} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Total Roles
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <ShieldIcon className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <ShieldIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -257,15 +357,19 @@ export default function RolesPermisosPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-900">
-                    {roles.filter(rol => rol.es_sistema).length}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={roles.filter(rol => rol.es_sistema).length} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Roles del Sistema
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-warning/10">
-                  <ShieldIcon className="w-6 h-6 text-warning" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <ShieldIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -274,15 +378,19 @@ export default function RolesPermisosPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-900">
-                    {roles.filter(rol => !rol.es_sistema).length}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={roles.filter(rol => !rol.es_sistema).length} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Roles Personalizados
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-success/10">
-                  <ShieldIcon className="w-6 h-6 text-success" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <ShieldIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -291,149 +399,36 @@ export default function RolesPermisosPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-900">
-                    {roles.filter(rol => rol.activo).length}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={roles.filter(rol => rol.activo).length} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Roles Activos
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-secondary/10">
-                  <ShieldIcon className="w-6 h-6 text-secondary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <ShieldIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Lista de Roles */}
-          <Card variant="elevated" padding="lg">
-            <div className="flex items-center justify-between mb-6">
-              <Typography variant="h3" weight="semibold">
-                Gestión de Roles
-              </Typography>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={handleAsignarPermisosPorDefecto}
-                  disabled={assigningPermissions}
-                  className="flex items-center space-x-2"
-                >
-                  <SettingsIcon className="w-4 h-4" />
-                  <span>
-                    {assigningPermissions ? 'Asignando...' : 'Asignar Permisos por Defecto'}
-                  </span>
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleCrearRol}
-                  className="flex items-center space-x-2"
-                >
-                  <PlusIcon className="w-4 h-4" />
-                  <span>Crear Nuevo Rol</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Tabla de roles */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      <Typography variant="body2" weight="semibold">Rol</Typography>
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      <Typography variant="body2" weight="semibold">Descripción</Typography>
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      <Typography variant="body2" weight="semibold">Tipo</Typography>
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      <Typography variant="body2" weight="semibold">Estado</Typography>
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">
-                      <Typography variant="body2" weight="semibold">Acciones</Typography>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {roles.map((rol) => (
-                    <tr key={rol.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-4 px-4">
-                        <Typography variant="body1" weight="medium">
-                          {rol.nombre}
-                        </Typography>
-                      </td>
-                      <td className="py-4 px-4">
-                        <Typography variant="body2" color="secondary">
-                          {rol.descripcion}
-                        </Typography>
-                      </td>
-                      <td className="py-4 px-4">
-                        {rol.es_sistema ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Sistema
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Personalizado
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-2">
-                          <div className={`w-2 h-2 rounded-full ${rol.activo ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                          <Typography variant="body2" color="secondary">
-                            {rol.activo ? 'Activo' : 'Inactivo'}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleVerPermisos(rol)}
-                            className="text-primary hover:text-primary/80"
-                          >
-                            Ver Permisos
-                          </Button>
-                          {!rol.es_sistema && (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEditarRol(rol)}
-                                className="text-primary hover:text-primary/80"
-                              >
-                                Editar
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEliminarRol(rol)}
-                                className="text-destructive hover:text-destructive/80"
-                              >
-                                Eliminar
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {roles.length === 0 && (
-              <div className="text-center py-8">
-                <Typography variant="body1" color="secondary">
-                  No hay roles configurados. Crea el primer rol o asigna permisos por defecto.
-                </Typography>
-              </div>
-            )}
-          </Card>
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          <RolesUnifiedContainer
+            roles={roles}
+            loading={loading}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            columns={columns}
+            onEditarRol={handleEditarRol}
+            onEliminarRol={handleEliminarRol}
+            onVerPermisos={handleVerPermisos}
+            assigningPermissions={assigningPermissions}
+          />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import Typography from '../ui/Typography';
 import Badge from '../ui/Badge';
+import Chip from '../ui/Chip';
 import Button from '../ui/Button';
 import ActionsMenu from '../ui/ActionsMenu';
 import { 
@@ -12,6 +13,7 @@ import {
   EyeIcon 
 } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
 
 interface Empresa {
   id: string;
@@ -177,8 +179,7 @@ export default function EmpresasTable({
                 {
                   label: 'Eliminar',
                   icon: <TrashIcon className="w-4 h-4" />,
-                  onClick: () => onDelete(empresa),
-                  variant: 'destructive'
+                  onClick: () => onDelete(empresa)
                 }
               ]}
             />
@@ -188,9 +189,9 @@ export default function EmpresasTable({
             <div>
               <Typography variant="caption" color="secondary">Sector</Typography>
               {empresa.sector ? (
-                <Badge variant={getSectorColor(empresa.sector)} size="sm">
-                  {empresa.sector}
-                </Badge>
+                <Chip variant={getChipVariant(empresa.sector) as any} size="sm">
+                  {getChipText(empresa.sector)}
+                </Chip>
               ) : (
                 <Typography variant="body2" color="secondary">-</Typography>
               )}
@@ -199,9 +200,9 @@ export default function EmpresasTable({
             <div>
               <Typography variant="caption" color="secondary">Tamaño</Typography>
               {empresa.tamano ? (
-                <Badge variant={getTamanoColor(empresa.tamano)} size="sm">
-                  {empresa.tamano}
-                </Badge>
+                <Chip variant={getChipVariant(empresa.tamano) as any} size="sm">
+                  {getChipText(empresa.tamano)}
+                </Chip>
               ) : (
                 <Typography variant="body2" color="secondary">-</Typography>
               )}
@@ -219,9 +220,12 @@ export default function EmpresasTable({
 
             <div>
               <Typography variant="caption" color="secondary">Estado</Typography>
-              <Badge variant={empresa.activo ? 'success' : 'warning'} size="sm">
-                {empresa.activo ? 'Activa' : 'Inactiva'}
-              </Badge>
+              <Chip 
+                variant={getChipVariant(empresa.activo ? 'activo' : 'inactivo') as any} 
+                size="sm"
+              >
+                {getChipText(empresa.activo ? 'activo' : 'inactivo')}
+              </Chip>
             </div>
           </div>
 

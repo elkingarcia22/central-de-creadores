@@ -16,6 +16,10 @@ export interface Empresa {
   relacion_nombre?: string;
   producto_id?: string;
   producto_nombre?: string;
+  industria_id?: string;
+  industria_nombre?: string;
+  modalidad_id?: string;
+  modalidad_nombre?: string;
   productos_ids?: string[];
   participaciones?: number;
   activo?: boolean;
@@ -43,6 +47,8 @@ export interface FilterValuesEmpresa {
   activo?: boolean;
   relacion?: string;
   producto?: string;
+  industria?: string;
+  modalidad?: string;
 }
 
 export interface FilterOptions {

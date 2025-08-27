@@ -94,9 +94,18 @@ const DataTable: React.FC<DataTableProps> = ({
 
   // Filtrar datos
   const filteredData = useMemo(() => {
+    console.log('🔍 DataTable - Filtrando datos:', {
+      dataLength: data.length,
+      search,
+      filter,
+      searchKeys,
+      filterKey
+    });
+    
     // Solo loggear una vez por render para evitar spam
     if (data.length > 0) {
       console.log('🔍 DataTable - Datos recibidos:', data.length);
+      console.log('🔍 DataTable - Primer dato:', data[0]);
       
       // Verificar duplicados en los datos
       const ids = data.map((item: any) => item[rowKey] || item.id || item._id);
@@ -370,6 +379,7 @@ const DataTable: React.FC<DataTableProps> = ({
                   // Solo loggear la primera fila para debugging
                   if (index === 0) {
                     console.log('🔍 DataTable - Renderizando filas, primera fila ID:', rowId);
+                    console.log('🔍 DataTable - Primera fila datos:', row);
                   }
                   
                   return (

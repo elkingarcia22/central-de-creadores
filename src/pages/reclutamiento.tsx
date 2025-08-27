@@ -12,6 +12,7 @@ import AnimatedCounter from '../components/ui/AnimatedCounter';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';
+import ReclutamientoUnifiedContainer from '../components/reclutamiento/ReclutamientoUnifiedContainer';
 import { 
   SearchIcon, 
   PlusIcon, 
@@ -467,17 +468,6 @@ export default function ReclutamientoPage() {
     router.push(`/reclutamiento/ver/${reclutamientoId}`);
   };
 
-  const handleOpenFilters = () => {
-    setShowFilterDrawer(true);
-  };
-
-  const handleCloseFilters = () => {
-    setShowFilterDrawer(false);
-  };
-
-  const handleFiltersChange = (newFilters: FilterValuesReclutamiento) => {
-    setFilters(newFilters);
-  };
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -950,82 +940,35 @@ export default function ReclutamientoPage() {
             </div>
           )}
 
-          {/* Barra de búsqueda y filtro al estilo gestión de usuarios */}
-          <Card variant="elevated" padding="md" className="mb-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Buscar reclutamientos, investigaciones, libretos, responsables..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2"
-                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                  iconPosition="left"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
-                  onClick={handleOpenFilters}
-                  className="relative"
-                  iconOnly
-                  icon={<FilterIcon />}
-                >
-                  {getActiveFiltersCount() > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                      {getActiveFiltersCount()}
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* Tabla de reclutamientos */}
-          <DataTable
-            data={datosCompletos}
-            columns={columns}
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          <ReclutamientoUnifiedContainer
+            reclutamientos={datosCompletos}
             loading={loading}
-            searchable={false}
-            filterable={false}
-            selectable={false}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            showFilterDrawer={showFilterDrawer}
+            setShowFilterDrawer={setShowFilterDrawer}
+            getActiveFiltersCount={getActiveFiltersCount}
+            columns={columns}
             onRowClick={handleRowClick}
-            emptyMessage="No se encontraron reclutamientos"
-            loadingMessage="Cargando reclutamientos..."
-            rowKey="reclutamiento_id"
+            filterOptions={{
+              estados: filterOptionsDynamic.estados,
+              tipos: filterOptionsDynamic.tiposInvestigacion,
+              modalidades: [
+                { value: 'automatico', label: 'Automático' },
+                { value: 'manual', label: 'Manual' }
+              ],
+              responsables: filterOptionsDynamic.responsables,
+              implementadores: filterOptionsDynamic.implementadores,
+              empresas: filterOptionsDynamic.periodos, // Usando periodos como empresas temporalmente
+            }}
           />
         </div>
       </div>
 
-      {/* Drawer de filtros avanzados */}
-      <FilterDrawer
-        isOpen={showFilterDrawer}
-        onClose={handleCloseFilters}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        type="reclutamiento"
-        options={{
-          estados: filterOptionsDynamic.estados,
-          responsables: filterOptionsDynamic.responsables,
-          implementadores: filterOptionsDynamic.implementadores,
-          periodos: filterOptionsDynamic.periodos,
-          tiposInvestigacion: filterOptionsDynamic.tiposInvestigacion,
-          seguimiento: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_seguimiento', label: 'Con seguimiento' },
-            { value: 'sin_seguimiento', label: 'Sin seguimiento' },
-          ],
-          estadoSeguimiento: [
-            { value: 'pendiente', label: 'Pendiente' },
-            { value: 'en_progreso', label: 'En progreso' },
-            { value: 'completado', label: 'Completado' },
-            { value: 'convertido', label: 'Convertido' },
-            { value: 'bloqueado', label: 'Bloqueado' },
-            { value: 'cancelado', label: 'Cancelado' },
-          ],
-          nivelRiesgo: filterOptionsDynamic.nivelRiesgo,
-        }}
-      />
+
 
       {/* Modal de creación de reclutamiento */}
       <CrearReclutamientoModal

@@ -11,10 +11,13 @@ export interface TabItem {
 }
 
 export interface TabsProps {
-  tabs: TabItem[];
+  tabs?: TabItem[];
+  items?: Array<{value: string, label: string, count?: number}>;
   defaultActiveTab?: string;
   activeTab?: string;
+  value?: string;
   onTabChange?: (tabId: string) => void;
+  onValueChange?: (value: string) => void;
   variant?: 'default' | 'pills' | 'underline';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -23,27 +26,39 @@ export interface TabsProps {
 
 export const Tabs: React.FC<TabsProps> = ({
   tabs,
+  items,
   defaultActiveTab,
   activeTab: controlledActiveTab,
+  value,
   onTabChange,
+  onValueChange,
   variant = 'default',
   size = 'md',
   className = '',
   fullWidth = false
 }) => {
-  const [internalActiveTab, setInternalActiveTab] = useState(defaultActiveTab || (tabs && tabs.length > 0 ? tabs[0]?.id : undefined));
+  // Determinar qué tipo de tabs usar
+  const useItems = items && items.length > 0;
+  const useTabs = tabs && tabs.length > 0;
+  
+  // Determinar el valor activo
+  const activeValue = value || controlledActiveTab || defaultActiveTab || 
+    (useItems ? items[0]?.value : useTabs ? tabs[0]?.id : undefined);
+  
+  const [internalActiveTab, setInternalActiveTab] = useState(activeValue);
   const { theme } = useTheme();
 
-  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : internalActiveTab;
+  const currentActiveTab = activeValue !== undefined ? activeValue : internalActiveTab;
 
   const handleTabChange = (tabId: string) => {
-    if (controlledActiveTab === undefined) {
+    if (activeValue === undefined) {
       setInternalActiveTab(tabId);
     }
     onTabChange?.(tabId);
+    onValueChange?.(tabId);
   };
 
-  const activeTabContent = tabs && tabs.find(tab => tab.id === activeTab)?.content;
+  const activeTabContent = useTabs ? tabs.find(tab => tab.id === currentActiveTab)?.content : null;
 
   const sizeClasses = {
     sm: 'text-sm px-3 py-2',
@@ -78,18 +93,38 @@ export const Tabs: React.FC<TabsProps> = ({
   const currentVariant = variantClasses[variant];
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-2 ${className}`}>
       {/* Tab Headers */}
       <div className={`flex ${fullWidth ? 'w-full' : ''} ${currentVariant.container}`}>
         <div className={`flex ${fullWidth ? 'w-full' : 'space-x-1'} ${variant === 'pills' ? '' : 'space-x-0'}`}>
-          {tabs && tabs.length > 0 ? tabs.map((tab) => (
+          {useItems ? items.map((item) => (
+            <button
+              key={item.value}
+              onClick={() => handleTabChange(item.value)}
+              className={`
+                ${currentVariant.tab}
+                ${item.value === currentActiveTab ? currentVariant.active : currentVariant.inactive}
+                ${fullWidth ? 'flex-1' : ''}
+                flex items-center justify-center gap-2
+                focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2
+                rounded-t-lg
+              `}
+            >
+              <span className={fullWidth ? '' : 'whitespace-nowrap'}>{item.label}</span>
+              {item.count !== undefined && (
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full min-w-[16px] h-4 flex items-center justify-center">
+                  {item.count}
+                </span>
+              )}
+            </button>
+          )) : useTabs ? tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => !tab.disabled && handleTabChange(tab.id)}
               disabled={tab.disabled}
               className={`
                 ${currentVariant.tab}
-                ${tab.id === activeTab ? currentVariant.active : 
+                ${tab.id === currentActiveTab ? currentVariant.active : 
                   tab.disabled ? currentVariant.disabled : currentVariant.inactive}
                 ${fullWidth ? 'flex-1' : ''}
                 flex items-center justify-center gap-2
@@ -114,9 +149,11 @@ export const Tabs: React.FC<TabsProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[200px]">
-        {activeTabContent}
-      </div>
+      {activeTabContent && (
+        <div className="pt-2">
+          {activeTabContent}
+        </div>
+      )}
     </div>
   );
 };

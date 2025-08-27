@@ -9,12 +9,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Obtener participantes externos usando la misma lógica que la API de participantes
       const { data: participantesExternos, error: errorExternos } = await supabaseServer
         .from('participantes')
-        .select('*')
-        .order('nombre')
-        ;
+        .select(`
+          id,
+          nombre,
+          email,
+          tipo,
+          rol_empresa_id,
+          empresa_id,
+          kam_id,
+          descripción,
+          doleres_necesidades,
+          fecha_ultima_participacion,
+          total_participaciones,
+          productos_relacionados,
+          estado_participante,
+          created_at,
+          updated_at
+        `)
+        .order('nombre');
 
       if (errorExternos) {
         console.error('❌ Error obteniendo participantes externos:', errorExternos);
+      } else {
+        console.log('✅ Participantes externos obtenidos:', participantesExternos?.length || 0);
       }
 
       // Obtener participantes internos con información relacionada
@@ -28,12 +45,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           rol_empresa_id,
           created_at,
           updated_at,
-          departamentos!inner(nombre)
-        `)
-        ;
+          departamentos(nombre)
+        `);
 
       if (errorInternos) {
         console.error('❌ Error obteniendo participantes internos:', errorInternos);
+      } else {
+        console.log('✅ Participantes internos obtenidos:', participantesInternos?.length || 0);
       }
 
       // Obtener participantes friend & family con información relacionada
@@ -47,12 +65,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           rol_empresa_id,
           created_at,
           updated_at,
-          departamentos!inner(nombre)
-        `)
-        ;
+          departamentos(nombre)
+        `);
 
       if (errorFriendFamily) {
         console.error('❌ Error obteniendo participantes friend & family:', errorFriendFamily);
+      } else {
+        console.log('✅ Participantes friend & family obtenidos:', participantesFriendFamily?.length || 0);
       }
 
       // Obtener datos relacionados para participantes externos
@@ -188,7 +207,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const fechaUltimaParticipacion = await obtenerFechaUltimaParticipacion(p.id, 'externo');
           const totalParticipaciones = await obtenerTotalParticipaciones(p.id, 'externo');
           
-          return {
+          const participanteTransformado = {
             id: p.id,
             nombre: p.nombre,
             email: p.email || 'sin-email@ejemplo.com',
@@ -200,10 +219,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             fecha_ultima_participacion: fechaUltimaParticipacion,
             total_participaciones: totalParticipaciones,
             comentarios: p.descripción || '',
-            doleres_necesidades: '',
+            doleres_necesidades: p.doleres_necesidades || '',
             created_at: p.created_at,
             updated_at: p.updated_at
           };
+          
+          console.log('🔍 Participante externo transformado:', participanteTransformado);
+          return participanteTransformado;
         }),
         ...(participantesInternos || []).map(async p => {
           const fechaUltimaParticipacion = await obtenerFechaUltimaParticipacion(p.id, 'interno');
@@ -255,6 +277,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         friendFamily: participantesFriendFamily?.length || 0,
         total: participantesCombinados.length
       });
+
+      console.log('🔍 Primer participante externo:', participantesExternos?.[0]);
+      console.log('🔍 Primer participante interno:', participantesInternos?.[0]);
+      console.log('🔍 Primer participante friend & family:', participantesFriendFamily?.[0]);
+      console.log('🔍 Primer participante combinado:', participantesCombinados[0]);
 
       return res.status(200).json({
         success: true,

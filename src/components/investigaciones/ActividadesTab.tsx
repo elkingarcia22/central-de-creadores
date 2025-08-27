@@ -35,83 +35,84 @@ import {
   TrashIcon,
   InfoIcon
 } from '../../components/icons';
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
 
 const getTipoActividadInfo = (tipo: string) => {
   const tipos = {
     creacion: { 
       label: 'Creación', 
-      color: 'success' as const, 
+      color: getChipVariant('creación') as any, 
       icon: <PlusIcon className="w-4 h-4" />
     },
     edicion: { 
       label: 'Edición', 
-      color: 'info' as const, 
+      color: getChipVariant('edicion') as any, 
       icon: <EditIcon className="w-4 h-4" />
     },
     cambio_estado: { 
       label: 'Cambio de Estado', 
-      color: 'warning' as const, 
+      color: getChipVariant('cambio_estado') as any, 
       icon: <RefreshIcon className="w-4 h-4" />
     },
     cambio_fechas: { 
       label: 'Cambio de Fechas', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_fechas') as any, 
       icon: <CalendarIcon className="w-4 h-4" />
     },
     cambio_responsable: { 
       label: 'Cambio de Responsable', 
-      color: 'warning' as const, 
+      color: getChipVariant('cambio_responsable') as any, 
       icon: <UserIcon className="w-4 h-4" />
     },
     cambio_implementador: { 
       label: 'Cambio de Implementador', 
-      color: 'warning' as const, 
+      color: getChipVariant('cambio_implementador') as any, 
       icon: <SettingsIcon className="w-4 h-4" />
     },
     cambio_producto: { 
       label: 'Cambio de Producto', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_producto') as any, 
       icon: <BarChartIcon className="w-4 h-4" />
     },
     cambio_tipo_investigacion: { 
       label: 'Cambio de Tipo', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_tipo_investigacion') as any, 
       icon: <InfoIcon className="w-4 h-4" />
     },
     cambio_periodo: { 
       label: 'Cambio de Período', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_periodo') as any, 
       icon: <BarChartIcon className="w-4 h-4" />
     },
     cambio_link_prueba: { 
       label: 'Cambio de Link Prueba', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_link_prueba') as any, 
       icon: <LinkIcon className="w-4 h-4" />
     },
     cambio_link_resultados: { 
       label: 'Cambio de Link Resultados', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_link_resultados') as any, 
       icon: <BarChartIcon className="w-4 h-4" />
     },
     cambio_libreto: { 
       label: 'Cambio de Libreto', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_libreto') as any, 
       icon: <FileTextIcon className="w-4 h-4" />
     },
     cambio_descripcion: { 
       label: 'Cambio de Descripción', 
-      color: 'info' as const, 
+      color: getChipVariant('cambio_descripcion') as any, 
       icon: <EditIcon className="w-4 h-4" />
     },
     eliminacion: { 
       label: 'Eliminación', 
-      color: 'danger' as const, 
+      color: getChipVariant('eliminacion') as any, 
       icon: <TrashIcon className="w-4 h-4" />
     }
   };
   return tipos[tipo as keyof typeof tipos] || { 
     label: tipo, 
-    color: 'default' as const, 
+    color: getChipVariant(tipo) as any, 
     icon: <InfoIcon className="w-4 h-4" />
   };
 };

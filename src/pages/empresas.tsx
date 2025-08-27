@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 import { Empresa, Usuario, FilterValuesEmpresa, FilterOptions } from '../types/empresas';
 
 import { Layout, PageHeader } from '../components/ui';
@@ -28,6 +29,7 @@ import InlineUserSelect from '../components/ui/InlineUserSelect';
 import EditableChip from '../components/ui/EditableChip';
 import EmpresaSideModal from '../components/empresas/EmpresaSideModal';
 import EmpresaViewModal from '../components/empresas/EmpresaViewModal';
+import EmpresasUnifiedContainer from '../components/empresas/EmpresasUnifiedContainer';
 
 import { 
   SearchIcon, 
@@ -48,6 +50,7 @@ import {
   ClipboardListIcon, 
   InfoIcon 
 } from '../components/icons';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
 
 
 
@@ -222,7 +225,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
-        kams: usuarios.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' })),
+        kams: [],
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre })),
         industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
@@ -286,6 +289,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     if (filters.producto && filters.producto !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.producto_id === filters.producto);
     }
+    
+
     
     return filtradas;
   }, []);
@@ -583,14 +588,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             options={filterOptions.estados}
             onSave={(newValue) => handleInlineUpdate(row.id, 'estado_id', newValue)}
             useChip={true}
-            getChipVariant={(value) => {
-              const estado = filterOptions.estados.find(e => e.value === value);
-              return estado?.label === 'activa' ? 'success' : 'warning';
-            }}
-            getChipText={(value) => {
-              const estado = filterOptions.estados.find(e => e.value === value);
-              return estado?.label === 'activa' ? 'Activa' : 'Inactiva';
-            }}
+            getChipVariant={getChipVariant}
+            getChipText={getChipText}
           />
         );
       }
@@ -635,24 +634,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       }
     },
 
-    {
-      key: 'tamano',
-      label: 'Tamaño',
-      sortable: false,
-      width: 'min-w-[120px]',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <InlineSelect
-            value={row.tamano_id}
-            options={filterOptions.tamanos}
-            onSave={(newValue) => handleInlineUpdate(row.id, 'tamano_id', newValue)}
-          />
-        );
-      }
-    },
+
 
     {
       key: 'relacion',
@@ -669,32 +651,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
           return <div className="text-gray-400">Sin relación</div>;
         }
         
-        // Función para obtener el color del chip según la relación
-        const getRelacionChipVariant = (relacionNombre: string) => {
-          switch (relacionNombre.toLowerCase()) {
-            case 'excelente':
-              return 'success';
-            case 'buena':
-              return 'accent-emerald';
-            case 'regular':
-              return 'warning';
-            case 'mala':
-              return 'danger';
-            case 'muy mala':
-              return 'danger';
-            default:
-              return 'default';
-          }
-        };
-        
-        const chipVariant = getRelacionChipVariant(relacion.label);
-        
         return (
           <EditableChip
             value={row.relacion_id}
             options={filterOptions.relaciones}
             onSave={(newValue) => handleInlineUpdate(row.id, 'relacion_id', newValue)}
-            getChipVariant={getRelacionChipVariant}
+            getChipVariant={getChipVariant}
             size="sm"
           />
         );
@@ -795,125 +757,118 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               }}
             />
 
-          {/* Métricas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="p-4">
+          {/* Estadísticas del Dashboard */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Total Empresas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
-                    {metricas.total}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.total} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
-                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
+                  <Typography variant="body2" color="secondary">
                     Total Empresas
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <EmpresasIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <EmpresasIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Empresas Alcanzadas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
-                    {metricas.empresasAlcanzadas}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.empresasAlcanzadas} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
-                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
+                  <Typography variant="body2" color="secondary">
                     Empresas Alcanzadas
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <CheckCircleIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Retención de Empresas */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
-                    {metricas.retencionEmpresas}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.retencionEmpresas} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
-                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
+                  <Typography variant="body2" color="secondary">
                     Retención de Empresas
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <BarChartIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4">
+            {/* Promedio por KAM */}
+            <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
-                    {metricas.promedioPorKAM}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={metricas.promedioPorKAM} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
-                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
+                  <Typography variant="body2" color="secondary">
                     Promedio por KAM
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <UserIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
           </div>
 
-          {/* Filtros y búsqueda */}
-          <Card className="p-4 mb-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-center">
-              <div className="flex-1 relative">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-                    <SearchIcon className="w-5 h-5" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Buscar empresas..."
-                    value={searchTerm}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilterDrawer(true)}
-                  className="relative"
-                  iconOnly
-                  icon={<FilterIcon />}
-                >
-                  {getActiveFiltersCount() > 0 && (
-                    <Badge variant="secondary" className="absolute -top-1 -right-1">
-                      {getActiveFiltersCount()}
-                    </Badge>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          {/* Tabla */}
-          <div className="space-y-4">
-            <DataTable
-              data={empresasFiltradas}
-              columns={columns}
-              loading={loading}
-              searchable={false}
-              filterable={false}
-              selectable={true}
-              onSelectionChange={handleSelectionChange}
-              emptyMessage="No se encontraron empresas"
-              loadingMessage="Cargando empresas..."
-              rowKey="id"
-              bulkActions={bulkActions}
-              clearSelection={clearTableSelection}
-            />
-          </div>
+          {/* Contenedor unificado de tabla, buscador y filtros */}
+          <EmpresasUnifiedContainer
+            empresas={empresasFiltradas}
+            loading={loading}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filters={filters}
+            setFilters={setFilters}
+            showFilterDrawer={showFilterDrawer}
+            setShowFilterDrawer={setShowFilterDrawer}
+            getActiveFiltersCount={getActiveFiltersCount}
+            columns={columns}
+            onRowClick={(empresa) => {
+              setSelectedEmpresa(empresa);
+              setShowViewModal(true);
+            }}
+            filterOptions={{
+              estados: filterOptions.estados,
+              tamanos: filterOptions.tamanos,
+              paises: filterOptions.paises,
+            }}
+            onSelectionChange={handleSelectionChange}
+            bulkActions={bulkActions}
+            clearSelection={clearTableSelection}
+          />
           </div>
         </div>
       </Layout>
@@ -931,23 +886,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         loading={saving}
       />
 
-      {/* Drawer de filtros avanzados */}
-      <FilterDrawer
-        isOpen={showFilterDrawer}
-        onClose={handleCloseFilters}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        type="empresa"
-        options={{
-          estados: filterOptions.estados,
-          tamanos: filterOptions.tamanos,
-          paises: filterOptions.paises,
-          kams: filterOptions.kams,
-          relaciones: filterOptions.relaciones,
-          productos: filterOptions.productos,
-          usuarios: usuarios
-        }}
-      />
+
 
       {/* Modales de creación/edición/vista */}
       <EmpresaSideModal

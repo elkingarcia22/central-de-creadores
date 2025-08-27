@@ -287,13 +287,10 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     } else if (type === 'empresa') {
       const empFilters = filters as FilterValuesEmpresa;
       if (empFilters.estado && empFilters.estado !== 'todos') count++;
-      if (empFilters.sector && empFilters.sector !== 'todos') count++;
       if (empFilters.tamano && empFilters.tamano !== 'todos') count++;
       if (empFilters.pais && empFilters.pais !== 'todos') count++;
       if (empFilters.kam_id && empFilters.kam_id !== 'todos') count++;
       if (empFilters.activo !== undefined) count++;
-      if (empFilters.industria && empFilters.industria !== 'todos') count++;
-      if (empFilters.modalidad && empFilters.modalidad !== 'todos') count++;
       if (empFilters.relacion && empFilters.relacion !== 'todos') count++;
       if (empFilters.producto && empFilters.producto !== 'todos') count++;
     } else {
@@ -819,9 +816,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               <>
                 {/* Estado */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Estado
-                  </Typography>
+                  <FilterLabel>Estado</FilterLabel>
                   <Select
                     placeholder="Seleccionar estado..."
                     options={[
@@ -834,13 +829,9 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   />
                 </div>
 
-
-
                 {/* Tamaño */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Tamaño
-                  </Typography>
+                  <FilterLabel>Tamaño</FilterLabel>
                   <Select
                     placeholder="Seleccionar tamaño..."
                     options={[
@@ -855,9 +846,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* País */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    País
-                  </Typography>
+                  <FilterLabel>País</FilterLabel>
                   <Select
                     placeholder="Seleccionar país..."
                     options={[
@@ -872,9 +861,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* KAM */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    KAM
-                  </Typography>
+                  <FilterLabel>KAM</FilterLabel>
                   <UserSelect
                     value={(filters as FilterValuesEmpresa).kam_id || 'todos'}
                     onChange={(value) => handleFilterChange('kam_id', value)}
@@ -884,13 +871,27 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   />
                 </div>
 
+                {/* Estado Activo/Inactivo */}
+                <div>
+                  <FilterLabel>Estado Activo</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar estado..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      { value: 'true', label: 'Activas' },
+                      { value: 'false', label: 'Inactivas' }
+                    ]}
+                    value={(filters as FilterValuesEmpresa).activo === undefined ? 'todos' : (filters as FilterValuesEmpresa).activo ? 'true' : 'false'}
+                    onChange={(value) => handleFilterChange('activo', value === 'todos' ? undefined : value === 'true')}
+                    fullWidth
+                  />
+                </div>
+
 
 
                 {/* Relación */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Relación
-                  </Typography>
+                  <FilterLabel>Relación</FilterLabel>
                   <Select
                     placeholder="Seleccionar relación..."
                     options={[
@@ -905,9 +906,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Producto */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Producto
-                  </Typography>
+                  <FilterLabel>Producto</FilterLabel>
                   <Select
                     placeholder="Seleccionar producto..."
                     options={[

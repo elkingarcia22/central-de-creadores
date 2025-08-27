@@ -1,0 +1,317 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Card from '../ui/Card';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
+import DataTable from '../ui/DataTable';
+import FilterDrawer from '../ui/FilterDrawer';
+import Tabs from '../ui/Tabs';
+import { Subtitle } from '../ui/Subtitle';
+import { SearchIcon, FilterIcon } from '../icons';
+
+interface ParticipantesUnifiedContainerProps {
+  // Datos
+  participantes: any[];
+  loading: boolean;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  
+  // Filtros
+  filters: any;
+  setFilters: (filters: any) => void;
+  showFilterDrawer: boolean;
+  setShowFilterDrawer: (show: boolean) => void;
+  getActiveFiltersCount: () => number;
+  
+  // Configuración de tabla
+  columns: any[];
+  onRowClick: (row: any) => void;
+  onSelectionChange?: (selectedRows: any[]) => void;
+  bulkActions?: any[];
+  
+  // Tabs
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  tabs: Array<{value: string, label: string, count?: number}>;
+  
+  // Opciones de filtros
+  filterOptions: {
+    estados: Array<{value: string, label: string}>;
+    roles: Array<{value: string, label: string}>;
+    empresas: Array<{value: string, label: string}>;
+    departamentos: Array<{value: string, label: string}>;
+  };
+}
+
+export default function ParticipantesUnifiedContainer({
+  participantes,
+  loading,
+  searchTerm,
+  setSearchTerm,
+  filters,
+  setFilters,
+  showFilterDrawer,
+  setShowFilterDrawer,
+  getActiveFiltersCount,
+  columns,
+  onRowClick,
+  onSelectionChange,
+  bulkActions,
+  activeTab,
+  setActiveTab,
+  tabs,
+  filterOptions
+}: ParticipantesUnifiedContainerProps) {
+  const router = useRouter();
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+
+  // Efecto para cerrar la búsqueda con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchExpanded) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    if (isSearchExpanded) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isSearchExpanded]);
+
+  // Filtrar participantes basado en searchTerm, filters y activeTab
+  const participantesFiltradas = useMemo(() => {
+    console.log('🔍 Filtrando participantes:', {
+      total: participantes.length,
+      activeTab,
+      searchTerm,
+      filters
+    });
+    
+    let filtradas = [...participantes];
+    
+    // Filtrar por tipo de participante (tab activo)
+    if (activeTab !== 'todos') {
+      const tipoMap = {
+        'externos': 'externo',
+        'internos': 'interno',
+        'friend_family': 'friend_family'
+      };
+      const tipo = tipoMap[activeTab as keyof typeof tipoMap];
+      if (tipo) {
+        console.log('🔍 Filtrando por tipo:', { activeTab, tipo });
+        filtradas = filtradas.filter(p => p.tipo === tipo);
+        console.log('🔍 Después de filtrar por tipo:', filtradas.length);
+      }
+    }
+    
+    // Filtrar por término de búsqueda
+    if (searchTerm.trim()) {
+      const termino = searchTerm.toLowerCase();
+      filtradas = filtradas.filter(p => 
+        p?.nombre?.toLowerCase().includes(termino) ||
+        p?.email?.toLowerCase().includes(termino) ||
+        p?.empresa_nombre?.toLowerCase().includes(termino) ||
+        p?.departamento_nombre?.toLowerCase().includes(termino)
+      );
+    }
+    
+    // Aplicar filtros avanzados específicos de participantes
+    if (filters.estado_participante && filters.estado_participante !== 'todos') {
+      filtradas = filtradas.filter(p => p?.estado_participante === filters.estado_participante);
+    }
+    
+    if (filters.rol_empresa && filters.rol_empresa !== 'todos') {
+      filtradas = filtradas.filter(p => p?.rol_empresa === filters.rol_empresa);
+    }
+    
+    if (filters.empresa && filters.empresa !== 'todos') {
+      filtradas = filtradas.filter(p => p?.empresa_nombre === filters.empresa);
+    }
+    
+    if (filters.departamento && filters.departamento !== 'todos') {
+      filtradas = filtradas.filter(p => p?.departamento_nombre === filters.departamento);
+    }
+    
+    if (filters.fecha_registro_desde) {
+      filtradas = filtradas.filter(p => p?.created_at >= filters.fecha_registro_desde);
+    }
+    
+    if (filters.fecha_registro_hasta) {
+      filtradas = filtradas.filter(p => p?.created_at <= filters.fecha_registro_hasta);
+    }
+    
+    if (filters.fecha_ultima_participacion_desde) {
+      filtradas = filtradas.filter(p => p?.fecha_ultima_participacion >= filters.fecha_ultima_participacion_desde);
+    }
+    
+    if (filters.fecha_ultima_participacion_hasta) {
+      filtradas = filtradas.filter(p => p?.fecha_ultima_participacion <= filters.fecha_ultima_participacion_hasta);
+    }
+    
+    if (filters.total_participaciones_min) {
+      filtradas = filtradas.filter(p => (p?.total_participaciones || 0) >= parseInt(filters.total_participaciones_min));
+    }
+    
+    if (filters.total_participaciones_max) {
+      filtradas = filtradas.filter(p => (p?.total_participaciones || 0) <= parseInt(filters.total_participaciones_max));
+    }
+    
+    if (filters.tiene_email && filters.tiene_email !== 'todos') {
+      filtradas = filtradas.filter(p => {
+        const tieneEmail = !!p?.email;
+        return filters.tiene_email === 'con_email' ? tieneEmail : !tieneEmail;
+      });
+    }
+    
+    if (filters.tiene_productos && filters.tiene_productos !== 'todos') {
+      filtradas = filtradas.filter(p => {
+        const tieneProductos = p?.productos_relacionados && p.productos_relacionados.length > 0;
+        return filters.tiene_productos === 'con_productos' ? tieneProductos : !tieneProductos;
+      });
+    }
+    
+    console.log('🔍 Participantes filtradas final:', filtradas.length);
+    console.log('🔍 Primer participante filtrado:', filtradas[0]);
+    
+    return filtradas;
+  }, [participantes, activeTab, searchTerm, filters]);
+
+  const handleOpenFilters = () => {
+    setShowFilterDrawer(true);
+  };
+
+  const handleCloseFilters = () => {
+    setShowFilterDrawer(false);
+  };
+
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
+
+  return (
+    <Card variant="elevated" padding="lg" className="space-y-4">
+      {/* Header del contenedor con iconos integrados */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Subtitle>
+            Lista de Participantes
+          </Subtitle>
+          <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+            {participantesFiltradas.length} de {participantes.length}
+          </span>
+        </div>
+        
+        {/* Iconos de búsqueda y filtro en la misma línea */}
+        <div className="flex items-center gap-2">
+          {/* Icono de búsqueda que se expande */}
+          <div className="relative">
+            {isSearchExpanded ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Buscar participantes..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-[500px] pl-10 pr-10 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsSearchExpanded(false)}
+                  className="text-gray-500 hover:text-gray-700 border-0"
+                >
+                  ✕
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={() => setIsSearchExpanded(true)}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                iconOnly
+                icon={<SearchIcon className="w-5 h-5" />}
+              />
+            )}
+          </div>
+          
+          {/* Icono de filtro */}
+          <Button
+            variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
+            onClick={handleOpenFilters}
+            className="relative p-2 border-0"
+            iconOnly
+            icon={<FilterIcon />}
+          >
+            {getActiveFiltersCount() > 0 && (
+              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                {getActiveFiltersCount()}
+              </span>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Tabs de tipos de participantes */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        items={tabs}
+        className="w-full"
+      />
+
+      {/* Tabla de participantes */}
+      {console.log('🔍 Renderizando DataTable con:', {
+        dataLength: participantesFiltradas.length,
+        columnsLength: columns.length,
+        loading,
+        firstParticipant: participantesFiltradas[0]
+      })}
+      <DataTable
+        data={participantesFiltradas}
+        columns={columns}
+        loading={loading}
+        searchable={false}
+        filterable={false}
+        selectable={!!onSelectionChange}
+        onSelectionChange={onSelectionChange}
+        onRowClick={onRowClick}
+        emptyMessage="No se encontraron participantes que coincidan con los criterios de búsqueda"
+        loadingMessage="Cargando participantes..."
+        rowKey="id"
+        bulkActions={bulkActions}
+      />
+
+      {/* Drawer de filtros avanzados */}
+      <FilterDrawer
+        isOpen={showFilterDrawer}
+        onClose={handleCloseFilters}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        type="participante"
+        participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
+        options={{
+          estados: filterOptions.estados,
+          roles: filterOptions.roles,
+          empresas: filterOptions.empresas,
+          departamentos: filterOptions.departamentos,
+          tieneEmail: [
+            { value: 'todos', label: 'Todos' },
+            { value: 'con_email', label: 'Con email' },
+            { value: 'sin_email', label: 'Sin email' }
+          ],
+          tieneProductos: [
+            { value: 'todos', label: 'Todos' },
+            { value: 'con_productos', label: 'Con productos' },
+            { value: 'sin_productos', label: 'Sin productos' }
+          ]
+        }}
+      />
+    </Card>
+  );
+}
