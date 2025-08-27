@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal } from './Modal';
 import Button from './Button';
 import Typography from './Typography';
+import { PageHeader } from './PageHeader';
 import { AlertTriangleIcon, InfoIcon, CheckCircleIcon, XCircleIcon } from '../icons';
 
 export interface ConfirmModalProps {
@@ -32,13 +33,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircleIcon className="w-8 h-8 text-success" />;
+        return <CheckCircleIcon className="w-6 h-6 text-success" />;
       case 'warning':
-        return <AlertTriangleIcon className="w-8 h-8 text-warning" />;
+        return <AlertTriangleIcon className="w-6 h-6 text-warning" />;
       case 'error':
-        return <XCircleIcon className="w-8 h-8 text-destructive" />;
+        return <AlertTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />;
       default:
-        return <InfoIcon className="w-8 h-8 text-primary" />;
+        return <InfoIcon className="w-6 h-6 text-primary" />;
     }
   };
 
@@ -83,19 +84,27 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       footer={footer}
       closeOnOverlayClick={!loading}
       closeOnEscape={!loading}
+      showCloseButton={false}
     >
       <div className="flex flex-col items-start w-full">
-        <div className="flex flex-row items-center gap-3 mb-2 w-full">
-          {getIcon()}
-          {title && (
-            <Typography variant="h4" weight="semibold" className="mb-0 text-card-foreground text-left">
-              {title}
-            </Typography>
-          )}
+        {/* Header con PageHeader e icono integrado */}
+        {title && (
+          <PageHeader
+            title={title}
+            variant="title-only"
+            color="gray"
+            className="mb-4"
+            icon={getIcon()}
+            onClose={onClose}
+          />
+        )}
+        
+        {/* Contenido del modal */}
+        <div className="flex flex-col items-start w-full px-6">
+          <Typography variant="body1" color="secondary" className="text-muted-foreground text-left w-full">
+            {message}
+          </Typography>
         </div>
-        <Typography variant="body1" color="secondary" className="text-muted-foreground mt-2 text-left w-full">
-          {message}
-        </Typography>
       </div>
     </Modal>
   );

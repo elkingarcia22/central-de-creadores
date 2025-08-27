@@ -116,6 +116,8 @@ export default {
           DEFAULT: 'rgb(var(--title))',
           foreground: 'rgb(var(--title-foreground))',
         },
+
+
       },
       fontFamily: {
         sans: [

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState } from '../../../components/ui';
 import { SeguimientosSection } from '../../../components/investigaciones/SeguimientosSection';
 import { TrazabilidadSection } from '../../../components/investigaciones/TrazabilidadSection';
 import ActividadesTab from '../../../components/investigaciones/ActividadesTab';
@@ -26,7 +26,10 @@ import {
   MoreVerticalIcon,
   PlusIcon,
   SettingsIcon,
-  ClipboardListIcon
+  ClipboardListIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  UsersIcon
 } from '../../../components/icons';
 import { 
   obtenerInvestigacionPorId,
@@ -50,7 +53,8 @@ import {
   obtenerPaises
 } from '../../../api/supabase-libretos';
 import { formatearFecha } from '../../../utils/fechas';
-import { getEstadoInvestigacionVariant, getEstadoInvestigacionText } from '../../../utils/estadoUtils';
+
+import { getChipVariant, getChipText } from '../../../utils/chipUtils';
 import { 
   obtenerSeguimientosPorInvestigacion, 
   obtenerTrazabilidadCompleta,
@@ -477,7 +481,7 @@ const VerInvestigacion: NextPage = () => {
       onClick: () => {
         router.push(`/investigaciones/libreto/crear?investigacion=${id}`);
       },
-      className: 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+      className: 'text-popover-foreground hover:text-popover-foreground/80'
     }] : []),
     {
       label: 'Editar',
@@ -500,241 +504,205 @@ const VerInvestigacion: NextPage = () => {
   ];
 
   // Estados para mostrar badges con colores (usando funciones centralizadas)
-  const getEstadoBadgeVariant = (estado: string) => {
-    return getEstadoInvestigacionVariant(estado);
+  const getEstadoBadgeVariant = (estado: string): any => {
+    return getChipVariant(estado);
   };
 
   // Formatear el estado para mostrar (usando funciones centralizadas)
   const formatearEstado = (estado: string) => {
-    return getEstadoInvestigacionText(estado);
+    return getChipText(estado);
   };
 
-  // Componente Empty State reutilizable
-  const EmptyState: React.FC<{ 
-    icon: React.ReactNode; 
-    title: string; 
-    description: string; 
-    actionText?: string;
-    onAction?: () => void;
-  }> = ({ icon, title, description, actionText, onAction }) => (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="w-16 h-16 rounded-full bg-muted-solid flex items-center justify-center mb-4 text-muted-foreground">
-        {icon}
-      </div>
-      <Typography variant="h4" className="mb-2 text-center">{title}</Typography>
-      <Typography variant="body2" color="secondary" className="mb-6 text-center max-w-md">
-        {description}
-      </Typography>
-      {actionText && onAction && (
-        <Button variant="primary" onClick={onAction}>
-          {actionText}
-        </Button>
-      )}
-    </div>
-  );
+
 
   // Componente de Información General
   const InformacionGeneral: React.FC = () => (
     <div className="space-y-6">
       {/* Información básica */}
-      <Card className="p-6">
-        <div className="mb-4">
-          <Typography variant="h3" className="mb-2">Descripción</Typography>
-        </div>
-        
-        {investigacion?.descripcion && (
-          <div className="mb-4">
-            <Typography variant="subtitle2" className="mb-2">Descripción</Typography>
-            <Typography variant="body1" color="secondary">
-              {investigacion.descripcion}
-            </Typography>
-          </div>
-        )}
-
-        {investigacion?.objetivo && (
-          <div>
-            <Typography variant="subtitle2" className="mb-2">Objetivo</Typography>
-            <Typography variant="body1" color="secondary">
-              {investigacion.objetivo}
-            </Typography>
-          </div>
-        )}
-      </Card>
+      {investigacion?.objetivo && (
+        <InfoContainer title="Objetivo" icon={<CheckCircleIcon className="w-4 h-4" />}>
+          <InfoItem 
+            label="Descripción del objetivo" 
+            value={investigacion.objetivo}
+            size="lg"
+          />
+        </InfoContainer>
+      )}
 
       {/* Detalles del proyecto */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Fechas */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <SesionesIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Fechas</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.fecha_inicio && (
-              <div>
-                <Typography variant="caption" color="secondary">Fecha de inicio</Typography>
-                <Typography variant="body2">{formatearFecha(investigacion.fecha_inicio)}</Typography>
-              </div>
-            )}
-            {investigacion?.fecha_fin && (
-              <div>
-                <Typography variant="caption" color="secondary">Fecha de fin</Typography>
-                <Typography variant="body2">{formatearFecha(investigacion.fecha_fin)}</Typography>
-              </div>
-            )}
-            <div>
-              <Typography variant="caption" color="secondary">Creada</Typography>
-              <Typography variant="body2">{formatearFecha(investigacion?.creado_el || '')}</Typography>
-            </div>
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Fechas"
+          icon={<ClockIcon className="w-4 h-4" />}
+        >
+          {investigacion?.fecha_inicio && (
+            <InfoItem 
+              label="Fecha de inicio" 
+              value={formatearFecha(investigacion.fecha_inicio)}
+            />
+          )}
+          {investigacion?.fecha_fin && (
+            <InfoItem 
+              label="Fecha de fin" 
+              value={formatearFecha(investigacion.fecha_fin)}
+            />
+          )}
+          <InfoItem 
+            label="Creada" 
+            value={formatearFecha(investigacion?.creado_el || '')}
+          />
+        </InfoContainer>
 
         {/* Equipo */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <UserIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Equipo</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.responsable_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Responsable</Typography>
-                <Typography variant="body2">{investigacion.responsable_nombre}</Typography>
-                {investigacion.responsable_email && (
-                  <Typography variant="caption" color="secondary" className="block">
-                    {investigacion.responsable_email}
-                  </Typography>
-                )}
-              </div>
-            )}
-            {investigacion?.implementador_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Implementador</Typography>
-                <Typography variant="body2">{investigacion.implementador_nombre}</Typography>
-                {investigacion.implementador_email && (
-                  <Typography variant="caption" color="secondary" className="block">
-                    {investigacion.implementador_email}
-                  </Typography>
-                )}
-              </div>
-            )}
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Equipo"
+          icon={<UsersIcon className="w-4 h-4" />}
+        >
+          {investigacion?.responsable_nombre && (
+            <InfoItem 
+              label="Responsable" 
+              value={
+                <div>
+                  <div>{investigacion.responsable_nombre}</div>
+                  {investigacion.responsable_email && (
+                    <div className="text-sm text-gray-500">{investigacion.responsable_email}</div>
+                  )}
+                </div>
+              }
+            />
+          )}
+          {investigacion?.implementador_nombre && (
+            <InfoItem 
+              label="Implementador" 
+              value={
+                <div>
+                  <div>{investigacion.implementador_nombre}</div>
+                  {investigacion.implementador_email && (
+                    <div className="text-sm text-gray-500">{investigacion.implementador_email}</div>
+                  )}
+                </div>
+              }
+            />
+          )}
+        </InfoContainer>
 
         {/* Links */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <LinkIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Enlaces</Typography>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <Typography variant="caption" color="secondary">Link de prueba</Typography>
-              {investigacion?.link_prueba ? (
-                <div className="flex items-center gap-2">
-                  <a 
-                    href={investigacion.link_prueba} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
-                  >
-                    {investigacion.link_prueba}
-                  </a>
+        <InfoContainer 
+          title="Enlaces"
+          icon={<LinkIcon className="w-4 h-4" />}
+        >
+          <div>
+            <InfoItem 
+              label="Link de prueba"
+              value={
+                investigacion?.link_prueba ? (
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={investigacion.link_prueba} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
+                    >
+                      {investigacion.link_prueba}
+                    </a>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentLinkType('prueba');
+                        setCurrentLink(investigacion.link_prueba || '');
+                        setShowLinkModal(true);
+                      }}
+                    >
+                      <EditIcon className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('prueba');
-                      setCurrentLink(investigacion.link_prueba || '');
+                      setCurrentLink('');
                       setShowLinkModal(true);
                     }}
                   >
-                    <EditIcon className="w-3 h-3" />
+                    Agregar link
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setCurrentLinkType('prueba');
-                    setCurrentLink('');
-                    setShowLinkModal(true);
-                  }}
-                >
-                  Agregar link
-                </Button>
-              )}
-            </div>
+                )
+              }
+            />
+          </div>
 
-            <div>
-              <Typography variant="caption" color="secondary">Link de resultados</Typography>
-              {investigacion?.link_resultados ? (
-                <div className="flex items-center gap-2">
-                  <a 
-                    href={investigacion.link_resultados} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
-                  >
-                    {investigacion.link_resultados}
-                  </a>
+          <div>
+            <InfoItem 
+              label="Link de resultados"
+              value={
+                investigacion?.link_resultados ? (
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={investigacion.link_resultados} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
+                    >
+                      {investigacion.link_resultados}
+                    </a>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentLinkType('resultados');
+                        setCurrentLink(investigacion.link_resultados || '');
+                        setShowLinkModal(true);
+                      }}
+                    >
+                      <EditIcon className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('resultados');
-                      setCurrentLink(investigacion.link_resultados || '');
+                      setCurrentLink('');
                       setShowLinkModal(true);
                     }}
                   >
-                    <EditIcon className="w-3 h-3" />
+                    Agregar link
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setCurrentLinkType('resultados');
-                    setCurrentLink('');
-                    setShowLinkModal(true);
-                  }}
-                >
-                  Agregar link
-                </Button>
-              )}
-            </div>
+                )
+              }
+            />
           </div>
-        </Card>
+        </InfoContainer>
 
         {/* Configuración */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <ConfiguracionesIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Configuración</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.producto_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Producto</Typography>
-                <Typography variant="body2">{investigacion.producto_nombre}</Typography>
-              </div>
-            )}
-            {investigacion?.periodo_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Período</Typography>
-                <Typography variant="body2">{investigacion.periodo_nombre}</Typography>
-              </div>
-            )}
-            {investigacion?.tipo_sesion && (
-              <div>
-                <Typography variant="caption" color="secondary">Tipo de sesión</Typography>
-                <Typography variant="body2">{investigacion.tipo_sesion}</Typography>
-              </div>
-            )}
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Configuración"
+          icon={<SettingsIcon className="w-4 h-4" />}
+        >
+          {investigacion?.producto_nombre && (
+            <InfoItem 
+              label="Producto" 
+              value={investigacion.producto_nombre}
+            />
+          )}
+          {investigacion?.periodo_nombre && (
+            <InfoItem 
+              label="Período" 
+              value={investigacion.periodo_nombre}
+            />
+          )}
+          {investigacion?.tipo_sesion && (
+            <InfoItem 
+              label="Tipo de sesión" 
+              value={investigacion.tipo_sesion}
+            />
+          )}
+        </InfoContainer>
       </div>
     </div>
   );
@@ -770,259 +738,178 @@ const VerInvestigacion: NextPage = () => {
       return (
         <div className="space-y-6">
           {/* Header del Libreto */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <FileTextIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <Typography variant="h3" className="text-lg font-semibold">
-                    Libreto de la Investigación
-                  </Typography>
-                  <Typography variant="caption" color="secondary">
-                    Guión y configuración completa para las sesiones
-                  </Typography>
-                </div>
-              </div>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => router.push(`/investigaciones/libreto/${id}`)}
-                className="flex items-center gap-2"
-              >
-                <EditIcon className="w-4 h-4" />
-                Editar
-              </Button>
-            </div>
-            
-            {/* Información básica de la sesión */}
-            {(libreto.nombre_sesion || libreto.duracion_estimada || libreto.numero_participantes) && (
-              <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4 mb-6">
-                {libreto.nombre_sesion && (
-                  <Typography variant="h4" className="mb-2 text-blue-900 dark:text-blue-100">
-                    {libreto.nombre_sesion}
-                  </Typography>
-                )}
-                <div className="flex flex-wrap gap-4 text-sm text-blue-700 dark:text-blue-300">
-                  {libreto.duracion_estimada && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Duración:</span> {libreto.duracion_estimada} minutos
-                    </div>
-                  )}
-                  {libreto.numero_participantes && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Participantes:</span> {libreto.numero_participantes}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </Card>
+          <PageHeader
+            title="Libreto de la Investigación"
+            subtitle="Guión y configuración completa para las sesiones"
+            variant="compact"
+            color="blue"
+            primaryAction={{
+              label: "Editar",
+              onClick: () => router.push(`/investigaciones/libreto/${id}`),
+              variant: "primary",
+              icon: <EditIcon className="w-4 h-4" />
+            }}
+          />
 
           {/* Contenido del Libreto */}
           <div className="space-y-8">
             {/* Problema y Objetivos */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <DocumentIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Problema y Objetivos
-                </Typography>
-              </div>
-              
-              <div className="space-y-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Problema o Situación
-                  </Typography>
+            <InfoContainer 
+              title="Problema y Objetivos"
+              icon={<CheckCircleIcon className="w-4 h-4" />}
+            >
+              <InfoItem 
+                label="Problema o Situación"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.problema_situacion || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Hipótesis
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Hipótesis"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.hipotesis || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Objetivos
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Objetivos"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.objetivos || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Resultado Esperado
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Resultado Esperado"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.resultado_esperado || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-              </div>
-            </Card>
+                }
+              />
+            </InfoContainer>
 
             {/* Configuración de la Sesión */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <SettingsIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Configuración de la Sesión
-                </Typography>
-              </div>
-              
+            <InfoContainer 
+              title="Configuración de la Sesión"
+              icon={<SettingsIcon className="w-4 h-4" />}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Nombre de la Sesión
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.nombre_sesion || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Nombre de la Sesión"
+                  value={libreto.nombre_sesion || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Duración Estimada (minutos)
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.duracion_estimada ? `${libreto.duracion_estimada} minutos` : 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Duración Estimada (minutos)"
+                  value={libreto.duracion_estimada ? `${libreto.duracion_estimada} minutos` : 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Número de Participantes
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.numero_participantes || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Número de Participantes"
+                  value={libreto.numero_participantes || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Plataforma
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
-                  </Typography>
+                <InfoItem 
+                  label="Plataforma"
+                  value={catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
+                />
+
+                <div className="md:col-span-2">
+                  <InfoItem 
+                    label="Link del Prototipo"
+                    value={
+                      libreto.link_prototipo ? (
+                        <a href={libreto.link_prototipo} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          {libreto.link_prototipo}
+                        </a>
+                      ) : (
+                        'No especificado'
+                      )
+                    }
+                  />
                 </div>
 
                 <div className="md:col-span-2">
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Link del Prototipo
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.link_prototipo ? (
-                      <a href={libreto.link_prototipo} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                        {libreto.link_prototipo}
-                      </a>
-                    ) : (
-                      'No especificado'
-                    )}
-                  </Typography>
-                </div>
-
-                <div className="md:col-span-2">
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Descripción General
-                  </Typography>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.descripcion_general || 'No especificado'}
-                    </Typography>
-                  </div>
+                  <InfoItem 
+                    label="Descripción General"
+                    value={
+                      <div className="p-4 bg-muted rounded-lg">
+                        <Typography variant="body2">
+                          {libreto.descripcion_general || 'No especificado'}
+                        </Typography>
+                      </div>
+                    }
+                  />
                 </div>
               </div>
-            </Card>
+            </InfoContainer>
 
             {/* Perfil de Participantes */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <UserIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Perfil de Participantes
-                </Typography>
-              </div>
-              
+            <InfoContainer 
+              title="Perfil de Participantes"
+              icon={<UsersIcon className="w-4 h-4" />}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Rol en Empresa
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Rol en Empresa"
+                  value={catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Industria
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Industria"
+                  value={catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Modalidad
-                  </Typography>
-                  <Typography variant="body2">
-                    {(() => {
-                      if (!libreto.modalidad_id) return 'No especificado';
-                      
-                      const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
-                      
-                      // Usar catálogos reales
-                      const nombres = modalidadIds
-                        .filter(id => id)
-                        .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
-                        .filter(Boolean);
-                      
-                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
-                    })()}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Modalidad"
+                  value={(() => {
+                    if (!libreto.modalidad_id) return 'No especificado';
+                    
+                    const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
+                    
+                    // Usar catálogos reales
+                    const nombres = modalidadIds
+                      .filter(id => id)
+                      .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
+                      .filter(Boolean);
+                    
+                    return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                  })()}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Tamaño de Empresa
-                  </Typography>
-                  <Typography variant="body2">
-                    {(() => {
-                      if (!libreto.tamano_empresa_id) return 'No especificado';
-                      
-                      const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
-                      
-                      // Usar catálogos reales
-                      const nombres = tamanoIds
-                        .filter(id => id)
-                        .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
-                        .filter(Boolean);
-                      
-                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
-                    })()}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Tamaño de Empresa"
+                  value={(() => {
+                    if (!libreto.tamano_empresa_id) return 'No especificado';
+                    
+                    const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
+                    
+                    // Usar catálogos reales
+                    const nombres = tamanoIds
+                      .filter(id => id)
+                      .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
+                      .filter(Boolean);
+                    
+                    return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                  })()}
+                />
               </div>
-            </Card>
+            </InfoContainer>
           </div>
         </div>
       );
@@ -1133,21 +1020,23 @@ const VerInvestigacion: NextPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => router.push('/investigaciones')}
-              className="p-2"
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-4">
-              <Typography variant="h2">{investigacion?.nombre}</Typography>
-              <div className="flex items-center gap-3">
-                <Chip variant={getEstadoBadgeVariant(investigacion?.estado || '')}>
-                  {formatearEstado(investigacion?.estado || '')}
-                </Chip>
-              </div>
-            </div>
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title={investigacion?.nombre || 'Investigación'}
+              variant="compact"
+              color="blue"
+              className="mb-0"
+              chip={{
+                label: formatearEstado(investigacion?.estado || ''),
+                variant: getEstadoBadgeVariant(investigacion?.estado || ''),
+                size: 'sm'
+              }}
+            />
           </div>
 
           {/* Acciones principales */}
@@ -1156,7 +1045,7 @@ const VerInvestigacion: NextPage = () => {
             {investigacion.estado?.toLowerCase().trim() === 'en_progreso' && (
               <Button
                 variant="secondary"
-                className="flex items-center gap-2 bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900"
+                className="flex items-center gap-2"
                 onClick={() => {
                   // Abrir directamente el modal de seguimiento
                   setShowSeguimientoModal(true);
@@ -1171,6 +1060,8 @@ const VerInvestigacion: NextPage = () => {
             <ActionsMenu actions={menuActions} />
           </div>
         </div>
+
+
 
         {/* Tabs */}
         <Tabs

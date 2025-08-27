@@ -38,6 +38,16 @@ export {
   Caption, Overline 
 } from "./Typography";
 
+// Componentes de formularios y layout
+export { PageHeader } from "./PageHeader";
+export { FormContainer } from "./FormContainer";
+export { FormItem } from "./FormItem";
+export { InfoContainer } from "./InfoContainer";
+export { InfoItem } from "./InfoItem";
+export { Subtitle } from "./Subtitle";
+export { default as FilterLabel } from "./FilterLabel";
+export { ContainerTitle } from "./ContainerTitle";
+
 // Componentes adicionales
 export { default as UserSelector } from "./UserSelector";
 export { default as Toast } from "./Toast";
@@ -63,7 +73,7 @@ export { default as UserAvatar, RobustAvatar } from './UserAvatar';
 export { default as Tooltip } from './Tooltip';
 
 // Componente de estado vacío
-export { default as EmptyState } from './EmptyState';
+export { EmptyState } from './EmptyState';
 
 // Componente de slider
 export { default as Slider } from './Slider';
@@ -96,6 +106,12 @@ export { default as KanbanBoardSimple } from './KanbanBoardSimple';
 export { default as Alert } from './Alert';
 export { default as Skeleton, SkeletonText, SkeletonAvatar, SkeletonCard } from './Skeleton';
 export { default as Divider } from './Divider';
+
+// Componente de actividades
+export { ActivityCard } from './ActivityCard';
+
+// Componente de participantes
+export { default as ParticipantCard } from './ParticipantCard';
 
 // Componentes de data display
 export { default as List } from './List';

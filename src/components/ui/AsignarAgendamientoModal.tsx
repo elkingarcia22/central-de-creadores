@@ -7,7 +7,9 @@ import {
   Select, 
   UserSelectorWithAvatar 
 } from './index';
-import { SaveIcon } from '../icons';
+import { PageHeader } from './';
+import FilterLabel from './FilterLabel';
+import { SaveIcon, CalendarIcon } from '../icons';
 
 interface AsignarAgendamientoModalProps {
   isOpen: boolean;
@@ -354,83 +356,94 @@ export default function AsignarAgendamientoModal({
     <SideModal
       isOpen={isOpen}
       onClose={handleClose}
-      title={isEditMode ? "Editar Responsable del Agendamiento" : "Asignar Agendamiento"}
       width="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      {loadingData ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <Typography variant="body2" color="secondary">
-              Cargando datos...
-            </Typography>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Selector de investigación solo si NO es modo de edición y NO hay investigacionId */}
-          {!isEditMode && !investigacionId && (
-            <div>
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Investigación *
-              </Typography>
-              {investigaciones.length === 0 ? (
-                <div className="bg-warning/10 dark:bg-warning/20 p-4 rounded-lg">
-                  <Typography variant="body2" color="secondary" className="text-warning">
-                    No hay investigaciones disponibles para asignar agendamiento. 
-                    Todas las investigaciones ya tienen reclutamiento asignado o no están en estado "por agendar".
-                  </Typography>
-                </div>
-              ) : (
-                <Select
-                  value={investigacionSeleccionada?.investigacion_id || ''}
-                  onChange={(value) => {
-                    const investigacion = investigaciones.find(inv => inv.investigacion_id === value);
-                    setInvestigacionSeleccionada(investigacion || null);
-                  }}
-                  placeholder="Seleccionar investigación"
-                  options={investigaciones.map(inv => ({
-                    value: inv.investigacion_id,
-                    label: inv.investigacion_nombre
-                  }))}
-                  disabled={loading}
-                  fullWidth
-                />
-              )}
-            </div>
-          )}
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title={isEditMode ? "Editar Responsable del Agendamiento" : "Asignar Agendamiento"}
+          variant="title-only"
+          onClose={handleClose}
+          icon={<CalendarIcon className="w-5 h-5" />}
+        />
 
-          {/* Responsable del agendamiento */}
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              {isEditMode ? 'Responsable del Agendamiento' : 'Responsable del Agendamiento *'}
-            </Typography>
-            {responsables.length === 0 ? (
-              <div className="bg-destructive/10 dark:bg-destructive/20 p-4 rounded-lg">
-                <Typography variant="body2" color="secondary" className="text-destructive">
-                  No se pudieron cargar los usuarios responsables. 
-                  Verifica que existan usuarios en el sistema con roles de reclutador o administrador.
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          {loadingData ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <Typography variant="body2" color="secondary">
+                  Cargando datos...
                 </Typography>
               </div>
-            ) : (
-              <UserSelectorWithAvatar
-                value={responsableId}
-                onChange={setResponsableId}
-                users={responsables.map(r => ({
-                  id: r.id,
-                  full_name: r.full_name || 'Sin nombre',
-                  email: r.email || 'sin-email@ejemplo.com',
-                  avatar_url: r.avatar_url
-                }))}
-                placeholder="Seleccionar responsable"
-                disabled={loading}
-                required={!isEditMode}
-              />
-            )}
-          </div>
-        </form>
-      )}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+              {/* Selector de investigación solo si NO es modo de edición y NO hay investigacionId */}
+              {!isEditMode && !investigacionId && (
+                <div>
+                  <FilterLabel>Investigación *</FilterLabel>
+                  {investigaciones.length === 0 ? (
+                    <div className="bg-warning/10 dark:bg-warning/20 p-4 rounded-lg">
+                      <Typography variant="body2" color="secondary" className="text-warning">
+                        No hay investigaciones disponibles para asignar agendamiento. 
+                        Todas las investigaciones ya tienen reclutamiento asignado o no están en estado "por agendar".
+                      </Typography>
+                    </div>
+                  ) : (
+                    <Select
+                      value={investigacionSeleccionada?.investigacion_id || ''}
+                      onChange={(value) => {
+                        const investigacion = investigaciones.find(inv => inv.investigacion_id === value);
+                        setInvestigacionSeleccionada(investigacion || null);
+                      }}
+                      placeholder="Seleccionar investigación"
+                      options={investigaciones.map(inv => ({
+                        value: inv.investigacion_id,
+                        label: inv.investigacion_nombre
+                      }))}
+                      disabled={loading}
+                      fullWidth
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Responsable del agendamiento */}
+              <div>
+                <FilterLabel>
+                  {isEditMode ? 'Responsable del Agendamiento' : 'Responsable del Agendamiento *'}
+                </FilterLabel>
+                {responsables.length === 0 ? (
+                  <div className="bg-destructive/10 dark:bg-destructive/20 p-4 rounded-lg">
+                    <Typography variant="body2" color="secondary" className="text-destructive">
+                      No se pudieron cargar los usuarios responsables. 
+                      Verifica que existan usuarios en el sistema con roles de reclutador o administrador.
+                    </Typography>
+                  </div>
+                ) : (
+                  <UserSelectorWithAvatar
+                    value={responsableId}
+                    onChange={setResponsableId}
+                    users={responsables.map(r => ({
+                      id: r.id,
+                      full_name: r.full_name || 'Sin nombre',
+                      email: r.email || 'sin-email@ejemplo.com',
+                      avatar_url: r.avatar_url
+                    }))}
+                    placeholder="Seleccionar responsable"
+                    disabled={loading}
+                    required={!isEditMode}
+                  />
+                )}
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
     </SideModal>
   );
 } 

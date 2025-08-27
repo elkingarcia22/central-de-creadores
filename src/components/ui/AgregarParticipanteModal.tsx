@@ -10,12 +10,15 @@ import DatePicker from './DatePicker';
 import { TimePicker } from './TimePicker';
 import Input from './Input';
 import Chip from './Chip';
+import { PageHeader } from './PageHeader';
+import FilterLabel from './FilterLabel';
 import { getUserTimezone, getCurrentDateTime, debugTimezone, getMinDate, createUTCDateFromLocal } from '../../utils/timezone';
 import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../utils/estadoUtils';
 import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
+import { UsersIcon } from '../icons';
 
 interface AgregarParticipanteModalProps {
   isOpen: boolean;
@@ -496,11 +499,11 @@ export default function AgregarParticipanteModal({
   };
 
   return (
-    <SideModal 
+        <SideModal
       isOpen={isOpen} 
       onClose={onClose} 
-      title="Agregar Participante" 
-      width="lg" 
+      width="lg"
+      showCloseButton={false}
       footer={
         <div className="flex gap-3">
           <Button
@@ -522,7 +525,18 @@ export default function AgregarParticipanteModal({
         </div>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title="Agregar Participante"
+          variant="title-only"
+          onClose={onClose}
+          icon={<UsersIcon className="w-5 h-5" />}
+        />
+
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
         
         {/* Mostrar error si existe */}
         {error && (
@@ -535,7 +549,7 @@ export default function AgregarParticipanteModal({
         
         {/* Responsable */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Responsable del Agendamiento *</Typography>
+          <FilterLabel>Responsable del Agendamiento *</FilterLabel>
           <UserSelectorWithAvatar
             value={responsableId}
             onChange={setResponsableId}
@@ -553,7 +567,7 @@ export default function AgregarParticipanteModal({
 
         {/* Fecha de sesión */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Fecha de la Sesión *</Typography>
+          <FilterLabel>Fecha de la Sesión *</FilterLabel>
           <DatePicker
             value={fechaSesion}
             onChange={e => setFechaSesion(e.target.value)}
@@ -567,7 +581,7 @@ export default function AgregarParticipanteModal({
 
         {/* Hora de sesión */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Hora de la Sesión *</Typography>
+          <FilterLabel>Hora de la Sesión *</FilterLabel>
           <TimePicker
             value={horaSesion}
             onChange={setHoraSesion}
@@ -579,9 +593,7 @@ export default function AgregarParticipanteModal({
 
         {/* Duración de la sesión */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Duración de la Sesión (minutos) *
-          </Typography>
+          <FilterLabel>Duración de la Sesión (minutos) *</FilterLabel>
           <Input
             type="number"
             value={duracionSesion}
@@ -600,7 +612,7 @@ export default function AgregarParticipanteModal({
 
         {/* Tipo de participante */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Tipo de Participante *</Typography>
+          <FilterLabel>Tipo de Participante *</FilterLabel>
           <Select
             value={tipoParticipante}
             onChange={(value) => {
@@ -629,7 +641,7 @@ export default function AgregarParticipanteModal({
 
         {/* Participante */}
         <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Participante *</Typography>
+          <FilterLabel>Participante *</FilterLabel>
           <div className="space-y-3">
             <Select
               value={participanteId}
@@ -772,7 +784,9 @@ export default function AgregarParticipanteModal({
           );
         })()}
 
-      </form>
+          </form>
+        </div>
+      </div>
 
       {/* Modales para crear participantes */}
       <CrearParticipanteExternoModal

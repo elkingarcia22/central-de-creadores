@@ -14,8 +14,10 @@ import {
   UserSelectorWithAvatar,
   DatePicker,
   TimePicker,
-  Chip
+  Chip,
+  PageHeader
 } from './index';
+import FilterLabel from './FilterLabel';
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
@@ -498,7 +500,7 @@ export default function CrearReclutamientoModal({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         loading={loading}
         disabled={loading || !responsableId || !fechaSesion || !horaSesion || !tipoParticipante || (tipoParticipante === 'externo' && !participanteSeleccionado) || (tipoParticipante === 'interno' && !participanteSeleccionado) || (tipoParticipante === 'friend_family' && !participanteSeleccionado) || !duracionSesion}
         className="flex items-center gap-2"
@@ -517,17 +519,26 @@ export default function CrearReclutamientoModal({
       <SideModal
         isOpen={isOpen}
         onClose={handleClose}
-        title="Agregar Participante"
         width="lg"
         footer={footer}
+        showCloseButton={false}
       >
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex flex-col h-full -m-6">
+          {/* Header con PageHeader */}
+          <PageHeader
+            title="Agregar Participante"
+            variant="title-only"
+            onClose={handleClose}
+            icon={<UsersIcon className="w-5 h-5" />}
+          />
+
+          {/* Contenido del formulario */}
+          <div className="flex-1 overflow-y-auto px-6">
+            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           {/* Selector de investigación - Solo mostrar si no estamos en una investigación específica */}
           {!esInvestigacionEspecifica && (
             <div>
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Investigación *
-              </Typography>
+              <FilterLabel>Investigación *</FilterLabel>
               <Select
                 value={investigacionSeleccionada?.investigacion_id || ''}
                 onChange={(value) => {
@@ -548,9 +559,7 @@ export default function CrearReclutamientoModal({
           {/* Mostrar información de la investigación si estamos en una específica */}
           {esInvestigacionEspecifica && (
             <div>
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Investigación
-              </Typography>
+              <FilterLabel>Investigación</FilterLabel>
               <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <Typography variant="body2" weight="medium">
                   {investigacionNombre}
@@ -561,9 +570,7 @@ export default function CrearReclutamientoModal({
 
           {/* Responsable del agendamiento */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Responsable del Agendamiento *
-            </Typography>
+            <FilterLabel>Responsable del Agendamiento *</FilterLabel>
             <UserSelectorWithAvatar
               value={responsableId}
               onChange={setResponsableId}
@@ -581,9 +588,7 @@ export default function CrearReclutamientoModal({
 
           {/* Fecha de la sesión */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Fecha de la Sesión *
-            </Typography>
+            <FilterLabel>Fecha de la Sesión *</FilterLabel>
             <DatePicker
               value={fechaSesion}
               onChange={(e) => setFechaSesion(e.target.value)}
@@ -597,9 +602,7 @@ export default function CrearReclutamientoModal({
 
           {/* Hora de la sesión */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Hora de la Sesión *
-            </Typography>
+            <FilterLabel>Hora de la Sesión *</FilterLabel>
             <TimePicker
               value={horaSesion}
               onChange={setHoraSesion}
@@ -611,9 +614,7 @@ export default function CrearReclutamientoModal({
 
           {/* Duración de la sesión */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Duración de la Sesión (minutos) *
-            </Typography>
+            <FilterLabel>Duración de la Sesión (minutos) *</FilterLabel>
             <Input
               type="number"
               value={duracionSesion}
@@ -632,9 +633,7 @@ export default function CrearReclutamientoModal({
 
           {/* Tipo de participante */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Tipo de Participante *
-            </Typography>
+            <FilterLabel>Tipo de Participante *</FilterLabel>
             <Select
               value={tipoParticipante}
               onChange={(value) => setTipoParticipante(value as 'externo' | 'interno' | 'friend_family')}
@@ -651,9 +650,7 @@ export default function CrearReclutamientoModal({
 
           {/* Participante */}
           <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Participante *
-            </Typography>
+            <FilterLabel>Participante *</FilterLabel>
             <div className="space-y-3">
               <Select
                 value={participanteSeleccionado?.id || ''}
@@ -788,7 +785,9 @@ export default function CrearReclutamientoModal({
               </div>
             </div>
           )}
-        </form>
+            </form>
+          </div>
+        </div>
       </SideModal>
 
       {/* Modal para crear participante externo */}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrección de Línea del Header</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <h1 class="text-2xl font-bold text-center mb-8">Corrección de Línea del Header</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Antes: Línea corta -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-red-600">❌ Antes: Línea corta</h2>
+                <div class="border rounded-lg overflow-hidden">
+                    <!-- Header -->
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between w-full py-4 px-6">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center mr-2 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                            </div>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Línea corta con mx-6 -->
+                        <div class="border-b border-gray-200 mx-6"></div>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="p-6">
+                        <div class="pt-4 space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                                <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-red-50 rounded-lg">
+                    <p class="text-sm text-red-800"><strong>Problema:</strong> <code>mx-6</code> hace la línea más corta</p>
+                </div>
+            </div>
+
+            <!-- Después: Línea completa -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-green-600">✅ Después: Línea completa</h2>
+                <div class="border rounded-lg overflow-hidden">
+                    <!-- Header -->
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between w-full py-4 px-6">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center mr-2 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                            </div>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Línea completa sin mx-6 -->
+                        <div class="border-b border-gray-200"></div>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="p-6">
+                        <div class="pt-4 space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                                <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                    <p class="text-sm text-green-800"><strong>Solución:</strong> Línea llega de lado a lado, texto alineado con contenido</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparación con footer -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-lg font-semibold mb-4 text-blue-600">🔄 Comparación con Footer</h2>
+            <div class="border rounded-lg overflow-hidden">
+                <!-- Header con línea completa -->
+                <div class="border-b border-gray-200">
+                    <div class="flex items-center justify-between w-full py-4 px-6">
+                        <div class="flex items-center">
+                            <div class="flex items-center justify-center mr-2 text-blue-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                        </div>
+                        <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Línea completa como footer -->
+                    <div class="border-b border-gray-200"></div>
+                </div>
+
+                <!-- Contenido -->
+                <div class="p-6">
+                    <div class="pt-4 space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                            <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Responsable *</label>
+                            <input type="text" placeholder="Seleccionar responsable" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer con línea completa -->
+                <div class="border-t border-gray-200">
+                    <div class="flex items-center justify-end gap-3 p-6">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Cancelar
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                            Crear Seguimiento
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800"><strong>Consistencia:</strong> Header y footer tienen líneas que llegan de lado a lado, contenido alineado con padding</p>
+            </div>
+        </div>
+
+        <!-- Resumen técnico -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-3">🔧 Cambio Técnico:</h3>
+            <div class="text-gray-700 space-y-2">
+                <p><strong>Archivo:</strong> <code>src/components/ui/PageHeader.tsx</code></p>
+                <p><strong>Línea:</strong> Variante <code>title-only</code></p>
+                <p><strong>Antes:</strong> <code>&lt;div className="border-b border-border mx-6"&gt;&lt;/div&gt;</code></p>
+                <p><strong>Después:</strong> <code>&lt;div className="border-b border-border"&gt;&lt;/div&gt;</code></p>
+                <p><strong>Resultado:</strong> Línea llega de lado a lado, manteniendo alineación del contenido</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

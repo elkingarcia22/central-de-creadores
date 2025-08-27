@@ -54,7 +54,7 @@ const BarChart: React.FC<BarChartProps> = ({
 
   // Animación de carga
   useEffect(() => {
-    if (animate && data.length > 0) {
+    if (animate && data && data.length > 0) {
       setIsAnimating(true);
       setAnimatedData([]);
       
@@ -65,9 +65,20 @@ const BarChart: React.FC<BarChartProps> = ({
 
       return () => clearTimeout(timer);
     } else {
-      setAnimatedData(data);
+      setAnimatedData(data || []);
     }
   }, [data, animate]);
+
+  // Validar que tenemos datos
+  if (!data || data.length === 0) {
+    return (
+      <div className={`flex items-center justify-center ${className}`} style={{ width, height }}>
+        <Typography variant="body1" color="secondary">
+          No hay datos disponibles
+        </Typography>
+      </div>
+    );
+  }
 
   // Calcular dimensiones del gráfico
   const margin = { top: 20, right: 20, bottom: 60, left: 60 };
@@ -79,12 +90,12 @@ const BarChart: React.FC<BarChartProps> = ({
   const minValue = Math.min(...animatedData.map(d => d.value));
 
   const barWidth = orientation === 'vertical' 
-    ? chartWidth / animatedData.length * 0.8
-    : chartHeight / animatedData.length * 0.8;
+    ? chartWidth / (animatedData.length || 1) * 0.8
+    : chartHeight / (animatedData.length || 1) * 0.8;
 
   const barSpacing = orientation === 'vertical'
-    ? chartWidth / animatedData.length * 0.2
-    : chartHeight / animatedData.length * 0.2;
+    ? chartWidth / (animatedData.length || 1) * 0.2
+    : chartHeight / (animatedData.length || 1) * 0.2;
 
   const valueScale = (value: number) => {
     if (orientation === 'vertical') {

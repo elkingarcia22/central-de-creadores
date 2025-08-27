@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Layout } from '../../components/ui';
+import { Layout, PageHeader } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -31,17 +31,20 @@ export default function CrearParticipantePage() {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <Button
-            variant="secondary"
-            onClick={() => router.back()}
-            className="flex items-center gap-2 mb-4"
-          >
-            <ArrowLeftIcon className="w-4 h-4" />
-            Volver
-          </Button>
-          <Typography variant="h2" weight="bold">
-            Crear Participante - {tipo}
-          </Typography>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.back()}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title={`Crear Participante - ${tipo}`}
+              variant="compact"
+              color="purple"
+              className="mb-0"
+            />
+          </div>
         </div>
 
         <Card variant="elevated" padding="lg" className="max-w-md">

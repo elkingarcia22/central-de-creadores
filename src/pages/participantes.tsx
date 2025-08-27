@@ -4,7 +4,7 @@ import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 
-import { Layout } from '../components/ui';
+import { Layout, PageHeader } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -21,6 +21,7 @@ import EditarParticipanteModal from '../components/ui/EditarParticipanteModal';
 import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModal';
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 // Interfaces para participantes
 interface Participante {
@@ -566,15 +567,9 @@ export default function ParticipantesPage() {
     }
   };
 
-  const getEstadoColor = (estado?: string) => {
+  const getEstadoColor = (estado?: string): any => {
     if (!estado) return 'default';
-    switch (estado.toLowerCase()) {
-      case 'activo': return 'success';
-      case 'inactivo': return 'warning';
-      case 'disponible': return 'success';
-      case 'enfriamiento': return 'warning';
-      default: return 'default';
-    }
+    return getChipVariant(estado);
   };
 
   // Definición de columnas para participantes externos
@@ -725,7 +720,7 @@ export default function ParticipantesPage() {
           <ActionsMenu
             actions={[
               {
-                label: 'Ver detalles',
+                label: 'Ver Detalles',
                 icon: <EyeIcon className="w-4 h-4" />,
                 onClick: () => handleVerParticipante(row)
               },
@@ -744,7 +739,7 @@ export default function ParticipantesPage() {
                 label: 'Crear Comentario',
                 icon: <MessageIcon className="w-4 h-4" />,
                 onClick: () => handleCrearComentario(row),
-                className: 'text-blue-600 hover:text-blue-700'
+                className: 'text-popover-foreground hover:text-popover-foreground/80'
               },
               {
                 label: 'Eliminar',
@@ -891,7 +886,7 @@ export default function ParticipantesPage() {
                 label: 'Crear Comentario',
                 icon: <MessageIcon className="w-4 h-4" />,
                 onClick: () => handleCrearComentario(row),
-                className: 'text-blue-600 hover:text-blue-700'
+                className: 'text-popover-foreground hover:text-popover-foreground/80'
               },
               {
                 label: 'Eliminar',
@@ -1037,7 +1032,7 @@ export default function ParticipantesPage() {
                 label: 'Crear Comentario',
                 icon: <MessageIcon className="w-4 h-4" />,
                 onClick: () => handleCrearComentario(row),
-                className: 'text-blue-600 hover:text-blue-700'
+                className: 'text-popover-foreground hover:text-popover-foreground/80'
               },
               {
                 label: 'Eliminar',
@@ -1070,80 +1065,68 @@ export default function ParticipantesPage() {
     <Layout rol={rolSeleccionado}>
       <div className="py-10 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                            <Typography variant="h2" color="title" weight="semibold">
-              Participantes
-            </Typography>
-                <Typography variant="subtitle1" color="secondary">
-                  Gestionar participantes de investigaciones
-                </Typography>
-              </div>
-              <div className="relative dropdown-container">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center gap-2"
+          {/* Header con dropdown */}
+          <div className="relative">
+            <PageHeader
+              title="Participantes"
+              subtitle="Gestionar participantes de investigaciones"
+              color="purple"
+              primaryAction={{
+                label: "Nuevo Participante",
+                onClick: () => setShowDropdown(!showDropdown),
+                variant: "primary",
+                icon: <PlusIcon className="w-4 h-4" />
+              }}
+            />
+            
+            {/* Dropdown para tipos de participantes */}
+            {showDropdown && (
+              <div className="absolute right-0 top-0 mt-20 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg z-50 shadow-lg">
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    handleCrearParticipanteExterno();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
                 >
-                  <PlusIcon className="w-4 h-4" />
-                  Nuevo Participante
-                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </Button>
-                
-                {showDropdown && (
-                  <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg  z-50">
-                    <div className="py-1">
-                      <button
-                        onClick={() => {
-                          handleCrearParticipanteExterno();
-                          setShowDropdown(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                      >
-                        <BuildingIcon className="w-5 h-5 text-blue-600" />
-                        <div>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
-                        </div>
-                      </button>
-                      
-                      <button
-                        onClick={() => {
-                          handleCrearParticipanteInterno();
-                          setShowDropdown(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                      >
-                        <UsersIcon className="w-5 h-5 text-green-600" />
-                        <div>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
-                        </div>
-                      </button>
-                      
-                      <button
-                        onClick={() => {
-                          handleCrearParticipanteFriendFamily();
-                          setShowDropdown(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                      >
-                        <UserIcon className="w-5 h-5 text-purple-600" />
-                        <div>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
-                        </div>
-                      </button>
-                    </div>
+                  <BuildingIcon className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
                   </div>
-                )}
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleCrearParticipanteInterno();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                >
+                  <UsersIcon className="w-5 h-5 text-green-600" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleCrearParticipanteFriendFamily();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                >
+                  <UserIcon className="w-5 h-5 text-purple-600" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
+                  </div>
+                </button>
               </div>
             </div>
+          )}
           </div>
 
           {/* Métricas */}
@@ -1151,15 +1134,15 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-primary">
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {metricas.total}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Total Participantes
                   </Typography>
                 </div>
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <UserIcon className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -1167,15 +1150,15 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-blue-600">
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {metricas.externos}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Externos
                   </Typography>
                 </div>
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                  <BuildingIcon className="w-6 h-6 text-blue-600" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <BuildingIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -1183,15 +1166,15 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-green-600">
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {metricas.internos}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Internos
                   </Typography>
                 </div>
-                <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                  <UsersIcon className="w-6 h-6 text-green-600" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <UsersIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -1199,15 +1182,15 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className="text-purple-600">
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {metricas.activos}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Activos ({metricas.porcentajeActivos}%)
                   </Typography>
                 </div>
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                  <CheckCircleIcon className="w-6 h-6 text-purple-600" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <CheckCircleIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -1238,14 +1221,14 @@ export default function ParticipantesPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
                             onClick={handleOpenFilters}
-                            className="relative flex items-center gap-2"
+                            className="relative"
+                            iconOnly
+                            icon={<FilterIcon />}
                           >
-                            <FilterIcon className="w-4 h-4" />
-                            Filtros Avanzados
                             {getActiveFiltersCount() > 0 && (
-                              <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                                 {getActiveFiltersCount()}
                               </span>
                             )}
@@ -1294,14 +1277,14 @@ export default function ParticipantesPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
                             onClick={handleOpenFilters}
-                            className="relative flex items-center gap-2"
+                            className="relative"
+                            iconOnly
+                            icon={<FilterIcon />}
                           >
-                            <FilterIcon className="w-4 h-4" />
-                            Filtros Avanzados
                             {getActiveFiltersCount() > 0 && (
-                              <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                                 {getActiveFiltersCount()}
                               </span>
                             )}
@@ -1350,14 +1333,14 @@ export default function ParticipantesPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Button
-                            variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                            variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
                             onClick={handleOpenFilters}
-                            className="relative flex items-center gap-2"
+                            className="relative"
+                            iconOnly
+                            icon={<FilterIcon />}
                           >
-                            <FilterIcon className="w-4 h-4" />
-                            Filtros Avanzados
                             {getActiveFiltersCount() > 0 && (
-                              <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                                 {getActiveFiltersCount()}
                               </span>
                             )}

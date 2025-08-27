@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "autoAdd": true,
+  "autoCommit": true,
+  "autoPush": true,
+  "commitMessage": "🔄 Auto-commit: Cambios automáticos del MCP System",
+  "backupBeforeCommit": true,
+  "maxCommitsPerDay": 50,
+  "excludePatterns": [
+    "node_modules/**",
+    "*.log",
+    "*.tmp",
+    ".env",
+    "mcp-config.env"
+  ]
+}

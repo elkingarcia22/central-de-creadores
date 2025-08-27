@@ -7,7 +7,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip, PageHeader, InfoContainer, InfoItem, ParticipantCard } from '../../../components/ui';
 import EditarReclutamientoModal from '../../../components/ui/EditarReclutamientoModal';
 import EditarResponsableAgendamientoModal from '../../../components/ui/EditarResponsableAgendamientoModal';
 import AgregarParticipanteModal from '../../../components/ui/AgregarParticipanteModal';
@@ -41,6 +41,10 @@ import {
   UsersIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
+import { getChipVariant, getChipText } from '../../../utils/chipUtils';
+import { getTipoParticipanteVariant, getTipoParticipanteText, getTipoParticipante, getTipoParticipanteBadge } from '../../../utils/tipoParticipanteUtils';
+import { getEstadoReclutamientoText, getEstadoReclutamientoVariant, getEstadoAgendamientoBadgeVariant, getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../../utils/estadoUtils';
+import { getEstadoAgendamientoText } from '../../../types/reclutamientos';
 import { 
   obtenerInvestigacionPorId,
   actualizarLinkPrueba,
@@ -1231,15 +1235,9 @@ const VerReclutamiento: NextPage = () => {
           {selectedParticipante.tipo && (
             <div>
               <Typography variant="caption" color="secondary">Tipo de Cliente</Typography>
-              <Badge variant={
-                selectedParticipante.tipo === 'interno' ? 'info' : 
-                selectedParticipante.tipo === 'friend_family' ? 'secondary' : 
-                'primary'
-              } size="sm">
-                {selectedParticipante.tipo === 'interno' ? 'Cliente Interno' : 
-                 selectedParticipante.tipo === 'friend_family' ? 'Friend and Family' : 
-                 'Cliente Externo'}
-              </Badge>
+              <Chip variant={getTipoParticipanteVariant(selectedParticipante.tipo)} size="sm">
+                {getTipoParticipanteText(selectedParticipante.tipo)}
+              </Chip>
             </div>
           )}
           {selectedParticipante.tipo === 'externo' && selectedParticipante.estado_participante && (
@@ -1659,180 +1657,191 @@ const VerReclutamiento: NextPage = () => {
   // Contenido del tab Información - usando datos de la investigación (igual que en investigaciones)
   const InformacionGeneral: React.FC = () => (
     <div className="space-y-6">
+      {/* Información básica */}
+      {investigacion?.objetivo && (
+        <InfoContainer title="Objetivo" icon={<CheckCircleIcon className="w-4 h-4" />}>
+          <InfoItem 
+            label="Descripción del objetivo" 
+            value={investigacion.objetivo}
+            size="lg"
+          />
+        </InfoContainer>
+      )}
+
       {/* Detalles del proyecto */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Fechas */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <SesionesIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Fechas</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.fecha_inicio && (
-              <div>
-                <Typography variant="caption" color="secondary">Fecha de inicio</Typography>
-                <Typography variant="body2">{formatearFecha(investigacion.fecha_inicio)}</Typography>
-              </div>
-            )}
-            {investigacion?.fecha_fin && (
-              <div>
-                <Typography variant="caption" color="secondary">Fecha de fin</Typography>
-                <Typography variant="body2">{formatearFecha(investigacion.fecha_fin)}</Typography>
-              </div>
-            )}
-            <div>
-              <Typography variant="caption" color="secondary">Creada</Typography>
-              <Typography variant="body2">{formatearFecha(investigacion?.creado_el || '')}</Typography>
-            </div>
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Fechas"
+          icon={<ClockIcon className="w-4 h-4" />}
+        >
+          {investigacion?.fecha_inicio && (
+            <InfoItem 
+              label="Fecha de inicio" 
+              value={formatearFecha(investigacion.fecha_inicio)}
+            />
+          )}
+          {investigacion?.fecha_fin && (
+            <InfoItem 
+              label="Fecha de fin" 
+              value={formatearFecha(investigacion.fecha_fin)}
+            />
+          )}
+          <InfoItem 
+            label="Creada" 
+            value={formatearFecha(investigacion?.creado_el || '')}
+          />
+        </InfoContainer>
 
         {/* Equipo */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <UserIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Equipo</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.responsable_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Responsable</Typography>
-                <Typography variant="body2">{investigacion.responsable_nombre}</Typography>
-                {investigacion.responsable_email && (
-                  <Typography variant="caption" color="secondary" className="block">
-                    {investigacion.responsable_email}
-                  </Typography>
-                )}
-              </div>
-            )}
-            {investigacion?.implementador_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Implementador</Typography>
-                <Typography variant="body2">{investigacion.implementador_nombre}</Typography>
-                {investigacion.implementador_email && (
-                  <Typography variant="caption" color="secondary" className="block">
-                    {investigacion.implementador_email}
-                  </Typography>
-                )}
-              </div>
-            )}
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Equipo"
+          icon={<UsersIcon className="w-4 h-4" />}
+        >
+          {investigacion?.responsable_nombre && (
+            <InfoItem 
+              label="Responsable" 
+              value={
+                <div>
+                  <div>{investigacion.responsable_nombre}</div>
+                  {investigacion.responsable_email && (
+                    <div className="text-sm text-gray-500">{investigacion.responsable_email}</div>
+                  )}
+                </div>
+              }
+            />
+          )}
+          {investigacion?.implementador_nombre && (
+            <InfoItem 
+              label="Implementador" 
+              value={
+                <div>
+                  <div>{investigacion.implementador_nombre}</div>
+                  {investigacion.implementador_email && (
+                    <div className="text-sm text-gray-500">{investigacion.implementador_email}</div>
+                  )}
+                </div>
+              }
+            />
+          )}
+        </InfoContainer>
 
         {/* Links */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <LinkIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Enlaces</Typography>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <Typography variant="caption" color="secondary">Link de prueba</Typography>
-              {investigacion?.link_prueba ? (
-                <div className="flex items-center gap-2">
-                  <a 
-                    href={investigacion.link_prueba} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
-                  >
-                    {investigacion.link_prueba}
-                  </a>
+        <InfoContainer 
+          title="Enlaces"
+          icon={<LinkIcon className="w-4 h-4" />}
+        >
+          <div>
+            <InfoItem 
+              label="Link de prueba"
+              value={
+                investigacion?.link_prueba ? (
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={investigacion.link_prueba} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
+                    >
+                      {investigacion.link_prueba}
+                    </a>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentLinkType('prueba');
+                        setCurrentLink(investigacion.link_prueba || '');
+                        setShowLinkModal(true);
+                      }}
+                    >
+                      <EditIcon className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('prueba');
-                      setCurrentLink(investigacion.link_prueba || '');
+                      setCurrentLink('');
                       setShowLinkModal(true);
                     }}
                   >
-                    <EditIcon className="w-3 h-3" />
+                    Agregar link
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setCurrentLinkType('prueba');
-                    setCurrentLink('');
-                    setShowLinkModal(true);
-                  }}
-                >
-                  Agregar link
-                </Button>
-              )}
-            </div>
+                )
+              }
+            />
+          </div>
 
-            <div>
-              <Typography variant="caption" color="secondary">Link de resultados</Typography>
-              {investigacion?.link_resultados ? (
-                <div className="flex items-center gap-2">
-                  <a 
-                    href={investigacion.link_resultados} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
-                  >
-                    {investigacion.link_resultados}
-                  </a>
+          <div>
+            <InfoItem 
+              label="Link de resultados"
+              value={
+                investigacion?.link_resultados ? (
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={investigacion.link_resultados} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm truncate"
+                    >
+                      {investigacion.link_resultados}
+                    </a>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentLinkType('resultados');
+                        setCurrentLink(investigacion.link_resultados || '');
+                        setShowLinkModal(true);
+                      }}
+                    >
+                      <EditIcon className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('resultados');
-                      setCurrentLink(investigacion.link_resultados || '');
+                      setCurrentLink('');
                       setShowLinkModal(true);
                     }}
                   >
-                    <EditIcon className="w-3 h-3" />
+                    Agregar link
                   </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setCurrentLinkType('resultados');
-                    setCurrentLink('');
-                    setShowLinkModal(true);
-                  }}
-                >
-                  Agregar link
-                </Button>
-              )}
-            </div>
+                )
+              }
+            />
           </div>
-        </Card>
+        </InfoContainer>
 
         {/* Configuración */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <ConfiguracionesIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5">Configuración</Typography>
-          </div>
-          <div className="space-y-3">
-            {investigacion?.producto_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Producto</Typography>
-                <Typography variant="body2">{investigacion.producto_nombre}</Typography>
-              </div>
-            )}
-            {investigacion?.periodo_nombre && (
-              <div>
-                <Typography variant="caption" color="secondary">Período</Typography>
-                <Typography variant="body2">{investigacion.periodo_nombre}</Typography>
-              </div>
-            )}
-            {investigacion?.tipo_sesion && (
-              <div>
-                <Typography variant="caption" color="secondary">Tipo de sesión</Typography>
-                <Typography variant="body2">{investigacion.tipo_sesion}</Typography>
-              </div>
-            )}
-          </div>
-        </Card>
+        <InfoContainer 
+          title="Configuración"
+          icon={<SettingsIcon className="w-4 h-4" />}
+        >
+          {investigacion?.producto_nombre && (
+            <InfoItem 
+              label="Producto" 
+              value={investigacion.producto_nombre}
+            />
+          )}
+          {investigacion?.periodo_nombre && (
+            <InfoItem 
+              label="Período" 
+              value={investigacion.periodo_nombre}
+            />
+          )}
+          {investigacion?.tipo_sesion && (
+            <InfoItem 
+              label="Tipo de sesión" 
+              value={investigacion.tipo_sesion}
+            />
+          )}
+        </InfoContainer>
       </div>
     </div>
   );
@@ -1868,251 +1877,172 @@ const VerReclutamiento: NextPage = () => {
       return (
         <div className="space-y-6">
           {/* Header del Libreto */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                  <FileTextIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <Typography variant="h3" className="text-lg font-semibold">
-                    Libreto de la Investigación
-                  </Typography>
-                  <Typography variant="caption" color="secondary">
-                    Guión y configuración completa para las sesiones
-                  </Typography>
-                </div>
-              </div>
-              {/* Botón de editar removido para reclutamiento */}
-            </div>
-            
-            {/* Información básica de la sesión */}
-            {(libreto.nombre_sesion || libreto.duracion_estimada || libreto.numero_participantes) && (
-              <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4 mb-6">
-                {libreto.nombre_sesion && (
-                  <Typography variant="h4" className="mb-2 text-blue-900 dark:text-blue-100">
-                    {libreto.nombre_sesion}
-                  </Typography>
-                )}
-                <div className="flex flex-wrap gap-4 text-sm text-blue-700 dark:text-blue-300">
-                  {libreto.duracion_estimada && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Duración:</span> {libreto.duracion_estimada} minutos
-                    </div>
-                  )}
-                  {libreto.numero_participantes && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Participantes:</span> {libreto.numero_participantes}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </Card>
+          <PageHeader
+            title="Libreto de la Investigación"
+            subtitle="Guión y configuración completa para las sesiones"
+            variant="compact"
+            color="blue"
+          />
 
           {/* Contenido del Libreto */}
           <div className="space-y-8">
             {/* Problema y Objetivos */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <DocumentIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Problema y Objetivos
-                </Typography>
-              </div>
-              
-              <div className="space-y-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Problema o Situación
-                  </Typography>
+            <InfoContainer 
+              title="Problema y Objetivos"
+              icon={<CheckCircleIcon className="w-4 h-4" />}
+            >
+              <InfoItem 
+                label="Problema o Situación"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.problema_situacion || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Hipótesis
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Hipótesis"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.hipotesis || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Objetivos
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Objetivos"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.objetivos || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Resultado Esperado
-                  </Typography>
+                }
+              />
+              
+              <InfoItem 
+                label="Resultado Esperado"
+                value={
                   <div className="p-4 bg-muted rounded-lg">
                     <Typography variant="body2">
                       {libreto.resultado_esperado || 'No especificado'}
                     </Typography>
                   </div>
-                </div>
-              </div>
-            </Card>
+                }
+              />
+            </InfoContainer>
 
             {/* Configuración de la Sesión */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <SettingsIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Configuración de la Sesión
-                </Typography>
-              </div>
-              
+            <InfoContainer 
+              title="Configuración de la Sesión"
+              icon={<SettingsIcon className="w-4 h-4" />}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Nombre de la Sesión
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.nombre_sesion || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Nombre de la Sesión"
+                  value={libreto.nombre_sesion || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Duración Estimada (minutos)
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.duracion_estimada ? `${libreto.duracion_estimada} minutos` : 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Duración Estimada (minutos)"
+                  value={libreto.duracion_estimada ? `${libreto.duracion_estimada} minutos` : 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Número de Participantes
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.numero_participantes || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Número de Participantes"
+                  value={libreto.numero_participantes || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Plataforma
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
-                  </Typography>
+                <InfoItem 
+                  label="Plataforma"
+                  value={catalogosLibreto.plataformas.find(p => p.id === libreto.plataforma_id)?.nombre || 'No especificado'}
+                />
+
+                <div className="md:col-span-2">
+                  <InfoItem 
+                    label="Link del Prototipo"
+                    value={
+                      libreto.link_prototipo ? (
+                        <a href={libreto.link_prototipo} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          {libreto.link_prototipo}
+                        </a>
+                      ) : (
+                        'No especificado'
+                      )
+                    }
+                  />
                 </div>
 
                 <div className="md:col-span-2">
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Link del Prototipo
-                  </Typography>
-                  <Typography variant="body2">
-                    {libreto.link_prototipo ? (
-                      <a href={libreto.link_prototipo} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                        {libreto.link_prototipo}
-                      </a>
-                    ) : (
-                      'No especificado'
-                    )}
-                  </Typography>
-                </div>
-
-                <div className="md:col-span-2">
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Descripción General
-                  </Typography>
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.descripcion_general || 'No especificado'}
-                    </Typography>
-                  </div>
+                  <InfoItem 
+                    label="Descripción General"
+                    value={
+                      <div className="p-4 bg-muted rounded-lg">
+                        <Typography variant="body2">
+                          {libreto.descripcion_general || 'No especificado'}
+                        </Typography>
+                      </div>
+                    }
+                  />
                 </div>
               </div>
-            </Card>
+            </InfoContainer>
 
             {/* Perfil de Participantes */}
-            <Card variant="default" padding="lg">
-              <div className="flex items-center gap-2 mb-6">
-                <UserIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h3" weight="medium">
-                  Perfil de Participantes
-                </Typography>
-              </div>
-              
+            <InfoContainer 
+              title="Perfil de Participantes"
+              icon={<UsersIcon className="w-4 h-4" />}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Rol en Empresa
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Rol en Empresa"
+                  value={catalogosLibreto.rolesEmpresa.find(r => r.id === libreto.rol_empresa_id)?.nombre || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Industria
-                  </Typography>
-                  <Typography variant="body2">
-                    {catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Industria"
+                  value={catalogosLibreto.industrias.find(i => i.id === libreto.industria_id)?.nombre || 'No especificado'}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Modalidad
-                  </Typography>
-                  <Typography variant="body2">
-                    {(() => {
-                      if (!libreto.modalidad_id) return 'No especificado';
-                      
-                      const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
-                      
-                      // Usar catálogos reales
-                      const nombres = modalidadIds
-                        .filter(id => id)
-                        .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
-                        .filter(Boolean);
-                      
-                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
-                    })()}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Modalidad"
+                  value={(() => {
+                    if (!libreto.modalidad_id) return 'No especificado';
+                    
+                    const modalidadIds = Array.isArray(libreto.modalidad_id) ? libreto.modalidad_id : [libreto.modalidad_id];
+                    
+                    // Usar catálogos reales
+                    const nombres = modalidadIds
+                      .filter(id => id)
+                      .map(id => catalogosLibreto.modalidades.find(m => m.id === id)?.nombre || id)
+                      .filter(Boolean);
+                    
+                    return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                  })()}
+                />
 
-                <div>
-                  <Typography variant="caption" color="secondary" className="mb-2">
-                    Tamaño de Empresa
-                  </Typography>
-                  <Typography variant="body2">
-                    {(() => {
-                      if (!libreto.tamano_empresa_id) return 'No especificado';
-                      
-                      const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
-                      
-                      // Usar catálogos reales
-                      const nombres = tamanoIds
-                        .filter(id => id)
-                        .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
-                        .filter(Boolean);
-                      
-                      return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
-                    })()}
-                  </Typography>
-                </div>
+                <InfoItem 
+                  label="Tamaño de Empresa"
+                  value={(() => {
+                    if (!libreto.tamano_empresa_id) return 'No especificado';
+                    
+                    const tamanoIds = Array.isArray(libreto.tamano_empresa_id) ? libreto.tamano_empresa_id : [libreto.tamano_empresa_id];
+                    
+                    // Usar catálogos reales
+                    const nombres = tamanoIds
+                      .filter(id => id)
+                      .map(id => catalogosLibreto.tamanosEmpresa.find(t => t.id === id)?.nombre || id)
+                      .filter(Boolean);
+                    
+                    return nombres.length > 0 ? nombres.join(', ') : 'No especificado';
+                  })()}
+                />
               </div>
-            </Card>
+            </InfoContainer>
           </div>
         </div>
       );
@@ -2175,307 +2105,15 @@ const VerReclutamiento: NextPage = () => {
 
         {/* Cards de Participantes */}
         <div className="space-y-4">
-          {participantes.map((participante, index) => {
-            console.log('�� Debug participante completo:', participante);
-            console.log('🔍 Debug participante nombre:', participante.nombre);
-            console.log('🔍 Debug participante email:', participante.email);
-            console.log('🔍 Debug participante tipo:', getTipoParticipante(participante));
-            
-            const tipoParticipante = getTipoParticipante(participante);
-            const tipoBadge = getTipoParticipanteBadge(participante);
-            const estadoAgendamiento = participante.estado_agendamiento?.nombre || participante.estado_agendamiento || 'Sin estado';
-            const estadoVariant = getEstadoAgendamientoBadgeVariant(estadoAgendamiento);
-            const esPendienteDeAgendamiento = estadoAgendamiento === 'Pendiente de agendamiento';
-            
-            console.log('🔍 Debug estado agendamiento:', {
-              participanteId: participante.id,
-              nombre: participante.nombre,
-              estadoAgendamiento: estadoAgendamiento,
-              esPendienteDeAgendamiento: esPendienteDeAgendamiento
-            });
-            
-            // Card especial para "Pendiente de agendamiento"
-            if (esPendienteDeAgendamiento) {
-              return (
-                <Card 
-                  key={`${participante.id}-${index}`}
-                  className="transition-all duration-200 hover:"
-                >
-                  {/* Header con acciones en la parte superior derecha */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          Agendamiento Pendiente
-                        </h3>
-                      </div>
-                    </div>
-
-                    {/* Acciones en la parte superior derecha */}
-                    <div className="flex gap-2 ml-4">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleConvertirAgendamientoPendiente(participante)}
-                      >
-                        Agregar Participante
-                      </Button>
-                      
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          console.log('🔍 Botón Editar clickeado para participante:', participante);
-                          handleEditParticipante(participante);
-                        }}
-                      >
-                        Editar
-                      </Button>
-                      
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteParticipante(participante)}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Contenido optimizado en grid de 2 columnas */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <Typography variant="caption" color="secondary">Estado</Typography>
-                      <Chip 
-                        variant={getEstadoAgendamientoBadgeVariant(
-                          typeof participante.estado_agendamiento === 'object' 
-                            ? participante.estado_agendamiento.nombre 
-                            : participante.estado_agendamiento
-                        )}
-                        size="sm"
-                      >
-                        {typeof participante.estado_agendamiento === 'object' 
-                          ? participante.estado_agendamiento.nombre 
-                          : participante.estado_agendamiento}
-                      </Chip>
-                    </div>
-
-                    <div>
-                      <Typography variant="caption" color="secondary">Responsable</Typography>
-                      <Typography variant="body2">
-                        {participante.responsable_agendamiento?.nombre || 
-                         participante.responsable_agendamiento?.full_name || 
-                         participante.reclutador_nombre || 
-                         'Sin responsable'}
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-              );
-            }
-            
-            // Card normal para otros estados
-            return (
-              <Card 
-                key={`${participante.id}-${index}`}
-                className="transition-all duration-200 hover:"
-              >
-                {/* Header con acciones en la parte superior derecha */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      {(() => {
-                        const nombreFinal = participante.nombre || (getTipoParticipante(participante) === 'interno' ? 'Participante Interno' : 
-                          getTipoParticipante(participante) === 'friend_family' ? 'Friend and Family' : 'Participante Externo');
-                        const tipoBadge = getTipoParticipanteBadge(participante);
-                        
-                        console.log('🔍 Debug renderizado nombre CARD NORMAL:', {
-                          participanteId: participante.id,
-                          nombreOriginal: participante.nombre,
-                          nombreFinal: nombreFinal,
-                          tipo: getTipoParticipante(participante),
-                          esVacio: participante.nombre === '',
-                          esNull: participante.nombre === null,
-                          esUndefined: participante.nombre === undefined,
-                          tipoBadge: tipoBadge
-                        });
-                        
-                        return (
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {nombreFinal}
-                          </h3>
-                        );
-                      })()}
-                    </div>
-                  </div>
-
-                  {/* Acciones en la parte superior derecha */}
-                  <div className="flex gap-2 ml-4">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedParticipante(participante);
-                        setShowModal(true);
-                        setModalActiveTab('reclutamiento');
-                      }}
-                    >
-                      Ver más
-                    </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        console.log('🔍 Botón Editar clickeado para participante:', participante);
-                        handleEditParticipante(participante);
-                      }}
-                    >
-                      Editar
-                    </Button>
-                    
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteParticipante(participante)}
-                    >
-                      Eliminar
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Contenido optimizado en grid de 2 columnas */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  {participante.fecha_sesion && (
-                    <div>
-                      <Typography variant="caption" color="secondary">Fecha</Typography>
-                      <Typography variant="body2">
-                        {new Date(participante.fecha_sesion).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </Typography>
-                    </div>
-                  )}
-                  
-                  {/* Mostrar hora solo cuando existe */}
-                  {participante.hora_sesion && (
-                    <div>
-                      <Typography variant="caption" color="secondary">Hora</Typography>
-                      <Typography variant="body2">
-                        {(() => {
-                          console.log('🔍 Debug hora:', {
-                            participanteId: participante.id,
-                            tipo: getTipoParticipante(participante),
-                            hora_sesion: participante.hora_sesion,
-                            esString: typeof participante.hora_sesion === 'string',
-                            esNull: participante.hora_sesion === null,
-                            esUndefined: participante.hora_sesion === undefined
-                          });
-                          
-                          // Log específico para el participante que estamos editando
-                          if (participante.nombre === 'prueba 12344') {
-                            console.log('🎯 UI RENDERIZANDO - prueba 12344:', {
-                              hora_sesion: participante.hora_sesion,
-                              hora_sesion_tipo: typeof participante.hora_sesion,
-                              hora_sesion_mostrada: participante.hora_sesion
-                            });
-                          }
-                          
-                          return participante.hora_sesion;
-                        })()}
-                      </Typography>
-                    </div>
-                  )}
-
-                  {participante.estado_agendamiento && (
-                    <div>
-                      <Typography variant="caption" color="secondary">Estado</Typography>
-                      <Chip 
-                        variant={getEstadoAgendamientoBadgeVariant(
-                          typeof participante.estado_agendamiento === 'object' 
-                            ? participante.estado_agendamiento.nombre 
-                            : participante.estado_agendamiento
-                        )}
-                        size="sm"
-                      >
-                        {typeof participante.estado_agendamiento === 'object' 
-                          ? participante.estado_agendamiento.nombre 
-                          : participante.estado_agendamiento}
-                      </Chip>
-                    </div>
-                  )}
-
-                  {/* Solo mostrar departamento para internos y friend family */}
-                  {(() => {
-                    const esInternoOFriendFamily = getTipoParticipante(participante) === 'interno' || getTipoParticipante(participante) === 'friend_family';
-                    const tieneDepartamento = participante.departamento;
-                    const debeMostrarDepartamento = esInternoOFriendFamily && tieneDepartamento;
-                    
-                    return debeMostrarDepartamento ? (
-                      <div>
-                        <Typography variant="caption" color="secondary">Departamento</Typography>
-                        <Typography variant="body2">
-                          {(() => {
-                            const departamentoFinal = typeof participante.departamento === 'object' && participante.departamento.nombre 
-                              ? participante.departamento.nombre 
-                              : typeof participante.departamento === 'string' 
-                                ? participante.departamento 
-                                : 'Sin departamento';
-                            return departamentoFinal;
-                          })()}
-                        </Typography>
-                      </div>
-                    ) : null;
-                  })()}
-
-                  {/* Mostrar rol de empresa para todos los tipos */}
-                  {(() => {
-                    const tieneRol = participante.rol_empresa;
-                    
-                    return tieneRol ? (
-                      <div>
-                        <Typography variant="caption" color="secondary">Rol</Typography>
-                        <Typography variant="body2">
-                          {participante.rol_empresa}
-                        </Typography>
-                      </div>
-                    ) : null;
-                  })()}
-
-                  {/* Mostrar empresa para participantes externos */}
-                  {(() => {
-                    const esExterno = getTipoParticipante(participante) === 'externo';
-                    const tieneEmpresa = participante.empresa_nombre;
-                    
-                    return esExterno && tieneEmpresa ? (
-                      <div>
-                        <Typography variant="caption" color="secondary">Empresa</Typography>
-                        <Typography variant="body2">
-                          {participante.empresa_nombre}
-                        </Typography>
-                      </div>
-                    ) : null;
-                  })()}
-
-                  {/* Mostrar estado del participante solo para participantes externos */}
-                  {getTipoParticipante(participante) === 'externo' && participante.estado_calculado && (
-                    <div>
-                      <Typography variant="caption" color="secondary">Estado Participante</Typography>
-                      <Chip
-                        variant={participante.estado_calculado.estado === 'Enfriamiento' ? 'warning' : 'success'}
-                        size="sm"
-                        className="text-white"
-                      >
-                        {participante.estado_calculado.estado}
-                      </Chip>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
+          {participantes.map((participante, index) => (
+            <ParticipantCard
+              key={`${participante.id}-${index}`}
+              participante={participante}
+              onEdit={handleEditParticipante}
+              onDelete={handleDeleteParticipante}
+              onConvertAgendamiento={handleConvertirAgendamientoPendiente}
+            />
+          ))}
         </div>
 
         {/* Modal de detalles del participante - Sin animaciones */}
@@ -2748,24 +2386,31 @@ const VerReclutamiento: NextPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => router.push('/reclutamiento')}
-              className="p-2"
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <ArrowLeftIcon className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center gap-3">
-              <Typography variant="h2">Ver Reclutamiento</Typography>
-              {reclutamiento && (
-                <Badge
-                  variant={getEstadoBadgeVariant(reclutamiento.estado_reclutamiento_nombre)}
-                  className="ml-2"
-                >
-                  {reclutamiento.estado_reclutamiento_nombre || 'Sin estado'}
-                </Badge>
-              )}
-            </div>
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title="Ver Reclutamiento"
+              variant="compact"
+              color="teal"
+              className="mb-0"
+              chip={{
+                label: getEstadoReclutamientoText(reclutamiento?.estado_reclutamiento_nombre || ''),
+                variant: getEstadoReclutamientoVariant(reclutamiento?.estado_reclutamiento_nombre || ''),
+                size: 'sm'
+              }}
+            />
+            {/* Debug del estado */}
+            {reclutamiento?.estado_reclutamiento_nombre && (
+              <div style={{display: 'none'}}>
+                Debug Estado: {reclutamiento.estado_reclutamiento_nombre} | 
+                Variant: {getEstadoReclutamientoVariant(reclutamiento.estado_reclutamiento_nombre)} | 
+                Text: {getEstadoReclutamientoText(reclutamiento.estado_reclutamiento_nombre)}
+              </div>
+            )}
           </div>
 
           {/* Acciones principales */}
@@ -2787,6 +2432,8 @@ const VerReclutamiento: NextPage = () => {
             </Button>
           </div>
         </div>
+
+
 
         {/* Barra de Progreso del Reclutamiento */}
         {reclutamiento && (

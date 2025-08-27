@@ -20,6 +20,7 @@ import {
 } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { Empresa } from '../../types/empresas';
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
 
 interface EstadisticasEmpresa {
   totalParticipaciones: number;
@@ -94,33 +95,14 @@ export default function EmpresaStatsPanel({
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'activa':
-      case 'completada':
-        return 'success';
-      case 'en_progreso':
-      case 'en progreso':
-        return 'warning';
-      case 'pausada':
-      case 'cancelada':
-        return 'danger';
-      default:
-        return 'default';
-    }
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
+
+  const getEstadoColor = (estado: string): any => {
+    return getChipVariant(estado);
   };
 
-  const getRiesgoColor = (riesgo: string) => {
-    switch (riesgo?.toLowerCase()) {
-      case 'bajo':
-        return 'success';
-      case 'medio':
-        return 'warning';
-      case 'alto':
-        return 'danger';
-      default:
-        return 'default';
-    }
+  const getRiesgoColor = (riesgo: string): any => {
+    return getChipVariant(riesgo);
   };
 
   const formatearDuracion = (minutos: number) => {

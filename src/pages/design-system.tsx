@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Typography, Card, Button, Tabs } from '../components/ui';
+import { Layout, Typography, Card, Button, Tabs, PageHeader } from '../components/ui';
 import ColorsSection from '../components/design-system/ColorsSection';
 import TypographySection from '../components/design-system/TypographySection';
 import ComponentsSection from '../components/design-system/ComponentsSection';
@@ -36,18 +36,11 @@ const DesignSystemPage: React.FC = () => {
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
-              <div>
-                        <Typography variant="h2" color="title" weight="semibold">
-          Sistema de Diseño
-        </Typography>
-                <Typography variant="subtitle1" color="secondary">
-                  Plataforma visual de componentes, colores y patrones de diseño
-                </Typography>
-              </div>
-            </div>
-          </div>
+          <PageHeader
+            title="Sistema de Diseño"
+            subtitle="Plataforma visual de componentes, colores y patrones de diseño"
+            color="indigo"
+          />
 
           {/* Navegación y Contenido */}
           <Tabs

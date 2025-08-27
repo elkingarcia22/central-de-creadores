@@ -10,9 +10,12 @@ import DatePicker from './DatePicker';
 import { TimePicker } from './TimePicker';
 import Input from './Input';
 import Chip from './Chip';
+import { PageHeader } from './';
+import FilterLabel from './FilterLabel';
 import { getUserTimezone, getCurrentDateTime, debugTimezone, getMinDate, createUTCDateFromLocal } from '../../utils/timezone';
 import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../utils/estadoUtils';
 import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
+import { UserIcon } from '../icons';
 
 interface EditarReclutamientoModalProps {
   isOpen: boolean;
@@ -299,200 +302,217 @@ export default function EditarReclutamientoModal({
   };
 
   return (
-    <SideModal isOpen={isOpen} onClose={onClose} title="Editar Reclutamiento" width="lg" footer={null}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        
-        {/* Responsable */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Responsable del Agendamiento *</Typography>
-          <UserSelectorWithAvatar
-            value={responsableId}
-            onChange={setResponsableId}
-            users={responsablesArray.map(u => ({
-              id: u.id,
-              full_name: u.full_name || '',
-              email: u.email || '',
-              avatar_url: u.avatar_url || ''
-            }))}
-            placeholder="Seleccionar responsable"
-            disabled={loading}
-            required
-          />
-        </div>
-        {/* Fecha de sesión */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Fecha de la Sesión *</Typography>
-          <DatePicker
-            value={fechaSesion}
-            onChange={e => setFechaSesion(e.target.value)}
-            placeholder="Seleccionar fecha"
-            min={getMinDate()}
-            disabled={loading}
-            required
-            fullWidth
-          />
-        </div>
-        {/* Hora de sesión */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Hora de la Sesión *</Typography>
-          <TimePicker
-            value={horaSesion}
-            onChange={setHoraSesion}
-            placeholder="--:-- --"
-            disabled={loading}
-            format="12h"
-          />
-        </div>
+    <SideModal isOpen={isOpen} onClose={onClose} width="lg" footer={null} showCloseButton={false}>
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title="Editar Reclutamiento"
+          variant="title-only"
+          onClose={onClose}
+          icon={<UserIcon className="w-5 h-5" />}
+        />
 
-        {/* Duración de la sesión */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Duración de la Sesión (minutos) *
-          </Typography>
-          <Input
-            type="number"
-            value={duracionSesion}
-            onChange={(e) => setDuracionSesion(e.target.value)}
-            placeholder="60"
-            min="15"
-            max="480"
-            disabled={loading}
-            required
-            fullWidth
-          />
-          <Typography variant="caption" color="secondary" className="mt-1 block">
-            Duración en minutos (mínimo 15, máximo 8 horas)
-          </Typography>
-        </div>
-        {/* Tipo de participante */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Tipo de Participante *</Typography>
-          <Select
-            value={tipoParticipante}
-            onChange={(value) => {
-              const newTipo = value as 'externo' | 'interno' | 'friend_family';
-              setTipoParticipante(newTipo);
-              // Solo resetear si el participante actual no es del tipo seleccionado
-              const participanteActual = newTipo === 'externo' 
-                ? participantesExternos.find(p => p.id === participanteId)
-                : newTipo === 'interno'
-                ? participantesInternos.find(p => p.id === participanteId)
-                : participantesFriendFamily.find(p => p.id === participanteId);
-              if (!participanteActual) {
-                setParticipanteId('');
-              }
-            }}
-            options={[
-              { value: 'externo', label: 'Cliente Externo' },
-              { value: 'interno', label: 'Cliente Interno' },
-              { value: 'friend_family', label: 'Friend and Family' }
-            ]}
-            placeholder="Seleccionar tipo de participante"
-            disabled={loading}
-            fullWidth
-          />
-        </div>
-        {/* Participante */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">Participante *</Typography>
-          <Select
-            value={participanteId}
-            onChange={v => setParticipanteId(String(v))}
-            placeholder={`Seleccionar participante ${tipoParticipante}`}
-            options={participantesDisponibles.map(p => ({ value: p.id, label: p.nombre }))}
-            disabled={loading}
-            fullWidth
-          />
-        </div>
-        {/* Información del participante seleccionado */}
-        {(() => {
-          const participante = participantesDisponibles.find(p => p.id === participanteId);
-          if (!participante) return null;
-          return (
-            <div className="p-4 bg-muted rounded-lg mt-2">
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Participante Seleccionado
-              </Typography>
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Nombre:</span>
-                  <span className="text-sm font-medium">{participante.nombre}</span>
-                </div>
-                {participante.email && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Email:</span>
-                    <span className="text-sm font-medium">{participante.email}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Tipo:</span>
-                  <Chip 
-                    variant={getTipoParticipanteVariant(participante.tipo)}
-                    size="sm"
-                  >
-                    {getTipoParticipanteText(participante.tipo)}
-                  </Chip>
-                </div>
-                {participante.empresa_nombre && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Empresa:</span>
-                    <span className="text-sm font-medium">{participante.empresa_nombre}</span>
-                  </div>
-                )}
-                {participante.rol_empresa_nombre && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Rol en la Empresa:</span>
-                    <span className="text-sm font-medium">{participante.rol_empresa_nombre}</span>
-                  </div>
-                )}
-                {participante.estado && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Estado:</span>
-                    <Chip 
-                      variant={getEstadoParticipanteVariant(participante.estado)}
-                      size="sm"
-                    >
-                      {getEstadoParticipanteText(participante.estado)}
-                    </Chip>
-                  </div>
-                )}
-                {participante.productos_relacionados && participante.productos_relacionados.length > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Productos:</span>
-                    <span className="text-sm font-medium">
-                      {participante.productos_relacionados.map((producto: any) => 
-                        typeof producto === 'string' ? producto : producto.nombre
-                      ).join(', ')}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Mostrar mensaje de enfriamiento solo para participantes externos */}
-                {tipoParticipante === 'externo' && participante.estado_calculado && participante.estado_calculado.estado === 'En enfriamiento' && participante.estado_calculado.mensaje && (
-                  <div className="mt-3 p-3 bg-warning/10 border border-warning/20 rounded-md">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-warning" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="ml-3">
-                        <Typography variant="caption" weight="medium" className="text-warning">
-                          {participante.estado_calculado.mensaje}
-                        </Typography>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+            
+            {/* Responsable */}
+            <div>
+              <FilterLabel>Responsable del Agendamiento *</FilterLabel>
+              <UserSelectorWithAvatar
+                value={responsableId}
+                onChange={setResponsableId}
+                users={responsablesArray.map(u => ({
+                  id: u.id,
+                  full_name: u.full_name || '',
+                  email: u.email || '',
+                  avatar_url: u.avatar_url || ''
+                }))}
+                placeholder="Seleccionar responsable"
+                disabled={loading}
+                required
+              />
             </div>
-          );
-        })()}
-        <div className="flex justify-end gap-3">
-          <Button variant="secondary" onClick={onClose} disabled={loading}>Cancelar</Button>
-          <Button variant="primary" type="submit" loading={loading} disabled={loading}>Guardar Cambios</Button>
+
+            {/* Fecha de sesión */}
+            <div>
+              <FilterLabel>Fecha de la Sesión *</FilterLabel>
+              <DatePicker
+                value={fechaSesion}
+                onChange={e => setFechaSesion(e.target.value)}
+                placeholder="Seleccionar fecha"
+                min={getMinDate()}
+                disabled={loading}
+                required
+                fullWidth
+              />
+            </div>
+
+            {/* Hora de sesión */}
+            <div>
+              <FilterLabel>Hora de la Sesión *</FilterLabel>
+              <TimePicker
+                value={horaSesion}
+                onChange={setHoraSesion}
+                placeholder="--:-- --"
+                disabled={loading}
+                format="12h"
+              />
+            </div>
+
+            {/* Duración de la sesión */}
+            <div>
+              <FilterLabel>Duración de la Sesión (minutos) *</FilterLabel>
+              <Input
+                type="number"
+                value={duracionSesion}
+                onChange={(e) => setDuracionSesion(e.target.value)}
+                placeholder="60"
+                min="15"
+                max="480"
+                disabled={loading}
+                required
+                fullWidth
+              />
+              <Typography variant="caption" color="secondary" className="mt-1 block">
+                Duración en minutos (mínimo 15, máximo 8 horas)
+              </Typography>
+            </div>
+
+            {/* Tipo de participante */}
+            <div>
+              <FilterLabel>Tipo de Participante *</FilterLabel>
+              <Select
+                value={tipoParticipante}
+                onChange={(value) => {
+                  const newTipo = value as 'externo' | 'interno' | 'friend_family';
+                  setTipoParticipante(newTipo);
+                  // Solo resetear si el participante actual no es del tipo seleccionado
+                  const participanteActual = newTipo === 'externo' 
+                    ? participantesExternos.find(p => p.id === participanteId)
+                    : newTipo === 'interno'
+                    ? participantesInternos.find(p => p.id === participanteId)
+                    : participantesFriendFamily.find(p => p.id === participanteId);
+                  if (!participanteActual) {
+                    setParticipanteId('');
+                  }
+                }}
+                options={[
+                  { value: 'externo', label: 'Cliente Externo' },
+                  { value: 'interno', label: 'Cliente Interno' },
+                  { value: 'friend_family', label: 'Friend and Family' }
+                ]}
+                placeholder="Seleccionar tipo de participante"
+                disabled={loading}
+                fullWidth
+              />
+            </div>
+
+            {/* Participante */}
+            <div>
+              <FilterLabel>Participante *</FilterLabel>
+              <Select
+                value={participanteId}
+                onChange={v => setParticipanteId(String(v))}
+                placeholder={`Seleccionar participante ${tipoParticipante}`}
+                options={participantesDisponibles.map(p => ({ value: p.id, label: p.nombre }))}
+                disabled={loading}
+                fullWidth
+              />
+            </div>
+
+            {/* Información del participante seleccionado */}
+            {(() => {
+              const participante = participantesDisponibles.find(p => p.id === participanteId);
+              if (!participante) return null;
+              return (
+                <div className="p-4 bg-muted rounded-lg mt-2">
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Participante Seleccionado
+                  </Typography>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Nombre:</span>
+                      <span className="text-sm font-medium">{participante.nombre}</span>
+                    </div>
+                    {participante.email && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Email:</span>
+                        <span className="text-sm font-medium">{participante.email}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Tipo:</span>
+                      <Chip 
+                        variant={getTipoParticipanteVariant(participante.tipo)}
+                        size="sm"
+                      >
+                        {getTipoParticipanteText(participante.tipo)}
+                      </Chip>
+                    </div>
+                    {participante.empresa_nombre && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Empresa:</span>
+                        <span className="text-sm font-medium">{participante.empresa_nombre}</span>
+                      </div>
+                    )}
+                    {participante.rol_empresa_nombre && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Rol en la Empresa:</span>
+                        <span className="text-sm font-medium">{participante.rol_empresa_nombre}</span>
+                      </div>
+                    )}
+                    {participante.estado && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Estado:</span>
+                        <Chip 
+                          variant={getEstadoParticipanteVariant(participante.estado)}
+                          size="sm"
+                        >
+                          {getEstadoParticipanteText(participante.estado)}
+                        </Chip>
+                      </div>
+                    )}
+                    {participante.productos_relacionados && participante.productos_relacionados.length > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Productos:</span>
+                        <span className="text-sm font-medium">
+                          {participante.productos_relacionados.map((producto: any) => 
+                            typeof producto === 'string' ? producto : producto.nombre
+                          ).join(', ')}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Mostrar mensaje de enfriamiento solo para participantes externos */}
+                    {tipoParticipante === 'externo' && participante.estado_calculado && participante.estado_calculado.estado === 'En enfriamiento' && participante.estado_calculado.mensaje && (
+                      <div className="mt-3 p-3 bg-warning/10 border border-warning/20 rounded-md">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-warning" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <div className="ml-3">
+                            <Typography variant="caption" weight="medium" className="text-warning">
+                              {participante.estado_calculado.mensaje}
+                            </Typography>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+            <div className="flex justify-end gap-3">
+              <Button variant="secondary" onClick={onClose} disabled={loading}>Cancelar</Button>
+              <Button variant="primary" type="submit" loading={loading} disabled={loading}>Guardar Cambios</Button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </SideModal>
   );
 } 

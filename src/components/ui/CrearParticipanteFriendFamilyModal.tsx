@@ -7,8 +7,11 @@ import {
   Button, 
   Input, 
   Select,
-  DepartamentoSelect
+  DepartamentoSelect,
+  PageHeader
 } from './index';
+import FilterLabel from './FilterLabel';
+import { UsersIcon } from '../icons';
 
 interface CrearParticipanteFriendFamilyModalProps {
   isOpen: boolean;
@@ -140,7 +143,7 @@ export default function CrearParticipanteFriendFamilyModal({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         loading={loading}
         disabled={loading || !formData.nombre || !formData.email}
       >
@@ -153,63 +156,84 @@ export default function CrearParticipanteFriendFamilyModal({
     <SideModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Crear Participante Friend and Family"
       width="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title="Crear Participante Friend and Family"
+          variant="title-only"
+          onClose={handleClose}
+          icon={<UsersIcon className="w-5 h-5" />}
+        />
+
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Nombre"
-            value={formData.nombre}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              nombre: e.target.value
-            }))}
-            placeholder="Nombre del participante"
-            disabled={loading}
-            required
-          />
-          <Input
-            label="Email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              email: e.target.value
-            }))}
-            placeholder="email@amigo.com"
-            disabled={loading}
-            required
-          />
-          <DepartamentoSelect
-            label="Departamento"
-            value={formData.departamentoId}
-            onChange={(value) => setFormData(prev => ({
-              ...prev,
-              departamentoId: value
-            }))}
-            placeholder="Seleccionar departamento"
-            disabled={loading}
-            fullWidth
-          />
-          <Select
-            label="Rol en la Empresa"
-            value={formData.rolEmpresaId}
-            onChange={(value) => setFormData(prev => ({
-              ...prev,
-              rolEmpresaId: value as string
-            }))}
-            placeholder="Seleccionar rol"
-            options={rolesEmpresa.map(r => ({
-              value: r.id,
-              label: r.nombre
-            }))}
-            disabled={loading}
-            fullWidth
-          />
+          <div>
+            <FilterLabel>Nombre *</FilterLabel>
+            <Input
+              value={formData.nombre}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                nombre: e.target.value
+              }))}
+              placeholder="Nombre del participante"
+              disabled={loading}
+              required
+            />
+          </div>
+          <div>
+            <FilterLabel>Email *</FilterLabel>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                email: e.target.value
+              }))}
+              placeholder="email@amigo.com"
+              disabled={loading}
+              required
+            />
+          </div>
+          <div>
+            <FilterLabel>Departamento</FilterLabel>
+            <DepartamentoSelect
+              value={formData.departamentoId}
+              onChange={(value) => setFormData(prev => ({
+                ...prev,
+                departamentoId: value
+              }))}
+              placeholder="Seleccionar departamento"
+              disabled={loading}
+              fullWidth
+            />
+          </div>
+          <div>
+            <FilterLabel>Rol en la Empresa</FilterLabel>
+            <Select
+              value={formData.rolEmpresaId}
+              onChange={(value) => setFormData(prev => ({
+                ...prev,
+                rolEmpresaId: value as string
+              }))}
+              placeholder="Seleccionar rol"
+              options={rolesEmpresa.map(r => ({
+                value: r.id,
+                label: r.nombre
+              }))}
+              disabled={loading}
+              fullWidth
+            />
+          </div>
         </div>
-      </form>
+          </form>
+        </div>
+      </div>
     </SideModal>
   );
 } 

@@ -8,7 +8,7 @@ import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
 import { Empresa, Usuario, FilterValuesEmpresa, FilterOptions } from '../types/empresas';
 
-import { Layout } from '../components/ui';
+import { Layout, PageHeader } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -153,7 +153,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     try {
       console.log('🔄 Cargando empresas...');
       
-      const response = await fetch('http://localhost:3000/api/empresas');
+      const response = await fetch('/api/empresas');
       console.log('📡 Response status:', response.status);
       
       if (response.ok) {
@@ -360,6 +360,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       setSaving(false);
     }
   };
+
+
 
   // Handlers para actualizaciones en línea
   const handleInlineUpdate = async (empresaId: string, field: string, value: any) => {
@@ -727,6 +729,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
+
           {
             label: 'Eliminar',
             icon: <TrashIcon className="w-4 h-4" />,
@@ -780,42 +783,32 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         <div className="py-10 px-4">
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between">
-                <div>
-                              <Typography variant="h2" color="title" weight="semibold">
-              Empresas
-            </Typography>
-                  <Typography variant="subtitle1" color="secondary">
-                    Gestiona las empresas de tu portafolio
-                  </Typography>
-                </div>
-                <Button
-                  onClick={() => setShowCreateModal(true)}
-                  variant="primary"
-                  size="md"
-                  className="flex items-center gap-2"
-                >
-                  <PlusIcon className="w-4 h-4" />
-                  Crear Empresa
-                </Button>
-              </div>
-            </div>
+            <PageHeader
+              title="Empresas"
+              subtitle="Gestiona las empresas de tu portafolio"
+              color="green"
+              primaryAction={{
+                label: "Crear Empresa",
+                onClick: () => setShowCreateModal(true),
+                variant: "primary",
+                icon: <PlusIcon className="w-4 h-4" />
+              }}
+            />
 
           {/* Métricas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
+                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
                     {metricas.total}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
                     Total Empresas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <EmpresasIcon className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <EmpresasIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -823,15 +816,15 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
+                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
                     {metricas.empresasAlcanzadas}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
                     Empresas Alcanzadas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-success/10">
-                  <CheckCircleIcon className="w-6 h-6 text-success" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <CheckCircleIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -839,15 +832,15 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
+                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
                     {metricas.retencionEmpresas}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
                     Retención de Empresas
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <BarChartIcon className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <BarChartIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -855,15 +848,15 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" className="text-foreground">
+                  <Typography variant="h4" className="text-gray-900 dark:text-gray-100">
                     {metricas.promedioPorKAM}
                   </Typography>
-                  <Typography variant="body1" className="text-muted-foreground">
+                  <Typography variant="body1" className="text-gray-600 dark:text-gray-400">
                     Promedio por KAM
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-secondary/10">
-                  <UserIcon className="w-6 h-6 text-secondary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -888,14 +881,14 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   onClick={() => setShowFilterDrawer(true)}
-                  className="relative flex items-center gap-2"
+                  className="relative"
+                  iconOnly
+                  icon={<FilterIcon />}
                 >
-                  <FilterIcon className="w-4 h-4" />
-                  Filtros Avanzados
                   {getActiveFiltersCount() > 0 && (
-                    <Badge variant="secondary" className="ml-1">
+                    <Badge variant="secondary" className="absolute -top-1 -right-1">
                       {getActiveFiltersCount()}
                     </Badge>
                   )}
@@ -1003,7 +996,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   try {
     console.log('🔄 getServerSideProps ejecutándose para empresas');
     
-    const response = await fetch('http://localhost:3000/api/empresas');
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/empresas`);
     console.log('📡 Response status:', response.status);
     
     if (response.ok) {

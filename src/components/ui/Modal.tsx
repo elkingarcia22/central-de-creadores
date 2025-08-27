@@ -102,7 +102,7 @@ export const Modal: React.FC<ModalProps> = ({
         {/* Modal Content */}
         <div className="bg-card rounded-lg  w-full max-h-full overflow-hidden">
           {/* Header */}
-          {(title || showCloseButton) && (
+          {title && showCloseButton && (
             <div className="flex items-center justify-between p-6 border-b border-border">
               {title && (
                 <Typography variant="h4" weight="semibold" className="text-card-foreground">

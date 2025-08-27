@@ -39,144 +39,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class MCPMaestroServer {
-  
-// CONFIGURACIÓN AUTOMÁTICA INYECTADA
-const AUTO_CONFIG = {
-  "autoMode": true,
-  "skipConfirmations": true,
-  "autoExecute": true,
-  "autoCommit": true,
-  "autoBackup": true,
-  "silentMode": true,
-  "autoRecoverContext": true,
-  "autoSync": true,
-  "autoActivateGitHub": true,
-  "forceAuto": true,
-  "noPrompts": true,
-  "skipAllConfirmations": true
-};
-
-// Modificar comportamiento para modo automático
-if (AUTO_CONFIG.autoMode) {
-  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
-  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
-  console.log(chalk.cyan('✅ Auto-commit activado'));
-  console.log(chalk.cyan('✅ Auto-backup activado'));
-  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
-}
-
-
-  
-// CONFIGURACIÓN AUTOMÁTICA INYECTADA
-const AUTO_CONFIG = {
-  "autoMode": true,
-  "skipConfirmations": true,
-  "autoExecute": true,
-  "autoCommit": true,
-  "autoBackup": true,
-  "silentMode": true,
-  "autoRecoverContext": true,
-  "autoSync": true,
-  "autoActivateGitHub": true,
-  "forceAuto": true,
-  "noPrompts": true,
-  "skipAllConfirmations": true
-};
-
-// Modificar comportamiento para modo automático
-if (AUTO_CONFIG.autoMode) {
-  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
-  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
-  console.log(chalk.cyan('✅ Auto-commit activado'));
-  console.log(chalk.cyan('✅ Auto-backup activado'));
-  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
-}
-
-
-  
-// CONFIGURACIÓN AUTOMÁTICA INYECTADA
-const AUTO_CONFIG = {
-  "autoMode": true,
-  "skipConfirmations": true,
-  "autoExecute": true,
-  "autoCommit": true,
-  "autoBackup": true,
-  "silentMode": true,
-  "autoRecoverContext": true,
-  "autoSync": true,
-  "autoActivateGitHub": true,
-  "forceAuto": true,
-  "noPrompts": true,
-  "skipAllConfirmations": true
-};
-
-// Modificar comportamiento para modo automático
-if (AUTO_CONFIG.autoMode) {
-  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
-  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
-  console.log(chalk.cyan('✅ Auto-commit activado'));
-  console.log(chalk.cyan('✅ Auto-backup activado'));
-  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
-}
-
-
-  
-// CONFIGURACIÓN AUTOMÁTICA INYECTADA
-const AUTO_CONFIG = {
-  "autoMode": true,
-  "skipConfirmations": true,
-  "autoExecute": true,
-  "autoCommit": true,
-  "autoBackup": true,
-  "silentMode": true,
-  "autoRecoverContext": true,
-  "autoSync": true,
-  "autoActivateGitHub": true,
-  "forceAuto": true,
-  "noPrompts": true,
-  "skipAllConfirmations": true
-};
-
-// Modificar comportamiento para modo automático
-if (AUTO_CONFIG.autoMode) {
-  console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
-  console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
-  console.log(chalk.cyan('✅ Auto-commit activado'));
-  console.log(chalk.cyan('✅ Auto-backup activado'));
-  console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
-}
-
-
+  // CONFIGURACIÓN AUTOMÁTICA ACTIVADA
   constructor() {
-    // CONFIGURACIÓN AUTOMÁTICA
-    this.AUTO_CONFIG = {
-      "autoMode": true,
-      "skipConfirmations": true,
-      "autoExecute": true,
-      "autoCommit": true,
-      "autoBackup": true,
-      "silentMode": true,
-      "autoRecoverContext": true,
-      "autoSync": true,
-      "autoActivateGitHub": true,
-      "forceAuto": true,
-      "noPrompts": true,
-      "skipAllConfirmations": true
-    };
-
-    // Modificar comportamiento para modo automático
-    if (this.AUTO_CONFIG.autoMode) {
-      console.log(chalk.blue('🎯 MODO AUTOMÁTICO ACTIVADO'));
-      console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
-      console.log(chalk.cyan('✅ Auto-commit activado'));
-      console.log(chalk.cyan('✅ Auto-backup activado'));
-      console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
-    }
-
+    this.autoMode = true;
+    this.skipConfirmations = true;
+    this.autoExecute = true;
+    this.autoCommit = true;
+    this.autoBackup = true;
+    this.silentMode = true;
+    this.autoRecoverContext = true;
+    this.autoSync = true;
+    this.autoActivateGitHub = true;
+    this.forceAuto = true;
+    this.noPrompts = true;
+    this.skipAllConfirmations = true;
+    
+    // Inicializar el servidor MCP
     this.server = new Server(
       {
         name: 'mcp-maestro',
-        version: '2.0.0',
+        version: '1.0.0',
       },
       {
         capabilities: {
@@ -184,8 +66,8 @@ if (AUTO_CONFIG.autoMode) {
         },
       }
     );
-
-    // Inicializar componentes del Maestro
+    
+    // Inicializar herramientas
     this.contextManager = new ContextManager(__dirname);
     this.mcpDispatcher = new MCPDispatcher(__dirname);
     this.sessionManager = new SessionManager(__dirname);
@@ -193,41 +75,19 @@ if (AUTO_CONFIG.autoMode) {
     this.projectAnalyzer = new ProjectAnalyzer(__dirname);
     this.githubIntegration = new GitHubIntegration(__dirname);
     this.mcpSyncManager = new MCPSyncManager(__dirname);
-
-    // Estado del sistema
-    this.isInitialized = false;
-    this.currentSession = null;
-    this.projectContext = null;
-
+    
+    // Configurar manejadores de herramientas
     this.setupToolHandlers();
-    this.initializeSystem();
+    
+    console.log(chalk.blue('🎯 MCP MAESTRO EN MODO AUTOMÁTICO'));
+    console.log(chalk.cyan('✅ Sin confirmaciones - ejecución automática'));
+    console.log(chalk.cyan('✅ Auto-commit activado'));
+    console.log(chalk.cyan('✅ Auto-backup activado'));
+    console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
   }
 
-  async initializeSystem() {
-    try {
-      console.log('🎯 MCP Maestro iniciando sistema...');
-      
-      // Cargar contexto del proyecto
-      this.projectContext = await this.projectAnalyzer.analyzeProject();
-      
-      // Activar GitHub automáticamente
-      await this.githubIntegration.activate();
-      
-      // Iniciar sincronización automática con otros MCPs
-      await this.mcpSyncManager.startAutoSync(5); // Sincronizar cada 5 minutos
-      
-      // Recuperar contexto perdido si existe
-      await this.autoRecoverContext();
-      
-      this.isInitialized = true;
-      console.log('✅ MCP Maestro inicializado y listo para orquestar');
-      
-    } catch (error) {
-      console.error('❌ Error inicializando MCP Maestro:', error);
-    }
-  }
-
-  async autoRecoverContext() {
+  
+async autoRecoverContext() {
     try {
       const recentContext = await this.contextManager.getRecentContext();
       if (recentContext) {

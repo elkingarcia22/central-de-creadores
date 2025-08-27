@@ -203,15 +203,15 @@ export default function DashboardPage() {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {stats.investigaciones}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Investigaciones
                   </Typography>
                 </div>
-                <div className="p-3 rounded-lg bg-background">
-                  <InvestigacionesIcon className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <InvestigacionesIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -219,15 +219,15 @@ export default function DashboardPage() {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {stats.riesgo}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     ⚠️ RIESGO CRÍTICO ⚠️
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-destructive/10'}`}>
-                  <AlertTriangleIcon className="w-6 h-6 text-orange-500" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <AlertTriangleIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -235,15 +235,15 @@ export default function DashboardPage() {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {stats.sesiones}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Sesiones
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
-                  <SesionesIcon className="w-6 h-6 text-secondary" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <SesionesIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>
@@ -251,15 +251,15 @@ export default function DashboardPage() {
             <Card variant="elevated" padding="lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h3" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  <Typography variant="h3" weight="bold" className="text-gray-900 dark:text-gray-100">
                     {stats.empresas}
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Empresas
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-teal-900 bg-opacity-20' : 'bg-info/10'}`}>
-                  <EmpresasIcon className="w-6 h-6 text-info" />
+                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                  <EmpresasIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 </div>
               </div>
             </Card>

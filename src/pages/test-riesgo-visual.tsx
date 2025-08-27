@@ -3,8 +3,8 @@ import { Layout } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
-import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText } from '../utils/riesgoUtils';
-import { getEstadoInvestigacionVariant } from '../utils/estadoUtils';
+import { getRiesgoIconName } from '../utils/riesgoUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 // Función para calcular el nivel de riesgo (igual que en investigaciones.tsx)
 const calcularNivelRiesgo = (investigacion: any): {
@@ -112,7 +112,7 @@ export default function TestRiesgoVisualPage() {
 
   const RiesgoColumn = ({ investigacion }: { investigacion: any }) => {
     const riesgoInfo = calcularNivelRiesgo(investigacion);
-    const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
+            const badgeVariant = getChipVariant(riesgoInfo.nivel) as any;
     const iconName = getRiesgoIconName(riesgoInfo.nivel);
 
     // Mapeo de iconos por nombre
@@ -130,7 +130,7 @@ export default function TestRiesgoVisualPage() {
         <div className="flex items-center gap-2">
           <span className="text-sm">{icon}</span>
           <Badge variant={badgeVariant} className="text-xs whitespace-nowrap">
-            {getRiesgoText(riesgoInfo.nivel)}
+                          {getChipText(riesgoInfo.nivel)}
           </Badge>
         </div>
         <div className="text-xs text-muted-foreground whitespace-nowrap">
@@ -184,7 +184,7 @@ export default function TestRiesgoVisualPage() {
                         <div className="font-medium">{investigacion.nombre}</div>
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <Badge variant={getEstadoInvestigacionVariant(investigacion.estado)}>
+                        <Badge variant={getChipVariant(investigacion.estado) as any}>
                           {investigacion.estado}
                         </Badge>
                       </td>

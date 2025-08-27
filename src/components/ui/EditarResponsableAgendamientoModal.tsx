@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { SideModal } from './SideModal';
-import { Typography } from './Typography';
-import { Button } from './Button';
-import { UserSelectorWithAvatar } from './UserSelectorWithAvatar';
-import { SaveIcon } from '../icons';
+import SideModal from './SideModal';
+import Typography from './Typography';
+import Button from './Button';
+import UserSelectorWithAvatar from './UserSelectorWithAvatar';
+import { PageHeader } from './';
+import FilterLabel from './FilterLabel';
+import { SaveIcon, UserIcon } from '../icons';
 
 interface EditarResponsableAgendamientoModalProps {
   isOpen: boolean;
@@ -135,7 +137,7 @@ export default function EditarResponsableAgendamientoModal({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         loading={loading}
         disabled={loading || !responsableId}
         className="flex items-center gap-2"
@@ -150,54 +152,65 @@ export default function EditarResponsableAgendamientoModal({
     <SideModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Editar Responsable del Agendamiento"
       width="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      {loadingData ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <Typography variant="body2" color="secondary">
-              Cargando datos...
-            </Typography>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Responsable del Agendamiento */}
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Responsable del Agendamiento *
-            </Typography>
-            {responsables.length === 0 ? (
-              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-                <Typography variant="body2" color="secondary" className="text-red-700 dark:text-red-300">
-                  No se pudieron cargar los usuarios responsables. 
-                  Verifica que existan usuarios en el sistema con roles de reclutador o administrador.
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title="Editar Responsable del Agendamiento"
+          variant="title-only"
+          onClose={handleClose}
+          icon={<UserIcon className="w-5 h-5" />}
+        />
+
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          {loadingData ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <Typography variant="body2" color="secondary">
+                  Cargando datos...
                 </Typography>
               </div>
-            ) : (
-              <UserSelectorWithAvatar
-                value={responsableId}
-                onChange={setResponsableId}
-                users={responsables.map(r => ({
-                  id: r.id,
-                  full_name: r.full_name || 'Sin nombre',
-                  email: r.email || 'sin-email@ejemplo.com',
-                  avatar_url: r.avatar_url
-                }))}
-                placeholder="Seleccionar responsable"
-                disabled={loading}
-                required
-              />
-            )}
-            <Typography variant="caption" color="secondary" className="mt-2 block">
-              Esta persona será responsable de agendar la sesión con el participante
-            </Typography>
-          </div>
-        </form>
-      )}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+              {/* Responsable del Agendamiento */}
+              <div>
+                <FilterLabel>Responsable del Agendamiento *</FilterLabel>
+                {responsables.length === 0 ? (
+                  <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                    <Typography variant="body2" color="secondary" className="text-red-700 dark:text-red-300">
+                      No se pudieron cargar los usuarios responsables. 
+                      Verifica que existan usuarios en el sistema con roles de reclutador o administrador.
+                    </Typography>
+                  </div>
+                ) : (
+                  <UserSelectorWithAvatar
+                    value={responsableId}
+                    onChange={setResponsableId}
+                    users={responsables.map(r => ({
+                      id: r.id,
+                      full_name: r.full_name || 'Sin nombre',
+                      email: r.email || 'sin-email@ejemplo.com',
+                      avatar_url: r.avatar_url
+                    }))}
+                    placeholder="Seleccionar responsable"
+                    disabled={loading}
+                    required
+                  />
+                )}
+                <Typography variant="caption" color="secondary" className="mt-2 block">
+                  Esta persona será responsable de agendar la sesión con el participante
+                </Typography>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
     </SideModal>
   );
 } 

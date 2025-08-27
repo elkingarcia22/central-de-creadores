@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, Input, Select, Textarea, MultiSelect } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Input, Select, Textarea, MultiSelect, PageHeader, EmptyState, FormContainer, FormItem, Subtitle } from '../../../components/ui';
 import { 
   ArrowLeftIcon, 
   FileTextIcon, 
@@ -183,15 +183,13 @@ const CrearLibretoPage: NextPage = () => {
     return (
       <Layout rol={rolSeleccionado}>
         <div className="py-8">
-          <Card className="p-8 text-center">
-            <Typography variant="h4" className="mb-4">Investigación no encontrada</Typography>
-            <Typography variant="body1" color="secondary" className="mb-6">
-              No se pudo encontrar la investigación solicitada
-            </Typography>
-            <Button variant="primary" onClick={() => router.push('/investigaciones')}>
-              Volver a Investigaciones
-            </Button>
-          </Card>
+          <EmptyState
+            icon={<FileTextIcon className="w-8 h-8" />}
+            title="Investigación no encontrada"
+            description="No se pudo encontrar la investigación solicitada para crear el libreto."
+            actionText="Volver a Investigaciones"
+            onAction={() => router.push('/investigaciones')}
+          />
         </div>
       </Layout>
     );
@@ -201,57 +199,43 @@ const CrearLibretoPage: NextPage = () => {
     <Layout rol={rolSeleccionado}>
       <div className="py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/investigaciones')}
-              className="p-2"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </Button>
-            <div>
-              <Typography variant="h2">Crear Libreto</Typography>
-              <Typography variant="body2" color="secondary">
-                {investigacionData.nombre}
-              </Typography>
-            </div>
-          </div>
-
-          {/* Acciones */}
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={saving}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              loading={saving}
-              className="flex items-center gap-2"
-            >
-              <SaveIcon className="w-4 h-4" />
-              Crear Libreto
-            </Button>
-          </div>
+        <div className="flex items-center gap-4 mb-6">
+          <PageHeader
+            title="Crear Libreto"
+            subtitle={investigacionData.nombre}
+            color="blue"
+            className="mb-0 flex-1"
+            primaryAction={{
+              label: "Crear Libreto",
+              onClick: handleSave,
+              variant: "primary",
+              icon: <SaveIcon className="w-4 h-4" />,
+              disabled: saving
+            }}
+            secondaryActions={[
+              {
+                label: "Cancelar",
+                onClick: handleCancel,
+                variant: "secondary",
+                disabled: saving
+              }
+            ]}
+          />
         </div>
 
         {/* Contenido */}
         <div className="space-y-8">
           {/* Problema y Objetivos */}
-          <Card variant="default" padding="lg">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <DocumentIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h3" weight="medium">
+              <DocumentIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>
                 Problema y Objetivos
-              </Typography>
+              </Subtitle>
             </div>
             
             <div className="space-y-6">
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Problema o Situación *
                 </Typography>
@@ -264,9 +248,9 @@ const CrearLibretoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Hipótesis
                 </Typography>
@@ -278,9 +262,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Objetivos *
                 </Typography>
@@ -293,9 +277,9 @@ const CrearLibretoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Resultado Esperado
                 </Typography>
@@ -307,21 +291,21 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
             </div>
-          </Card>
+          </FormContainer>
 
           {/* Configuración de la Sesión */}
-          <Card variant="default" padding="lg">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <SettingsIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h3" weight="medium">
+              <SettingsIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>
                 Configuración de la Sesión
-              </Typography>
+              </Subtitle>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Nombre de la Sesión
                 </Typography>
@@ -332,9 +316,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Duración Estimada (minutos)
                 </Typography>
@@ -346,9 +330,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Número de Participantes
                 </Typography>
@@ -360,9 +344,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Plataforma
                 </Typography>
@@ -377,9 +361,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div className="md:col-span-2">
+              <FormItem className="md:col-span-2">
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Link del Prototipo
                 </Typography>
@@ -390,9 +374,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div className="md:col-span-2">
+              <FormItem className="md:col-span-2">
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Descripción General
                 </Typography>
@@ -404,21 +388,21 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
             </div>
-          </Card>
+          </FormContainer>
 
           {/* Perfil de Participantes */}
-          <Card variant="default" padding="lg">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <UserIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h3" weight="medium">
+              <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>
                 Perfil de Participantes
-              </Typography>
+              </Subtitle>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Rol en Empresa
                 </Typography>
@@ -433,9 +417,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Industria
                 </Typography>
@@ -450,9 +434,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Modalidad
                 </Typography>
@@ -467,9 +451,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Tamaño de Empresa
                 </Typography>
@@ -484,9 +468,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </div>
+              </FormItem>
             </div>
-          </Card>
+          </FormContainer>
         </div>
       </div>
     </Layout>

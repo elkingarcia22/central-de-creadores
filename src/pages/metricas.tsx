@@ -148,15 +148,15 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className="text-gray-900 dark:text-gray-100">
                   {metricas.totalInvestigaciones}
                 </Typography>
                 <Typography variant="body2" color="secondary">
                   Investigaciones
                 </Typography>
               </div>
-              <div className="p-3 rounded-lg bg-card">
-                <InvestigacionesIcon className="w-6 h-6 text-primary" />
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <InvestigacionesIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </Card>
@@ -164,15 +164,15 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className="text-gray-900 dark:text-gray-100">
                   {metricas.totalSesiones}
                 </Typography>
                 <Typography variant="body2" color="secondary">
                   Sesiones
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
-                <SesionesIcon className="w-6 h-6 text-secondary" />
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <SesionesIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </Card>
@@ -180,15 +180,15 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className="text-gray-900 dark:text-gray-100">
                   {metricas.totalParticipantes}
                 </Typography>
                 <Typography variant="body2" color="secondary">
                   Participantes
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
-                <UserIcon className="w-6 h-6 text-success" />
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </Card>
@@ -196,15 +196,15 @@ export default function MetricasPage() {
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                <Typography variant="h4" weight="bold" className="text-gray-900 dark:text-gray-100">
                   {metricas.tasaCompletitud}%
                 </Typography>
                 <Typography variant="body2" color="secondary">
                   Tasa Completitud
                 </Typography>
               </div>
-              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-orange-50'}`}>
-                <MetricasIcon className="w-6 h-6 text-orange-600" />
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <MetricasIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </Card>

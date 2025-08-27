@@ -3,9 +3,9 @@ import Card from '../ui/Card';
 import Chip from '../ui/Chip';
 import Button from '../ui/Button';
 import { 
-  Investigacion,
-  getColorEstadoInvestigacion
+  Investigacion
 } from '../../types/supabase-investigaciones';
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
 
 interface InvestigacionCardProps {
   investigacion: Investigacion;
@@ -27,19 +27,9 @@ export function InvestigacionCard({
     return new Date(fecha).toLocaleDateString('es-ES');
   };
 
-  // Mapear colores a variantes válidas del Chip
-  const mapearVarianteChip = (color: string) => {
-    const mapa: Record<string, 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary'> = {
-      'default': 'default',
-      'primary': 'primary',
-      'success': 'success',
-      'warning': 'warning',
-      'danger': 'danger',
-      'destructive': 'danger',
-      'info': 'info',
-      'secondary': 'secondary'
-    };
-    return mapa[color] || 'default';
+  // Obtener variante del chip usando las nuevas utilidades
+  const obtenerVarianteChip = (estado: string): any => {
+    return getChipVariant(estado);
   };
 
   return (
@@ -65,10 +55,10 @@ export function InvestigacionCard({
 
         <div className="flex gap-2">
           <Chip 
-            variant={mapearVarianteChip(getColorEstadoInvestigacion(investigacion.estado))}
+            variant={obtenerVarianteChip(investigacion.estado)}
             size="sm"
           >
-            {investigacion.estado || 'Sin estado'}
+            {getChipText(investigacion.estado || '')}
           </Chip>
         </div>
       </div>

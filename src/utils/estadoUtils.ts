@@ -80,23 +80,30 @@ export const getEstadoSesionText = (estado: string): string => {
 
 // Función para obtener el color del badge de estado de participante
 export const getEstadoParticipanteVariant = (estado: string): 'success' | 'secondary' | 'warning' => {
-  switch (estado?.toLowerCase()) {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
     case 'activo': return 'success';           // Verde
     case 'inactivo': return 'secondary';       // Gris claro
     case 'pendiente': return 'warning';        // Amarillo
+    case 'pendiente de agendamiento': return 'warning'; // Amarillo (transitorio)
     default: return 'secondary';               // Gris claro
   }
 };
 
 // Función para obtener el texto del estado de participante
 export const getEstadoParticipanteText = (estado: string): string => {
-  switch (estado?.toLowerCase()) {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
     case 'activo':
       return 'Activo';
     case 'inactivo':
       return 'Inactivo';
     case 'pendiente':
       return 'Pendiente';
+    case 'pendiente de agendamiento':
+      return 'Pendiente de Agendamiento';
     default:
       return 'Sin Estado';
   }
@@ -183,14 +190,14 @@ export const getEstadoMetricaText = (estado: string): string => {
 
 // Función para obtener el color del badge de estado de reclutamiento
 export const getEstadoReclutamientoVariant = (estado: string): 'default' | 'warning' | 'accent-purple' | 'success' | 'accent-indigo' | 'accent-pink' | 'danger' | 'secondary' => {
-  const estadoLower = estado?.toLowerCase()?.trim();
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
   
   switch (estadoLower) {
     case 'pendiente': 
     case 'pendiente de agendamiento': return 'warning';        // Amarillo
     case 'en progreso': 
     case 'en_progreso': 
-    case 'en progreso': return 'accent-purple'; // Púrpura (único)
+    case 'en progreso': return 'primary'; // Azul primario (más seguro)
     case 'agendada': return 'success';         // Verde (como finalizado)
     case 'por agendar': 
     case 'por_agendar': return 'accent-indigo'; // Índigo (único)
@@ -203,14 +210,15 @@ export const getEstadoReclutamientoVariant = (estado: string): 'default' | 'warn
 
 // Función para obtener el texto del estado de reclutamiento
 export const getEstadoReclutamientoText = (estado: string): string => {
-  switch (estado?.toLowerCase()) {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
     case 'pendiente':
       return 'Pendiente';
     case 'pendiente de agendamiento':
       return 'Pendiente de Agendamiento';
     case 'en progreso':
     case 'en_progreso':
-    case 'en progreso':
       return 'En Progreso';
     case 'agendada':
       return 'Agendada';
@@ -269,5 +277,22 @@ export const getEstadoText = (estado: string, tipo: 'investigacion' | 'sesion' |
       return getEstadoReclutamientoText(estado);
     default:
       return 'Sin Estado';
+  }
+};
+
+// Función para obtener el color del badge de estado de agendamiento
+export const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | 'warning' | 'info' | 'success' | 'danger' => {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
+    case 'pendiente': 
+    case 'pendiente de agendamiento': return 'warning';        // Amarillo
+    case 'agendada': 
+    case 'programada': return 'info';                          // Azul
+    case 'confirmada': 
+    case 'confirmado': return 'success';                       // Verde
+    case 'cancelada': 
+    case 'cancelado': return 'danger';                         // Rojo
+    default: return 'default';                                 // Gris oscuro
   }
 };

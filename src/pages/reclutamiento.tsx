@@ -6,8 +6,9 @@ import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
 
-import { Layout, Typography, Card, Button, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu } from '../components/ui';
+import { Layout, Typography, Card, Button, Input, Chip, ProgressBar, FilterDrawer, ActionsMenu, PageHeader } from '../components/ui';
 import DataTable from '../components/ui/DataTable';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
 import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';
@@ -31,8 +32,9 @@ import {
   LoadingIcon
 } from '../components/icons';
 import { obtenerEstadosReclutamiento } from '../api/supabase-investigaciones';
-import { getRiesgoBadgeVariant, getRiesgoText, getRiesgoIconName } from '../utils/riesgoUtils';
+import { getRiesgoIconName } from '../utils/riesgoUtils';
 import { getEstadoInvestigacionVariant, getEstadoInvestigacionText, getEstadoReclutamientoVariant, getEstadoReclutamientoText } from '../utils/estadoUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 // Tipos para la estructura de datos
 interface InvestigacionReclutamiento {
@@ -534,7 +536,7 @@ export default function ReclutamientoPage() {
         <div className="space-y-2">
           <div 
             className="font-semibold text-gray-900 dark:text-gray-100 text-sm cursor-pointer hover:text-primary transition-colors"
-            onClick={() => router.push(`/investigaciones/ver/${row.investigacion_id}`)}
+            onClick={() => router.push(`/reclutamiento/ver/${row.reclutamiento_id}`)}
           >
             {row.investigacion_nombre || 'Sin nombre'}
           </div>
@@ -602,12 +604,12 @@ export default function ReclutamientoPage() {
         (a.estado_reclutamiento_nombre || '').localeCompare(b.estado_reclutamiento_nombre || ''),
       render: (value: any, row: InvestigacionReclutamiento) => {
         const estado = row.estado_reclutamiento_nombre;
-        const variant = getEstadoReclutamientoVariant(estado);
-        const text = getEstadoReclutamientoText(estado);
+        const variant = getChipVariant(estado);
+        const text = getChipText(estado);
         console.log('🎯 Tabla - Estado:', estado, 'Variant:', variant, 'Text:', text);
         return (
           <Chip 
-            variant={variant}
+            variant={variant as any}
             size="sm"
           >
             {text}
@@ -704,7 +706,7 @@ export default function ReclutamientoPage() {
         };
 
         const tooltipText = getTooltipText(row);
-        const badgeVariant = getRiesgoBadgeVariant(row.riesgo_reclutamiento || 'bajo');
+        const badgeVariant = getChipVariant(row.riesgo_reclutamiento || 'bajo') as any;
         const iconName = getRiesgoIconName(row.riesgo_reclutamiento || 'bajo');
 
         // Mapeo de iconos por nombre
@@ -728,7 +730,7 @@ export default function ReclutamientoPage() {
               icon={icon}
               className="whitespace-nowrap chip-group-hover:opacity-80 transition-opacity"
             >
-              {getRiesgoText((row.riesgo_reclutamiento || 'bajo') as any)}
+              {getChipText(row.riesgo_reclutamiento || 'bajo')}
             </Chip>
             {/* Tooltip personalizado */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 chip-group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -841,34 +843,23 @@ export default function ReclutamientoPage() {
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
-              <div>
-                            <Typography variant="h2" color="title" weight="semibold">
-              Reclutamiento
-            </Typography>
-                <Typography variant="subtitle1" color="secondary">
-                  Gestionar el reclutamiento de participantes para investigaciones por agendar
-                </Typography>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={handleAsignarAgendamiento}
-                >
-                  Asignar Agendamiento
-                </Button>
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={handleCrearReclutamiento}
-                >
-                  Agregar Participante
-                </Button>
-              </div>
-            </div>
-          </div>
+          <PageHeader
+            title="Reclutamiento"
+            subtitle="Gestionar el reclutamiento de participantes para investigaciones por agendar"
+            color="teal"
+            primaryAction={{
+              label: "Agregar Participante",
+              onClick: handleCrearReclutamiento,
+              variant: "primary"
+            }}
+            secondaryActions={[
+              {
+                label: "Asignar Agendamiento",
+                onClick: handleAsignarAgendamiento,
+                variant: "outline"
+              }
+            ]}
+          />
 
           {/* Estadísticas del Dashboard */}
           {metricas && metricasRiesgo && (
@@ -877,15 +868,19 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricas.total}
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={metricas.total} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Total Reclutamientos
                     </Typography>
                   </div>
-                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-blue-50'}`}>
-                    <ReclutamientoIcon className="w-6 h-6 text-blue-600" />
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <ReclutamientoIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </Card>
@@ -894,15 +889,19 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricas?.estados?.pendientes || 0}
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={metricas?.estados?.pendientes || 0} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Pendientes
                     </Typography>
                   </div>
-                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-yellow-900 bg-opacity-20' : 'bg-yellow-50'}`}>
-                    <BellIcon className="w-6 h-6 text-yellow-600" />
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <BellIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </Card>
@@ -911,15 +910,19 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {(metricasRiesgo?.alto || 0) + (metricasRiesgo?.medio || 0)}
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={(metricasRiesgo?.alto || 0) + (metricasRiesgo?.medio || 0)} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Riesgo Alto/Medio
                     </Typography>
                   </div>
-                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900 bg-opacity-20' : 'bg-red-50'}`}>
-                    <AlertTriangleIcon className="w-6 h-6 text-red-600" />
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <AlertTriangleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </Card>
@@ -928,15 +931,19 @@ export default function ReclutamientoPage() {
               <Card variant="elevated" padding="md">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {metricas?.estados?.completados || 0}
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={metricas?.estados?.completados || 0} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
                     </Typography>
                     <Typography variant="body2" color="secondary">
                       Completados
                     </Typography>
                   </div>
-                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-purple-50'}`}>
-                    <CheckCircleIcon className="w-6 h-6 text-purple-600" />
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </Card>
@@ -958,14 +965,14 @@ export default function ReclutamientoPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                  variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
                   onClick={handleOpenFilters}
-                  className="relative flex items-center gap-2"
+                  className="relative"
+                  iconOnly
+                  icon={<FilterIcon />}
                 >
-                  <FilterIcon className="w-4 h-4" />
-                  Filtros Avanzados
                   {getActiveFiltersCount() > 0 && (
-                    <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                    <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                       {getActiveFiltersCount()}
                     </span>
                   )}

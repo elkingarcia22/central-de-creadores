@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-08-27T19:13:53.389Z",
+  "status": "ACTIVE",
+  "auto_mode": true,
+  "features": {
+    "skipConfirmations": true,
+    "autoExecute": true,
+    "autoCommit": true,
+    "autoBackup": true,
+    "autoRecoverContext": true,
+    "autoSync": true,
+    "autoActivateGitHub": true
+  },
+  "message": "MCP Maestro activo en modo automático",
+  "pid": 22587
+}

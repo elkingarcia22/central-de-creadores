@@ -1,9 +1,9 @@
 export type TipoParticipante = 'externo' | 'interno' | 'friend_family';
 
-export const getTipoParticipanteVariant = (tipo: TipoParticipante): 'accent-cyan' | 'accent-emerald' | 'accent-violet' => {
+export const getTipoParticipanteVariant = (tipo: TipoParticipante): 'accent-cyan' | 'accent-blue' | 'accent-violet' => {
   switch (tipo) {
     case 'externo': return 'accent-cyan';
-    case 'interno': return 'accent-emerald';
+    case 'interno': return 'accent-blue';
     case 'friend_family': return 'accent-violet';
     default: return 'accent-cyan';
   }
@@ -25,4 +25,32 @@ export const getTipoParticipanteDescripcion = (tipo: TipoParticipante): string =
     case 'friend_family': return 'Participante friend & family';
     default: return 'Tipo de participante no definido';
   }
+};
+
+// Función para determinar el tipo de participante basado en los datos
+export const getTipoParticipante = (participante: any): TipoParticipante => {
+  if (participante.tipo) {
+    return participante.tipo as TipoParticipante;
+  }
+  
+  // Lógica de fallback basada en otros campos
+  if (participante.empresa_nombre || participante.empresa_id) {
+    return 'externo';
+  }
+  
+  if (participante.departamento || participante.departamento_id) {
+    return 'interno';
+  }
+  
+  // Por defecto, asumir externo
+  return 'externo';
+};
+
+// Función para obtener el badge del tipo de participante
+export const getTipoParticipanteBadge = (participante: any) => {
+  const tipo = getTipoParticipante(participante);
+  return {
+    variant: getTipoParticipanteVariant(tipo),
+    text: getTipoParticipanteText(tipo)
+  };
 };

@@ -4,7 +4,8 @@ import { useToast } from '../../contexts/ToastContext';
 import { 
   SideModal, 
   Typography, 
-  Button
+  Button,
+  PageHeader
 } from './index';
 import { TrashIcon, AlertTriangleIcon } from '../icons';
 
@@ -43,16 +44,20 @@ export default function ConfirmarEliminacionModal({
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Confirmar Eliminación"
       size="md"
     >
       <div className="space-y-6">
-        {/* Icono de advertencia */}
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950 flex items-center justify-center">
-            <AlertTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
-          </div>
-        </div>
+        {/* Header con PageHeader e icono integrado */}
+        <PageHeader
+          title="Confirmar Eliminación"
+          variant="title-only"
+          color="gray"
+          onClose={onClose}
+          icon={<AlertTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />}
+        />
+        
+        {/* Espacio adicional después del header */}
+        <div className="pt-8"></div>
 
         {/* Mensaje principal */}
         <div className="text-center space-y-2">

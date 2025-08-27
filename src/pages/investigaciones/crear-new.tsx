@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout } from '../../components/ui';
+import { Layout, PageHeader } from '../../components/ui';
 import { InvestigacionFormNew } from '../../components/investigaciones/InvestigacionFormNew';
 import { useToast } from '../../contexts/ToastContext';
 import { 
@@ -150,16 +150,12 @@ const CrearInvestigacionPage: NextPage = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">
-                  Crear nueva investigación
-                </h1>
-                <p className="text-muted-foreground">
-                  Completa la información para crear una nueva investigación
-                </p>
-              </div>
-            </div>
+            <PageHeader
+              title="Crear nueva investigación"
+              subtitle="Completa la información para crear una nueva investigación"
+              variant="compact"
+              color="blue"
+            />
           </div>
 
           {/* Formulario */}

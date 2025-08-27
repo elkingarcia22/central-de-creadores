@@ -7,6 +7,7 @@ import Select from '../ui/Select';
 import MultiSelect from '../ui/MultiSelect';
 import Textarea from '../ui/Textarea';
 import UserSelectorWithAvatar from '../ui/UserSelectorWithAvatar';
+import { PageHeader } from '../ui/PageHeader';
 import { SaveIcon, XIcon } from '../icons';
 import { Empresa, Usuario } from '../../types/empresas';
 
@@ -188,40 +189,50 @@ export default function EmpresaSideModal({
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Editar Empresa' : 'Crear Empresa'}
       size="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
-        {/* Información básica */}
-        <div className="space-y-4">
-          <Typography variant="h4" weight="semibold">
-            Información Básica
-          </Typography>
-          
-          <div>
-            <Input
-              label="Nombre de la Empresa"
-              value={formData.nombre || ''}
-              onChange={(e) => handleInputChange('nombre', e.target.value)}
-              placeholder="Ingresa el nombre de la empresa"
-              error={errors.nombre}
-              required
-              fullWidth
-            />
-          </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title={isEditing ? 'Editar Empresa' : 'Crear Empresa'}
+          variant="title-only"
+          color="green"
+          className="mb-0"
+          onClose={onClose}
+        />
 
-          <div>
-            <Textarea
-              label="Descripción"
-              value={formData.descripcion || ''}
-              onChange={(e) => handleInputChange('descripcion', e.target.value)}
-              placeholder="Describe la empresa"
-              rows={3}
-              fullWidth
-            />
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
+          {/* Información básica */}
+          <div className="space-y-4">
+            <Typography variant="h4" weight="semibold">
+              Información Básica
+            </Typography>
+            
+            <div>
+              <Input
+                label="Nombre de la Empresa"
+                value={formData.nombre || ''}
+                onChange={(e) => handleInputChange('nombre', e.target.value)}
+                placeholder="Ingresa el nombre de la empresa"
+                error={errors.nombre}
+                required
+                fullWidth
+              />
+            </div>
+
+            <div>
+              <Textarea
+                label="Descripción"
+                value={formData.descripcion || ''}
+                onChange={(e) => handleInputChange('descripcion', e.target.value)}
+                placeholder="Describe la empresa"
+                rows={3}
+                fullWidth
+              />
+            </div>
           </div>
-        </div>
 
         {/* Información de contacto */}
         <div className="space-y-4">
@@ -358,11 +369,10 @@ export default function EmpresaSideModal({
               fullWidth
             />
           </div>
-
-
         </div>
 
-      </form>
+        </form>
+      </div>
     </SideModal>
   );
 }

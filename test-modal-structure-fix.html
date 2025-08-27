@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corrección de Estructura del Modal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto space-y-8">
+        <h1 class="text-2xl font-bold text-center mb-8">Corrección de Estructura del Modal</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Antes: Doble header y padding incorrecto -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-red-600">❌ Antes: Doble header</h2>
+                <div class="border rounded-lg overflow-hidden" style="height: 400px;">
+                    <!-- SideModal header (oculto pero presente) -->
+                    <div class="hidden">
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h4 class="font-semibold">Título del SideModal</h4>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100">×</button>
+                        </div>
+                    </div>
+
+                    <!-- PageHeader -->
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between w-full py-4 px-6">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center mr-2 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                            </div>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100">×</button>
+                        </div>
+                        <!-- Línea corta -->
+                        <div class="border-b border-gray-200 mx-6"></div>
+                    </div>
+
+                    <!-- Contenido con padding doble -->
+                    <div class="p-6">
+                        <div class="pt-4 space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                                <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-red-50 rounded-lg">
+                    <p class="text-sm text-red-800"><strong>Problemas:</strong></p>
+                    <ul class="text-sm text-red-700 mt-1 space-y-1">
+                        <li>• SideModal aplica <code>p-6</code> al contenido</li>
+                        <li>• PageHeader tiene línea corta con <code>mx-6</code></li>
+                        <li>• Doble padding en el contenido</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Después: Estructura correcta -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-semibold mb-4 text-green-600">✅ Después: Estructura correcta</h2>
+                <div class="border rounded-lg overflow-hidden" style="height: 400px;">
+                    <!-- PageHeader con línea completa -->
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between w-full py-4 px-6">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center mr-2 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                            </div>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100">×</button>
+                        </div>
+                        <!-- Línea completa -->
+                        <div class="border-b border-gray-200"></div>
+                    </div>
+
+                    <!-- Contenido con padding correcto -->
+                    <div class="px-6">
+                        <div class="pt-4 space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                                <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                    <p class="text-sm text-green-800"><strong>Soluciones:</strong></p>
+                    <ul class="text-sm text-green-700 mt-1 space-y-1">
+                        <li>• <code>-m-6</code> cancela el padding del SideModal</li>
+                        <li>• Línea del PageHeader llega de lado a lado</li>
+                        <li>• <code>px-6</code> solo en el contenido</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparación con FilterDrawer -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-lg font-semibold mb-4 text-blue-600">🔄 Comparación con FilterDrawer</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- FilterDrawer -->
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 class="font-semibold text-gray-700">Filtros de Investigaciones</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Estado</label>
+                            <select class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm">
+                                <option>Todos</option>
+                                <option>En Progreso</option>
+                                <option>Completado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Tipo</label>
+                            <select class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm">
+                                <option>Todos</option>
+                                <option>Investigación</option>
+                                <option>Seguimiento</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SeguimientoSideModal corregido -->
+                <div class="border rounded-lg overflow-hidden">
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between w-full py-4 px-6">
+                            <div class="flex items-center">
+                                <div class="flex items-center justify-center mr-2 text-blue-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                                <h4 class="font-semibold text-gray-500">Nuevo Seguimiento</h4>
+                            </div>
+                            <button class="h-8 w-8 p-0 rounded-md hover:bg-gray-100">×</button>
+                        </div>
+                        <div class="border-b border-gray-200"></div>
+                    </div>
+                    <div class="px-6">
+                        <div class="pt-4 space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Fecha de Seguimiento *</label>
+                                <input type="date" value="2025-08-27" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 mb-2">Responsable *</label>
+                                <input type="text" placeholder="Seleccionar responsable" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800"><strong>Consistencia:</strong> Ambos componentes ahora tienen la misma estructura de padding y líneas separadoras</p>
+            </div>
+        </div>
+
+        <!-- Resumen técnico -->
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-3">🔧 Cambios Técnicos:</h3>
+            <div class="text-gray-700 space-y-2">
+                <p><strong>Archivo:</strong> <code>src/components/ui/SeguimientoSideModal.tsx</code></p>
+                <p><strong>Problema:</strong> SideModal aplica <code>p-6</code> automáticamente al contenido</p>
+                <p><strong>Solución:</strong></p>
+                <ul class="ml-4 space-y-1">
+                    <li>• <code>className="flex flex-col h-full -m-6"</code> cancela el padding del SideModal</li>
+                    <li>• <code>className="flex-1 overflow-y-auto px-6"</code> aplica solo padding horizontal</li>
+                    <li>• PageHeader con línea completa (sin <code>mx-6</code>)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

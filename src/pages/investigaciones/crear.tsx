@@ -6,7 +6,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useUser } from '../../contexts/UserContext';
 import { usePermisos } from '../../utils/permisosUtils';
-import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, ConfirmModal } from '../../components/ui';
+import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, ConfirmModal, PageHeader, FormContainer, FormItem } from '../../components/ui';
 import { 
   ArrowLeftIcon,
   InfoIcon,
@@ -462,47 +462,50 @@ const CrearInvestigacionPage: NextPage = () => {
     <Layout rol={rolSeleccionado}>
       <div className="py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <Typography variant="h2">
-              {esDuplicacion ? 'Duplicar Investigación' : 'Crear Investigación'}
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              {esDuplicacion 
-                ? `Duplicando: ${investigacionOriginal?.nombre}` 
-                : 'Crea una nueva investigación con toda la información necesaria'
+        <PageHeader
+          title={esDuplicacion ? 'Duplicar Investigación' : 'Crear Investigación'}
+          subtitle={esDuplicacion 
+            ? `Duplicando: ${investigacionOriginal?.nombre}` 
+            : 'Crea una nueva investigación con toda la información necesaria'
+          }
+          color="blue"
+          primaryAction={{
+            label: esDuplicacion ? 'Duplicar Investigación' : 'Crear Investigación',
+            onClick: () => {
+              // Crear un evento de submit sintético
+              const form = document.getElementById('crear-investigacion-form');
+              if (form) {
+                const submitEvent = new Event('submit', { 
+                  cancelable: true, 
+                  bubbles: true 
+                });
+                form.dispatchEvent(submitEvent);
+              } else {
+                // Si no encuentra el formulario, llamar directamente a handleSubmit
+                handleSubmit({ preventDefault: () => {} } as React.FormEvent);
               }
-            </Typography>
-          </div>
-          
-          {/* Acciones */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              onClick={handleVolver}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              loading={loadingForm}
-            >
-              {esDuplicacion ? 'Duplicar Investigación' : 'Crear Investigación'}
-            </Button>
-          </div>
-        </div>
+            },
+            variant: "primary",
+            disabled: loadingForm
+          }}
+          secondaryActions={[
+            {
+              label: "Cancelar",
+              onClick: handleVolver,
+              variant: "secondary"
+            }
+          ]}
+        />
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id="crear-investigacion-form" onSubmit={handleSubmit} className="space-y-6">
           {/* Información básica */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <InfoIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Información Básica</Typography>
-            </div>
-            
-            <div className="space-y-4">
+          <FormContainer
+            title="Información Básica"
+            icon={<InfoIcon className="w-5 h-5" />}
+            spacing="md"
+          >
+            <FormItem layout="full">
               <Input
                 label="Nombre de la investigación"
                 placeholder="Ej: Investigación de usabilidad del dashboard"
@@ -511,45 +514,44 @@ const CrearInvestigacionPage: NextPage = () => {
                 required
                 fullWidth
               />
+            </FormItem>
+            
+            <FormItem layout="half">
+              <Select
+                label="Tipo de investigación"
+                placeholder="Seleccionar tipo"
+                value={formData.tipo_investigacion_id}
+                onChange={(value) => handleInputChange('tipo_investigacion_id', value.toString())}
+                options={tiposInvestigacion.map(tipo => ({
+                  value: tipo.id,
+                  label: tipo.nombre
+                }))}
+                required
+                fullWidth
+              />
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select
-                  label="Tipo de investigación"
-                  placeholder="Seleccionar tipo"
-                  value={formData.tipo_investigacion_id}
-                  onChange={(value) => handleInputChange('tipo_investigacion_id', value.toString())}
-                  options={tiposInvestigacion.map(tipo => ({
-                    value: tipo.id,
-                    label: tipo.nombre
-                  }))}
-                  required
-                  fullWidth
-                />
-                
-                <Select
-                  label="Producto"
-                  placeholder="Seleccionar producto"
-                  value={formData.producto}
-                  onChange={(value) => handleInputChange('producto', value.toString())}
-                  options={productos.map(producto => ({
-                    value: producto.id,
-                    label: producto.nombre
-                  }))}
-                  required
-                  fullWidth
-                />
-              </div>
-            </div>
-          </Card>
+              <Select
+                label="Producto"
+                placeholder="Seleccionar producto"
+                value={formData.producto}
+                onChange={(value) => handleInputChange('producto', value.toString())}
+                options={productos.map(producto => ({
+                  value: producto.id,
+                  label: producto.nombre
+                }))}
+                required
+                fullWidth
+              />
+            </FormItem>
+          </FormContainer>
 
           {/* Fechas */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <SesionesIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Fechas</Typography>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormContainer
+            title="Fechas"
+            icon={<SesionesIcon className="w-5 h-5" />}
+            spacing="md"
+          >
+            <FormItem layout="third">
               <DatePicker
                 label="Fecha de inicio"
                 value={formData.fecha_inicio}
@@ -577,17 +579,16 @@ const CrearInvestigacionPage: NextPage = () => {
                 }))}
                 fullWidth
               />
-            </div>
-          </Card>
+            </FormItem>
+          </FormContainer>
 
           {/* Equipo */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <UserIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Equipo</Typography>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormContainer
+            title="Equipo"
+            icon={<UserIcon className="w-5 h-5" />}
+            spacing="md"
+          >
+            <FormItem layout="half">
               <UserSelectorWithAvatar
                 label="Responsable"
                 placeholder="Seleccionar responsable"
@@ -613,8 +614,8 @@ const CrearInvestigacionPage: NextPage = () => {
                 value={formData.implementador_id}
                 onChange={(userId) => handleInputChange('implementador_id', userId)}
               />
-            </div>
-          </Card>
+            </FormItem>
+          </FormContainer>
         </form>
       </div>
 

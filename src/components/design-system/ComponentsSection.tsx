@@ -59,7 +59,16 @@ import {
   LineChart,
   BarChart,
   Counter,
-  CounterGroup
+  CounterGroup,
+  PageHeader,
+  FormContainer,
+  FormItem,
+  InfoContainer,
+  InfoItem,
+  Subtitle,
+  ContainerTitle,
+  FilterLabel,
+  ParticipantCard
 } from '../ui';
 import MicroInteractionsDemo from './MicroInteractionsDemo';
 import { 
@@ -96,7 +105,29 @@ import {
   XIcon,
   MoreVerticalIcon,
   ClockIcon,
-  FileIcon
+  FileIcon,
+  UserIcon,
+  SettingsIcon,
+  // Iconos para las categorías del menú
+  PaletteIcon,
+  TypeIcon,
+  BoxIcon,
+  GridIcon,
+  BarChartIcon,
+  DatabaseIcon,
+  ChartIcon,
+  FolderIcon,
+  CalendarIcon,
+  MessageIcon,
+  BellIcon,
+  ShieldIcon,
+  ToolIcon,
+  LayoutIcon,
+  FormIcon,
+  FeedbackIcon,
+  DataIcon,
+  OverlayIcon,
+  InterfaceIcon
 } from '../icons';
 
 const ComponentsSection: React.FC = () => {
@@ -132,6 +163,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "buttons",
       name: "Buttons",
+      icon: <PaletteIcon className="w-5 h-5" />,
       components: [
         { id: "button", name: "Button" }
       ]
@@ -139,6 +171,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "navigation",
       name: "Navegación",
+      icon: <MenuIcon className="w-5 h-5" />,
       components: [
         { id: "tabs", name: "Tabs" },
         { id: "sidebar", name: "Sidebar" },
@@ -151,6 +184,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "inputs",
       name: "Inputs",
+      icon: <TypeIcon className="w-5 h-5" />,
       components: [
         { id: "text-input", name: "Text Input" },
         { id: "textarea", name: "Textarea" },
@@ -166,6 +200,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "feedback",
       name: "Feedback",
+      icon: <FeedbackIcon className="w-5 h-5" />,
       components: [
         { id: "badge", name: "Badge" },
         { id: "chip", name: "Chip" },
@@ -180,18 +215,21 @@ const ComponentsSection: React.FC = () => {
     {
       id: "data-display",
       name: "Data Display",
+      icon: <DataIcon className="w-5 h-5" />,
       components: [
         { id: "card", name: "Card" },
         { id: "data-table", name: "Data Table" },
         { id: "metric-card", name: "Metric Card" },
         { id: "empty-state", name: "Empty State" },
         { id: "list", name: "List" },
-        { id: "counter", name: "Counter" }
+        { id: "counter", name: "Counter" },
+        { id: "participant-card", name: "Participant Card" }
       ]
     },
     {
       id: "charts",
       name: "Charts",
+      icon: <BarChartIcon className="w-5 h-5" />,
       components: [
         { id: "donut-chart", name: "Donut Chart" },
         { id: "line-chart", name: "Line Chart" },
@@ -199,8 +237,9 @@ const ComponentsSection: React.FC = () => {
       ]
     },
     {
-      id: "navigation",
+      id: "navigation-2",
       name: "Navegación",
+      icon: <MenuIcon className="w-5 h-5" />,
       components: [
         { id: "tabs", name: "Tabs" },
         { id: "sidebar", name: "Sidebar" },
@@ -214,6 +253,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "data-management",
       name: "Gestión de Datos",
+      icon: <DatabaseIcon className="w-5 h-5" />,
       components: [
         { id: "drag-drop-zone", name: "Drag & Drop Zone" },
         { id: "calendar", name: "Calendar" },
@@ -224,6 +264,7 @@ const ComponentsSection: React.FC = () => {
     {
       id: "overlays",
       name: "Overlays",
+      icon: <OverlayIcon className="w-5 h-5" />,
       components: [
         { id: "modal", name: "Modal" },
         { id: "side-modal", name: "Side Modal" },
@@ -234,12 +275,28 @@ const ComponentsSection: React.FC = () => {
     {
       id: "user-interface",
       name: "User Interface",
+      icon: <InterfaceIcon className="w-5 h-5" />,
       components: [
         { id: "avatar", name: "Avatar" },
         { id: "user-selector", name: "User Selector" },
         { id: "actions-menu", name: "Actions Menu" },
         { id: "grouped-actions", name: "Grouped Actions" },
         { id: "slider", name: "Slider" }
+      ]
+    },
+    {
+      id: "layout-forms",
+      name: "Layout y Formularios",
+      icon: <FormIcon className="w-5 h-5" />,
+      components: [
+        { id: "page-header", name: "Page Header" },
+        { id: "form-container", name: "Form Container" },
+        { id: "form-item", name: "Form Item" },
+        { id: "info-container", name: "Info Container" },
+        { id: "info-item", name: "Info Item" },
+        { id: "subtitle", name: "Subtitle" },
+        { id: "container-title", name: "Container Title" },
+        { id: "filter-label", name: "Filter Label" }
       ]
     },
 
@@ -254,8 +311,8 @@ const ComponentsSection: React.FC = () => {
             Button Component
           </Typography>
           <Typography variant="body1" color="secondary" className="mb-4">
-            El componente Button es la base para todas las acciones interactivas en la interfaz. 
-            Proporciona múltiples variantes, tamaños y estados para diferentes contextos de uso.
+            El componente Button es la base para las interacciones de usuario. 
+            Proporciona múltiples variantes, tamaños y estados para diferentes tipos de acciones.
           </Typography>
           <div className="bg-muted p-4 rounded-lg">
             <Typography variant="h5" weight="semibold" className="mb-2">
@@ -301,10 +358,10 @@ const ComponentsSection: React.FC = () => {
           </div>
         </Card>
 
-        {/* Variantes */}
+        {/* Variantes de Botón */}
         <Card className="p-6">
           <Typography variant="h3" weight="bold" className="mb-4">
-            Variantes
+            Variantes de Botón
           </Typography>
           <Typography variant="body1" color="secondary" className="mb-6">
             Diferentes estilos visuales para distintos contextos de uso.
@@ -319,7 +376,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botón principal para acciones importantes y llamadas a la acción.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="primary" size="sm">Small</Button>
                 <Button variant="primary">Medium</Button>
                 <Button variant="primary" size="lg">Large</Button>
@@ -334,7 +391,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botón secundario para acciones complementarias.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="secondary" size="sm">Small</Button>
                 <Button variant="secondary">Medium</Button>
                 <Button variant="secondary" size="lg">Large</Button>
@@ -349,7 +406,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botón con borde para acciones menos prominentes.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="outline" size="sm">Small</Button>
                 <Button variant="outline">Medium</Button>
                 <Button variant="outline" size="lg">Large</Button>
@@ -364,7 +421,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botón transparente para acciones sutiles.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="ghost" size="sm">Small</Button>
                 <Button variant="ghost">Medium</Button>
                 <Button variant="ghost" size="lg">Large</Button>
@@ -379,7 +436,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botón para acciones destructivas como eliminar.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="destructive" size="sm">Small</Button>
                 <Button variant="destructive">Medium</Button>
                 <Button variant="destructive" size="lg">Large</Button>
@@ -406,7 +463,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Botones con iconos para mejorar la comprensión visual.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="primary" icon={<PlusIcon className="w-4 h-4" />}>
                   Agregar
                 </Button>
@@ -425,7 +482,7 @@ const ComponentsSection: React.FC = () => {
               <Typography variant="body2" color="secondary" className="mb-3">
                 Estados para indicar carga o deshabilitación.
               </Typography>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-4">
                 <Button variant="primary" loading>
                   Cargando
                 </Button>
@@ -437,61 +494,6 @@ const ComponentsSection: React.FC = () => {
                 </Button>
                 <Button variant="outline" disabled>
                   Deshabilitado
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Ejemplos de Uso */}
-        <Card className="p-6">
-          <Typography variant="h3" weight="bold" className="mb-4">
-            Ejemplos de Uso
-          </Typography>
-          <Typography variant="body1" color="secondary" className="mb-6">
-            Casos de uso comunes y patrones recomendados.
-          </Typography>
-          
-          <div className="space-y-6">
-            {/* Formularios */}
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-3">
-                Formularios
-              </Typography>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="primary">Guardar</Button>
-                <Button variant="outline">Cancelar</Button>
-                <Button variant="ghost">Resetear</Button>
-              </div>
-            </div>
-
-            {/* Acciones de Lista */}
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-3">
-                Acciones de Lista
-              </Typography>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" icon={<EditIcon className="w-4 h-4" />}>
-                  Editar
-                </Button>
-                <Button variant="destructive" size="sm" icon={<PlusIcon className="w-4 h-4" />}>
-                  Eliminar
-                </Button>
-                <Button variant="ghost" size="sm" icon={<SaveIcon className="w-4 h-4" />} iconOnly />
-              </div>
-            </div>
-
-            {/* Navegación */}
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-3">
-                Navegación
-              </Typography>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="primary" size="lg">
-                  Continuar
-                </Button>
-                <Button variant="secondary" size="lg">
-                  Volver
                 </Button>
               </div>
             </div>
@@ -7255,6 +7257,580 @@ const ComponentsSection: React.FC = () => {
     );
   };
 
+  // Funciones de renderizado para componentes de Layout y Formularios
+  const renderPageHeaderComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            PageHeader Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente PageHeader proporciona una estructura consistente para los títulos de página.
+            Incluye soporte para iconos, acciones y diferentes variantes de color.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Header básico */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Header Básico
+              </Typography>
+              <PageHeader
+                title="Investigaciones"
+                subtitle="Gestiona y organiza todas las investigaciones"
+                icon={<InfoIcon className="w-5 h-5" />}
+                color="blue"
+              />
+            </div>
+
+            {/* Header con acciones */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Header con Acciones
+              </Typography>
+              <PageHeader
+                title="Usuarios"
+                subtitle="Administra los usuarios del sistema"
+                primaryAction={{
+                  label: "Nuevo Usuario",
+                  onClick: () => console.log('Crear usuario'),
+                  variant: "primary"
+                }}
+                secondaryActions={[
+                  {
+                    label: "Importar",
+                    onClick: () => console.log('Importar'),
+                    variant: "outline"
+                  }
+                ]}
+                color="green"
+              />
+            </div>
+
+            {/* Header compacto */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Header Compacto
+              </Typography>
+              <PageHeader
+                title="Configuración"
+                variant="compact"
+                color="purple"
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderFormContainerComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            FormContainer Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Contenedor flexible para formularios con elementos de entrada como Input, Select, DatePicker, etc.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Formulario básico */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Formulario Básico
+              </Typography>
+              <FormContainer
+                title="Información Básica"
+                icon={<UserIcon className="w-5 h-5" />}
+                variant="default"
+                padding="lg"
+                spacing="md"
+              >
+                <FormItem layout="full">
+                  <Input label="Nombre" placeholder="Ingrese nombre" />
+                </FormItem>
+                <FormItem layout="half">
+                  <Input label="Email" type="email" placeholder="email@ejemplo.com" />
+                  <Input label="Teléfono" type="tel" placeholder="+1234567890" />
+                </FormItem>
+              </FormContainer>
+            </div>
+
+            {/* Formulario compacto */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Formulario Compacto
+              </Typography>
+              <FormContainer
+                title="Configuración"
+                icon={<SettingsIcon className="w-5 h-5" />}
+                variant="compact"
+                padding="md"
+                spacing="sm"
+              >
+                <FormItem layout="full">
+                  <Input label="API Key" placeholder="Ingrese API key" />
+                </FormItem>
+              </FormContainer>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderFormItemComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            FormItem Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Elemento de formulario que proporciona layout flexible para diferentes tipos de entrada.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+                         <FormContainer title="Diferentes Layouts" icon={<SettingsIcon className="w-5 h-5" />}>
+              <FormItem layout="full">
+                <Input label="Campo Completo" placeholder="Ocupa todo el ancho" />
+              </FormItem>
+              <FormItem layout="half">
+                <Input label="Campo 1" placeholder="Mitad del ancho" />
+                <Input label="Campo 2" placeholder="Mitad del ancho" />
+              </FormItem>
+              <FormItem layout="third">
+                <Input label="Campo 1" placeholder="Un tercio" />
+                <Input label="Campo 2" placeholder="Un tercio" />
+                <Input label="Campo 3" placeholder="Un tercio" />
+              </FormItem>
+            </FormContainer>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderInfoContainerComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            InfoContainer Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Contenedor para mostrar información de manera consistente en toda la plataforma.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Información básica */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Información Básica
+              </Typography>
+              <InfoContainer
+                title="Información Personal"
+                icon={<UserIcon className="w-5 h-5" />}
+                variant="default"
+                padding="lg"
+              >
+                <InfoItem label="Nombre completo" value="Juan Carlos Pérez" />
+                <InfoItem label="Email" value="juan@ejemplo.com" />
+                <InfoItem label="Teléfono" empty={true} />
+                <InfoItem label="Departamento" value="Desarrollo" />
+              </InfoContainer>
+            </div>
+
+            {/* Información de proyecto */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Información de Proyecto
+              </Typography>
+              <InfoContainer
+                title="Detalles del Proyecto"
+                icon={<InfoIcon className="w-5 h-5" />}
+                variant="elevated"
+              >
+                <InfoItem label="Estado" value={<Chip variant="success">Activo</Chip>} />
+                <InfoItem label="Fecha de inicio" value="01/01/2024" />
+                <InfoItem label="Responsable" value="María García" />
+                <InfoItem label="Presupuesto" value="$50,000" />
+              </InfoContainer>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderInfoItemComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            InfoItem Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Elemento individual de información con título sutil y valor prominente.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+                         <InfoContainer title="Diferentes Variantes" icon={<InfoIcon className="w-5 h-5" />}>
+              <InfoItem label="Básico" value="Valor normal" />
+              <InfoItem label="Compacto" value="Valor compacto" variant="compact" />
+              <InfoItem label="Stacked" value="Valor apilado" variant="stacked" />
+              <InfoItem label="Inline" value="Valor en línea" variant="inline" />
+              <InfoItem label="Vacío" empty={true} emptyMessage="Sin información" />
+              <InfoItem label="Requerido" value="Valor requerido" required={true} />
+            </InfoContainer>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderSubtitleComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Subtitle Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Componente para subtítulos con estilos consistentes.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-4">
+            <Subtitle>Subtítulo básico</Subtitle>
+            <Subtitle size="lg">Subtítulo grande</Subtitle>
+            <Subtitle size="sm">Subtítulo pequeño</Subtitle>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderContainerTitleComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            ContainerTitle Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Título consistente para contenedores de información con el mismo estilo sutil que PageHeader.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-6">
+            <ContainerTitle title="Información de Contacto" />
+            <ContainerTitle 
+              title="Detalles del Usuario"
+              icon={<UserIcon className="w-5 h-5" />}
+              size="lg"
+            />
+            <ContainerTitle 
+              title="Resumen"
+              alignment="center"
+              size="sm"
+            />
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderFilterLabelComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            FilterLabel Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Etiqueta para filtros con estilos consistentes.
+          </Typography>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos
+          </Typography>
+          
+          <div className="space-y-4">
+            <FilterLabel>Filtro básico</FilterLabel>
+            <Input placeholder="Valor del filtro" />
+            
+            <FilterLabel>Filtro con clase personalizada</FilterLabel>
+            <Input placeholder="Filtro personalizado" className="mt-2" />
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderParticipantCardComponent = () => {
+    // Datos de ejemplo para las cards
+    const participanteExterno = {
+      id: '1',
+      nombre: 'Juan Pérez',
+      email: 'juan.perez@empresa.com',
+      tipo: 'externo',
+      empresa_nombre: 'TechCorp',
+      rol_empresa: 'Desarrollador Senior',
+      estado_agendamiento: 'Agendada',
+      fecha_sesion: '2025-08-28T10:00:00Z',
+      hora_sesion: '10:00:00',
+      duracion_sesion: 60,
+      responsable_agendamiento: {
+        nombre: 'María García',
+        full_name: 'María García'
+      }
+    };
+
+    const participanteInterno = {
+      id: '2',
+      nombre: 'Ana López',
+      email: 'ana.lopez@nuestraempresa.com',
+      tipo: 'interno',
+      empresa_nombre: 'Nuestra Empresa',
+      rol_empresa: 'Product Manager',
+      estado_agendamiento: 'En progreso',
+      fecha_sesion: '2025-08-29T14:00:00Z',
+      hora_sesion: '14:00:00',
+      duracion_sesion: 90,
+      responsable_agendamiento: {
+        nombre: 'Carlos Ruiz',
+        full_name: 'Carlos Ruiz'
+      }
+    };
+
+    const participanteFriendFamily = {
+      id: '3',
+      nombre: 'Roberto Silva',
+      email: 'roberto.silva@email.com',
+      tipo: 'friend_family',
+      estado_agendamiento: 'Pendiente de agendamiento',
+      responsable_agendamiento: {
+        nombre: 'Laura Martínez',
+        full_name: 'Laura Martínez'
+      }
+    };
+
+    return (
+      <div className="space-y-8">
+        {/* Descripción */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            ParticipantCard Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Componente especializado para mostrar información de participantes en reclutamientos. 
+            Maneja diferentes tipos de participantes (externo, interno, friend & family) y estados 
+            especiales como "Pendiente de agendamiento".
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Características principales:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Maneja 3 tipos de participantes: Externo, Interno, Friend & Family</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Estado especial para "Pendiente de agendamiento"</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Iconos específicos según el tipo de participante</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Botones de acción consistentes (editar, eliminar)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Colores suaves siguiendo los lineamientos del sistema</span>
+              </Typography>
+            </div>
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos de Cards
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes variantes del componente según el tipo de participante y estado.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Participante Externo */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Participante Externo
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante de empresa externa con información completa.
+              </Typography>
+              <div className="max-w-2xl">
+                <ParticipantCard
+                  participante={participanteExterno}
+                  onEdit={() => console.log('Editar participante externo')}
+                  onDelete={() => console.log('Eliminar participante externo')}
+                />
+              </div>
+            </div>
+
+            {/* Participante Interno */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Participante Interno
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante interno de la empresa con información de departamento.
+              </Typography>
+              <div className="max-w-2xl">
+                <ParticipantCard
+                  participante={participanteInterno}
+                  onEdit={() => console.log('Editar participante interno')}
+                  onDelete={() => console.log('Eliminar participante interno')}
+                />
+              </div>
+            </div>
+
+            {/* Participante Friend & Family */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Participante Friend & Family
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante de tipo friend & family con información básica.
+              </Typography>
+              <div className="max-w-2xl">
+                <ParticipantCard
+                  participante={participanteFriendFamily}
+                  onEdit={() => console.log('Editar participante friend & family')}
+                  onDelete={() => console.log('Eliminar participante friend & family')}
+                  onConvertAgendamiento={() => console.log('Convertir agendamiento')}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Props y Uso */}
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Props y Uso
+          </Typography>
+          <div className="space-y-4">
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Props disponibles:
+              </Typography>
+              <div className="space-y-1">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">participante</code>
+                  <span>: Objeto con datos del participante (requerido)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onEdit</code>
+                  <span>: Función para editar participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onDelete</code>
+                  <span>: Función para eliminar participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onConvertAgendamiento</code>
+                  <span>: Función para convertir agendamiento pendiente (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onViewMore</code>
+                  <span>: Función para ver más detalles del participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">className</code>
+                  <span>: Clases CSS adicionales (opcional)</span>
+                </Typography>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Uso básico:
+              </Typography>
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-sm overflow-x-auto">
+{`<ParticipantCard
+  participante={participanteData}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+  onViewMore={handleViewMore}
+/>`}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   const renderComponentContent = () => {
     if (activeComponent === 'button') {
       return renderButtonComponent();
@@ -9570,6 +10146,43 @@ const ComponentsSection: React.FC = () => {
       );
     }
 
+    // Componentes de Layout y Formularios
+    if (activeComponent === 'page-header') {
+      return renderPageHeaderComponent();
+    }
+    
+    if (activeComponent === 'form-container') {
+      return renderFormContainerComponent();
+    }
+    
+    if (activeComponent === 'form-item') {
+      return renderFormItemComponent();
+    }
+    
+    if (activeComponent === 'info-container') {
+      return renderInfoContainerComponent();
+    }
+    
+    if (activeComponent === 'info-item') {
+      return renderInfoItemComponent();
+    }
+    
+    if (activeComponent === 'subtitle') {
+      return renderSubtitleComponent();
+    }
+    
+    if (activeComponent === 'container-title') {
+      return renderContainerTitleComponent();
+    }
+    
+    if (activeComponent === 'filter-label') {
+      return renderFilterLabelComponent();
+    }
+    
+    if (activeComponent === 'participant-card') {
+      return renderParticipantCardComponent();
+    }
+
     return (
       <Card className="p-6 text-center">
         <Typography variant="body1" color="secondary">
@@ -9601,9 +10214,7 @@ const ComponentsSection: React.FC = () => {
                   className="flex items-center justify-between w-full px-3 py-2.5 rounded-md transition-colors text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none"
                 >
                   <span className="flex items-center gap-2">
-                    {category.id === 'inputs' && <PlusIcon className="w-4 h-4" />}
-                    {category.id === 'navigation' && <MenuIcon className="w-4 h-4" />}
-                    {category.id === 'buttons' && <EditIcon className="w-4 h-4" />}
+                    {category.icon}
                     {category.name}
                   </span>
                   {activeCategory === category.id ? (

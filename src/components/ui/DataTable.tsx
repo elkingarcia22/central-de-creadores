@@ -4,6 +4,7 @@ import Card from './Card';
 import Button from './Button';
 import Input from './Input';
 import Select from './Select';
+import SelectSimple from './SelectSimple';
 import Typography from './Typography';
 import { ChevronDownIcon, ChevronRightIcon, EditIcon, CheckIcon, CloseIcon } from '../icons';
 
@@ -227,16 +228,28 @@ const DataTable: React.FC<DataTableProps> = ({
                 />
               )}
               {filterable && (
-                <Select
-                  options={[
-                    { value: '', label: 'Todos' },
-                    ...filterOptions
-                  ]}
-                  value={filter}
-                  onChange={(value) => setFilter(value.toString())}
-                  size="md"
-                  className="min-w-[150px]"
-                />
+                <div className="relative">
+                  {(() => {
+                    const allOptions = [
+                      { value: '', label: 'Todos' },
+                      ...filterOptions
+                    ];
+                    console.log('🔍 DataTable - filterOptions:', filterOptions);
+                    console.log('🔍 DataTable - allOptions:', allOptions);
+                    console.log('🔍 DataTable - current filter value:', filter);
+                    return (
+                      <SelectSimple
+                        options={allOptions}
+                        value={filter}
+                        onChange={(value) => {
+                          console.log('🔍 DataTable - Filter changed to:', value);
+                          setFilter(value.toString());
+                        }}
+                        placeholder="Filtrar..."
+                      />
+                    );
+                  })()}
+                </div>
               )}
             </div>
           </div>
@@ -244,7 +257,7 @@ const DataTable: React.FC<DataTableProps> = ({
       )}
 
       {/* Tabla */}
-      <Card className="overflow-x-hidden overflow-y-visible">
+      <Card className="overflow-x-auto overflow-y-visible">
         {/* Barra de acciones masivas integrada */}
         {selectable && selectedRows.size > 0 && bulkActions.length > 0 && (
           <div className="px-4 py-3 bg-muted/50 border-b border-border">

@@ -11,8 +11,11 @@ import {
   Textarea,
   UserSelectorWithAvatar,
   Chip,
-  MultiSelect
+  MultiSelect,
+  PageHeader
 } from './index';
+import FilterLabel from './FilterLabel';
+import { UserIcon } from '../icons';
 
 interface CrearParticipanteExternoModalProps {
   isOpen: boolean;
@@ -335,39 +338,54 @@ export default function CrearParticipanteExternoModal({
     <SideModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Crear Participante Externo"
       width="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Nombre"
-            value={formData.nombre}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              nombre: e.target.value
-            }))}
-            placeholder="Nombre completo"
-            disabled={loading}
-            required
-          />
-          <Input
-            label="Email"
-            value={formData.email}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              email: e.target.value
-            }))}
-            placeholder="email@ejemplo.com"
-            disabled={loading}
-            type="email"
-          />
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title="Crear Participante Externo"
+          variant="title-only"
+          onClose={handleClose}
+          icon={<UserIcon className="w-5 h-5" />}
+        />
+
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FilterLabel>Nombre *</FilterLabel>
+            <Input
+              value={formData.nombre}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                nombre: e.target.value
+              }))}
+              placeholder="Nombre completo"
+              disabled={loading}
+              required
+            />
+          </div>
+          <div>
+            <FilterLabel>Email</FilterLabel>
+            <Input
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                email: e.target.value
+              }))}
+              placeholder="email@ejemplo.com"
+              disabled={loading}
+              type="email"
+            />
+          </div>
         </div>
 
         <div className="w-full">
+          <FilterLabel>Rol en la Empresa *</FilterLabel>
           <Select
-            label="Rol en la Empresa"
             value={formData.rolEmpresaId}
             onChange={(value) => setFormData(prev => ({
               ...prev,
@@ -386,8 +404,8 @@ export default function CrearParticipanteExternoModal({
 
         {/* Empresa en línea completa */}
         <div className="w-full">
+          <FilterLabel>Empresa</FilterLabel>
           <Select
-            label="Empresa"
             value={formData.empresaId}
             onChange={(value) => {
               const empresaSeleccionada = empresas.find(e => e.id === value);
@@ -422,9 +440,7 @@ export default function CrearParticipanteExternoModal({
         {/* KAM en línea completa */}
         {formData.empresaId && (
           <div className="w-full">
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              KAM
-            </Typography>
+            <FilterLabel>KAM</FilterLabel>
             <UserSelectorWithAvatar
               value={formData.kamId}
               onChange={(value) => setFormData(prev => ({
@@ -449,67 +465,77 @@ export default function CrearParticipanteExternoModal({
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select
-            label="Estado del Participante"
-            value={formData.estadoParticipante}
-            onChange={(value) => setFormData(prev => ({
-              ...prev,
-              estadoParticipante: value as string
-            }))}
-            placeholder="Seleccionar estado"
-            options={estadosParticipante.map(e => ({
-              value: e.id,
-              label: e.nombre
-            }))}
-            disabled={loading}
-            fullWidth
-          />
+          <div>
+            <FilterLabel>Estado del Participante</FilterLabel>
+            <Select
+              value={formData.estadoParticipante}
+              onChange={(value) => setFormData(prev => ({
+                ...prev,
+                estadoParticipante: value as string
+              }))}
+              placeholder="Seleccionar estado"
+              options={estadosParticipante.map(e => ({
+                value: e.id,
+                label: e.nombre
+              }))}
+              disabled={loading}
+              fullWidth
+            />
+          </div>
 
-          <MultiSelect
-            label="Productos Relacionados"
-            value={formData.productosRelacionados}
-            onChange={(value) => setFormData(prev => ({
-              ...prev,
-              productosRelacionados: value as string[]
-            }))}
-            placeholder="Seleccionar productos"
-            options={productos.map(p => ({
-              value: p.id,
-              label: p.nombre
-            }))}
-            disabled={loading}
-            fullWidth
-          />
+          <div>
+            <FilterLabel>Productos Relacionados</FilterLabel>
+            <MultiSelect
+              value={formData.productosRelacionados}
+              onChange={(value) => setFormData(prev => ({
+                ...prev,
+                productosRelacionados: value as string[]
+              }))}
+              placeholder="Seleccionar productos"
+              options={productos.map(p => ({
+                value: p.id,
+                label: p.nombre
+              }))}
+              disabled={loading}
+              fullWidth
+            />
+          </div>
         </div>
         
         {/* Campos de texto amplio en filas separadas */}
         <div className="space-y-4">
-          <Textarea
-            label="Dolores y Necesidades"
-            value={formData.doleresNecesidades}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              doleresNecesidades: e.target.value
-            }))}
-            placeholder="Describe los dolores y necesidades del participante, sus principales desafíos, problemas que enfrenta en su rol, etc..."
-            disabled={loading}
-            rows={4}
-            fullWidth
-          />
-          <Textarea
-            label="Descripción"
-            value={formData.descripcion}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              descripcion: e.target.value
-            }))}
-            placeholder="Descripción detallada del participante, su experiencia, contexto, información adicional relevante..."
-            disabled={loading}
-            rows={4}
-            fullWidth
-          />
+          <div>
+            <FilterLabel>Dolores y Necesidades</FilterLabel>
+            <Textarea
+              value={formData.doleresNecesidades}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                doleresNecesidades: e.target.value
+              }))}
+              placeholder="Describe los dolores y necesidades del participante, sus principales desafíos, problemas que enfrenta en su rol, etc..."
+              disabled={loading}
+              rows={4}
+              fullWidth
+            />
+          </div>
+          <div>
+            <FilterLabel>Descripción</FilterLabel>
+            <Textarea
+              value={formData.descripcion}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                descripcion: e.target.value
+              }))}
+              placeholder="Descripción detallada del participante, su experiencia, contexto, información adicional relevante..."
+              disabled={loading}
+              rows={4}
+              fullWidth
+            />
+          </div>
         </div>
-      </form>
-    </SideModal>
+            </form>
+          </div>
+        </div>
+      </SideModal>
   );
 } 

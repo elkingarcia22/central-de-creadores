@@ -240,13 +240,12 @@ const ConvertirSeguimientoPage: NextPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => router.push('/investigaciones')}
-              className="p-2"
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </Button>
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
             <div>
               <Typography variant="h2">Convertir Seguimiento en Investigación</Typography>
               <Typography variant="body2" color="secondary">

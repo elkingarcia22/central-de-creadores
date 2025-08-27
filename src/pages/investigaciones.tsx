@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useUser } from '../contexts/UserContext';
 import { usePermisos } from '../utils/permisosUtils';
 
-import { Layout } from '../components/ui';
+import { Layout, PageHeader } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -24,6 +24,7 @@ import { InlineSelect, InlineDate } from '../components/ui/InlineEdit';
 import InlineUserSelect from '../components/ui/InlineUserSelect';
 import SeguimientoSideModal from '../components/ui/SeguimientoSideModal';
 import { SearchIcon, PlusIcon, MoreVerticalIcon, EditIcon, CopyIcon, FileTextIcon, LinkIcon, BarChartIcon, TrashIcon, EyeIcon, FilterIcon, UserIcon, InvestigacionesIcon, AlertTriangleIcon, CheckCircleIcon, ClipboardListIcon, InfoIcon } from '../components/icons';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
 import { 
   obtenerInvestigaciones, 
   actualizarInvestigacion, 
@@ -46,8 +47,9 @@ import {
 } from '../api/supabase-libretos';
 import { obtenerSeguimientosPorInvestigacion, crearSeguimiento } from '../api/supabase-seguimientos';
 import { formatearFecha } from '../utils/fechas';
-import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText, getRiesgoDescripcion, getRiesgoPrioridad } from '../utils/riesgoUtils';
-import { getEstadoInvestigacionVariant, getEstadoInvestigacionText } from '../utils/estadoUtils';
+import { getRiesgoIconName, getRiesgoDescripcion, getRiesgoPrioridad } from '../utils/riesgoUtils';
+
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 import type { Investigacion as InvestigacionSupabase, Usuario as UsuarioSupabase, Periodo as PeriodoSupabase } from '../types/supabase-investigaciones';
 import type { LibretoInvestigacion, LibretoFormData } from '../types/libretos';
 import type { SeguimientoFormData } from '../types/seguimientos';
@@ -856,6 +858,8 @@ export default function InvestigacionesPage() {
   // FUNCIONES PARA GESTIONAR LIBRETOS
   // ====================================
 
+
+
   // === CÁLCULO DE MÉTRICAS DE RIESGO EN VIVO ===
   const metricasRiesgo = useMemo(() => {
     const conteo = { alto: 0, medio: 0, bajo: 0, sin_fecha: 0 };
@@ -948,8 +952,8 @@ export default function InvestigacionesPage() {
             options={estadosInvestigacion}
             onSave={(newValue) => handleInlineUpdate(row.id, 'estado', newValue)}
             useChip={true}
-            getChipVariant={getEstadoInvestigacionVariant}
-            getChipText={getEstadoInvestigacionText}
+            getChipVariant={getChipVariant}
+            getChipText={getChipText}
           />
         );
       }
@@ -1019,7 +1023,7 @@ export default function InvestigacionesPage() {
         if (riesgoInfo.nivel === 'completado') {
           return null;
         }
-        const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
+        const badgeVariant = getChipVariant(riesgoInfo.nivel) as any;
         const iconName = getRiesgoIconName(riesgoInfo.nivel);
 
         // Mapeo de iconos por nombre
@@ -1043,7 +1047,7 @@ export default function InvestigacionesPage() {
               icon={icon}
               className="whitespace-nowrap chip-group-hover:opacity-80 transition-opacity"
             >
-              {getRiesgoText(riesgoInfo.nivel)}
+              {getChipText(riesgoInfo.nivel)}
             </Chip>
             {/* Tooltip personalizado */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 chip-group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -1122,26 +1126,26 @@ export default function InvestigacionesPage() {
           });
         }
 
-        // Agregar acción de eliminar solo si tiene permisos
+        // Agregar acción de crear seguimiento si está en progreso
+        if (row.estado === 'en_progreso') {
+          actions.push({
+            label: 'Crear Seguimiento',
+            icon: <PlusIcon className="w-4 h-4" />,
+            onClick: () => {
+              setInvestigacionParaSeguimiento(row);
+              setShowSeguimientoModal(true);
+            },
+            className: 'text-popover-foreground hover:text-popover-foreground/80'
+          });
+        }
+
+        // Agregar acción de eliminar solo si tiene permisos (al final)
         if (tienePermisoSobreElemento(row, 'investigaciones', 'eliminar')) {
           actions.push({
             label: 'Eliminar',
             icon: <TrashIcon className="w-4 h-4" />,
             onClick: () => handleDelete(row),
             className: 'text-destructive hover:text-destructive/80'
-          });
-        }
-
-        // Agregar acción de crear seguimiento si está en progreso
-        if (row.estado === 'en_progreso') {
-          actions.splice(2, 0, {
-            label: 'Crear seguimiento',
-            icon: <PlusIcon className="w-4 h-4" />,
-            onClick: () => {
-              setInvestigacionParaSeguimiento(row);
-              setShowSeguimientoModal(true);
-            },
-            className: 'text-success hover:text-success/80'
           });
         }
 
@@ -1160,25 +1164,16 @@ export default function InvestigacionesPage() {
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
-                <div>
-                  <Typography variant="h2" color="title" weight="bold">
-                    Investigaciones
-                  </Typography>
-                  <Typography variant="subtitle1" color="secondary">
-                  Gestiona y organiza todas las investigaciones
-                  </Typography>
-              </div>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={handleCrearInvestigacion}
-              >
-                Nueva Investigación
-              </Button>
-            </div>
-          </div>
+          <PageHeader
+            title="Investigaciones"
+            subtitle="Gestiona y organiza todas las investigaciones"
+            color="blue"
+            primaryAction={{
+              label: "Nueva Investigación",
+              onClick: handleCrearInvestigacion,
+              variant: "primary"
+            }}
+          />
 
           {/* Estadísticas del Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -1186,69 +1181,86 @@ export default function InvestigacionesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                    {investigaciones.length}
+                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                    <AnimatedCounter 
+                      value={investigaciones.length} 
+                      duration={2000}
+                      className="text-gray-700 dark:text-gray-200"
+                    />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Total Investigaciones
                   </Typography>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900 bg-opacity-20' : 'bg-primary/10'}`}>
-                  <InvestigacionesIcon className="w-6 h-6 text-primary" />
+                                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <InvestigacionesIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            {/* Estados de Investigaciones */}
-            <Card variant="elevated" padding="md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                    {investigaciones.filter(inv => inv.estado === 'en_progreso').length}
-                  </Typography>
-                  <Typography variant="body2" color="secondary">
-                    En Progreso
-                  </Typography>
+              {/* Estados de Investigaciones */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={investigaciones.filter(inv => inv.estado === 'en_progreso').length} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      En Progreso
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900 bg-opacity-20' : 'bg-warning/10'}`}>
-                  <BarChartIcon className="w-6 h-6 text-warning" />
-                </div>
-              </div>
-            </Card>
+              </Card>
 
-            {/* Seguimientos */}
-            <Card variant="elevated" padding="md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                    {metricasSeguimientos?.seguimientos?.total || 0}
-                  </Typography>
-                  <Typography variant="body2" color="secondary">
-                    Seguimientos
-                  </Typography>
+              {/* Seguimientos */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={metricasSeguimientos?.seguimientos?.total || 0} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Seguimientos
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <ClipboardListIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
                 </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900 bg-opacity-20' : 'bg-secondary/10'}`}>
-                  <ClipboardListIcon className="w-6 h-6 text-secondary" />
-                </div>
-              </div>
-            </Card>
+              </Card>
 
-            {/* Tasa de Finalización */}
-            <Card variant="elevated" padding="md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Typography variant="h4" weight="bold" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                    {investigaciones.length > 0 
-                      ? Math.round((investigaciones.filter(inv => inv.estado === 'finalizado').length / investigaciones.length) * 100)
-                      : 0}%
-                  </Typography>
-                  <Typography variant="body2" color="secondary">
-                    Tasa Finalización
-                  </Typography>
-                </div>
-                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900 bg-opacity-20' : 'bg-success/10'}`}>
-                  <CheckCircleIcon className="w-6 h-6 text-success" />
-                </div>
+              {/* Tasa de Finalización */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={investigaciones.length > 0 
+                          ? Math.round((investigaciones.filter(inv => inv.estado === 'finalizado').length / investigaciones.length) * 100)
+                          : 0} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                        suffix="%"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Tasa Finalización
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
               </div>
             </Card>
           </div>
@@ -1267,15 +1279,15 @@ export default function InvestigacionesPage() {
                 />
               </div>
               <div className="flex items-center gap-2">
-              <Button
-                  variant={getActiveFiltersCount() > 0 ? "primary" : "secondary"}
+                              <Button
+                  variant={getActiveFiltersCount() > 0 ? "primary" : "outline"}
                   onClick={handleOpenFilters}
-                  className="relative flex items-center gap-2"
+                  className="relative"
+                  iconOnly
+                  icon={<FilterIcon />}
                 >
-                  <FilterIcon className="w-4 h-4" />
-                  Filtros Avanzados
                   {getActiveFiltersCount() > 0 && (
-                    <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                    <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                       {getActiveFiltersCount()}
                     </span>
                   )}
@@ -1347,7 +1359,7 @@ export default function InvestigacionesPage() {
           ],
           estadoSeguimiento: [
             { value: 'pendiente', label: 'Pendiente' },
-            { value: 'en_progreso', label: 'En progreso' },
+            { value: 'en_progreso', label: 'En Progreso' },
             { value: 'completado', label: 'Completado' },
             { value: 'convertido', label: 'Convertido' },
             { value: 'bloqueado', label: 'Bloqueado' },

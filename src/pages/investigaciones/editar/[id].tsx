@@ -6,7 +6,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
-import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip, PageHeader, FormContainer, FormItem, Subtitle, EmptyState } from '../../../components/ui';
 import { 
   ArrowLeftIcon,
   InfoIcon,
@@ -31,6 +31,7 @@ import {
   EstadoAgendamiento
 } from '../../../types/investigaciones';
 import { formatearFechaParaInput } from '../../../utils/fechas';
+import { getChipVariant, getChipText } from '../../../utils/chipUtils';
 // Tipos de Supabase para catálogos reales
 import type {
   Producto,
@@ -98,23 +99,8 @@ const EditarInvestigacionPage: NextPage = () => {
   };
 
   // Función para obtener el color del badge según el estado
-  const obtenerColorEstado = (estado: EstadoInvestigacion) => {
-    switch (estado) {
-      case 'en_borrador':
-        return 'warning';
-      case 'por_iniciar':
-        return 'primary';
-      case 'en_progreso':
-        return 'info';
-      case 'finalizado':
-        return 'success';
-      case 'pausado':
-        return 'secondary';
-      case 'cancelado':
-        return 'danger';
-      default:
-        return 'secondary';
-    }
+  const obtenerColorEstado = (estado: EstadoInvestigacion): any => {
+    return getChipVariant(estado);
   };
 
   // Cargar datos al montar el componente
@@ -311,15 +297,13 @@ const EditarInvestigacionPage: NextPage = () => {
     return (
       <Layout rol={rolSeleccionado}>
         <div className="py-8">
-          <Card className="p-8 text-center">
-            <Typography variant="h4" className="mb-4">Acceso denegado</Typography>
-            <Typography variant="body1" color="secondary" className="mb-6">
-              No tienes permisos para editar esta investigación
-            </Typography>
-            <Button variant="primary" onClick={() => router.push('/investigaciones')}>
-              Volver a Investigaciones
-            </Button>
-          </Card>
+          <EmptyState
+            icon={<ConfiguracionesIcon className="w-8 h-8" />}
+            title="Acceso denegado"
+            description="No tienes permisos para editar esta investigación."
+            actionText="Volver a Investigaciones"
+            onAction={() => router.push('/investigaciones')}
+          />
         </div>
       </Layout>
     );
@@ -350,15 +334,13 @@ const EditarInvestigacionPage: NextPage = () => {
     return (
       <Layout rol={rolSeleccionado}>
         <div className="py-8">
-          <Card className="p-8 text-center">
-            <Typography variant="h4" className="mb-4">Investigación no encontrada</Typography>
-            <Typography variant="body1" color="secondary" className="mb-6">
-              La investigación que buscas no existe o no tienes permisos para verla
-            </Typography>
-            <Button variant="primary" onClick={() => router.push('/investigaciones')}>
-              Volver a Investigaciones
-            </Button>
-          </Card>
+          <EmptyState
+            icon={<InfoIcon className="w-8 h-8" />}
+            title="Investigación no encontrada"
+            description="La investigación que buscas no existe o no tienes permisos para verla."
+            actionText="Volver a Investigaciones"
+            onAction={() => router.push('/investigaciones')}
+          />
         </div>
       </Layout>
     );
@@ -368,182 +350,185 @@ const EditarInvestigacionPage: NextPage = () => {
     <Layout rol={rolSeleccionado}>
       <div className="py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              onClick={handleVolver}
-              className="p-2"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </Button>
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <Typography variant="h2">{investigacion.nombre}</Typography>
-                <Chip 
-                  variant={obtenerColorEstado(investigacion.estado)} 
-                  className="capitalize"
-                >
-                  {investigacion.estado?.replace('_', ' ')}
-                </Chip>
-              </div>
-              <Typography variant="body2" color="secondary">
-                Edita la información de la investigación
-              </Typography>
-            </div>
-          </div>
-          
-          {/* Acciones */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              onClick={handleVolver}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              loading={loadingForm}
-            >
-              Guardar Cambios
-            </Button>
-          </div>
+        <div className="flex items-center gap-4 mb-6">
+          <PageHeader
+            title={investigacion.nombre}
+            subtitle="Edita la información de la investigación"
+            variant="compact"
+            color="blue"
+            className="mb-0 flex-1"
+            chip={{
+              label: investigacion.estado?.replace('_', ' ') || '',
+              variant: obtenerColorEstado(investigacion.estado),
+              size: 'sm'
+            }}
+            primaryAction={{
+              label: "Guardar Cambios",
+              onClick: handleSubmit,
+              variant: "primary",
+              disabled: loadingForm
+            }}
+            secondaryActions={[
+              {
+                label: "Cancelar",
+                onClick: handleVolver,
+                variant: "secondary"
+              }
+            ]}
+          />
         </div>
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Información básica */}
-          <Card className="p-6">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <InfoIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Información Básica</Typography>
+              <InfoIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>Información Básica</Subtitle>
             </div>
             
             <div className="space-y-4">
-              <Input
-                label="Nombre de la investigación"
-                placeholder="Ej: Investigación de usabilidad del dashboard"
-                value={formData.nombre}
-                onChange={(e) => handleInputChange('nombre', e.target.value)}
-                required
-                fullWidth
-              />
+              <FormItem>
+                <Input
+                  label="Nombre de la investigación"
+                  placeholder="Ej: Investigación de usabilidad del dashboard"
+                  value={formData.nombre}
+                  onChange={(e) => handleInputChange('nombre', e.target.value)}
+                  required
+                  fullWidth
+                />
+              </FormItem>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Select
-                  label="Tipo de investigación"
-                  placeholder="Seleccionar tipo"
-                  value={formData.tipo_investigacion_id}
-                  onChange={(value) => handleInputChange('tipo_investigacion_id', value.toString())}
-                  options={tiposInvestigacion.map(tipo => ({
-                    value: tipo.id,
-                    label: tipo.nombre
-                  }))}
-                  required
-                  fullWidth
-                />
+                <FormItem>
+                  <Select
+                    label="Tipo de investigación"
+                    placeholder="Seleccionar tipo"
+                    value={formData.tipo_investigacion_id}
+                    onChange={(value) => handleInputChange('tipo_investigacion_id', value.toString())}
+                    options={tiposInvestigacion.map(tipo => ({
+                      value: tipo.id,
+                      label: tipo.nombre
+                    }))}
+                    required
+                    fullWidth
+                  />
+                </FormItem>
                 
-                <Select
-                  label="Producto"
-                  placeholder="Seleccionar producto"
-                  value={formData.producto}
-                  onChange={(value) => handleInputChange('producto', value.toString())}
-                  options={productos.map(producto => ({
-                    value: producto.id,
-                    label: producto.nombre
-                  }))}
-                  required
-                  fullWidth
-                />
+                <FormItem>
+                  <Select
+                    label="Producto"
+                    placeholder="Seleccionar producto"
+                    value={formData.producto}
+                    onChange={(value) => handleInputChange('producto', value.toString())}
+                    options={productos.map(producto => ({
+                      value: producto.id,
+                      label: producto.nombre
+                    }))}
+                    required
+                    fullWidth
+                  />
+                </FormItem>
 
-                <Select
-                  label="Estado"
-                  placeholder="Seleccionar estado"
-                  value={formData.estado}
-                  onChange={(value) => handleInputChange('estado', value.toString())}
-                  options={OPCIONES_ESTADO_INVESTIGACION.map(opcion => ({
-                    value: opcion.value,
-                    label: opcion.label
-                  }))}
-                  required
-                  fullWidth
-                />
+                <FormItem>
+                  <Select
+                    label="Estado"
+                    placeholder="Seleccionar estado"
+                    value={formData.estado}
+                    onChange={(value) => handleInputChange('estado', value.toString())}
+                    options={OPCIONES_ESTADO_INVESTIGACION.map(opcion => ({
+                      value: opcion.value,
+                      label: opcion.label
+                    }))}
+                    required
+                    fullWidth
+                  />
+                </FormItem>
               </div>
             </div>
-          </Card>
+          </FormContainer>
 
           {/* Fechas */}
-          <Card className="p-6">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <SesionesIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Fechas</Typography>
+              <SesionesIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>Fechas</Subtitle>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <DatePicker
-                label="Fecha de inicio"
-                value={formData.fecha_inicio}
-                onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
-                required
-              />
+              <FormItem>
+                <DatePicker
+                  label="Fecha de inicio"
+                  value={formData.fecha_inicio}
+                  onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
+                  required
+                />
+              </FormItem>
               
-              <DatePicker
-                label="Fecha de fin"
-                value={formData.fecha_fin}
-                onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
-                required
-              />
+              <FormItem>
+                <DatePicker
+                  label="Fecha de fin"
+                  value={formData.fecha_fin}
+                  onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
+                  required
+                />
+              </FormItem>
 
-              <Select
-                label="Período"
-                placeholder="Seleccionar período (opcional)"
-                value={formData.periodo}
-                onChange={(value) => handleInputChange('periodo', value.toString())}
-                options={periodos.map(periodo => ({
-                  value: periodo.id,
-                  label: periodo.nombre || periodo.etiqueta || 'Sin nombre'
-                }))}
-                fullWidth
-              />
+              <FormItem>
+                <Select
+                  label="Período"
+                  placeholder="Seleccionar período (opcional)"
+                  value={formData.periodo}
+                  onChange={(value) => handleInputChange('periodo', value.toString())}
+                  options={periodos.map(periodo => ({
+                    value: periodo.id,
+                    label: periodo.nombre || periodo.etiqueta || 'Sin nombre'
+                  }))}
+                  fullWidth
+                />
+              </FormItem>
             </div>
-          </Card>
+          </FormContainer>
 
           {/* Equipo */}
-          <Card className="p-6">
+          <FormContainer>
             <div className="flex items-center gap-2 mb-6">
-              <UserIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4">Equipo</Typography>
+              <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>Equipo</Subtitle>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <UserSelectorWithAvatar
-                label="Responsable"
-                placeholder="Seleccionar responsable"
-                users={usuarios.map(usuario => ({
-                  id: usuario.id,
-                  full_name: usuario.full_name,
-                  email: usuario.email,
-                  avatar_url: usuario.avatar_url
-                }))}
-                value={formData.responsable_id}
-                onChange={(userId) => handleInputChange('responsable_id', userId)}
-              />
+              <FormItem>
+                <UserSelectorWithAvatar
+                  label="Responsable"
+                  placeholder="Seleccionar responsable"
+                  users={usuarios.map(usuario => ({
+                    id: usuario.id,
+                    full_name: usuario.full_name,
+                    email: usuario.email,
+                    avatar_url: usuario.avatar_url
+                  }))}
+                  value={formData.responsable_id}
+                  onChange={(userId) => handleInputChange('responsable_id', userId)}
+                />
+              </FormItem>
               
-              <UserSelectorWithAvatar
-                label="Implementador"
-                placeholder="Seleccionar implementador"
-                users={usuarios.map(usuario => ({
-                  id: usuario.id,
-                  full_name: usuario.full_name,
-                  email: usuario.email,
-                  avatar_url: usuario.avatar_url
-                }))}
-                value={formData.implementador_id}
-                onChange={(userId) => handleInputChange('implementador_id', userId)}
-              />
+              <FormItem>
+                <UserSelectorWithAvatar
+                  label="Implementador"
+                  placeholder="Seleccionar implementador"
+                  users={usuarios.map(usuario => ({
+                    id: usuario.id,
+                    full_name: usuario.full_name,
+                    email: usuario.email,
+                    avatar_url: usuario.avatar_url
+                  }))}
+                  value={formData.implementador_id}
+                  onChange={(userId) => handleInputChange('implementador_id', userId)}
+                />
+              </FormItem>
             </div>
-          </Card>
+          </FormContainer>
         </form>
       </div>
     </Layout>

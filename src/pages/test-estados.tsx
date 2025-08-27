@@ -1,15 +1,11 @@
 import React from 'react';
 import Chip from '../components/ui/Chip';
-import { 
-  getEstadoReclutamientoVariant, 
-  getEstadoReclutamientoText,
-  getEstadoInvestigacionVariant,
-  getEstadoInvestigacionText
-} from '../utils/estadoUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 const TestEstadosPage: React.FC = () => {
   const estadosReclutamiento = [
     'pendiente',
+    'pendiente de agendamiento',
     'en progreso',
     'agendada',
     'por agendar',
@@ -42,13 +38,13 @@ const TestEstadosPage: React.FC = () => {
               {estadosReclutamiento.map((estado) => (
                 <div key={estado} className="flex items-center gap-3">
                   <Chip
-                    variant={getEstadoReclutamientoVariant(estado) as any}
+                    variant={getChipVariant(estado) as any}
                     size="md"
                   >
-                    {getEstadoReclutamientoText(estado)}
+                    {getChipText(estado)}
                   </Chip>
                   <span className="text-sm text-muted-foreground">
-                    → {getEstadoReclutamientoVariant(estado)}
+                    → {getChipVariant(estado)}
                   </span>
                 </div>
               ))}
@@ -64,13 +60,13 @@ const TestEstadosPage: React.FC = () => {
               {estadosInvestigacion.map((estado) => (
                 <div key={estado} className="flex items-center gap-3">
                   <Chip
-                    variant={getEstadoInvestigacionVariant(estado) as any}
+                    variant={getChipVariant(estado) as any}
                     size="md"
                   >
-                    {getEstadoInvestigacionText(estado)}
+                    {getChipText(estado)}
                   </Chip>
                   <span className="text-sm text-muted-foreground">
-                    → {getEstadoInvestigacionVariant(estado)}
+                    → {getChipVariant(estado)}
                   </span>
                 </div>
               ))}
@@ -87,6 +83,7 @@ const TestEstadosPage: React.FC = () => {
               <h3 className="font-semibold mb-2 text-blue-600">Reclutamiento:</h3>
               <ul className="space-y-1 text-sm">
                 <li>• Pendiente → <span className="text-yellow-600">warning (amarillo)</span></li>
+                <li>• Pendiente de Agendamiento → <span className="text-yellow-600">warning (amarillo)</span></li>
                 <li>• En Progreso → <span className="text-purple-600">accent-purple (púrpura)</span></li>
                 <li>• Agendada → <span className="text-blue-600">accent-blue (azul oscuro)</span></li>
                 <li>• Por Agendar → <span className="text-indigo-600">accent-indigo (índigo)</span></li>

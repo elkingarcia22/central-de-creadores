@@ -9,7 +9,9 @@ import Select from './Select';
 import Typography from './Typography';
 import UserSelectorWithAvatar from './UserSelectorWithAvatar';
 import DatePicker from './DatePicker';
-import { SaveIcon } from '../icons';
+import { PageHeader } from './';
+import FilterLabel from './FilterLabel';
+import { SaveIcon, ClipboardListIcon } from '../icons';
 import type { SeguimientoInvestigacion, SeguimientoFormData } from '../../types/seguimientos';
 import { ESTADOS_SEGUIMIENTO } from '../../types/seguimientos';
 
@@ -123,6 +125,15 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     }
   };
 
+  const handleSubmitClick = () => {
+    // Crear un evento sintético para el formulario
+    const form = document.querySelector('form');
+    if (form) {
+      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(submitEvent);
+    }
+  };
+
   const footer = (
     <div className="flex gap-3">
       <Button
@@ -134,7 +145,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmit}
+        onClick={handleSubmitClick}
         loading={saving}
         disabled={saving}
         className="flex items-center gap-2"
@@ -149,79 +160,84 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     <SideModal
       isOpen={isOpen}
       onClose={handleClose}
-      title={seguimiento ? 'Editar Seguimiento' : 'Nuevo Seguimiento'}
       width="lg"
       footer={footer}
+      showCloseButton={false}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Fecha de Seguimiento */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Fecha de Seguimiento *
-          </Typography>
-          <DatePicker
-            value={formData.fecha_seguimiento}
-            onChange={(e) => handleInputChange('fecha_seguimiento', e.target.value)}
-            disabled={saving}
-            required
-            fullWidth
-          />
-        </div>
+      <div className="flex flex-col h-full -m-6">
+        {/* Header con PageHeader */}
+        <PageHeader
+          title={seguimiento ? 'Editar Seguimiento' : 'Nuevo Seguimiento'}
+          variant="title-only"
+          onClose={handleClose}
+          icon={<ClipboardListIcon className="w-5 h-5" />}
+        />
 
-        {/* Responsable */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Responsable *
-          </Typography>
-          <UserSelectorWithAvatar
-            value={formData.responsable_id}
-            onChange={(value) => handleInputChange('responsable_id', value)}
-            users={usuarios}
-            placeholder="Seleccionar responsable"
-            disabled={saving}
-            required
-          />
-        </div>
+        {/* Contenido del formulario */}
+        <div className="flex-1 overflow-y-auto px-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+            {/* Fecha de Seguimiento */}
+            <div>
+              <FilterLabel>Fecha de Seguimiento *</FilterLabel>
+              <DatePicker
+                value={formData.fecha_seguimiento}
+                onChange={(e) => handleInputChange('fecha_seguimiento', e.target.value)}
+                disabled={saving}
+                required
+                fullWidth
+              />
+            </div>
 
-        {/* Estado */}
-        {/*
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Estado *
-          </Typography>
-          <Select
-            options={ESTADOS_SEGUIMIENTO.map(estado => ({
-              value: estado.value,
-              label: estado.label
-            }))}
-            value={formData.estado}
-            onChange={(value) => handleInputChange('estado', value.toString())}
-            placeholder="Seleccionar estado"
-            disabled={saving}
-            fullWidth
-          />
-        </div>
-        */}
+            {/* Responsable */}
+            <div>
+              <FilterLabel>Responsable *</FilterLabel>
+              <UserSelectorWithAvatar
+                value={formData.responsable_id}
+                onChange={(value) => handleInputChange('responsable_id', value)}
+                users={usuarios}
+                placeholder="Seleccionar responsable"
+                disabled={saving}
+                required
+              />
+            </div>
 
-        {/* Notas */}
-        <div>
-          <Typography variant="subtitle2" weight="medium" className="mb-2">
-            Notas *
-          </Typography>
-          <Textarea
-            value={formData.notas}
-            onChange={(e) => handleInputChange('notas', e.target.value)}
-            placeholder="Describe los detalles del seguimiento, avances, bloqueos, próximos pasos, etc."
-            rows={8}
-            required
-            disabled={saving}
-            fullWidth
-          />
-          <Typography variant="caption" color="secondary" className="mt-1">
-            Describe el estado actual, avances realizados, bloqueos encontrados y próximos pasos.
-          </Typography>
+            {/* Estado */}
+            {/*
+            <div>
+              <FilterLabel>Estado *</FilterLabel>
+              <Select
+                options={ESTADOS_SEGUIMIENTO.map(estado => ({
+                  value: estado.value,
+                  label: estado.label
+                }))}
+                value={formData.estado}
+                onChange={(value) => handleInputChange('estado', value.toString())}
+                placeholder="Seleccionar estado"
+                disabled={saving}
+                fullWidth
+              />
+            </div>
+            */}
+
+            {/* Notas */}
+            <div>
+              <FilterLabel>Notas *</FilterLabel>
+              <Textarea
+                value={formData.notas}
+                onChange={(e) => handleInputChange('notas', e.target.value)}
+                placeholder="Describe los detalles del seguimiento, avances, bloqueos, próximos pasos, etc."
+                rows={8}
+                required
+                disabled={saving}
+                fullWidth
+              />
+              <Typography variant="caption" color="secondary" className="mt-1">
+                Describe el estado actual, avances realizados, bloqueos encontrados y próximos pasos.
+              </Typography>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </SideModal>
   );
 };

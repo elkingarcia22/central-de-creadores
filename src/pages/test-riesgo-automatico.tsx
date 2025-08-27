@@ -3,8 +3,8 @@ import { obtenerInvestigaciones } from '../api/supabase-investigaciones';
 import { Layout } from '../components/ui';
 import Badge from '../components/ui/Badge';
 import Typography from '../components/ui/Typography';
-import { getRiesgoBadgeVariant, getRiesgoIconName, getRiesgoText } from '../utils/riesgoUtils';
-import { getEstadoInvestigacionVariant } from '../utils/estadoUtils';
+import { getRiesgoIconName } from '../utils/riesgoUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 // Función para calcular el nivel de riesgo (igual que en investigaciones.tsx)
 const calcularNivelRiesgo = (investigacion: any): {
@@ -120,7 +120,7 @@ export default function TestRiesgoAutomaticoPage() {
           <div className="space-y-4">
             {investigaciones.map((investigacion) => {
               const riesgoInfo = calcularNivelRiesgo(investigacion);
-              const badgeVariant = getRiesgoBadgeVariant(riesgoInfo.nivel);
+              const badgeVariant = getChipVariant(riesgoInfo.nivel) as any;
               const iconName = getRiesgoIconName(riesgoInfo.nivel);
 
               // Mapeo de iconos por nombre
@@ -144,7 +144,7 @@ export default function TestRiesgoAutomaticoPage() {
                         <div>
                           <span className="font-medium">Estado:</span>
                           <div className="mt-1">
-                            <Badge variant={getEstadoInvestigacionVariant(investigacion.estado)}>
+                            <Badge variant={getChipVariant(investigacion.estado) as any}>
                               {investigacion.estado}
                             </Badge>
                           </div>
@@ -169,7 +169,7 @@ export default function TestRiesgoAutomaticoPage() {
                           <div className="mt-1 flex items-center gap-2">
                             <span>{icon}</span>
                             <Badge variant={badgeVariant} className="text-xs">
-                              {getRiesgoText(riesgoInfo.nivel)}
+                              {getChipText(riesgoInfo.nivel)}
                             </Badge>
                           </div>
                         </div>

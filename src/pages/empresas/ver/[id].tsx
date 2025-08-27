@@ -8,7 +8,7 @@ import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
 import { Empresa } from '../../../types/empresas';
 
-import { Layout } from '../../../components/ui';
+import { Layout, PageHeader } from '../../../components/ui';
 import Typography from '../../../components/ui/Typography';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
@@ -38,26 +38,17 @@ import {
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
+import { getChipVariant, getChipText } from '../../../utils/chipUtils';
+
 // Funciones de utilidad para colores
-const getEstadoColor = (estado: string): string => {
+const getEstadoColor = (estado: string): any => {
   console.log('🔍 getEstadoColor llamado con:', estado);
-  const estadoLower = estado.toLowerCase();
-  if (estadoLower.includes('activo') || estadoLower.includes('activa')) return 'success';
-  if (estadoLower.includes('inactivo') || estadoLower.includes('inactiva')) return 'warning';
-  if (estadoLower.includes('pendiente')) return 'warning';
-  if (estadoLower.includes('completado') || estadoLower.includes('finalizado')) return 'success';
-  if (estadoLower.includes('cancelado') || estadoLower.includes('cancelada')) return 'danger';
-  console.log('🎨 Color asignado: default');
-  return 'default';
+  return getChipVariant(estado);
 };
 
-  const getRiesgoColor = (riesgo: string): string => {
-    const riesgoLower = riesgo.toLowerCase();
-    if (riesgoLower.includes('alto') || riesgoLower.includes('high')) return 'danger';
-    if (riesgoLower.includes('medio') || riesgoLower.includes('medium')) return 'warning';
-    if (riesgoLower.includes('bajo') || riesgoLower.includes('low')) return 'success';
-    return 'default';
-  };
+const getRiesgoColor = (riesgo: string): any => {
+  return getChipVariant(riesgo);
+};
 
   const getRelacionColor = (relacion: string): string => {
     const relacionLower = relacion.toLowerCase();
@@ -718,24 +709,24 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
+              <button
                 onClick={() => router.push('/empresas')}
-                className="p-2"
+                className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <ArrowLeftIcon className="w-5 h-5" />
-              </Button>
+                <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
               
-              <div className="flex items-center gap-4">
-                <Typography variant="h3">{empresaData.nombre}</Typography>
-                <div className="flex items-center gap-3">
-                  {empresaData.estado_nombre && (
-                    <Chip variant={getEstadoColor(empresaData.estado_nombre)}>
-                      {empresaData.estado_nombre}
-                    </Chip>
-                  )}
-                </div>
-              </div>
+              <PageHeader
+                title={empresaData.nombre}
+                variant="compact"
+                color="green"
+                className="mb-0"
+                chip={{
+                  label: empresaData.estado_nombre || 'Sin estado',
+                  variant: getEstadoColor(empresaData.estado_nombre || ''),
+                  size: 'sm'
+                }}
+              />
             </div>
             
             <div className="flex items-center space-x-2">
@@ -750,6 +741,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               </Button>
             </div>
           </div>
+
+
 
           {/* Tabs */}
           <Tabs

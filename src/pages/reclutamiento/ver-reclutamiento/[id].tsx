@@ -117,14 +117,12 @@ const VerReclutamientoIndividual: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={handleVolver}
+                className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <ArrowLeftIcon className="w-4 h-4 mr-2" />
-                Volver
-              </Button>
+                <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
               <div>
                 <Typography variant="h1" weight="bold">
                   Reclutamiento Individual

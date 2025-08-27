@@ -27,40 +27,12 @@ export default function MetricCard({
   onClick
 }: MetricCardProps) {
   
-  const colorClasses = {
-    blue: {
-      bg: 'bg-blue-100 dark:bg-blue-900/20',
-      icon: 'text-blue-600 dark:text-blue-400',
-      trend: 'text-blue-600 dark:text-blue-400'
-    },
-    green: {
-      bg: 'bg-green-100 dark:bg-green-900/20',
-      icon: 'text-green-600 dark:text-green-400',
-      trend: 'text-green-600 dark:text-green-400'
-    },
-    yellow: {
-      bg: 'bg-yellow-100 dark:bg-yellow-900/20',
-      icon: 'text-yellow-600 dark:text-yellow-400',
-      trend: 'text-yellow-600 dark:text-yellow-400'
-    },
-    red: {
-      bg: 'bg-red-100 dark:bg-red-900/20',
-      icon: 'text-red-600 dark:text-red-400',
-      trend: 'text-red-600 dark:text-red-400'
-    },
-    purple: {
-      bg: 'bg-purple-100 dark:bg-purple-900/20',
-      icon: 'text-purple-600 dark:text-purple-400',
-      trend: 'text-purple-600 dark:text-purple-400'
-    },
-    gray: {
-      bg: 'bg-gray-100 dark:bg-gray-800',
-      icon: 'text-gray-600 dark:text-gray-400',
-      trend: 'text-gray-600 dark:text-gray-400'
-    }
+  // Diseño limpio con color neutral más sutil
+  const cleanColorClasses = {
+    bg: 'bg-gray-50 dark:bg-gray-800/50',
+    icon: 'text-gray-600 dark:text-gray-400',
+    trend: 'text-gray-600 dark:text-gray-400'
   };
-
-  const colors = colorClasses[color];
 
   return (
     <Card 
@@ -76,7 +48,7 @@ export default function MetricCard({
           </p>
           
           <div className="flex items-baseline gap-2">
-            <p className="text-xl font-bold text-foreground">
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
               {typeof value === 'number' ? value.toLocaleString() : value}
             </p>
             
@@ -118,8 +90,8 @@ export default function MetricCard({
         </div>
 
         {icon && (
-          <div className={`p-3 rounded-lg ${colors.bg} ml-4`}>
-            <div className={`w-6 h-6 ${colors.icon}`}>
+          <div className={`p-2 rounded-lg ${cleanColorClasses.bg} ml-4`}>
+            <div className={`w-4 h-4 ${cleanColorClasses.icon}`}>
               {icon}
             </div>
           </div>

@@ -9,6 +9,7 @@ import MultiSelect from './MultiSelect';
 import Slider from './Slider';
 import Input from './Input';
 import UserSelect from './UserSelect';
+import { PageHeader, FormContainer, FormItem, Subtitle, FilterLabel } from './';
 import { CloseIcon, FilterIcon, TrashIcon } from '../icons';
 
 // Interface específica para filtros de investigaciones
@@ -369,36 +370,27 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       `}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-border">
-            <div className="flex items-center gap-3">
-              <FilterIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h4" weight="medium">
-                Filtros Avanzados
-              </Typography>
-              {getActiveFiltersCount() > 0 && (
-                <Chip variant="primary" size="sm">
-                  {getActiveFiltersCount()}
-                </Chip>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-md hover:bg-accent transition-colors"
-            >
-              <CloseIcon className="w-5 h-5 text-muted-foreground" />
-            </button>
-          </div>
+          <PageHeader
+            title="Filtros Avanzados"
+            variant="title-only"
+            color="gray"
+            icon={<FilterIcon className="w-5 h-5 text-foreground" />}
+            onClose={onClose}
+            chip={getActiveFiltersCount() > 0 ? {
+              label: getActiveFiltersCount().toString(),
+              variant: "primary",
+              size: "sm"
+            } : undefined}
+          />
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-card">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-card">
             {type === 'investigacion' ? (
               // Filtros específicos para investigaciones
               <>
                 {/* Estado */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Estado
-                  </Typography>
+                  <FilterLabel>Estado</FilterLabel>
                   <Select
                     placeholder="Seleccionar estado..."
                     options={[
@@ -413,9 +405,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Tipo */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Tipo
-                  </Typography>
+                  <FilterLabel>Tipo</FilterLabel>
                   <Select
                     placeholder="Seleccionar tipo..."
                     options={[
@@ -430,9 +420,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Período */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Período
-                  </Typography>
+                  <FilterLabel>Período</FilterLabel>
                   <Select
                     placeholder="Seleccionar período..."
                     options={[
@@ -447,9 +435,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Responsable */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Responsable
-                  </Typography>
+                  <FilterLabel>Responsable</FilterLabel>
                   <Select
                     placeholder="Seleccionar responsable..."
                     options={[
@@ -464,9 +450,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Implementador */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Implementador
-                  </Typography>
+                  <FilterLabel>Implementador</FilterLabel>
                   <Select
                     placeholder="Seleccionar implementador..."
                     options={[
@@ -481,9 +465,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Creador */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Creador
-                  </Typography>
+                  <FilterLabel>Creador</FilterLabel>
                   <Select
                     placeholder="Seleccionar creador..."
                     options={[
@@ -498,9 +480,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Libreto */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Libreto
-                  </Typography>
+                  <FilterLabel>Libreto</FilterLabel>
                   <Select
                     placeholder="Seleccionar..."
                     options={[
@@ -516,9 +496,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Nivel de Riesgo */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Nivel de Riesgo
-                  </Typography>
+                  <FilterLabel>Nivel de Riesgo</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar niveles..."
                     options={options.nivelRiesgo || []}
@@ -530,9 +508,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Link de Prueba */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Link de Prueba
-                  </Typography>
+                  <FilterLabel>Link de Prueba</FilterLabel>
                   <Select
                     placeholder="Seleccionar..."
                     options={[
@@ -548,9 +524,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Link de Resultados */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Link de Resultados
-                  </Typography>
+                  <FilterLabel>Link de Resultados</FilterLabel>
                   <Select
                     placeholder="Seleccionar..."
                     options={[
@@ -566,9 +540,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Seguimiento */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Seguimiento
-                  </Typography>
+                  <FilterLabel>Seguimiento</FilterLabel>
                   <Select
                     placeholder="Seleccionar..."
                     options={[
@@ -584,9 +556,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Estado de Seguimiento */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Estado de Seguimiento
-                  </Typography>
+                  <FilterLabel>Estado de Seguimiento</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar estados..."
                     options={options.estadoSeguimiento || []}
@@ -598,9 +568,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Fecha de Inicio */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Fecha de Inicio
-                  </Typography>
+                  <FilterLabel>Fecha de Inicio</FilterLabel>
                   <DatePicker
                     placeholder="Seleccionar fecha de inicio..."
                     value={(filters as FilterValuesInvestigacion).fecha_inicio_desde || ''}
@@ -611,9 +579,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Fecha de Fin */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Fecha de Fin
-                  </Typography>
+                  <FilterLabel>Fecha de Fin</FilterLabel>
                   <DatePicker
                     placeholder="Seleccionar fecha de fin..."
                     value={(filters as FilterValuesInvestigacion).fecha_fin_desde || ''}

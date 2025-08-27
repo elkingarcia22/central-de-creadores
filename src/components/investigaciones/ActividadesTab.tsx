@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Chip, UserAvatar } from '../../components/ui';
+import { Card, Typography, Chip, UserAvatar, Subtitle, ActivityCard } from '../../components/ui';
 import { formatDistanceToNow, format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
@@ -22,24 +22,98 @@ interface ActividadesTabProps {
   investigacionId: string;
 }
 
+import { 
+  PlusIcon, 
+  EditIcon, 
+  RefreshIcon, 
+  CalendarIcon, 
+  UserIcon, 
+  SettingsIcon, 
+  BarChartIcon, 
+  LinkIcon, 
+  FileTextIcon, 
+  TrashIcon,
+  InfoIcon
+} from '../../components/icons';
+
 const getTipoActividadInfo = (tipo: string) => {
   const tipos = {
-    creacion: { label: 'Creación', color: 'success', icon: '🟢' },
-    edicion: { label: 'Edición', color: 'info', icon: '✏️' },
-    cambio_estado: { label: 'Cambio de Estado', color: 'warning', icon: '🔄' },
-    cambio_fechas: { label: 'Cambio de Fechas', color: 'info', icon: '📅' },
-    cambio_responsable: { label: 'Cambio de Responsable', color: 'warning', icon: '👤' },
-    cambio_implementador: { label: 'Cambio de Implementador', color: 'warning', icon: '🔧' },
-    cambio_producto: { label: 'Cambio de Producto', color: 'info', icon: '📦' },
-    cambio_tipo_investigacion: { label: 'Cambio de Tipo', color: 'info', icon: '🏷️' },
-    cambio_periodo: { label: 'Cambio de Período', color: 'info', icon: '📊' },
-    cambio_link_prueba: { label: 'Cambio de Link Prueba', color: 'info', icon: '🔗' },
-    cambio_link_resultados: { label: 'Cambio de Link Resultados', color: 'info', icon: '📊' },
-    cambio_libreto: { label: 'Cambio de Libreto', color: 'info', icon: '📋' },
-    cambio_descripcion: { label: 'Cambio de Descripción', color: 'info', icon: '📝' },
-    eliminacion: { label: 'Eliminación', color: 'danger', icon: '🗑️' }
+    creacion: { 
+      label: 'Creación', 
+      color: 'success' as const, 
+      icon: <PlusIcon className="w-4 h-4" />
+    },
+    edicion: { 
+      label: 'Edición', 
+      color: 'info' as const, 
+      icon: <EditIcon className="w-4 h-4" />
+    },
+    cambio_estado: { 
+      label: 'Cambio de Estado', 
+      color: 'warning' as const, 
+      icon: <RefreshIcon className="w-4 h-4" />
+    },
+    cambio_fechas: { 
+      label: 'Cambio de Fechas', 
+      color: 'info' as const, 
+      icon: <CalendarIcon className="w-4 h-4" />
+    },
+    cambio_responsable: { 
+      label: 'Cambio de Responsable', 
+      color: 'warning' as const, 
+      icon: <UserIcon className="w-4 h-4" />
+    },
+    cambio_implementador: { 
+      label: 'Cambio de Implementador', 
+      color: 'warning' as const, 
+      icon: <SettingsIcon className="w-4 h-4" />
+    },
+    cambio_producto: { 
+      label: 'Cambio de Producto', 
+      color: 'info' as const, 
+      icon: <BarChartIcon className="w-4 h-4" />
+    },
+    cambio_tipo_investigacion: { 
+      label: 'Cambio de Tipo', 
+      color: 'info' as const, 
+      icon: <InfoIcon className="w-4 h-4" />
+    },
+    cambio_periodo: { 
+      label: 'Cambio de Período', 
+      color: 'info' as const, 
+      icon: <BarChartIcon className="w-4 h-4" />
+    },
+    cambio_link_prueba: { 
+      label: 'Cambio de Link Prueba', 
+      color: 'info' as const, 
+      icon: <LinkIcon className="w-4 h-4" />
+    },
+    cambio_link_resultados: { 
+      label: 'Cambio de Link Resultados', 
+      color: 'info' as const, 
+      icon: <BarChartIcon className="w-4 h-4" />
+    },
+    cambio_libreto: { 
+      label: 'Cambio de Libreto', 
+      color: 'info' as const, 
+      icon: <FileTextIcon className="w-4 h-4" />
+    },
+    cambio_descripcion: { 
+      label: 'Cambio de Descripción', 
+      color: 'info' as const, 
+      icon: <EditIcon className="w-4 h-4" />
+    },
+    eliminacion: { 
+      label: 'Eliminación', 
+      color: 'danger' as const, 
+      icon: <TrashIcon className="w-4 h-4" />
+    }
   };
-  return tipos[tipo as keyof typeof tipos] || { label: tipo, color: 'default', icon: '📌' };
+  return tipos[tipo as keyof typeof tipos] || { 
+    label: tipo, 
+    color: 'default' as const, 
+    icon: <InfoIcon className="w-4 h-4" />
+  };
 };
 
 // Extrae un resumen humano de los cambios
@@ -130,47 +204,29 @@ const ActividadesTab: React.FC<ActividadesTabProps> = ({ investigacionId }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
-        <Typography variant="h5" className="font-semibold">
+        <Subtitle>
           Actividades ({actividades.length})
-        </Typography>
+        </Subtitle>
       </div>
       <div className="space-y-4">
-        {actividades.map((actividad) => {
+        {actividades.map((actividad, index) => {
           const tipoInfo = getTipoActividadInfo(actividad.tipo_actividad);
           const resumen = getResumenActividad(actividad);
           console.log('🔍 Renderizando actividad:', actividad.id, tipoInfo, resumen);
           return (
-            <div key={actividad.id} className="flex items-start gap-3 relative group">
-              {/* Línea vertical del timeline */}
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted/60 group-last:hidden" style={{zIndex:0}} />
-              {/* Punto del timeline */}
-              <div className="z-10 w-8 flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xl bg-muted border-2 border-white shadow">
-                  {tipoInfo.icon}
-                </div>
-              </div>
-              <Card className="flex-1 p-4 mb-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <Chip variant={tipoInfo.color as any} size="sm">{tipoInfo.label}</Chip>
-                  <Typography variant="body2" className="font-medium">
-                    {actividad.usuario?.full_name || 'Desconocido'}
-                  </Typography>
-                  <UserAvatar 
-                    src={actividad.usuario?.avatar_url} 
-                    fallbackText={actividad.usuario?.full_name || 'Usuario'} 
-                    size="sm" 
-                  />
-                  <Typography variant="body2" className="text-muted-foreground ml-2">
-                    {formatDistanceToNow(new Date(actividad.fecha_creacion), { addSuffix: true, locale: enUS })}
-                    <span className="ml-2 text-xs text-muted-foreground">({format(new Date(actividad.fecha_creacion), 'dd/MM/yyyy HH:mm', { locale: enUS })})</span>
-                  </Typography>
-                </div>
-                <Typography variant="body1" className="mb-1">
-                  {resumen}
-                </Typography>
-                {/* Ya no mostramos el detalle de cambios */}
-              </Card>
-            </div>
+            <ActivityCard
+              key={actividad.id}
+              id={actividad.id}
+              tipo={actividad.tipo_actividad}
+              label={tipoInfo.label}
+              color={tipoInfo.color}
+              icon={tipoInfo.icon}
+              userName={actividad.usuario?.full_name || 'Desconocido'}
+              userAvatar={actividad.usuario?.avatar_url}
+              fechaCreacion={actividad.fecha_creacion}
+              resumen={resumen}
+              isLast={index === actividades.length - 1}
+            />
           );
         })}
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
-import { Typography, Card, Button } from '../../components/ui';
+import { Typography, Card, Button, PageHeader } from '../../components/ui';
 import { Layout } from '../../components/ui/Layout';
 import { ShieldIcon, PlusIcon, SettingsIcon } from '../../components/icons';
 import RolModal from '../../components/roles/RolModal';
@@ -220,14 +220,19 @@ export default function RolesPermisosPage() {
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <Typography variant="h2" color="title" weight="semibold" className="mb-2">
-              Sistema de Roles y Permisos
-            </Typography>
-            <Typography variant="subtitle1" color="secondary">
-              Gestiona roles, permisos y funcionalidades del sistema
-            </Typography>
-          </div>
+          <PageHeader
+            title="Sistema de Roles y Permisos"
+            subtitle="Gestiona roles, permisos y funcionalidades del sistema"
+            color="orange"
+            secondaryActions={[
+              {
+                label: "Asignar Permisos por Defecto",
+                onClick: handleAsignarPermisosPorDefecto,
+                variant: "outline",
+                icon: <SettingsIcon className="w-4 h-4" />
+              }
+            ]}
+          />
 
           {/* Estadísticas del Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

@@ -12,6 +12,7 @@ import {
 } from '../icons';
 import { obtenerTrazabilidadCompleta } from '../../api/supabase-seguimientos';
 import { formatearFecha } from '../../utils/fechas';
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
 
 interface TrazabilidadSectionProps {
   investigacionId: string;
@@ -83,19 +84,8 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
   };
 
   // Obtener color del estado
-  const getEstadoColor = (estado: string) => {
-    switch (estado) {
-      case 'pendiente': return 'default';
-      case 'en_progreso': return 'warning';
-      case 'completado': return 'success';
-      case 'convertido': return 'success';
-      case 'finalizado': return 'success';
-      case 'en_borrador': return 'default';
-      case 'por_iniciar': return 'warning';
-      case 'pausado': return 'secondary';
-      case 'cancelado': return 'danger';
-      default: return 'default';
-    }
+  const getEstadoColor = (estado: string): any => {
+    return getChipVariant(estado);
   };
 
   if (loading) {

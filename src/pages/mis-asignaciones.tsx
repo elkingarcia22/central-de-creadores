@@ -4,6 +4,7 @@ import { useUser } from '../contexts/UserContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button, Typography, Card, Badge, DataTable } from '../components/ui';
 import { CalendarIcon, ClockIcon, UserIcon, PhoneIcon, EmailIcon } from '../components/icons';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 interface Asignacion {
   reclutamiento_id: string;
@@ -58,19 +59,8 @@ export default function MisAsignaciones() {
     }
   };
 
-  const getEstadoBadgeVariant = (estado: string) => {
-    switch (estado) {
-      case 'd32b84d1-6209-41d9-8108-03588ca1f9b5': // Pendiente de agendamiento
-        return 'secondary';
-      case 'agendada':
-        return 'success';
-      case 'completada':
-        return 'success';
-      case 'cancelada':
-        return 'danger';
-      default:
-        return 'secondary';
-    }
+  const getEstadoBadgeVariant = (estado: string): any => {
+    return getChipVariant(estado);
   };
 
   const getEstadoText = (estado: string) => {
@@ -227,12 +217,14 @@ export default function MisAsignaciones() {
                 Gestiona las sesiones que tienes asignadas para agendar
               </Typography>
             </div>
-            <Button
-              variant="outline"
+            <button
               onClick={() => router.back()}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              Volver
-            </Button>
+              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
           </div>
 
           {/* Métricas */}

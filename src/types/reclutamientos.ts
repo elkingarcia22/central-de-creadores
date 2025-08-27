@@ -111,6 +111,7 @@ export interface InvestigacionConLibreto {
 
 export enum EstadoAgendamientoEnum {
   PENDIENTE = 'pendiente',
+  PENDIENTE_DE_AGENDAMIENTO = 'pendiente de agendamiento',
   CONFIRMADO = 'confirmado',
   CANCELADO = 'cancelado',
   COMPLETADO = 'completado',
@@ -120,6 +121,7 @@ export enum EstadoAgendamientoEnum {
 
 export const ESTADOS_AGENDAMIENTO_VALIDOS = [
   EstadoAgendamientoEnum.PENDIENTE,
+  EstadoAgendamientoEnum.PENDIENTE_DE_AGENDAMIENTO,
   EstadoAgendamientoEnum.CONFIRMADO,
   EstadoAgendamientoEnum.CANCELADO,
   EstadoAgendamientoEnum.COMPLETADO,
@@ -132,8 +134,11 @@ export const ESTADOS_AGENDAMIENTO_VALIDOS = [
 // ====================================
 
 export const getEstadoAgendamientoColor = (estado: string): string => {
-  switch (estado) {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
     case EstadoAgendamientoEnum.PENDIENTE:
+    case EstadoAgendamientoEnum.PENDIENTE_DE_AGENDAMIENTO:
       return 'warning';
     case EstadoAgendamientoEnum.CONFIRMADO:
       return 'success';
@@ -151,9 +156,12 @@ export const getEstadoAgendamientoColor = (estado: string): string => {
 };
 
 export const getEstadoAgendamientoText = (estado: string): string => {
-  switch (estado) {
+  const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+  
+  switch (estadoLower) {
     case EstadoAgendamientoEnum.PENDIENTE:
-      return 'Pendiente';
+    case EstadoAgendamientoEnum.PENDIENTE_DE_AGENDAMIENTO:
+      return 'Pendiente de Agendamiento';
     case EstadoAgendamientoEnum.CONFIRMADO:
       return 'Confirmado';
     case EstadoAgendamientoEnum.CANCELADO:

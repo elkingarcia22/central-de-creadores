@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Typography, Card, Chip } from '../components/ui';
-import { getEstadoConocimientoVariant, getEstadoConocimientoText } from '../utils/estadoUtils';
+import { getChipVariant, getChipText } from '../utils/chipUtils';
 
 export default function TestChipsPage() {
   return (
@@ -22,10 +22,10 @@ export default function TestChipsPage() {
                   Artículo de Prueba
                 </Typography>
                 <Chip 
-                  variant={getEstadoConocimientoVariant('borrador')}
+                  variant={getChipVariant('en borrador')}
                   size="sm"
                 >
-                  {getEstadoConocimientoText('borrador')}
+                  {getChipText('en borrador')}
                 </Chip>
               </div>
               
@@ -34,10 +34,10 @@ export default function TestChipsPage() {
                   Artículo Publicado
                 </Typography>
                 <Chip 
-                  variant={getEstadoConocimientoVariant('publicado')}
+                  variant={getChipVariant('finalizado')}
                   size="sm"
                 >
-                  {getEstadoConocimientoText('publicado')}
+                  {getChipText('finalizado')}
                 </Chip>
               </div>
               
@@ -46,10 +46,22 @@ export default function TestChipsPage() {
                   Artículo en Revisión
                 </Typography>
                 <Chip 
-                  variant={getEstadoConocimientoVariant('revision')}
+                  variant={getChipVariant('en progreso')}
                   size="sm"
                 >
-                  {getEstadoConocimientoText('revision')}
+                  {getChipText('en progreso')}
+                </Chip>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Typography variant="h4" weight="semibold">
+                  Reclutamiento Pendiente de Agendamiento
+                </Typography>
+                <Chip 
+                  variant={getChipVariant('pendiente de agendamiento')}
+                  size="sm"
+                >
+                  {getChipText('pendiente de agendamiento')}
                 </Chip>
               </div>
             </div>

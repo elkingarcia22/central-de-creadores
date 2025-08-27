@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Layout } from '../../components/ui';
+import { Layout, PageHeader } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -323,19 +323,24 @@ export default function DetalleParticipante() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
+            <button
               onClick={() => router.push('/participantes')}
-              className="p-2"
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <ArrowLeftIcon className="w-5 h-5" />
-            </Button>
-            <div>
-              <Typography variant="h2">Ver Participante</Typography>
-              <Typography variant="body2" color="secondary">
-                Detalles completos del participante
-              </Typography>
-            </div>
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title="Ver Participante"
+              subtitle="Detalles completos del participante"
+              variant="compact"
+              color="purple"
+              className="mb-0"
+              chip={{
+                label: getTipoLabel(participante.tipo),
+                variant: 'secondary',
+                size: 'sm'
+              }}
+            />
           </div>
 
           {/* Acciones principales */}

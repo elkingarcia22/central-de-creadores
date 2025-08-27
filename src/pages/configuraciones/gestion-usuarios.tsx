@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, SideModal, Select, DataTable, Input, ConfirmModal } from '../../components/ui';
+import { Layout, Typography, Card, Button, SideModal, Select, DataTable, Input, ConfirmModal, PageHeader } from '../../components/ui';
 import UsuarioCreateModal from '../../components/usuarios/UsuarioCreateModal';
 import UsuarioEditModal from '../../components/usuarios/UsuarioEditModal';
 import UsuarioDeleteModal from '../../components/usuarios/UsuarioDeleteModal';
@@ -596,27 +596,16 @@ export default function GestionUsuariosPage() {
       <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header modernizado */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
-              <div>
-                            <Typography variant="h2" color="title" weight="semibold">
-              Gestión de Usuarios
-            </Typography>
-                <Typography variant="subtitle1" color="secondary">
-                  Administra los usuarios de la plataforma
-                </Typography>
-              </div>
-              {(rolSeleccionado?.toLowerCase() === 'administrador' || true) && (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handleCrearUsuario}
-                >
-                  Crear Usuario
-                </Button>
-              )}
-            </div>
-          </div>
+          <PageHeader
+            title="Gestión de Usuarios"
+            subtitle="Administra los usuarios de la plataforma"
+            color="blue"
+            primaryAction={{
+              label: "Crear Usuario",
+              onClick: handleCrearUsuario,
+              variant: "primary"
+            }}
+          />
 
           {/* Barra de búsqueda y filtro al estilo investigaciones */}
           <Card variant="elevated" padding="md" className="mb-6">

@@ -34,16 +34,10 @@ interface SeguimientosSectionProps {
   onSeguimientoChange?: () => void;
 }
 
-const getEstadoBadgeVariant = (estado: string) => {
-  switch (estado) {
-    case 'pendiente': return 'default';
-    case 'en_progreso': return 'warning';
-    case 'completado': return 'success';
-    case 'convertido': return 'success';
-    case 'bloqueado': return 'danger';
-    case 'cancelado': return 'secondary';
-    default: return 'default';
-  }
+import { getChipVariant, getChipText } from '../../utils/chipUtils';
+
+const getEstadoBadgeVariant = (estado: string): any => {
+  return getChipVariant(estado);
 };
 
 export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({

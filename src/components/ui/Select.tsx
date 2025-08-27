@@ -64,46 +64,14 @@ const Select: React.FC<SelectProps> = ({
       : true
   );
 
+  // Log para debug
+  console.log('🔍 Select options:', options.length, 'filtered:', filteredOptions.length, 'isOpen:', isOpen);
+
   // Obtener la opción seleccionada
   const selectedOption = options.find(option => option.value === value);
 
-  // Calcular posición del dropdown de manera más estable
-  const getDropdownPosition = useCallback(() => {
-    if (!containerRef.current) return {};
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
-    
-    // Calcular dimensiones del dropdown
-    const dropdownHeight = Math.min(300, filteredOptions.length * 40 + 20);
-    const dropdownWidth = Math.max(rect.width, 280);
-    
-    // Calcular espacio disponible
-    const spaceBelow = viewportHeight - rect.bottom - 2;
-    const spaceAbove = rect.top - 2;
-    
-    // Determinar posición vertical
-    const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
-    
-    // Determinar posición horizontal
-    let left = rect.left;
-    if (left + dropdownWidth > viewportWidth) {
-      left = viewportWidth - dropdownWidth - 10;
-    }
-    if (left < 10) {
-      left = 10;
-    }
-
-    return {
-      position: 'fixed' as const,
-      top: showAbove ? `${rect.top - dropdownHeight - 2}px` : `${rect.bottom + 2}px`,
-      left: `${left}px`,
-      width: `${dropdownWidth}px`,
-      maxHeight: `${Math.min(300, showAbove ? spaceAbove : spaceBelow)}px`,
-      zIndex: 99999
-    };
-  }, [filteredOptions.length]);
+  // Función simplificada para posicionamiento (ya no se usa)
+  const getDropdownPosition = useCallback(() => ({}), []);
 
   // Manejar clic fuera del dropdown
   useEffect(() => {
@@ -115,11 +83,25 @@ const Select: React.FC<SelectProps> = ({
       }
     };
 
+    const handleScroll = () => {
+      if (isOpen) {
+        setIsOpen(false);
+        setSearchTerm('');
+        onBlur?.();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      document.addEventListener('scroll', handleScroll, true);
+      window.addEventListener('resize', handleScroll);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('scroll', handleScroll, true);
+        window.removeEventListener('resize', handleScroll);
+      };
     }
-  }, [isOpen]);
+  }, [isOpen, onBlur]);
 
   // Manejar teclas
   useEffect(() => {
@@ -150,12 +132,21 @@ const Select: React.FC<SelectProps> = ({
 
   // Cerrar dropdown cuando se selecciona una opción
   const handleOptionClick = (optionValue: string) => {
+    console.log('🔍 Option clicked:', optionValue);
     onChange?.(optionValue);
     if (!multiple) {
       setIsOpen(false);
       setSearchTerm('');
       onBlur?.();
     }
+  };
+
+  // Manejar clic en opción con prevención de eventos
+  const handleOptionClickWithPrevention = (e: React.MouseEvent, optionValue: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🔍 handleOptionClickWithPrevention called with:', optionValue);
+    handleOptionClick(optionValue);
   };
 
   // Clases CSS
@@ -174,7 +165,7 @@ const Select: React.FC<SelectProps> = ({
   const errorClasses = error ? 'border-destructive focus:ring-destructive' : '';
 
   return (
-    <div className={cn('relative', fullWidth && 'w-full', className)} ref={containerRef}>
+    <div className={cn('relative inline-block', fullWidth && 'w-full', className)} ref={containerRef}>
       {label && (
         <span className="block text-sm font-medium text-foreground mb-1">
           {label}
@@ -192,9 +183,13 @@ const Select: React.FC<SelectProps> = ({
           disabled && 'opacity-50 cursor-not-allowed',
           !disabled && 'cursor-pointer'
         )}
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔍 Select clicked, disabled:', disabled, 'loading:', loading, 'isOpen:', isOpen);
           if (!disabled && !loading) {
             const newIsOpen = !isOpen;
+            console.log('🔍 Setting isOpen to:', newIsOpen);
             setIsOpen(newIsOpen);
             if (newIsOpen) {
               onFocus?.();
@@ -232,11 +227,22 @@ const Select: React.FC<SelectProps> = ({
       </button>
 
       {/* Dropdown */}
-      {isOpen && createPortal(
+      {isOpen && (
         <div
           ref={dropdownRef}
-          className="fixed bg-background border border-border rounded-md  overflow-hidden z-[9999]"
-          style={getDropdownPosition()}
+          className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-md overflow-hidden z-[999999] shadow-lg"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: '0',
+            width: '100%',
+            marginTop: '4px',
+            backgroundColor: 'white',
+            border: '1px solid #d1d5db',
+            borderRadius: '6px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            zIndex: 999999
+          }}
         >
           {/* Search input */}
           {searchable && (
@@ -256,24 +262,43 @@ const Select: React.FC<SelectProps> = ({
           )}
 
           {/* Options */}
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-60 overflow-y-auto bg-white">
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-muted-foreground">
                 No se encontraron opciones
               </div>
             ) : (
-              filteredOptions.map((option) => (
+              filteredOptions.map((option) => {
+                console.log('🔍 Rendering option:', option.value, 'disabled:', option.disabled, 'label:', option.label);
+                return (
                 <button
                   key={option.value}
                   type="button"
                   className={cn(
-                    'w-full px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                    'w-full px-3 py-2 text-left text-sm transition-colors hover:bg-blue-100 hover:text-blue-900 focus:bg-blue-100 focus:text-blue-900 focus:outline-none relative z-10 cursor-pointer',
                     option.disabled && 'opacity-50 cursor-not-allowed',
-                    !option.disabled && 'cursor-pointer',
-                    value === option.value && 'bg-accent text-accent-foreground'
+                    value === option.value && 'bg-blue-100 text-blue-900'
                   )}
-                  onClick={() => !option.disabled && handleOptionClick(option.value)}
+                  onClick={(e) => {
+                    console.log('🔍 Select - Option button clicked:', option.value);
+                    console.log('🔍 Select - Event target:', e.target);
+                    console.log('🔍 Select - Event currentTarget:', e.currentTarget);
+                    if (!option.disabled) {
+                      handleOptionClickWithPrevention(e, option.value);
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    console.log('🔍 Select - Option button mousedown:', option.value);
+                  }}
+                  onMouseUp={(e) => {
+                    console.log('🔍 Select - Option button mouseup:', option.value);
+                  }}
                   disabled={option.disabled}
+                  style={{ 
+                    pointerEvents: option.disabled ? 'none' : 'auto',
+                    backgroundColor: option.disabled ? 'transparent' : 'white',
+                    color: option.disabled ? '#6b7280' : '#374151'
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm truncate">
@@ -284,11 +309,11 @@ const Select: React.FC<SelectProps> = ({
                     )}
                   </div>
                 </button>
-              ))
+              );
+              })
             )}
           </div>
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );
