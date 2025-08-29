@@ -1341,6 +1341,36 @@ export default function ParticipantesPage() {
             })()}
             onSelectionChange={handleSelectionChange}
             bulkActions={bulkActions}
+            actions={[
+              {
+                label: 'Ver Detalles',
+                icon: <EyeIcon className="w-4 h-4" />,
+                onClick: (row: any) => handleVerParticipante(row)
+              },
+              {
+                label: 'Editar',
+                icon: <EditIcon className="w-4 h-4" />,
+                onClick: (row: any) => handleEditarParticipante(row)
+              },
+              {
+                label: 'Crear Dolor',
+                icon: <AlertTriangleIcon className="w-4 h-4" />,
+                onClick: (row: any) => handleCrearDolor(row),
+                className: 'text-orange-600 hover:text-orange-700'
+              },
+              {
+                label: 'Crear Comentario',
+                icon: <MessageIcon className="w-4 h-4" />,
+                onClick: (row: any) => handleCrearComentario(row),
+                className: 'text-popover-foreground hover:text-popover-foreground/80'
+              },
+              {
+                label: 'Eliminar',
+                icon: <TrashIcon className="w-4 h-4" />,
+                onClick: (row: any) => handleEliminarParticipante(row),
+                className: 'text-red-600 hover:text-red-700'
+              }
+            ]}
           />
 
 

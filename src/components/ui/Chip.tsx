@@ -99,17 +99,17 @@ const Chip: React.FC<ChipProps> = ({
       : 'bg-accent-violet/10 text-accent-violet',
     // Nuevas variantes agrupadas
     pendiente: outlined
-      ? 'border border-blue-500 text-blue-700 bg-transparent'
-      : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+      ? 'border border-primary text-primary bg-transparent'
+      : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary',
     transitoria: outlined
-      ? 'border border-yellow-500 text-yellow-700 bg-transparent'
-      : 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+      ? 'border border-warning text-warning-foreground bg-transparent'
+      : 'bg-warning/10 text-warning-foreground dark:bg-warning/20 dark:text-warning-foreground',
     terminada: outlined
-      ? 'border border-green-500 text-green-700 bg-transparent'
-      : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      ? 'border border-success text-success bg-transparent'
+      : 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
     fallo: outlined
-      ? 'border border-red-500 text-red-700 bg-transparent'
-      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+      ? 'border border-destructive text-destructive bg-transparent'
+      : 'bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive'
   };
 
   const classes = [

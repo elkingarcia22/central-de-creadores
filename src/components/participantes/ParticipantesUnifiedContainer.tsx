@@ -41,6 +41,9 @@ interface ParticipantesUnifiedContainerProps {
     empresas: Array<{value: string, label: string}>;
     departamentos: Array<{value: string, label: string}>;
   };
+
+  // Acciones de la tabla
+  actions?: any[];
 }
 
 export default function ParticipantesUnifiedContainer({
@@ -60,7 +63,8 @@ export default function ParticipantesUnifiedContainer({
   activeTab,
   setActiveTab,
   tabs,
-  filterOptions
+  filterOptions,
+  actions
 }: ParticipantesUnifiedContainerProps) {
   const router = useRouter();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -96,12 +100,6 @@ export default function ParticipantesUnifiedContainer({
 
   // Filtrar participantes basado en searchTerm, filters y activeTab
   const participantesFiltradas = useMemo(() => {
-    console.log('🔍 Filtrando participantes:', {
-      total: participantes.length,
-      activeTab,
-      searchTerm,
-      filters
-    });
     
     let filtradas = [...participantes];
     
@@ -114,9 +112,7 @@ export default function ParticipantesUnifiedContainer({
       };
       const tipo = tipoMap[activeTab as keyof typeof tipoMap];
       if (tipo) {
-        console.log('🔍 Filtrando por tipo:', { activeTab, tipo });
         filtradas = filtradas.filter(p => p.tipo === tipo);
-        console.log('🔍 Después de filtrar por tipo:', filtradas.length);
       }
     }
     
@@ -133,20 +129,16 @@ export default function ParticipantesUnifiedContainer({
     
     // Aplicar filtros avanzados específicos de participantes
     if (filters.estado_participante && filters.estado_participante !== 'todos') {
-      console.log('🔍 Aplicando filtro de estado:', filters.estado_participante);
-      console.log('🔍 Participantes antes del filtro de estado:', filtradas.length);
       
       // Solo aplicar filtro de estado a participantes externos
       filtradas = filtradas.filter(p => {
         if (p?.tipo === 'externo') {
           const coincide = p?.estado_participante === filters.estado_participante;
-          console.log(`🔍 Participante externo ${p.nombre}: estado=${p.estado_participante}, filtro=${filters.estado_participante}, coincide=${coincide}`);
           return coincide;
         }
         return true; // Mantener participantes internos y friend & family
       });
       
-      console.log('🔍 Participantes después del filtro de estado:', filtradas.length);
     }
     
     if (filters.rol_empresa && filters.rol_empresa !== 'todos') {
@@ -193,9 +185,6 @@ export default function ParticipantesUnifiedContainer({
       });
     }
     
-    console.log('🔍 Participantes filtradas final:', filtradas.length);
-    console.log('🔍 Primer participante filtrado:', filtradas[0]);
-    
     return filtradas;
   }, [participantes, activeTab, searchTerm, filters]);
 
@@ -237,7 +226,6 @@ export default function ParticipantesUnifiedContainer({
                   className="!w-[700px] pl-10 pr-10 py-2"
                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
                   iconPosition="left"
-                  autoFocus
                 />
                 <Button
                   variant="ghost"
@@ -285,12 +273,6 @@ export default function ParticipantesUnifiedContainer({
       />
 
       {/* Tabla de participantes */}
-      {console.log('🔍 Renderizando DataTable con:', {
-        dataLength: participantesFiltradas.length,
-        columnsLength: columns.length,
-        loading,
-        firstParticipant: participantesFiltradas[0]
-      })}
       <DataTable
         data={participantesFiltradas}
         columns={columns}
@@ -304,6 +286,7 @@ export default function ParticipantesUnifiedContainer({
         loadingMessage="Cargando participantes..."
         rowKey="id"
         bulkActions={bulkActions}
+        actions={actions}
       />
 
       {/* Drawer de filtros avanzados */}
