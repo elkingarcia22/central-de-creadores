@@ -330,13 +330,13 @@ export default function DetalleParticipante() {
               <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>
             <PageHeader
-              title="Ver Participante"
+              title={participante.nombre}
               variant="compact"
               color="purple"
               className="mb-0"
               chip={{
-                label: getTipoLabel(participante.tipo),
-                variant: 'secondary',
+                label: participante.estado_participante || 'Sin estado',
+                variant: getEstadoVariant(participante.estado_participante || 'default'),
                 size: 'sm'
               }}
             />
@@ -371,7 +371,7 @@ export default function DetalleParticipante() {
                       <div className="mb-4">
                         <Typography variant="h3" className="mb-2">{participante.nombre}</Typography>
                         <div className="flex items-center gap-3">
-                          {participante.tipo === 'externo' && participante.estado_participante && (
+                          {participante.estado_participante && (
                             <Badge variant={getEstadoVariant(participante.estado_participante)}>
                               {participante.estado_participante}
                             </Badge>
