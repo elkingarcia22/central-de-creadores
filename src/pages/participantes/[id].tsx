@@ -13,6 +13,7 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select } from '../../components/ui';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
+import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
 
 interface Participante {
   id: string;
@@ -167,13 +168,7 @@ export default function DetalleParticipante() {
   };
 
   const getEstadoVariant = (estado: string) => {
-    switch (estado.toLowerCase()) {
-      case 'activo': return 'success';
-      case 'inactivo': return 'error';
-      case 'disponible': return 'info';
-      case 'enfriamiento': return 'warning';
-      default: return 'default';
-    }
+    return getEstadoParticipanteVariant(estado);
   };
 
   const columnsInvestigaciones = [
