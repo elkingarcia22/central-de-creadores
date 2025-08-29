@@ -1121,7 +1121,7 @@ export default function ParticipantesPage() {
                     }}
                     className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
                   >
-                    <BuildingIcon className="w-5 h-5 text-blue-600" />
+                    <BuildingIcon className="w-5 h-5 text-primary" />
                     <div>
                       <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
@@ -1135,7 +1135,7 @@ export default function ParticipantesPage() {
                     }}
                     className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
                   >
-                    <UsersIcon className="w-5 h-5 text-green-600" />
+                    <UsersIcon className="w-5 h-5 text-primary" />
                     <div>
                       <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
@@ -1149,7 +1149,7 @@ export default function ParticipantesPage() {
                     }}
                     className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
                   >
-                    <UserIcon className="w-5 h-5 text-purple-600" />
+                    <UserIcon className="w-5 h-5 text-primary" />
                     <div>
                       <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
@@ -1166,19 +1166,19 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <Typography variant="h4" weight="bold" className="text-foreground">
                     <AnimatedCounter 
                       value={metricas.total} 
                       duration={2000}
-                      className="text-gray-700 dark:text-gray-200"
+                      className="text-foreground"
                     />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Total Participantes
                   </Typography>
                 </div>
-                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <UserIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <div className="p-2 rounded-lg bg-muted ml-4">
+                  <UserIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
             </Card>
@@ -1187,19 +1187,19 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <Typography variant="h4" weight="bold" className="text-foreground">
                     <AnimatedCounter 
                       value={metricas.externos} 
                       duration={2000}
-                      className="text-gray-700 dark:text-gray-200"
+                      className="text-foreground"
                     />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Externos
                   </Typography>
                 </div>
-                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <BuildingIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <div className="p-2 rounded-lg bg-muted ml-4">
+                  <BuildingIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
             </Card>
@@ -1208,19 +1208,19 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <Typography variant="h4" weight="bold" className="text-foreground">
                     <AnimatedCounter 
                       value={metricas.internos} 
                       duration={2000}
-                      className="text-gray-700 dark:text-gray-200"
+                      className="text-foreground"
                     />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Internos
                   </Typography>
                 </div>
-                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <div className="p-2 rounded-lg bg-muted ml-4">
+                  <UsersIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
             </Card>
@@ -1229,19 +1229,19 @@ export default function ParticipantesPage() {
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
-                  <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <Typography variant="h4" weight="bold" className="text-foreground">
                     <AnimatedCounter 
                       value={metricas.alcance} 
                       duration={2000}
-                      className="text-gray-700 dark:text-gray-200"
+                      className="text-foreground"
                     />
                   </Typography>
                   <Typography variant="body2" color="secondary">
                     Alcance ({metricas.porcentajeAlcance}%)
                   </Typography>
                 </div>
-                <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                  <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <div className="p-2 rounded-lg bg-muted ml-4">
+                  <CheckCircleIcon className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
             </Card>
