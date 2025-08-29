@@ -168,7 +168,11 @@ export default function DetalleParticipante() {
   };
 
   const getEstadoVariant = (estado: string) => {
-    return getEstadoParticipanteVariant(estado);
+    console.log('🔍 DEBUG - Estado recibido:', estado);
+    console.log('🔍 DEBUG - Estado procesado:', estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' '));
+    const variant = getEstadoParticipanteVariant(estado);
+    console.log('🔍 DEBUG - Variant resultante:', variant);
+    return variant;
   };
 
   const columnsInvestigaciones = [
