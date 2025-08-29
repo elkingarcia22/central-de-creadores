@@ -34,7 +34,7 @@ const Alert: React.FC<AlertProps> = ({
   const getVariantStyles = () => {
     const baseStyles = 'p-4 rounded-lg border';
     const variantStyles = {
-      info: 'bg-blue-50 border-blue-200 text-blue-800',
+      info: 'bg-primary/10 border-primary/20 text-primary',
       success: 'bg-green-50 border-green-200 text-green-800',
       warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
       error: 'bg-red-50 border-red-200 text-red-800'
@@ -58,7 +58,7 @@ const Alert: React.FC<AlertProps> = ({
 
   const getIconColor = () => {
     const colorClasses = {
-      info: 'text-blue-500',
+      info: 'text-primary',
       success: 'text-green-500',
       warning: 'text-yellow-500',
       error: 'text-red-500'

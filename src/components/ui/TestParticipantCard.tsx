@@ -38,7 +38,7 @@ const TestParticipantCard: React.FC<TestParticipantCardProps> = ({ participant, 
       {onViewDetails && (
         <button 
           onClick={() => onViewDetails(participant.id)}
-          className="mt-3 px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+          className="mt-3 px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors"
         >
           Ver
         </button>
