@@ -439,9 +439,9 @@ export default function ParticipantesPage() {
     externos: participantes.filter(p => p.tipo === 'externo').length,
     internos: participantes.filter(p => p.tipo === 'interno').length,
     friendFamily: participantes.filter(p => p.tipo === 'friend_family').length,
-    activos: participantes.filter(p => p.estado_participante === 'Activo').length,
+    alcance: participantes.filter(p => (p.total_participaciones || 0) > 0).length,
     inactivos: participantes.filter(p => p.estado_participante === 'Inactivo').length,
-    porcentajeActivos: participantes.length > 0 ? Math.round((participantes.filter(p => p.estado_participante === 'Activo').length / participantes.length) * 100) : 0
+    porcentajeAlcance: participantes.length > 0 ? Math.round((participantes.filter(p => (p.total_participaciones || 0) > 0).length / participantes.length) * 100) : 0
   };
 
   // Acciones
@@ -1113,51 +1113,51 @@ export default function ParticipantesPage() {
             {/* Dropdown para tipos de participantes */}
             {showDropdown && (
               <div className="absolute right-0 top-0 mt-20 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg z-50 shadow-lg">
-              <div className="py-1">
-                <button
-                  onClick={() => {
-                    handleCrearParticipanteExterno();
-                    setShowDropdown(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                >
-                  <BuildingIcon className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleCrearParticipanteInterno();
-                    setShowDropdown(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                >
-                  <UsersIcon className="w-5 h-5 text-green-600" />
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
-                  </div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    handleCrearParticipanteFriendFamily();
-                    setShowDropdown(false);
-                  }}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
-                >
-                  <UserIcon className="w-5 h-5 text-purple-600" />
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
-                  </div>
-                </button>
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      handleCrearParticipanteExterno();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                  >
+                    <BuildingIcon className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      handleCrearParticipanteInterno();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                  >
+                    <UsersIcon className="w-5 h-5 text-green-600" />
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      handleCrearParticipanteFriendFamily();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                  >
+                    <UserIcon className="w-5 h-5 text-purple-600" />
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
+                    </div>
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
 
           {/* Estadísticas del Dashboard */}
@@ -1225,19 +1225,19 @@ export default function ParticipantesPage() {
               </div>
             </Card>
 
-            {/* Activos */}
+            {/* Alcance */}
             <Card variant="elevated" padding="md">
               <div className="flex items-center justify-between">
                 <div>
                   <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                     <AnimatedCounter 
-                      value={metricas.activos} 
+                      value={metricas.alcance} 
                       duration={2000}
                       className="text-gray-700 dark:text-gray-200"
                     />
                   </Typography>
                   <Typography variant="body2" color="secondary">
-                    Activos ({metricas.porcentajeActivos}%)
+                    Alcance ({metricas.porcentajeAlcance}%)
                   </Typography>
                 </div>
                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
