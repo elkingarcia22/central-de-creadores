@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 2. Obtener participantes de esta empresa
     const { data: participantes, error: errorParticipantes } = await supabaseServer
       .from('participantes')
-      .select('id, nombre, rol_empresa_id, fecha_ultima_participacion, total_participaciones')
+      .select('id, nombre, rol_empresa_id, fecha_ultima_participacion')
       .eq('empresa_id', id);
 
     if (errorParticipantes) {
@@ -38,35 +38,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Error obteniendo participantes' });
     }
 
-    // 3. Obtener reclutamientos finalizados
+    console.log('📊 Participantes encontrados para la empresa:', participantes?.length || 0);
+    if (participantes) {
+      participantes.forEach((p, index) => {
+        console.log(`  ${index + 1}. ID: ${p.id}, Nombre: ${p.nombre}`);
+      });
+    }
+
+    // 3. Obtener reclutamientos (finalizados, en progreso y pendientes)
     let reclutamientosFinalizados = [];
+    let reclutamientosEnProgreso = [];
+    let reclutamientosPendientes = [];
     let ultimaParticipacion = null;
     let investigacionesParticipadas = [];
 
     if (participantes && participantes.length > 0) {
       const participanteIds = participantes.map(p => p.id);
       
-      // Obtener el estado "Finalizado"
+      // Obtener todos los estados relevantes
       const { data: estadosData } = await supabaseServer
         .from('estado_agendamiento_cat')
         .select('id, nombre')
-        .ilike('nombre', '%finalizado%')
-        .limit(1);
+        .in('nombre', ['Finalizado', 'En progreso', 'Pendiente'])
+        .order('nombre');
       
       if (estadosData && estadosData.length > 0) {
-        const estadoFinalizadoId = estadosData[0].id;
+        const estadoIds = estadosData.map(e => e.id);
         
-        // Obtener reclutamientos finalizados
+        // Obtener todos los reclutamientos relevantes
         const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
           .from('reclutamientos')
-          .select('id, investigacion_id, participantes_id, fecha_sesion, duracion_sesion')
-          .eq('estado_agendamiento', estadoFinalizadoId)
+          .select('id, investigacion_id, participantes_id, fecha_sesion, duracion_sesion, estado_agendamiento')
+          .in('estado_agendamiento', estadoIds)
           .in('participantes_id', participanteIds);
 
         if (!errorReclutamientos && reclutamientos) {
-          reclutamientosFinalizados = reclutamientos;
+          // Separar reclutamientos por estado
+          const estadoFinalizadoId = estadosData.find(e => e.nombre === 'Finalizado')?.id;
+          const estadoEnProgresoId = estadosData.find(e => e.nombre === 'En progreso')?.id;
+          const estadoPendienteId = estadosData.find(e => e.nombre === 'Pendiente')?.id;
           
-          // Obtener la fecha de la última participación
+          reclutamientosFinalizados = reclutamientos.filter(r => r.estado_agendamiento === estadoFinalizadoId);
+          reclutamientosEnProgreso = reclutamientos.filter(r => r.estado_agendamiento === estadoEnProgresoId);
+          reclutamientosPendientes = reclutamientos.filter(r => r.estado_agendamiento === estadoPendienteId);
+          
+          // Obtener la fecha de la última participación (incluyendo todos los estados)
           if (reclutamientos.length > 0) {
             const reclutamientosOrdenados = reclutamientos.sort((a, b) => 
               new Date(b.fecha_sesion).getTime() - new Date(a.fecha_sesion).getTime()
@@ -74,7 +90,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             ultimaParticipacion = reclutamientosOrdenados[0].fecha_sesion;
           }
 
-          // Obtener investigaciones únicas
+          // Obtener investigaciones únicas (incluyendo todos los estados)
           const investigacionesIds = [...new Set(reclutamientos.map(r => r.investigacion_id))];
           
           if (investigacionesIds.length > 0) {
@@ -92,8 +108,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 4. Calcular estadísticas
+    const totalReclutamientos = reclutamientosFinalizados.length + reclutamientosEnProgreso.length + reclutamientosPendientes.length;
+    const todosLosReclutamientos = [...reclutamientosFinalizados, ...reclutamientosEnProgreso, ...reclutamientosPendientes];
+    
+    // 5. Calcular total_participaciones por participante
+    const participantesConEstadisticas = participantes ? participantes.map(participante => {
+      // Contar reclutamientos finalizados por este participante
+      const participacionesFinalizadas = reclutamientosFinalizados.filter(r => r.participantes_id === participante.id).length;
+      
+      // Encontrar la fecha de la última participación
+      const reclutamientosParticipante = todosLosReclutamientos.filter(r => r.participantes_id === participante.id);
+      const ultimaParticipacion = reclutamientosParticipante.length > 0 
+        ? reclutamientosParticipante.sort((a, b) => new Date(b.fecha_sesion).getTime() - new Date(a.fecha_sesion).getTime())[0].fecha_sesion
+        : null;
+      
+      return {
+        ...participante,
+        total_participaciones: participacionesFinalizadas,
+        fecha_ultima_participacion: ultimaParticipacion
+      };
+    }) : [];
+    
     const estadisticas = {
-      totalParticipaciones: reclutamientosFinalizados.length,
+      totalParticipaciones: reclutamientosFinalizados.length, // Solo contar las finalizadas
       totalParticipantes: participantes ? participantes.length : 0,
       fechaUltimaParticipacion: ultimaParticipacion,
       investigacionesParticipadas: investigacionesParticipadas.length,
@@ -111,18 +148,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         responsable: null,
         implementador: null,
         participaciones: reclutamientosFinalizados.filter(r => r.investigacion_id === inv.id).length
-      }))
+      })),
+      // Información adicional por estado
+      participacionesFinalizadas: reclutamientosFinalizados.length,
+      participacionesEnProgreso: reclutamientosEnProgreso.length,
+      participacionesPendientes: reclutamientosPendientes.length
     };
 
     console.log(`✅ Estadísticas obtenidas para empresa ${id}:`, {
       totalParticipaciones: estadisticas.totalParticipaciones,
       totalParticipantes: estadisticas.totalParticipantes,
-      investigacionesParticipadas: estadisticas.investigacionesParticipadas
+      investigacionesParticipadas: estadisticas.investigacionesParticipadas,
+      participacionesFinalizadas: estadisticas.participacionesFinalizadas,
+      participacionesEnProgreso: estadisticas.participacionesEnProgreso,
+      participacionesPendientes: estadisticas.participacionesPendientes
+    });
+
+    // Debug: Mostrar detalles de los reclutamientos finalizados
+    console.log('🔍 Debug - Reclutamientos finalizados encontrados:', reclutamientosFinalizados.length);
+    reclutamientosFinalizados.forEach((r, index) => {
+      console.log(`  ${index + 1}. ID: ${r.id}, Fecha: ${r.fecha_sesion}, Participante: ${r.participantes_id}`);
     });
 
     return res.status(200).json({
       estadisticas,
-      participantes: participantes || []
+      participantes: participantesConEstadisticas || []
     });
 
   } catch (error) {
@@ -135,6 +185,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 function calcularParticipacionesPorMes(reclutamientos: any[]) {
   const participacionesPorMes: { [key: string]: number } = {};
   
+  // Agregar participaciones existentes
   reclutamientos.forEach(reclutamiento => {
     if (reclutamiento.fecha_sesion) {
       const fecha = new Date(reclutamiento.fecha_sesion);
@@ -143,6 +194,17 @@ function calcularParticipacionesPorMes(reclutamientos: any[]) {
       participacionesPorMes[mesAnio] = (participacionesPorMes[mesAnio] || 0) + 1;
     }
   });
+
+  // Agregar los últimos 6 meses incluso si no hay participaciones
+  const ahora = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const fecha = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+    const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+    
+    if (!participacionesPorMes[mesAnio]) {
+      participacionesPorMes[mesAnio] = 0;
+    }
+  }
 
   return participacionesPorMes;
 }

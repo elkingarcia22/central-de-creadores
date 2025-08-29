@@ -64,6 +64,12 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     }
   }, [rol]); // Removido rolSeleccionado y setRolSeleccionado de las dependencias
 
+  // Detectar cambios de ruta para forzar actualización
+  useEffect(() => {
+    console.log('🔍 Layout - Ruta cambiada:', router.asPath);
+    // Forzar re-render cuando cambia la ruta
+  }, [router.asPath]);
+
   // Guardar el estado del sidebar en localStorage cuando cambie
   useEffect(() => {
     console.log('🔍 Layout - useEffect sidebarCollapsed:', { sidebarCollapsed });
@@ -151,6 +157,20 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const handleEditProfile = () => setEditModalOpen(true);
   const handleCloseEditModal = () => setEditModalOpen(false);
 
+  // Handler para navegación desde el sidebar
+  const handleSidebarNavigation = (href: string) => {
+    console.log('🔄 Navegando desde sidebar a:', href);
+    console.log('🔄 Ruta actual:', router.asPath);
+    console.log('🔄 Router ready:', router.isReady);
+    
+    // Forzar la navegación
+    router.push(href).then(() => {
+      console.log('✅ Navegación completada a:', href);
+    }).catch((error) => {
+      console.error('❌ Error en navegación:', error);
+    });
+  };
+
   const handleSaveProfile = async (updated: any) => {
     try {
       // Actualizar perfil en Supabase
@@ -198,6 +218,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       <MobileNavigation
         items={currentMenu}
         user={userForMenus}
+        onItemClick={handleSidebarNavigation}
       />
       {/* Sidebar para desktop */}
       <div className={`hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
@@ -207,6 +228,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
           utilityItems={utilityItems}
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+          onItemClick={handleSidebarNavigation}
           user={userForMenus}
           onLogout={handleLogout}
           onSettings={handleEditProfile}

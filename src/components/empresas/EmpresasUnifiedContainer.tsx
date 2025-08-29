@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
@@ -7,6 +7,7 @@ import DataTable from '../ui/DataTable';
 import FilterDrawer from '../ui/FilterDrawer';
 import { Subtitle } from '../ui/Subtitle';
 import { SearchIcon, FilterIcon } from '../icons';
+import type { FilterValuesEmpresa } from '../ui/FilterDrawer';
 
 interface EmpresasUnifiedContainerProps {
   // Datos
@@ -16,8 +17,8 @@ interface EmpresasUnifiedContainerProps {
   setSearchTerm: (term: string) => void;
   
   // Filtros
-  filters: any;
-  setFilters: (filters: any) => void;
+  filters: FilterValuesEmpresa;
+  setFilters: (filters: FilterValuesEmpresa) => void;
   showFilterDrawer: boolean;
   setShowFilterDrawer: (show: boolean) => void;
   getActiveFiltersCount: () => number;
@@ -25,15 +26,17 @@ interface EmpresasUnifiedContainerProps {
   // Configuración de tabla
   columns: any[];
   onRowClick: (row: any) => void;
-  onSelectionChange?: (selectedRows: any[]) => void;
-  bulkActions?: any[];
-  clearSelection?: boolean;
   
   // Opciones de filtros
   filterOptions: {
     estados: Array<{value: string, label: string}>;
     tamanos: Array<{value: string, label: string}>;
     paises: Array<{value: string, label: string}>;
+    relaciones: Array<{value: string, label: string}>;
+    productos: Array<{value: string, label: string}>;
+    industrias: Array<{value: string, label: string}>;
+    modalidades: Array<{value: string, label: string}>;
+    usuarios: Array<{value: string, label: string, avatar_url?: string}>;
   };
 }
 
@@ -49,9 +52,6 @@ export default function EmpresasUnifiedContainer({
   getActiveFiltersCount,
   columns,
   onRowClick,
-  onSelectionChange,
-  bulkActions,
-  clearSelection,
   filterOptions
 }: EmpresasUnifiedContainerProps) {
   const router = useRouter();
@@ -74,6 +74,19 @@ export default function EmpresasUnifiedContainer({
     };
   }, [isSearchExpanded]);
 
+  // Callbacks para manejar el estado del buscador
+  const handleExpandSearch = useCallback(() => {
+    setIsSearchExpanded(true);
+  }, []);
+
+  const handleCollapseSearch = useCallback(() => {
+    setIsSearchExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, [setSearchTerm]);
+
   // Filtrar empresas basado en searchTerm y filters
   const empresasFiltradas = useMemo(() => {
     let filtradas = [...empresas];
@@ -84,38 +97,48 @@ export default function EmpresasUnifiedContainer({
       filtradas = filtradas.filter(emp => 
         emp?.nombre?.toLowerCase().includes(termino) ||
         emp?.descripcion?.toLowerCase().includes(termino) ||
-        emp?.industria_nombre?.toLowerCase().includes(termino) ||
-        emp?.pais_nombre?.toLowerCase().includes(termino)
+        emp?.kam_nombre?.toLowerCase().includes(termino)
       );
     }
     
-    // Aplicar filtros avanzados específicos de empresas
+    // Filtrar por estado
     if (filters.estado && filters.estado !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.estado === filters.estado);
     }
     
+    // Filtrar por tamaño
     if (filters.tamano && filters.tamano !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.tamano === filters.tamano);
     }
     
+    // Filtrar por país
     if (filters.pais && filters.pais !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.pais === filters.pais);
     }
     
+    // Filtrar por KAM
     if (filters.kam_id && filters.kam_id !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.kam_id === filters.kam_id);
     }
     
-    if (filters.activo !== undefined) {
-      filtradas = filtradas.filter(emp => emp?.activo === filters.activo);
-    }
-    
+    // Filtrar por relación
     if (filters.relacion && filters.relacion !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.relacion === filters.relacion);
     }
     
+    // Filtrar por producto
     if (filters.producto && filters.producto !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.producto === filters.producto);
+    }
+    
+    // Filtrar por industria
+    if (filters.industria && filters.industria !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.industria === filters.industria);
+    }
+    
+    // Filtrar por modalidad
+    if (filters.modalidad && filters.modalidad !== 'todos') {
+      filtradas = filtradas.filter(emp => emp?.modalidad === filters.modalidad);
     }
     
     return filtradas;
@@ -129,7 +152,7 @@ export default function EmpresasUnifiedContainer({
     setShowFilterDrawer(false);
   };
 
-  const handleFiltersChange = (newFilters: any) => {
+  const handleFiltersChange = (newFilters: FilterValuesEmpresa) => {
     setFilters(newFilters);
   };
 
@@ -155,8 +178,8 @@ export default function EmpresasUnifiedContainer({
                 <Input
                   placeholder="Buscar empresas..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-[500px] pl-10 pr-10 py-2"
+                  onChange={handleSearchChange}
+                  className="!w-[700px] pl-10 pr-10 py-2"
                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
                   iconPosition="left"
                   autoFocus
@@ -164,7 +187,7 @@ export default function EmpresasUnifiedContainer({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsSearchExpanded(false)}
+                  onClick={handleCollapseSearch}
                   className="text-gray-500 hover:text-gray-700 border-0"
                 >
                   ✕
@@ -173,7 +196,7 @@ export default function EmpresasUnifiedContainer({
             ) : (
               <Button
                 variant="ghost"
-                onClick={() => setIsSearchExpanded(true)}
+                onClick={handleExpandSearch}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
                 iconOnly
                 icon={<SearchIcon className="w-5 h-5" />}
@@ -205,14 +228,11 @@ export default function EmpresasUnifiedContainer({
         loading={loading}
         searchable={false}
         filterable={false}
-        selectable={!!onSelectionChange}
-        onSelectionChange={onSelectionChange}
+        selectable={false}
         onRowClick={onRowClick}
         emptyMessage="No se encontraron empresas que coincidan con los criterios de búsqueda"
         loadingMessage="Cargando empresas..."
         rowKey="id"
-        bulkActions={bulkActions}
-        clearSelection={clearSelection}
       />
 
       {/* Drawer de filtros avanzados */}
@@ -222,17 +242,7 @@ export default function EmpresasUnifiedContainer({
         filters={filters}
         onFiltersChange={handleFiltersChange}
         type="empresa"
-        options={{
-          estados: filterOptions.estados,
-          tamanos: filterOptions.tamanos,
-          paises: filterOptions.paises,
-          kams: [], // Se puede agregar si es necesario
-          relaciones: [], // Se puede agregar si es necesario
-          productos: [], // Se puede agregar si es necesario
-          usuarios: [], // Se puede agregar si es necesario
-          industrias: filterOptions.industrias,
-          modalidades: filterOptions.modalidades,
-        }}
+        options={filterOptions}
       />
     </Card>
   );

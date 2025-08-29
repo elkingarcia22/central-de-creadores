@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
@@ -83,6 +83,19 @@ export default function InvestigacionesUnifiedContainer({
     };
   }, [isSearchExpanded]);
 
+  // Callbacks para manejar el estado del buscador
+  const handleExpandSearch = useCallback(() => {
+    setIsSearchExpanded(true);
+  }, []);
+
+  const handleCollapseSearch = useCallback(() => {
+    setIsSearchExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, [setSearchTerm]);
+
   // Filtrar investigaciones basado en searchTerm y filters
   const investigacionesFiltradas = useMemo(() => {
     let filtradas = [...investigaciones];
@@ -162,23 +175,24 @@ export default function InvestigacionesUnifiedContainer({
     // Filtrar por link de prueba
     if (filters.linkPrueba && filters.linkPrueba !== 'todos') {
       filtradas = filtradas.filter(inv => {
-        const tieneLink = !!inv?.link_prueba;
-        return filters.linkPrueba === 'con_link' ? tieneLink : !tieneLink;
+        const tieneLinkPrueba = inv?.link_prueba && inv.link_prueba.trim() !== '';
+        return filters.linkPrueba === 'con_link' ? tieneLinkPrueba : !tieneLinkPrueba;
       });
     }
     
     // Filtrar por link de resultados
     if (filters.linkResultados && filters.linkResultados !== 'todos') {
       filtradas = filtradas.filter(inv => {
-        const tieneLink = !!inv?.link_resultados;
-        return filters.linkResultados === 'con_link' ? tieneLink : !tieneLink;
+        const tieneLinkResultados = inv?.link_resultados && inv.link_resultados.trim() !== '';
+        return filters.linkResultados === 'con_link' ? tieneLinkResultados : !tieneLinkResultados;
       });
     }
     
     // Filtrar por seguimiento
     if (filters.seguimiento && filters.seguimiento !== 'todos') {
       filtradas = filtradas.filter(inv => {
-        const tieneSeguimiento = seguimientos[inv.id] && seguimientos[inv.id].length > 0;
+        const seguimientosInv = seguimientos[inv.id] || [];
+        const tieneSeguimiento = seguimientosInv.length > 0;
         return filters.seguimiento === 'con_seguimiento' ? tieneSeguimiento : !tieneSeguimiento;
       });
     }
@@ -187,7 +201,9 @@ export default function InvestigacionesUnifiedContainer({
     if (filters.estadoSeguimiento && filters.estadoSeguimiento.length > 0) {
       filtradas = filtradas.filter(inv => {
         const seguimientosInv = seguimientos[inv.id] || [];
-        return seguimientosInv.some(seg => filters.estadoSeguimiento!.includes(seg.estado));
+        return seguimientosInv.some(seg => 
+          filters.estadoSeguimiento!.includes(seg.estado)
+        );
       });
     }
     
@@ -223,51 +239,51 @@ export default function InvestigacionesUnifiedContainer({
         <div className="flex items-center gap-2">
           {/* Icono de búsqueda que se expande */}
           <div className="relative">
-                         {isSearchExpanded ? (
-               <div className="flex items-center gap-2">
-                 <Input
-                   placeholder="Buscar investigaciones..."
-                   value={searchTerm}
-                   onChange={e => setSearchTerm(e.target.value)}
-                   className="w-[500px] pl-10 pr-10 py-2"
-                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                   iconPosition="left"
-                   autoFocus
-                 />
-                 <Button
-                   variant="ghost"
-                   size="sm"
-                   onClick={() => setIsSearchExpanded(false)}
-                   className="text-gray-500 hover:text-gray-700 border-0"
-                 >
-                   ✕
-                 </Button>
-               </div>
-             ) : (
-               <Button
-                 variant="ghost"
-                 onClick={() => setIsSearchExpanded(true)}
-                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
-                 iconOnly
-                 icon={<SearchIcon className="w-5 h-5" />}
-               />
-             )}
+            {isSearchExpanded ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Buscar investigaciones..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="!w-[700px] pl-10 pr-10 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCollapseSearch}
+                  className="text-gray-500 hover:text-gray-700 border-0"
+                >
+                  ✕
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={handleExpandSearch}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                iconOnly
+                icon={<SearchIcon className="w-5 h-5" />}
+              />
+            )}
           </div>
           
-                     {/* Icono de filtro */}
-           <Button
-             variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
-             onClick={handleOpenFilters}
-             className="relative p-2 border-0"
-             iconOnly
-             icon={<FilterIcon />}
-           >
-             {getActiveFiltersCount() > 0 && (
-               <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                 {getActiveFiltersCount()}
-               </span>
-             )}
-           </Button>
+          {/* Icono de filtro */}
+          <Button
+            variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
+            onClick={handleOpenFilters}
+            className="relative p-2 border-0"
+            iconOnly
+            icon={<FilterIcon />}
+          >
+            {getActiveFiltersCount() > 0 && (
+              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                {getActiveFiltersCount()}
+              </span>
+            )}
+          </Button>
         </div>
       </div>
 

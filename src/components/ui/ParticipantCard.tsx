@@ -194,7 +194,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
               className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
             >
               <TrashIcon className="w-4 h-4" />
-          </Button>
+            </Button>
           )}
         </div>
       </div>

@@ -38,15 +38,15 @@ export const ContainerTitle: React.FC<ContainerTitleProps> = ({
   alignment = 'left'
 }) => {
   const sizeMap = {
-    sm: 'h5',
-    md: 'h4',
-    lg: 'h3'
+    sm: 'subtitle2',
+    md: 'subtitle1',
+    lg: 'h6'
   };
 
   const iconSizeMap = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6'
+    sm: 'w-3 h-3',
+    md: 'w-4 h-4',
+    lg: 'w-5 h-5'
   };
 
   return (
@@ -69,9 +69,9 @@ export const ContainerTitle: React.FC<ContainerTitleProps> = ({
       )}
       <Typography
         variant={sizeMap[size]}
-        color="default"
-        weight="semibold"
-        className="!text-gray-600 dark:!text-gray-300"
+        color="secondary"
+        weight="medium"
+        className="!text-gray-500 dark:!text-gray-400"
       >
         {title}
       </Typography>

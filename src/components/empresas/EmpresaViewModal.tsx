@@ -5,6 +5,7 @@ import Badge from '../ui/Badge';
 import { BuildingIcon, UserIcon, MapPinIcon, CalendarIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { Empresa } from '../../types/empresas';
+import { PageHeader, FilterLabel } from '../ui/';
 
 
 
@@ -52,11 +53,20 @@ export default function EmpresaViewModal({
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Detalles de la Empresa"
       size="lg"
+      showCloseButton={false}
     >
       <div className="space-y-6">
-        {/* Header con información básica */}
+        {/* Header */}
+        <PageHeader
+          title="Detalles de la Empresa"
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
+        />
+
+        {/* Información básica */}
         <div className="flex items-start space-x-4">
           <div className="p-3 bg-primary/10 rounded-lg">
             <BuildingIcon className="w-8 h-8 text-primary" />
@@ -81,9 +91,7 @@ export default function EmpresaViewModal({
         {/* Descripción */}
         {empresa.descripcion && (
           <div>
-            <Typography variant="h4" weight="semibold" className="mb-2">
-              Descripción
-            </Typography>
+            <FilterLabel>Descripción</FilterLabel>
             <Typography variant="body1" color="secondary">
               {empresa.descripcion}
             </Typography>
@@ -91,17 +99,12 @@ export default function EmpresaViewModal({
         )}
 
         {/* Información de contacto */}
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Información de Contacto
-          </Typography>
-          <div className="space-y-3">
+        <div className="space-y-4">
+          <div>
+            <FilterLabel>KAM Asignado</FilterLabel>
             <div className="flex items-center space-x-3">
               <UserIcon className="w-5 h-5 text-gray-400" />
               <div>
-                <Typography variant="body2" color="secondary">
-                  KAM Asignado
-                </Typography>
                 <Typography variant="body1" weight="medium">
                   {empresa.kam_nombre || 'Sin asignar'}
                 </Typography>
@@ -116,18 +119,13 @@ export default function EmpresaViewModal({
         </div>
 
         {/* Ubicación y clasificación */}
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Ubicación y Clasificación
-          </Typography>
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <MapPinIcon className="w-5 h-5 text-gray-400" />
-                <div>
-                  <Typography variant="body2" color="secondary">
-                    País
-                  </Typography>
+            <div className="space-y-4">
+              <div>
+                <FilterLabel>País</FilterLabel>
+                <div className="flex items-center space-x-3">
+                  <MapPinIcon className="w-5 h-5 text-gray-400" />
                   <Typography variant="body1" weight="medium">
                     {empresa.pais_nombre || 'Sin especificar'}
                   </Typography>
@@ -135,18 +133,14 @@ export default function EmpresaViewModal({
               </div>
 
               <div>
-                <Typography variant="body2" color="secondary">
-                  Industria
-                </Typography>
+                <FilterLabel>Industria</FilterLabel>
                 <Typography variant="body1" weight="medium">
                   {empresa.industria_nombre || 'Sin especificar'}
                 </Typography>
               </div>
 
               <div>
-                <Typography variant="body2" color="secondary">
-                  Tamaño
-                </Typography>
+                <FilterLabel>Tamaño</FilterLabel>
                 {empresa.tamano_nombre ? (
                   <Badge variant={getTamanoColor(empresa.tamano_nombre)}>
                     {empresa.tamano_nombre}
@@ -159,29 +153,23 @@ export default function EmpresaViewModal({
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <Typography variant="body2" color="secondary">
-                  Modalidad
-                </Typography>
+                <FilterLabel>Modalidad</FilterLabel>
                 <Typography variant="body1" weight="medium">
                   {empresa.modalidad_nombre || 'Sin especificar'}
                 </Typography>
               </div>
 
               <div>
-                <Typography variant="body2" color="secondary">
-                  Relación
-                </Typography>
+                <FilterLabel>Relación</FilterLabel>
                 <Typography variant="body1" weight="medium">
                   {empresa.relacion_nombre || 'Sin especificar'}
                 </Typography>
               </div>
 
               <div>
-                <Typography variant="body2" color="secondary">
-                  Producto
-                </Typography>
+                <FilterLabel>Producto</FilterLabel>
                 <Typography variant="body1" weight="medium">
                   {empresa.producto_nombre || 'Sin especificar'}
                 </Typography>
@@ -191,29 +179,22 @@ export default function EmpresaViewModal({
         </div>
 
         {/* Información de registro */}
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Información de Registro
-          </Typography>
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3">
-              <CalendarIcon className="w-5 h-5 text-gray-400" />
-              <div>
-                <Typography variant="body2" color="secondary">
-                  Fecha de Creación
-                </Typography>
+            <div>
+              <FilterLabel>Fecha de Creación</FilterLabel>
+              <div className="flex items-center space-x-3">
+                <CalendarIcon className="w-5 h-5 text-gray-400" />
                 <Typography variant="body1" weight="medium">
                   {formatearFecha(empresa.created_at)}
                 </Typography>
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <CalendarIcon className="w-5 h-5 text-gray-400" />
-              <div>
-                <Typography variant="body2" color="secondary">
-                  Última Actualización
-                </Typography>
+            <div>
+              <FilterLabel>Última Actualización</FilterLabel>
+              <div className="flex items-center space-x-3">
+                <CalendarIcon className="w-5 h-5 text-gray-400" />
                 <Typography variant="body1" weight="medium">
                   {formatearFecha(empresa.updated_at)}
                 </Typography>

@@ -44,7 +44,6 @@ export interface FilterValuesEmpresa {
   tamano?: string;
   pais?: string;
   kam_id?: string;
-  activo?: boolean;
   relacion?: string;
   producto?: string;
   industria?: string;

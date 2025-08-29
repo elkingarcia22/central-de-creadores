@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
@@ -70,6 +70,18 @@ export default function ReclutamientoUnifiedContainer({
       document.removeEventListener('keydown', handleEscape);
     };
   }, [isSearchExpanded]);
+  // Callbacks para manejar el estado del buscador
+  const handleExpandSearch = useCallback(() => {
+    setIsSearchExpanded(true);
+  }, []);
+
+  const handleCollapseSearch = useCallback(() => {
+    setIsSearchExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, [setSearchTerm]);
 
   // Filtrar reclutamientos basado en searchTerm y filters
   const reclutamientosFiltradas = useMemo(() => {
@@ -166,8 +178,8 @@ export default function ReclutamientoUnifiedContainer({
                 <Input
                   placeholder="Buscar reclutamientos..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-[500px] pl-10 pr-10 py-2"
+                  onChange={handleSearchChange}
+                  className="!w-[700px] pl-10 pr-10 py-2"
                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
                   iconPosition="left"
                   autoFocus
@@ -175,7 +187,7 @@ export default function ReclutamientoUnifiedContainer({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsSearchExpanded(false)}
+                  onClick={handleCollapseSearch}
                   className="text-gray-500 hover:text-gray-700 border-0"
                 >
                   ✕
@@ -184,7 +196,7 @@ export default function ReclutamientoUnifiedContainer({
             ) : (
               <Button
                 variant="ghost"
-                onClick={() => setIsSearchExpanded(true)}
+                onClick={handleExpandSearch}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
                 iconOnly
                 icon={<SearchIcon className="w-5 h-5" />}

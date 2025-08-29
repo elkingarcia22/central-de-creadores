@@ -64,7 +64,7 @@ export const InfoContainer: React.FC<InfoContainerProps> = ({
 
   const content = (
     <div className={cn(
-      'space-y-4',
+      'space-y-3',
       padding !== 'none' && paddingMap[padding],
       className
     )}>
@@ -76,7 +76,7 @@ export const InfoContainer: React.FC<InfoContainerProps> = ({
           alignment={titleAlignment}
         />
       )}
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {children}
       </div>
     </div>

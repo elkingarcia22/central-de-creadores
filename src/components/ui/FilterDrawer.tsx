@@ -368,7 +368,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         <div className="flex flex-col h-full">
           {/* Header */}
           <PageHeader
-            title="Filtros Avanzados"
+            title={type === 'empresa' ? 'Filtros de Empresas' : 'Filtros Avanzados'}
             variant="title-only"
             color="gray"
             icon={<FilterIcon className="w-5 h-5 text-foreground" />}
@@ -682,9 +682,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 {/* Estado del Participante - solo para participantes externos */}
                 {participanteType === 'externos' && (
                   <div>
-                    <Typography variant="subtitle2" weight="medium" className="mb-2">
-                      Estado del Participante
-                    </Typography>
+                    <FilterLabel>Estado del Participante</FilterLabel>
                     <Select
                       placeholder="Seleccionar estado..."
                       options={options.estados || []}
@@ -697,9 +695,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Rol en la Empresa - común para todos los tipos */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Rol en la Empresa
-                  </Typography>
+                  <FilterLabel>Rol en la Empresa</FilterLabel>
                   <Select
                     placeholder="Seleccionar rol..."
                     options={options.roles || []}
@@ -712,9 +708,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 {/* Empresa - solo para participantes externos */}
                 {participanteType === 'externos' && (
                   <div>
-                    <Typography variant="subtitle2" weight="medium" className="mb-2">
-                      Empresa
-                    </Typography>
+                    <FilterLabel>Empresa</FilterLabel>
                     <Select
                       placeholder="Seleccionar empresa..."
                       options={options.empresas || []}
@@ -728,9 +722,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 {/* Departamento - solo para participantes internos y friend & family */}
                 {(participanteType === 'internos' || participanteType === 'friend_family') && (
                   <div>
-                    <Typography variant="subtitle2" weight="medium" className="mb-2">
-                      Departamento
-                    </Typography>
+                    <FilterLabel>Departamento</FilterLabel>
                     <Select
                       placeholder="Seleccionar departamento..."
                       options={options.departamentos || []}
@@ -743,9 +735,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Fecha Última Participación - común para todos los tipos */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Fecha Última Participación
-                  </Typography>
+                  <FilterLabel>Fecha Última Participación</FilterLabel>
                   <div className="grid grid-cols-2 gap-2">
                     <DatePicker
                       placeholder="Desde..."
@@ -762,9 +752,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Total de Participaciones - común para todos los tipos */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Total de Participaciones
-                  </Typography>
+                  <FilterLabel>Total de Participaciones</FilterLabel>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="Mínimo"
@@ -783,9 +771,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Tiene Email - común para todos los tipos */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Tiene Email
-                  </Typography>
+                  <FilterLabel>Tiene Email</FilterLabel>
                   <Select
                     placeholder="Seleccionar..."
                     options={options.tieneEmail || []}
@@ -798,9 +784,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 {/* Tiene Productos - solo para participantes externos */}
                 {participanteType === 'externos' && (
                   <div>
-                    <Typography variant="subtitle2" weight="medium" className="mb-2">
-                      Tiene Productos
-                    </Typography>
+                    <FilterLabel>Tiene Productos</FilterLabel>
                     <Select
                       placeholder="Seleccionar..."
                       options={options.tieneProductos || []}
@@ -867,22 +851,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     onChange={(value) => handleFilterChange('kam_id', value)}
                     users={options.usuarios || []}
                     placeholder="Seleccionar KAM..."
-                    fullWidth
-                  />
-                </div>
-
-                {/* Estado Activo/Inactivo */}
-                <div>
-                  <FilterLabel>Estado Activo</FilterLabel>
-                  <Select
-                    placeholder="Seleccionar estado..."
-                    options={[
-                      { value: 'todos', label: 'Todos' },
-                      { value: 'true', label: 'Activas' },
-                      { value: 'false', label: 'Inactivas' }
-                    ]}
-                    value={(filters as FilterValuesEmpresa).activo === undefined ? 'todos' : (filters as FilterValuesEmpresa).activo ? 'true' : 'false'}
-                    onChange={(value) => handleFilterChange('activo', value === 'todos' ? undefined : value === 'true')}
                     fullWidth
                   />
                 </div>

@@ -12,7 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     email,
     rol_empresa,
     empresa_nombre,
-    departamento_nombre
+    departamento_nombre,
+    estado_participante
   } = req.body;
 
   if (!id || typeof id !== 'string') {
@@ -61,6 +62,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           .single();
         if (empresa) {
           updateData.empresa_id = empresa.id;
+        }
+      }
+
+      // Si se proporciona estado_participante, buscar el ID correspondiente
+      if (estado_participante) {
+        const { data: estado } = await supabaseServer
+          .from('estado_participante_cat')
+          .select('id')
+          .eq('nombre', estado_participante)
+          .single();
+        if (estado) {
+          updateData.estado_participante = estado.id;
         }
       }
 

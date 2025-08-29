@@ -53,12 +53,12 @@ export const InfoItem: React.FC<InfoItemProps> = ({
       value: 'body2'
     },
     md: {
-      label: 'subtitle2',
-      value: 'body1'
+      label: 'caption',
+      value: 'body2'
     },
     lg: {
-      label: 'subtitle1',
-      value: 'h6'
+      label: 'subtitle2',
+      value: 'body1'
     }
   };
 
@@ -80,7 +80,8 @@ export const InfoItem: React.FC<InfoItemProps> = ({
         <Typography 
           variant={sizeMap[size].value} 
           color="default"
-          className="!text-gray-700 dark:!text-gray-200"
+          weight="medium"
+          className="!text-gray-900 dark:!text-gray-100"
         >
           {value}
         </Typography>

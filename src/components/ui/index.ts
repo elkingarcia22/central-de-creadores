@@ -112,6 +112,7 @@ export { ActivityCard } from './ActivityCard';
 
 // Componente de participantes
 export { default as ParticipantCard } from './ParticipantCard';
+export { default as CompanyParticipantCard, type CompanyParticipant, type CompanyParticipantCardProps } from './CompanyParticipantCard';
 
 // Componentes de data display
 export { default as List } from './List';

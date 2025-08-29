@@ -68,7 +68,8 @@ import {
   Subtitle,
   ContainerTitle,
   FilterLabel,
-  ParticipantCard
+  ParticipantCard,
+  CompanyParticipantCard
 } from '../ui';
 import MicroInteractionsDemo from './MicroInteractionsDemo';
 import { 
@@ -223,7 +224,8 @@ const ComponentsSection: React.FC = () => {
         { id: "empty-state", name: "Empty State" },
         { id: "list", name: "List" },
         { id: "counter", name: "Counter" },
-        { id: "participant-card", name: "Participant Card" }
+        { id: "participant-card", name: "Participant Card" },
+        { id: "company-participant-card", name: "Company Participant Card" }
       ]
     },
     {
@@ -7871,6 +7873,251 @@ const ComponentsSection: React.FC = () => {
     );
   };
 
+  const renderCompanyParticipantCardComponent = () => {
+    // Datos de ejemplo para las cards de participantes de empresa
+    const participanteActivo = {
+      id: '1',
+      nombre: 'Juan Pérez',
+      total_participaciones: 5,
+      fecha_ultima_participacion: '2025-08-27T10:00:00Z',
+      email: 'juan.perez@empresa.com',
+      telefono: '+57 300 123 4567'
+    };
+
+    const participanteSinParticipacion = {
+      id: '2',
+      nombre: 'Ana López',
+      total_participaciones: 0,
+      fecha_ultima_participacion: null,
+      email: 'ana.lopez@empresa.com',
+      telefono: '+57 300 987 6543'
+    };
+
+    const participanteReciente = {
+      id: '3',
+      nombre: 'Carlos Ruiz',
+      total_participaciones: 2,
+      fecha_ultima_participacion: '2025-08-28T15:30:00Z',
+      email: 'carlos.ruiz@empresa.com',
+      telefono: '+57 300 555 1234'
+    };
+
+    return (
+      <div className="space-y-8">
+        {/* Descripción */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            CompanyParticipantCard Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Componente especializado para mostrar información de participantes de empresa 
+            en la vista de detalles de empresa. Incluye estadísticas de participaciones, 
+            estado de actividad y opciones de gestión.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Características principales:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Muestra estadísticas de participaciones del participante</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Indicador visual de estado (Activo/Sin participación)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Información de última participación con fecha</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Acciones configurables (Ver, Editar, Eliminar)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Información extendida opcional (email, teléfono)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Estado de carga integrado</span>
+              </Typography>
+            </div>
+          </div>
+        </Card>
+
+        {/* Ejemplos */}
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Ejemplos de Cards
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-6">
+            Diferentes variantes del componente según el estado de participación.
+          </Typography>
+          
+          <div className="space-y-6">
+            {/* Participante Activo */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Participante Activo
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante con múltiples participaciones y actividad reciente.
+              </Typography>
+              <div className="max-w-2xl">
+                <CompanyParticipantCard
+                  participant={participanteActivo}
+                  onViewDetails={(id) => console.log('Ver detalles:', id)}
+                  onEdit={(id) => console.log('Editar:', id)}
+                  onDelete={(id) => console.log('Eliminar:', id)}
+                  showActions={true}
+                />
+              </div>
+            </div>
+
+            {/* Participante Sin Participación */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Participante Sin Participación
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante registrado pero sin participaciones registradas.
+              </Typography>
+              <div className="max-w-2xl">
+                <CompanyParticipantCard
+                  participant={participanteSinParticipacion}
+                  onViewDetails={(id) => console.log('Ver detalles:', id)}
+                  onEdit={(id) => console.log('Editar:', id)}
+                  onDelete={(id) => console.log('Eliminar:', id)}
+                  showActions={true}
+                />
+              </div>
+            </div>
+
+            {/* Participante con Información Extendida */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Con Información Extendida
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Participante mostrando información adicional como email y teléfono.
+              </Typography>
+              <div className="max-w-2xl">
+                <CompanyParticipantCard
+                  participant={participanteReciente}
+                  onViewDetails={(id) => console.log('Ver detalles:', id)}
+                  onEdit={(id) => console.log('Editar:', id)}
+                  onDelete={(id) => console.log('Eliminar:', id)}
+                  showActions={true}
+                  showExtendedInfo={true}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Props y Uso */}
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Props y Uso
+          </Typography>
+          <div className="space-y-4">
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Props disponibles:
+              </Typography>
+              <div className="space-y-1">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">participant</code>
+                  <span>: Objeto con datos del participante (requerido)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onViewDetails</code>
+                  <span>: Función para ver detalles del participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onEdit</code>
+                  <span>: Función para editar participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">onDelete</code>
+                  <span>: Función para eliminar participante (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">showActions</code>
+                  <span>: Mostrar botones de acción (opcional, default: false)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">showExtendedInfo</code>
+                  <span>: Mostrar información adicional (opcional, default: false)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">loading</code>
+                  <span>: Estado de carga (opcional, default: false)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">className</code>
+                  <span>: Clases CSS adicionales (opcional)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <code className="bg-background px-1 rounded">dateFormatter</code>
+                  <span>: Función personalizada para formatear fechas (opcional)</span>
+                </Typography>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Uso básico:
+              </Typography>
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-sm overflow-x-auto">
+{`<CompanyParticipantCard
+  participant={participantData}
+  onViewDetails={handleViewDetails}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+  showActions={true}
+  showExtendedInfo={false}
+/>`}
+                </pre>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-2">
+                Interface del participante:
+              </Typography>
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-sm overflow-x-auto">
+{`interface CompanyParticipant {
+  id: string;
+  nombre: string;
+  total_participaciones: number;
+  fecha_ultima_participacion?: string | null;
+  rol_empresa_id?: string;
+  email?: string;
+  telefono?: string;
+}`}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   const renderComponentContent = () => {
     if (activeComponent === 'button') {
       return renderButtonComponent();
@@ -10221,6 +10468,10 @@ const ComponentsSection: React.FC = () => {
     
     if (activeComponent === 'participant-card') {
       return renderParticipantCardComponent();
+    }
+
+    if (activeComponent === 'company-participant-card') {
+      return renderCompanyParticipantCardComponent();
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import SideModal from '../ui/SideModal';
 import Typography from '../ui/Typography';
 import Button from '../ui/Button';
@@ -7,7 +7,7 @@ import Select from '../ui/Select';
 import MultiSelect from '../ui/MultiSelect';
 import Textarea from '../ui/Textarea';
 import UserSelectorWithAvatar from '../ui/UserSelectorWithAvatar';
-import { PageHeader } from '../ui/PageHeader';
+import { PageHeader, FilterLabel } from '../ui/';
 import { SaveIcon, XIcon } from '../icons';
 import { Empresa, Usuario } from '../../types/empresas';
 
@@ -19,7 +19,7 @@ interface EmpresaSideModalProps {
   onSave: (data: Partial<Empresa>) => void;
   empresa?: Empresa | null;
   usuarios: Usuario[];
-  filterOptions: {
+  filterOptions?: {
     estados: { value: string; label: string }[];
     paises: { value: string; label: string }[];
     tamanos: { value: string; label: string }[];
@@ -37,7 +37,7 @@ export default function EmpresaSideModal({
   onSave,
   empresa,
   usuarios,
-  filterOptions,
+  filterOptions = {},
   loading = false
 }: EmpresaSideModalProps) {
   const [formData, setFormData] = useState<Partial<Empresa>>({
@@ -56,7 +56,7 @@ export default function EmpresaSideModal({
   });
 
   // Verificar que filterOptions tenga todas las propiedades necesarias
-  const safeFilterOptions = {
+  const safeFilterOptions = useMemo(() => ({
     estados: filterOptions?.estados || [],
     tamanos: filterOptions?.tamanos || [],
     paises: filterOptions?.paises || [],
@@ -65,7 +65,16 @@ export default function EmpresaSideModal({
     productos: filterOptions?.productos || [],
     industrias: filterOptions?.industrias || [],
     modalidades: filterOptions?.modalidades || []
-  };
+  }), [
+    filterOptions?.estados,
+    filterOptions?.tamanos,
+    filterOptions?.paises,
+    filterOptions?.kams,
+    filterOptions?.relaciones,
+    filterOptions?.productos,
+    filterOptions?.industrias,
+    filterOptions?.modalidades
+  ]);
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -121,7 +130,7 @@ export default function EmpresaSideModal({
       });
     }
     setErrors({});
-  }, [empresa, usuarios, filterOptions]);
+  }, [empresa?.id, empresa?.nombre, empresa?.descripcion, empresa?.kam_id, empresa?.pais_id, empresa?.estado_id, empresa?.tamano_id, empresa?.relacion_id, empresa?.industria_id, empresa?.modalidad_id, empresa?.producto_id, empresa?.productos_ids, empresa?.activo]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -198,21 +207,17 @@ export default function EmpresaSideModal({
         <PageHeader
           title={isEditing ? 'Editar Empresa' : 'Crear Empresa'}
           variant="title-only"
-          color="green"
-          className="mb-0"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
           onClose={onClose}
         />
 
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-6">
           {/* Información básica */}
           <div className="space-y-4">
-            <Typography variant="h4" weight="semibold">
-              Información Básica
-            </Typography>
-            
             <div>
+              <FilterLabel>Nombre de la Empresa</FilterLabel>
               <Input
-                label="Nombre de la Empresa"
                 value={formData.nombre || ''}
                 onChange={(e) => handleInputChange('nombre', e.target.value)}
                 placeholder="Ingresa el nombre de la empresa"
@@ -223,8 +228,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Descripción</FilterLabel>
               <Textarea
-                label="Descripción"
                 value={formData.descripcion || ''}
                 onChange={(e) => handleInputChange('descripcion', e.target.value)}
                 placeholder="Describe la empresa"
@@ -236,13 +241,9 @@ export default function EmpresaSideModal({
 
         {/* Información de contacto */}
         <div className="space-y-4">
-          <Typography variant="h4" weight="semibold">
-            Información de Contacto
-          </Typography>
-          
           <div>
+            <FilterLabel>KAM Asignado</FilterLabel>
             <UserSelectorWithAvatar
-              label="KAM Asignado"
               value={formData.kam_id || ''}
               onChange={(value) => handleInputChange('kam_id', value)}
               placeholder="Selecciona un KAM"
@@ -259,14 +260,10 @@ export default function EmpresaSideModal({
 
         {/* Información de ubicación */}
         <div className="space-y-4">
-          <Typography variant="h4" weight="semibold">
-            Ubicación y Clasificación
-          </Typography>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <FilterLabel>País</FilterLabel>
               <Select
-                label="País"
                 value={formData.pais_id || ''}
                 onChange={(value) => handleInputChange('pais_id', value)}
                 options={[
@@ -281,8 +278,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Tamaño</FilterLabel>
               <Select
-                label="Tamaño"
                 value={formData.tamano_id || ''}
                 onChange={(value) => handleInputChange('tamano_id', value)}
                 options={[
@@ -295,8 +292,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Relación</FilterLabel>
               <Select
-                label="Relación"
                 value={formData.relacion_id || ''}
                 onChange={(value) => handleInputChange('relacion_id', value)}
                 options={[
@@ -309,8 +306,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Catálogo de Productos</FilterLabel>
               <MultiSelect
-                label="Catálogo de Productos"
                 value={formData.productos_ids || []}
                 onChange={(value) => handleInputChange('productos_ids', value)}
                 options={safeFilterOptions.productos}
@@ -321,8 +318,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Industria</FilterLabel>
               <Select
-                label="Industria"
                 value={formData.industria_id || ''}
                 onChange={(value) => handleInputChange('industria_id', value)}
                 options={[
@@ -335,8 +332,8 @@ export default function EmpresaSideModal({
             </div>
 
             <div>
+              <FilterLabel>Modalidad</FilterLabel>
               <Select
-                label="Modalidad"
                 value={formData.modalidad_id || ''}
                 onChange={(value) => handleInputChange('modalidad_id', value)}
                 options={[
@@ -352,13 +349,9 @@ export default function EmpresaSideModal({
 
         {/* Estado */}
         <div className="space-y-4">
-          <Typography variant="h4" weight="semibold">
-            Estado
-          </Typography>
-          
           <div>
+            <FilterLabel>Estado de la Empresa</FilterLabel>
             <Select
-              label="Estado de la Empresa"
               value={formData.estado_id || ''}
               onChange={(value) => handleInputChange('estado_id', value)}
               options={[

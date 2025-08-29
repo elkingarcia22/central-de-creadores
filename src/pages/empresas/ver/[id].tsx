@@ -8,15 +8,16 @@ import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
 import { Empresa } from '../../../types/empresas';
 
-import { Layout, PageHeader } from '../../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard } from '../../../components/ui';
+import TestParticipantCard from '../../../components/ui/TestParticipantCard';
 import Typography from '../../../components/ui/Typography';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import Chip from '../../../components/ui/Chip';
-import MetricCard from '../../../components/ui/MetricCard';
 import Tabs from '../../../components/ui/Tabs';
 import SimpleAvatar from '../../../components/ui/SimpleAvatar';
+import AnimatedCounter from '../../../components/ui/AnimatedCounter';
 import EmpresaSideModal from '../../../components/empresas/EmpresaSideModal';
 import { 
   BuildingIcon, 
@@ -42,7 +43,6 @@ import { getChipVariant, getChipText } from '../../../utils/chipUtils';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
-  console.log('🔍 getEstadoColor llamado con:', estado);
   return getChipVariant(estado);
 };
 
@@ -50,14 +50,14 @@ const getRiesgoColor = (riesgo: string): any => {
   return getChipVariant(riesgo);
 };
 
-  const getRelacionColor = (relacion: string): string => {
-    const relacionLower = relacion.toLowerCase();
-    if (relacionLower.includes('excelente')) return 'success';
-    if (relacionLower.includes('buena')) return 'success';
-    if (relacionLower.includes('regular')) return 'warning';
-    if (relacionLower.includes('mala') || relacionLower.includes('pobre')) return 'danger';
-    return 'default';
-  };
+const getRelacionColor = (relacion: string): string => {
+  const relacionLower = relacion.toLowerCase();
+  if (relacionLower.includes('excelente')) return 'success';
+  if (relacionLower.includes('buena')) return 'success';
+  if (relacionLower.includes('regular')) return 'warning';
+  if (relacionLower.includes('mala') || relacionLower.includes('pobre')) return 'danger';
+  return 'default';
+};
 
 interface EstadisticasEmpresa {
   totalParticipaciones: number;
@@ -110,6 +110,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [empresaData, setEmpresaData] = useState<EmpresaDetallada>(empresa);
+  const [activeTab, setActiveTab] = useState('informacion');
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [usuarios, setUsuarios] = useState<any[]>([]);
@@ -122,6 +124,13 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     productos: []
   });
 
+  // Detectar cambios de ruta para debuggear
+  useEffect(() => {
+    console.log('🔍 EmpresaVerPage - Ruta actual:', router.asPath);
+    console.log('🔍 EmpresaVerPage - Router ready:', router.isReady);
+    console.log('🔍 EmpresaVerPage - Empresa ID:', empresa.id);
+  }, [router.asPath, router.isReady, empresa.id]);
+
   useEffect(() => {
     if (empresa.id) {
       cargarEstadisticas(empresa.id);
@@ -131,15 +140,9 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
   const cargarDatosModal = async () => {
     try {
-      console.log('🔄 Cargando datos del modal...');
-      
       // Cargar usuarios
       const usuariosRes = await fetch('/api/usuarios');
-      console.log('📡 Response usuarios status:', usuariosRes.status);
       const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
-      console.log('👥 Usuarios cargados:', usuariosData);
-      console.log('👥 Tipo de usuariosData:', typeof usuariosData);
-      console.log('👥 Es array:', Array.isArray(usuariosData));
       
       // Extraer usuarios del objeto si es necesario
       let usuariosArray = [];
@@ -148,51 +151,39 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       } else if (usuariosData && usuariosData.usuarios && Array.isArray(usuariosData.usuarios)) {
         usuariosArray = usuariosData.usuarios;
       }
-      console.log('👥 UsuariosArray final:', usuariosArray.length);
       
       // Cargar catálogos - usar APIs correctas
       const estadosRes = await fetch('/api/estados-empresa');
       const estados = estadosRes.ok ? await estadosRes.json() : [];
-      console.log('🏷️ Estados cargados:', estados.length);
       
       const tamanosRes = await fetch('/api/tamanos-empresa');
       const tamanos = tamanosRes.ok ? await tamanosRes.json() : [];
-      console.log('📏 Tamaños cargados:', tamanos.length);
       
       const paisesRes = await fetch('/api/paises');
       const paises = paisesRes.ok ? await paisesRes.json() : [];
-      console.log('🌍 Países cargados:', paises.length);
       
       const relacionesRes = await fetch('/api/relaciones-empresa');
       const relaciones = relacionesRes.ok ? await relacionesRes.json() : [];
-      console.log('🤝 Relaciones cargadas:', relaciones.length);
       
       const productosRes = await fetch('/api/productos');
-      console.log('📡 Response productos status:', productosRes.status);
       const productos = productosRes.ok ? await productosRes.json() : [];
-      console.log('📦 Productos cargados:', productos);
-      console.log('📦 Productos length:', productos.length);
 
       const kamsMapped = usuariosArray.map((u: any) => ({ 
         value: u.id, 
         label: u.full_name || u.nombre || u.email || u.correo || 'Sin nombre' 
       }));
-      console.log('👥 KAMs mapeados:', kamsMapped);
 
       const productosMapped = productos.map((p: any) => ({ 
         value: p.id, 
         label: p.nombre 
       }));
-      console.log('📦 Productos mapeados:', productosMapped);
 
       // Cargar industrias y modalidades
       const industriasRes = await fetch('/api/industrias');
       const industrias = industriasRes.ok ? await industriasRes.json() : [];
-      console.log('🏭 Industrias cargadas:', industrias.length);
       
       const modalidadesRes = await fetch('/api/modalidades');
       const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
-      console.log('📋 Modalidades cargadas:', modalidades.length);
 
       const filterOptionsData = {
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
@@ -205,29 +196,25 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         modalidades: modalidades.map((m: any) => ({ value: m.id, label: m.nombre }))
       };
 
-      console.log('📋 FilterOptions configuradas:', filterOptionsData);
-      
       setUsuarios(usuariosArray);
       setFilterOptions(filterOptionsData);
-      
-      console.log('✅ Datos del modal cargados exitosamente');
     } catch (error) {
-      console.error('❌ Error cargando datos del modal:', error);
     }
   };
 
   const cargarEstadisticas = async (empresaId: string) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`/api/empresas/${empresaId}/estadisticas`);
-      
+
       if (!response.ok) {
         throw new Error('Error al cargar estadísticas');
       }
-      
+
       const data = await response.json();
+
       setEmpresaData({
         ...empresa,
         estadisticas: data.estadisticas,
@@ -240,334 +227,368 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'activa':
-      case 'completada':
-        return 'success';
-      case 'en_progreso':
-      case 'en progreso':
-        return 'warning';
-      case 'pausada':
-      case 'cancelada':
-        return 'danger';
-      default:
-        return 'default';
-    }
-  };
-
-  const getRiesgoColor = (riesgo: string) => {
-    switch (riesgo?.toLowerCase()) {
-      case 'bajo':
-        return 'success';
-      case 'medio':
-        return 'warning';
-      case 'alto':
-        return 'danger';
-      default:
-        return 'default';
-    }
-  };
-
-  const formatearDuracion = (minutos: number) => {
-    const horas = Math.floor(minutos / 60);
-    const mins = minutos % 60;
-    
-    if (horas > 0) {
-      return `${horas}h ${mins}m`;
-    }
-    return `${mins}m`;
-  };
-
-  const abrirInvestigacion = (investigacionId: string) => {
-    window.open(`/investigaciones/ver/${investigacionId}`, '_blank');
-  };
-
-  const handleSaveEmpresa = async (empresaData: any) => {
+  const handleSaveEmpresa = async (empresaActualizada: any) => {
     setSaving(true);
     try {
-      const response = await fetch(`/api/empresas?id=${empresaData.id}`, {
+      const response = await fetch(`/api/empresas/${empresaActualizada.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(empresaData),
+        body: JSON.stringify(empresaActualizada),
       });
 
-      if (response.ok) {
-        const updatedEmpresa = await response.json();
-        setEmpresaData(prev => ({ ...prev, ...updatedEmpresa }));
-        setShowEditModal(false);
-        showSuccess('Empresa actualizada', 'Los cambios se han guardado correctamente');
-      } else {
-        const errorData = await response.json();
-        showError(errorData.error || 'Error al actualizar la empresa');
+      if (!response.ok) {
+        throw new Error('Error al actualizar empresa');
       }
+
+      const data = await response.json();
+      setEmpresaData(data);
+      setShowEditModal(false);
+      showSuccess('Empresa actualizada exitosamente');
     } catch (error) {
-      console.error('Error actualizando empresa:', error);
-      showError('Error al actualizar la empresa');
+      showError('Error al actualizar empresa');
     } finally {
       setSaving(false);
     }
   };
 
-  const [activeTab, setActiveTab] = useState('informacion');
-
-  // Componente de contenido de información
-  const InformacionContent = () => {
-    console.log('🔍 InformacionContent - empresaData:', empresaData);
-    console.log('🔍 InformacionContent - filterOptions:', filterOptions);
-    console.log('🔍 InformacionContent - productos_ids:', empresaData.productos_ids);
-    console.log('🔍 InformacionContent - tamano_nombre:', empresaData.tamano_nombre);
-    console.log('🔍 InformacionContent - relacion_nombre:', empresaData.relacion_nombre);
-    
-    return (
-    <div className="space-y-6">
-      {/* Información básica */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <BuildingIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información Básica</Typography>
-        </div>
-        <div className="space-y-3">
-          <div>
-            <Typography variant="caption" color="secondary">Nombre</Typography>
-            <Typography variant="body2">{empresaData.nombre}</Typography>
-          </div>
-          {empresaData.descripcion && (
-            <div>
-              <Typography variant="caption" color="secondary">Descripción</Typography>
-              <Typography variant="body2">{empresaData.descripcion}</Typography>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Información de contacto */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <UserIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Información de Contacto</Typography>
-        </div>
-        <div className="space-y-3">
-          {empresaData.kam_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">KAM Asignado</Typography>
-              <div className="flex items-center gap-2">
-                <SimpleAvatar
-                  src={empresaData.kam_foto_url}
-                  alt={empresaData.kam_nombre}
-                  size="sm"
-                />
-                <Typography variant="body2">{empresaData.kam_nombre}</Typography>
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Ubicación y Clasificación */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <MapPinIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h5">Ubicación y Clasificación</Typography>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {empresaData.pais_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">País</Typography>
-              <Typography variant="body2">{empresaData.pais_nombre}</Typography>
-            </div>
-          )}
-          {empresaData.tamano_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Tamaño</Typography>
-              <Chip variant="default">
-                {empresaData.tamano_nombre}
-              </Chip>
-            </div>
-          )}
-          {empresaData.relacion_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Relación</Typography>
-              <Chip variant={getRelacionColor(empresaData.relacion_nombre)}>
-                {empresaData.relacion_nombre}
-              </Chip>
-            </div>
-          )}
-          {empresaData.productos_ids && empresaData.productos_ids.length > 0 && (
-            <div>
-              <Typography variant="caption" color="secondary">Productos</Typography>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {empresaData.productos_ids.map((productoId: string, index: number) => {
-                  const productoNombre = empresaData.productos_nombres?.[index];
-                  return (
-                    <Chip key={productoId} variant="outline" size="sm">
-                      {productoNombre || `Producto ID: ${productoId}`}
-                    </Chip>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          {empresaData.producto_id && !empresaData.productos_ids && (
-            <div>
-              <Typography variant="caption" color="secondary">Producto</Typography>
-              <Chip variant="outline">
-                {empresaData.producto_nombre || 'Producto asignado'}
-              </Chip>
-            </div>
-          )}
-          {empresaData.industria_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Industria</Typography>
-              <Typography variant="body2">{empresaData.industria_nombre}</Typography>
-            </div>
-          )}
-          {empresaData.modalidad_nombre && (
-            <div>
-              <Typography variant="caption" color="secondary">Modalidad</Typography>
-              <Typography variant="body2">{empresaData.modalidad_nombre}</Typography>
-            </div>
-          )}
-        </div>
-      </Card>
-
-
-    </div>
-  );
+  const abrirInvestigacion = (investigacionId: string) => {
+    router.push(`/investigaciones/ver/${investigacionId}`);
   };
 
-  // Componente de contenido de estadísticas
-  const EstadisticasContent = () => (
+  // Componente de contenido de información
+  const InformacionContent = () => (
     <div className="space-y-6">
-      {/* Loading state */}
-      {loading && (
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <Typography variant="body1" className="ml-3">
-            Cargando estadísticas...
-          </Typography>
-        </div>
+      {/* Descripción */}
+      {empresaData.descripcion && (
+        <InfoContainer 
+          title="Descripción"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Descripción" 
+            value={empresaData.descripcion}
+          />
+        </InfoContainer>
       )}
 
-      {/* Error state */}
-      {error && (
-        <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
-          <Typography variant="body1" color="danger">
-            Error: {error}
-          </Typography>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => empresaData.id && cargarEstadisticas(empresaData.id)}
-          >
-            Reintentar
-          </Button>
-        </Card>
-      )}
-
-      {/* Estadísticas */}
-      {empresaData.estadisticas && (
-        <>
-          {/* Métricas principales */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <MetricCard
-              title="Total Participaciones"
-              value={empresaData.estadisticas.totalParticipaciones}
-              subtitle="Sesiones completadas"
-              icon={<TrendingUpIcon />}
-              color="blue"
-            />
-            
-            <MetricCard
-              title="Participantes"
-              value={empresaData.estadisticas.totalParticipantes}
-              subtitle="Personas involucradas"
-              icon={<UsersIcon />}
-              color="green"
-            />
-            
-            <MetricCard
-              title="Investigaciones"
-              value={empresaData.estadisticas.investigacionesParticipadas}
-              subtitle="Proyectos participados"
-              icon={<FileTextIcon />}
-              color="purple"
-            />
-            
-            <MetricCard
-              title="Tiempo Total"
-              value={formatearDuracion(empresaData.estadisticas.duracionTotalSesiones)}
-              subtitle="Horas de participación"
-              icon={<ClockIcon />}
-              color="yellow"
-            />
-          </div>
-
-          {/* Última participación */}
-          {empresaData.estadisticas.fechaUltimaParticipacion && (
-            <Card className="p-6">
-              <Typography variant="h5" className="mb-4">Última Participación</Typography>
-              <div className="space-y-3">
-                <div>
-                  <Typography variant="caption" color="secondary">Fecha</Typography>
-                  <Typography variant="body2">{formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}</Typography>
-                </div>
+      {/* Información básica */}
+      <InfoContainer 
+        title="Información Básica"
+        icon={<BuildingIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Nombre" 
+          value={empresaData.nombre}
+        />
+        <InfoItem 
+          label="Estado" 
+          value={
+            <Chip 
+              variant={getChipVariant(empresaData.estado_nombre || '') as any}
+              size="sm"
+            >
+              {getChipText(empresaData.estado_nombre || '')}
+            </Chip>
+          }
+        />
+        <InfoItem 
+          label="País" 
+          value={empresaData.pais_nombre}
+        />
+        <InfoItem 
+          label="Industria" 
+          value={empresaData.industria_nombre}
+        />
+        <InfoItem 
+          label="Modalidad" 
+          value={empresaData.modalidad_nombre}
+        />
+        <InfoItem 
+          label="Tamaño" 
+          value={empresaData.tamano_nombre}
+        />
+        <InfoItem 
+          label="Relación" 
+          value={
+            <Chip 
+              variant={getChipVariant(empresaData.relacion_nombre || '') as any}
+              size="sm"
+            >
+              {getChipText(empresaData.relacion_nombre || '')}
+            </Chip>
+          }
+        />
+        <InfoItem 
+          label="Productos" 
+          value={empresaData.productos_nombres?.join(', ')}
+        />
+        <InfoItem 
+          label="KAM Asignado" 
+          value={
+            empresaData.kam_nombre ? (
+              <div className="flex items-center gap-2">
+                <SimpleAvatar 
+                  fallbackText={empresaData.kam_nombre}
+                  size="sm"
+                />
+                <span>{empresaData.kam_nombre}</span>
               </div>
-            </Card>
-          )}
+            ) : 'No asignado'
+          }
+        />
+      </InfoContainer>
 
-          {/* Gráfico de participaciones por mes */}
-          {Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
-            <Card className="p-6">
-              <Typography variant="h5" className="mb-4">Participaciones por Mes</Typography>
-              <div className="space-y-3">
-                {Object.entries(empresaData.estadisticas.participacionesPorMes)
-                  .sort(([a], [b]) => b.localeCompare(a))
-                  .slice(0, 12)
-                  .map(([mes, cantidad]) => (
-                    <div key={mes} className="flex items-center justify-between">
-                      <Typography variant="body2" color="secondary">
-                        {new Date(mes + '-01').toLocaleDateString('es-ES', { 
-                          year: 'numeric', 
-                          month: 'long' 
-                        })}
-                      </Typography>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ 
-                              width: `${Math.min((cantidad / Math.max(...Object.values(empresaData.estadisticas.participacionesPorMes))) * 100, 100)}%` 
-                            }}
-                          />
-                        </div>
-                        <Typography variant="body2" weight="medium" className="w-8 text-right">
-                          {cantidad}
-                        </Typography>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </Card>
-          )}
-        </>
-      )}
+      {/* Fechas */}
+      <InfoContainer 
+        title="Fechas"
+        icon={<ClockIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Fecha de Creación" 
+          value={empresaData.created_at ? formatearFecha(empresaData.created_at) : 'No disponible'}
+        />
+        <InfoItem 
+          label="Última Actualización" 
+          value={empresaData.updated_at ? formatearFecha(empresaData.updated_at) : 'No disponible'}
+        />
+      </InfoContainer>
     </div>
   );
+
+  // Componente de contenido de estadísticas
+  const EstadisticasContent = () => {
+    return (
+      <div className="space-y-6">
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <Typography variant="body1" className="ml-3">
+              Cargando estadísticas...
+            </Typography>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+            <Typography variant="body1" color="danger">
+              Error: {error}
+            </Typography>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+              onClick={() => empresaData.id && cargarEstadisticas(empresaData.id)}
+            >
+              Reintentar
+            </Button>
+          </Card>
+        )}
+
+        {/* Estadísticas principales */}
+        {empresaData.estadisticas && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Total Participaciones */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.totalParticipaciones}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Total Participaciones
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Total Participantes */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.totalParticipantes}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Total Participantes
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Investigaciones Participadas */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.investigacionesParticipadas}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Investigaciones
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Tiempo Total */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={Math.round(empresaData.estadisticas.duracionTotalSesiones / 60)} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                        suffix="h"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Tiempo Total
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Última participación y resumen del mes */}
+            <InfoContainer 
+              title="Última Participación"
+              icon={<ClockIcon className="w-4 h-4" />}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {empresaData.estadisticas.fechaUltimaParticipacion && (
+                  <InfoItem 
+                    label="Fecha de Última Participación" 
+                    value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
+                  />
+                )}
+                
+                {/* Resumen del mes actual */}
+                {(() => {
+                  const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                  const participacionesMesActual = empresaData.estadisticas.participacionesPorMes[mesActual] || 0;
+                  
+                  return (
+                    <InfoItem 
+                      label="Participaciones del Mes Actual" 
+                      value={
+                        <div className="flex items-center space-x-2">
+                          <Typography variant="h4" weight="bold" className="text-blue-600 dark:text-blue-400">
+                            {participacionesMesActual}
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            en {new Date().toLocaleDateString('es-ES', { 
+                              year: 'numeric', 
+                              month: 'long' 
+                            })}
+                          </Typography>
+                        </div>
+                      }
+                    />
+                  );
+                })()}
+              </div>
+            </InfoContainer>
+
+            {/* Participaciones por mes */}
+            {Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
+              <InfoContainer 
+                title="Participaciones por Mes"
+                icon={<TrendingUpIcon className="w-4 h-4" />}
+              >
+                <div className="space-y-3">
+                  {Object.entries(empresaData.estadisticas.participacionesPorMes)
+                    .sort(([a], [b]) => b.localeCompare(a))
+                    .slice(0, 6)
+                    .map(([mes, cantidad]) => {
+                      const fecha = new Date(mes + '-01');
+                      const esMesActual = fecha.getMonth() === new Date().getMonth() && fecha.getFullYear() === new Date().getFullYear();
+                      const maxCantidad = Math.max(...Object.values(empresaData.estadisticas.participacionesPorMes));
+                      
+                      return (
+                        <div key={mes} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                          esMesActual 
+                            ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
+                            : 'bg-gray-50 dark:bg-gray-800/50'
+                        }`}>
+                          <div className="flex items-center space-x-2">
+                            <Typography variant="body2" color="secondary">
+                              {fecha.toLocaleDateString('es-ES', { 
+                                year: 'numeric', 
+                                month: 'long' 
+                              })}
+                            </Typography>
+                            {esMesActual && (
+                              <Chip variant="primary" size="sm">
+                                Actual
+                              </Chip>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  esMesActual ? 'bg-blue-500' : 'bg-primary'
+                                }`}
+                                style={{ 
+                                  width: `${Math.min((cantidad / maxCantidad) * 100, 100)}%` 
+                                }}
+                              />
+                            </div>
+                            <Typography variant="body2" weight="medium" className="w-8 text-right">
+                              {cantidad}
+                            </Typography>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </InfoContainer>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
 
   // Componente de contenido de historial
   const HistorialContent = () => (
     <div className="space-y-6">
       {/* Investigaciones participadas */}
-      {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 && (
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Investigaciones Participadas
-          </Typography>
-          
+      <div>
+        <Typography variant="h4" weight="semibold" className="mb-4">
+          Investigaciones Participadas
+        </Typography>
+        
+        {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 ? (
           <div className="space-y-4">
             {empresaData.estadisticas.investigaciones.map((investigacion) => (
               <Card key={investigacion.id} className="p-6 hover: transition-colors">
@@ -578,7 +599,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                         {investigacion.nombre}
                       </Typography>
                       <Chip variant={getEstadoColor(investigacion.estado)}>
-                        {investigacion.estado}
+                        {getChipText(investigacion.estado)}
                       </Chip>
                     </div>
                     
@@ -621,51 +642,54 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               </Card>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <Card className="text-center py-12">
+            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Typography variant="h5" weight="medium" className="mb-2">
+              Sin investigaciones
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              Esta empresa no ha participado en investigaciones
+            </Typography>
+          </Card>
+        )}
+      </div>
 
       {/* Participantes de la empresa */}
-      {empresaData.participantes && empresaData.participantes.length > 0 && (
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Participantes de la Empresa
-          </Typography>
-          
+      <div>
+        <Typography variant="h4" weight="semibold" className="mb-4">
+          Participantes de la Empresa
+        </Typography>
+        
+        {empresaData.participantes && empresaData.participantes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {empresaData.participantes.map((participante) => (
-              <Card key={participante.id} className="p-6 hover: transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Typography variant="body1" weight="medium" className="mb-2">
-                      {participante.nombre}
-                    </Typography>
-                    
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center space-x-1">
-                        <TrendingUpIcon className="w-4 h-4" />
-                        <span>{participante.total_participaciones} participaciones</span>
-                      </div>
-                      
-                      {participante.fecha_ultima_participacion && (
-                        <div className="flex items-center space-x-1">
-                          <CalendarIcon className="w-4 h-4" />
-                          <span>Última: {formatearFecha(participante.fecha_ultima_participacion)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Chip variant="default">
-                    {participante.total_participaciones > 0 ? 'Activo' : 'Sin participación'}
-                  </Chip>
-                </div>
-              </Card>
+              <CompanyParticipantCard
+                key={participante.id}
+                participant={participante}
+                onViewDetails={(id) => {
+                  // Navegar a la vista del participante en nueva pestaña
+                  window.open(`/participantes/${id}`, '_blank');
+                }}
+                showActions={true}
+                showExtendedInfo={false}
+              />
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <Card className="text-center py-12">
+            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Typography variant="h5" weight="medium" className="mb-2">
+              Sin participantes
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              Esta empresa no tiene participantes registrados
+            </Typography>
+          </Card>
+        )}
+      </div>
 
-      {/* Estado vacío */}
+      {/* Estado vacío solo si no hay investigaciones ni participantes */}
       {(!empresaData.estadisticas?.investigaciones || empresaData.estadisticas.investigaciones.length === 0) &&
        (!empresaData.participantes || empresaData.participantes.length === 0) && (
         <Card className="text-center py-12">
@@ -680,6 +704,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       )}
     </div>
   );
+
+
 
   const tabs = [
     {
@@ -699,7 +725,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       label: 'Historial de Participaciones',
       icon: <HistoryIcon className="w-4 h-4" />,
       content: <HistorialContent />
-    }
+    },
+
   ];
 
   return (
@@ -707,17 +734,16 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       <div className="py-6 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push('/empresas')}
                 className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
-              
               <PageHeader
-                title={empresaData.nombre}
+                title={empresaData.nombre || 'Empresa'}
                 variant="compact"
                 color="green"
                 className="mb-0"
@@ -728,28 +754,27 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 }}
               />
             </div>
-            
-            <div className="flex items-center space-x-2">
+
+            {/* Acciones principales */}
+            <div className="flex flex-wrap gap-3">
               <Button
                 variant="outline"
-                size="sm"
+                className="flex items-center gap-2"
                 onClick={() => setShowEditModal(true)}
-                className="flex items-center space-x-2"
               >
                 <EditIcon className="w-4 h-4" />
-                <span>Editar</span>
+                Editar
               </Button>
             </div>
           </div>
-
-
 
           {/* Tabs */}
           <Tabs
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            className="border-b border-gray-200 dark:border-gray-700"
+            variant="default"
+            fullWidth={true}
           />
 
           {/* Loading state */}
@@ -779,25 +804,16 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             </Card>
           )}
 
-
         </div>
       </div>
 
       {/* Modal de edición */}
-      {showEditModal && (
-        <>
-          {console.log('🔍 Modal abierto, empresaData:', empresaData)}
-          {console.log('🔍 Modal abierto, usuarios:', usuarios.length)}
-          {console.log('🔍 Modal abierto, filterOptions:', filterOptions)}
-        </>
-      )}
       <EmpresaSideModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSave={handleSaveEmpresa}
         empresa={empresaData}
         usuarios={usuarios}
-        filterOptions={filterOptions}
         loading={saving}
       />
     </Layout>
@@ -815,9 +831,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     // Importar directamente la función de la API
-    const { supabaseServer } = await import('../../../api/supabase');
-    
-    console.log(`🔍 SSR - Obteniendo empresa: ${id}`);
+    const { supabaseServer } = require('../../../api/supabase');
 
     // Obtener información básica de la empresa
     const { data: empresa, error: errorEmpresa } = await supabaseServer
@@ -827,24 +841,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       .single();
 
     if (errorEmpresa || !empresa) {
-      console.error('❌ SSR - Error obteniendo empresa:', errorEmpresa);
       return {
         notFound: true
       };
     }
-
-    console.log('🏢 SSR - Empresa obtenida:', empresa);
-    console.log('🏢 SSR - Todos los campos de empresa:', Object.keys(empresa));
-    console.log('🏢 SSR - Campos específicos:', {
-      tamano: empresa?.tamaño,
-      relacion: empresa?.relacion,
-      industria: empresa?.industria,
-      modalidad: empresa?.modalidad,
-      tamano_id: empresa?.tamano_id,
-      relacion_id: empresa?.relacion_id,
-      industria_id: empresa?.industria_id,
-      modalidad_id: empresa?.modalidad_id
-    });
 
     // Obtener datos relacionados por separado
     let kamData = null;
@@ -891,26 +891,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         .single();
       tamanoData = tamano;
     }
-    // if (empresa['tamaño']) {
-    //   console.log('📏 SSR - Buscando tamaño con ID:', empresa['tamaño']);
-    //   const { data: tamano } = await supabaseServer
-    //     .from('tamanos')
-    //     .select('id, nombre')
-    //     .eq('id', empresa['tamaño'])
-    //     .single();
-    //   tamanoData = tamano;
-    //   console.log('📏 SSR - Tamaño encontrado:', tamanoData);
-    // }
 
     if (empresa.relacion) {
-      console.log('🤝 SSR - Buscando relación con ID:', empresa.relacion);
       const { data: relacion } = await supabaseServer
-        .from('relaciones')
+        .from('relacion_empresa')
         .select('id, nombre')
         .eq('id', empresa.relacion)
         .single();
       relacionData = relacion;
-      console.log('🤝 SSR - Relación encontrada:', relacionData);
     }
 
     if (empresa.modalidad) {
@@ -923,88 +911,124 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     if (empresa.industria) {
-      console.log('🏭 SSR - Buscando industria con ID:', empresa.industria);
       const { data: industria } = await supabaseServer
         .from('industrias')
         .select('id, nombre')
         .eq('id', empresa.industria)
         .single();
       industriaData = industria;
-      console.log('🏭 SSR - Industria encontrada:', industriaData);
     }
 
-    if (empresa.producto_id) {
-      const { data: producto } = await supabaseServer
-        .from('productos')
-        .select('id, nombre')
-        .eq('id', empresa.producto_id)
-        .single();
-      productoData = producto;
+    // Obtener productos de la empresa
+    const { data: productos } = await supabaseServer
+      .from('empresa_productos')
+      .select(`
+        productos (
+          id,
+          nombre
+        )
+      `)
+      .eq('empresa_id', empresa.id);
+
+    const productosNombres = productos?.map((p: any) => p.productos?.nombre).filter(Boolean) || [];
+
+    // Obtener participantes de la empresa
+    const { data: participantes, error: errorParticipantes } = await supabaseServer
+      .from('participantes')
+      .select('id, nombre, rol_empresa_id, fecha_ultima_participacion, total_participaciones')
+      .eq('empresa_id', empresa.id);
+
+    if (errorParticipantes) {
+      console.error('Error obteniendo participantes:', errorParticipantes);
     }
 
-    // Obtener productos relacionados desde la tabla de relación
-    let productosRelacionados = [];
-    if (empresa.id) {
-      const { data: productosEmpresa } = await supabaseServer
-        .from('empresa_productos')
-        .select('producto_id')
-        .eq('empresa_id', empresa.id);
+    // Calcular participaciones reales por participante
+    let participantesData = participantes || [];
+    
+    // Calcular participaciones reales por participante
+    if (participantesData.length > 0) {
+      const participanteIds = participantesData.map(p => p.id);
       
-      if (productosEmpresa && productosEmpresa.length > 0) {
-        const productoIds = productosEmpresa.map(p => p.producto_id);
-        const { data: productos } = await supabaseServer
-          .from('productos')
-          .select('id, nombre')
-          .in('id', productoIds);
-        productosRelacionados = productos || [];
+      // Obtener solo el estado "Finalizado"
+      const { data: estadoFinalizado, error: errorEstado } = await supabaseServer
+        .from('estado_agendamiento_cat')
+        .select('id, nombre')
+        .eq('nombre', 'Finalizado')
+        .single();
+
+      if (errorEstado || !estadoFinalizado) {
+        console.error('Error obteniendo estado Finalizado:', errorEstado);
+      } else {
+        // Obtener solo reclutamientos finalizados para estos participantes
+        const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
+          .from('reclutamientos')
+          .select('id, participantes_id, fecha_sesion, estado_agendamiento')
+          .eq('estado_agendamiento', estadoFinalizado.id)
+          .in('participantes_id', participanteIds);
+
+        if (errorReclutamientos) {
+          console.error('Error obteniendo reclutamientos:', errorReclutamientos);
+        } else if (reclutamientos) {
+          // Calcular participaciones por participante
+          const participacionesPorParticipante: { [key: string]: number } = {};
+          const fechaUltimaPorParticipante: { [key: string]: string } = {};
+
+          reclutamientos.forEach(reclutamiento => {
+            const participanteId = reclutamiento.participantes_id;
+            
+            // Contar participaciones
+            if (!participacionesPorParticipante[participanteId]) {
+              participacionesPorParticipante[participanteId] = 0;
+            }
+            participacionesPorParticipante[participanteId]++;
+            
+            // Actualizar fecha de última participación
+            if (!fechaUltimaPorParticipante[participanteId] || 
+                new Date(reclutamiento.fecha_sesion) > new Date(fechaUltimaPorParticipante[participanteId])) {
+              fechaUltimaPorParticipante[participanteId] = reclutamiento.fecha_sesion;
+            }
+          });
+          
+          // Actualizar datos de participantes con información real
+          participantesData = participantesData.map(participante => ({
+            ...participante,
+            total_participaciones: participacionesPorParticipante[participante.id] || 0,
+            fecha_ultima_participacion: fechaUltimaPorParticipante[participante.id] || null
+          }));
+        }
       }
     }
 
-    // Formatear respuesta
-    const empresaFormateada = {
-      id: empresa.id,
-      nombre: empresa.nombre,
-      descripcion: empresa.descripcion || null,
-      kam_id: empresa.kam_id || null,
-      kam_nombre: kamData?.nombre || null,
-      kam_email: kamData?.correo || null,
-      pais_id: empresa.pais || null,
+    // Construir objeto de empresa con datos relacionados
+    const empresaCompleta = {
+      ...empresa,
+      kam_nombre: kamData?.nombre || kamData?.correo || null,
       pais_nombre: paisData?.nombre || null,
-      estado_id: empresa.estado || null,
       estado_nombre: estadoData?.nombre || null,
-      tamano_id: empresa['tamaño'] || null,
       tamano_nombre: tamanoData?.nombre || null,
-      relacion_id: empresa.relacion || null,
       relacion_nombre: relacionData?.nombre || null,
-      modalidad_id: empresa.modalidad || null,
       modalidad_nombre: modalidadData?.nombre || null,
-      industria_id: empresa.industria || null,
       industria_nombre: industriaData?.nombre || null,
-      producto_id: empresa.producto_id || null,
-      producto_nombre: productoData?.nombre || null,
-      productos_ids: productosRelacionados.map(p => p.id),
-      productos_nombres: productosRelacionados.map(p => p.nombre),
-      activo: empresa.activo ?? true,
-      created_at: empresa.created_at || null,
-      updated_at: empresa.updated_at || null
+      productos_nombres: productosNombres,
+      estadisticas: {
+        totalParticipaciones: 0,
+        totalParticipantes: 0,
+        fechaUltimaParticipacion: null,
+        investigacionesParticipadas: 0,
+        duracionTotalSesiones: 0,
+        participacionesPorMes: {},
+        investigaciones: []
+      },
+      participantes: participantesData
     };
-
-    console.log(`✅ SSR - Empresa formateada: ${empresaFormateada.nombre}`);
-    console.log('📊 SSR - Campos relacionados:', {
-      tamano_nombre: empresaFormateada.tamano_nombre,
-      relacion_nombre: empresaFormateada.relacion_nombre,
-      industria_nombre: empresaFormateada.industria_nombre,
-      modalidad_nombre: empresaFormateada.modalidad_nombre,
-      productos_ids: empresaFormateada.productos_ids
-    });
 
     return {
       props: {
-        empresa: empresaFormateada
+        empresa: empresaCompleta
       }
     };
   } catch (error) {
-    console.error('❌ SSR - Error en getServerSideProps:', error);
+    console.error('Error en getServerSideProps:', error);
     return {
       notFound: true
     };

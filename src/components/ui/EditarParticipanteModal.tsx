@@ -9,7 +9,8 @@ import {
   Select, 
   Textarea
 } from './index';
-import { SaveIcon } from '../icons';
+import { PageHeader, FilterLabel } from './';
+import { SaveIcon, XIcon } from '../icons';
 
 interface EditarParticipanteModalProps {
   isOpen: boolean;
@@ -33,13 +34,15 @@ export default function EditarParticipanteModal({
     email: '',
     rol_empresa: '',
     empresa_nombre: '',
-    departamento_nombre: ''
+    departamento_nombre: '',
+    estado_participante: ''
   });
 
   // Estados para las opciones de los selects
   const [rolesEmpresa, setRolesEmpresa] = useState<Array<{ value: string; label: string }>>([]);
   const [empresas, setEmpresas] = useState<Array<{ value: string; label: string }>>([]);
   const [departamentos, setDepartamentos] = useState<Array<{ value: string; label: string }>>([]);
+  const [estadosParticipante, setEstadosParticipante] = useState<Array<{ value: string; label: string }>>([]);
 
   // Cargar opciones de los selects
   useEffect(() => {
@@ -49,21 +52,42 @@ export default function EditarParticipanteModal({
         const responseRoles = await fetch('/api/roles-empresa');
         if (responseRoles.ok) {
           const dataRoles = await responseRoles.json();
-          setRolesEmpresa(dataRoles.map((rol: any) => ({ value: rol.nombre, label: rol.nombre })));
+          if (Array.isArray(dataRoles)) {
+            setRolesEmpresa(dataRoles.map((rol: any) => ({ value: rol.nombre, label: rol.nombre })));
+          }
         }
 
         // Cargar empresas
         const responseEmpresas = await fetch('/api/empresas');
         if (responseEmpresas.ok) {
           const dataEmpresas = await responseEmpresas.json();
-          setEmpresas(dataEmpresas.map((empresa: any) => ({ value: empresa.nombre, label: empresa.nombre })));
+          if (Array.isArray(dataEmpresas)) {
+            setEmpresas(dataEmpresas.map((empresa: any) => ({ value: empresa.nombre, label: empresa.nombre })));
+          }
         }
 
         // Cargar departamentos
         const responseDepartamentos = await fetch('/api/departamentos');
         if (responseDepartamentos.ok) {
           const dataDepartamentos = await responseDepartamentos.json();
-          setDepartamentos(dataDepartamentos.map((departamento: any) => ({ value: departamento.nombre, label: departamento.nombre })));
+          let departamentosArray = [];
+          if (dataDepartamentos && dataDepartamentos.departamentos && Array.isArray(dataDepartamentos.departamentos)) {
+            departamentosArray = dataDepartamentos.departamentos;
+          } else if (Array.isArray(dataDepartamentos)) {
+            departamentosArray = dataDepartamentos;
+          }
+          setDepartamentos(departamentosArray.map((departamento: any) => ({ value: departamento.nombre, label: departamento.nombre })));
+        }
+
+        // Cargar estados de participante solo si es necesario
+        if (participante?.tipo === 'externo') {
+          const responseEstados = await fetch('/api/estados-participante');
+          if (responseEstados.ok) {
+            const dataEstados = await responseEstados.json();
+            if (Array.isArray(dataEstados)) {
+              setEstadosParticipante(dataEstados.map((estado: any) => ({ value: estado.nombre, label: estado.nombre })));
+            }
+          }
         }
       } catch (error) {
         console.error('Error cargando opciones:', error);
@@ -73,7 +97,7 @@ export default function EditarParticipanteModal({
     if (isOpen) {
       cargarOpciones();
     }
-  }, [isOpen]);
+  }, [isOpen, participante?.tipo]);
 
   useEffect(() => {
     if (participante) {
@@ -82,7 +106,8 @@ export default function EditarParticipanteModal({
         email: participante.email || '',
         rol_empresa: participante.rol_empresa || '',
         empresa_nombre: participante.empresa_nombre || '',
-        departamento_nombre: participante.departamento_nombre || ''
+        departamento_nombre: participante.departamento_nombre || '',
+        estado_participante: participante.estado_participante || ''
       });
     }
   }, [participante]);
@@ -135,130 +160,139 @@ export default function EditarParticipanteModal({
     }
   };
 
+  const footer = (
+    <div className="flex justify-end space-x-3">
+      <Button
+        variant="secondary"
+        onClick={onClose}
+        disabled={loading}
+      >
+        <XIcon className="w-4 h-4 mr-2" />
+        Cancelar
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleSubmit}
+        loading={loading}
+        disabled={loading}
+      >
+        <SaveIcon className="w-4 h-4 mr-2" />
+        Guardar Cambios
+      </Button>
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Editar Participante - ${getTipoLabel(participante?.tipo)}`}
       size="lg"
+      footer={footer}
+      showCloseButton={false}
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Información básica */}
-        <div className="space-y-4">
-          <Typography variant="h4" weight="medium">
-            Información Básica
-          </Typography>
-          
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Nombre Completo *
-            </Typography>
-            <Input
-              value={formData.nombre}
-              onChange={(e) => handleInputChange('nombre', e.target.value)}
-              placeholder="Ingresa el nombre completo"
-              disabled={loading}
-              fullWidth
-            />
-          </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title={`Editar Participante - ${getTipoLabel(participante?.tipo)}`}
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
+        />
 
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Email
-            </Typography>
-            <Input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="Ingresa el email"
-              disabled={loading}
-              fullWidth
-            />
-          </div>
-
-          <div>
-            <Typography variant="subtitle2" weight="medium" className="mb-2">
-              Rol en la Empresa
-            </Typography>
-            <Select
-              placeholder="Seleccionar rol..."
-              options={rolesEmpresa}
-              value={formData.rol_empresa}
-              onChange={(value) => handleInputChange('rol_empresa', value)}
-              disabled={loading}
-              fullWidth
-            />
-          </div>
-        </div>
-
-        {/* Información organizacional */}
-        <div className="space-y-4">
-          <Typography variant="h4" weight="medium">
-            Información Organizacional
-          </Typography>
-          
-          {participante?.tipo === 'externo' && (
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="space-y-6">
+          {/* Información básica */}
+          <div className="space-y-4">
             <div>
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Empresa
-              </Typography>
-              <Select
-                placeholder="Seleccionar empresa..."
-                options={empresas}
-                value={formData.empresa_nombre}
-                onChange={(value) => handleInputChange('empresa_nombre', value)}
+              <FilterLabel>Nombre Completo</FilterLabel>
+              <Input
+                value={formData.nombre}
+                onChange={(e) => handleInputChange('nombre', e.target.value)}
+                placeholder="Ingresa el nombre completo"
+                disabled={loading}
+                required
+                fullWidth
+              />
+            </div>
+
+            <div>
+              <FilterLabel>Email</FilterLabel>
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Ingresa el email"
                 disabled={loading}
                 fullWidth
               />
             </div>
-          )}
 
-          {(participante?.tipo === 'interno' || participante?.tipo === 'friend_family') && (
             <div>
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Departamento
-              </Typography>
+              <FilterLabel>Rol en la Empresa</FilterLabel>
               <Select
-                placeholder="Seleccionar departamento..."
-                options={departamentos}
-                value={formData.departamento_nombre}
-                onChange={(value) => handleInputChange('departamento_nombre', value)}
+                placeholder="Seleccionar rol..."
+                options={rolesEmpresa}
+                value={formData.rol_empresa}
+                onChange={(value) => handleInputChange('rol_empresa', value)}
                 disabled={loading}
                 fullWidth
               />
             </div>
-          )}
-        </div>
 
-        {/* Nota sobre acciones adicionales */}
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <Typography variant="body2" color="secondary" className="text-center">
-            💡 Los comentarios y dolores/necesidades se gestionan como acciones independientes desde el detalle del participante.
-          </Typography>
-        </div>
+            {participante?.tipo === 'externo' && (
+              <div>
+                <FilterLabel>Estado del Participante</FilterLabel>
+                <Select
+                  placeholder="Seleccionar estado..."
+                  options={estadosParticipante}
+                  value={formData.estado_participante}
+                  onChange={(value) => handleInputChange('estado_participante', value)}
+                  disabled={loading}
+                  fullWidth
+                />
+              </div>
+            )}
+          </div>
 
-        {/* Botones */}
-        <div className="flex gap-4 pt-6 border-t border-border">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-            className="flex-1"
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={loading}
-            className="flex-1 flex items-center justify-center gap-2"
-          >
-            <SaveIcon className="w-4 h-4" />
-            {loading ? 'Guardando...' : 'Guardar Cambios'}
-          </Button>
-        </div>
-      </form>
+          {/* Información organizacional */}
+          <div className="space-y-4">
+            {participante?.tipo === 'externo' && (
+              <div>
+                <FilterLabel>Empresa</FilterLabel>
+                <Select
+                  placeholder="Seleccionar empresa..."
+                  options={empresas}
+                  value={formData.empresa_nombre}
+                  onChange={(value) => handleInputChange('empresa_nombre', value)}
+                  disabled={loading}
+                  fullWidth
+                />
+              </div>
+            )}
+
+            {(participante?.tipo === 'interno' || participante?.tipo === 'friend_family') && (
+              <div>
+                <FilterLabel>Departamento</FilterLabel>
+                <Select
+                  placeholder="Seleccionar departamento..."
+                  options={departamentos}
+                  value={formData.departamento_nombre}
+                  onChange={(value) => handleInputChange('departamento_nombre', value)}
+                  disabled={loading}
+                  fullWidth
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Nota sobre acciones adicionales */}
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <Typography variant="body2" color="secondary" className="text-center">
+              💡 Los comentarios y dolores/necesidades se gestionan como acciones independientes desde el detalle del participante.
+            </Typography>
+          </div>
+        </form>
+      </div>
     </SideModal>
   );
 }

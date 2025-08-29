@@ -224,64 +224,89 @@ export default function ParticipantesPage() {
       const responseEstados = await fetch('/api/estados-participante');
       if (responseEstados.ok) {
         const dataEstados = await responseEstados.json();
-        setEstadosParticipante([
-          { value: 'todos', label: 'Todos' },
-          ...dataEstados.map((estado: any) => ({ value: estado.nombre, label: estado.nombre }))
-        ]);
-      }
-
-  // Callback para manejar cambios de selección
-  const handleSelectionChange = useCallback((selectedIds: string[]) => {
-    setSelectedParticipantes(selectedIds);
-  }, []);
-
-  // Acciones masivas
-  const bulkActions = [
-    {
-      label: 'Eliminar Seleccionados',
-      icon: <TrashIcon className="w-4 h-4" />,
-      onClick: (selectedIds: string[]) => {
-        if (selectedIds.length === 0) {
-          return;
+        console.log('🔍 Estados cargados:', dataEstados);
+        if (Array.isArray(dataEstados)) {
+          setEstadosParticipante([
+            { value: 'todos', label: 'Todos' },
+            ...dataEstados.map((estado: any) => ({ value: estado.nombre, label: estado.nombre }))
+          ]);
+        } else {
+          console.error('❌ Estados no es un array:', dataEstados);
+          setEstadosParticipante([
+            { value: 'todos', label: 'Todos' },
+            { value: 'Disponible', label: 'Disponible' },
+            { value: 'En enfriamiento', label: 'En enfriamiento' },
+            { value: 'No disponible', label: 'No disponible' }
+          ]);
         }
-        // Implementar eliminación masiva
-        console.log('Eliminando participantes:', selectedIds);
-      },
-      className: 'text-destructive hover:text-destructive/80 hover:bg-destructive/10 px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-200'
-    }
-  ];
+      }
 
       // Cargar roles de empresa
       const responseRoles = await fetch('/api/roles-empresa');
       if (responseRoles.ok) {
         const dataRoles = await responseRoles.json();
-        setRolesEmpresa([
-          { value: 'todos', label: 'Todos' },
-          ...dataRoles.map((rol: any) => ({ value: rol.nombre, label: rol.nombre }))
-        ]);
+        if (Array.isArray(dataRoles)) {
+          setRolesEmpresa([
+            { value: 'todos', label: 'Todos' },
+            ...dataRoles.map((rol: any) => ({ value: rol.nombre, label: rol.nombre }))
+          ]);
+        } else {
+          console.error('❌ Roles no es un array:', dataRoles);
+          setRolesEmpresa([{ value: 'todos', label: 'Todos' }]);
+        }
       }
 
       // Cargar empresas
       const responseEmpresas = await fetch('/api/empresas');
       if (responseEmpresas.ok) {
         const dataEmpresas = await responseEmpresas.json();
-        setEmpresas([
-          { value: 'todos', label: 'Todas' },
-          ...dataEmpresas.map((empresa: any) => ({ value: empresa.nombre, label: empresa.nombre }))
-        ]);
+        if (Array.isArray(dataEmpresas)) {
+          setEmpresas([
+            { value: 'todos', label: 'Todas' },
+            ...dataEmpresas.map((empresa: any) => ({ value: empresa.nombre, label: empresa.nombre }))
+          ]);
+        } else {
+          console.error('❌ Empresas no es un array:', dataEmpresas);
+          setEmpresas([{ value: 'todos', label: 'Todas' }]);
+        }
       }
 
       // Cargar departamentos
       const responseDepartamentos = await fetch('/api/departamentos');
       if (responseDepartamentos.ok) {
         const dataDepartamentos = await responseDepartamentos.json();
+        console.log('🔍 Departamentos cargados:', dataDepartamentos);
+        
+        // El endpoint devuelve un objeto con { departamentos: [], departamentosAgrupados: {} }
+        let departamentosArray = [];
+        if (dataDepartamentos && dataDepartamentos.departamentos && Array.isArray(dataDepartamentos.departamentos)) {
+          departamentosArray = dataDepartamentos.departamentos;
+        } else if (Array.isArray(dataDepartamentos)) {
+          // Si la respuesta es directamente un array
+          departamentosArray = dataDepartamentos;
+        } else {
+          console.error('❌ Departamentos no tiene el formato esperado:', dataDepartamentos);
+          departamentosArray = [];
+        }
+        
         setDepartamentos([
           { value: 'todos', label: 'Todos' },
-          ...dataDepartamentos.map((departamento: any) => ({ value: departamento.nombre, label: departamento.nombre }))
+          ...departamentosArray.map((departamento: any) => ({ value: departamento.nombre, label: departamento.nombre }))
         ]);
       }
     } catch (error) {
       console.error('Error cargando catálogos:', error);
+      
+      // Establecer valores por defecto en caso de error
+      setEstadosParticipante([
+        { value: 'todos', label: 'Todos' },
+        { value: 'Disponible', label: 'Disponible' },
+        { value: 'En enfriamiento', label: 'En enfriamiento' },
+        { value: 'No disponible', label: 'No disponible' }
+      ]);
+      setRolesEmpresa([{ value: 'todos', label: 'Todos' }]);
+      setEmpresas([{ value: 'todos', label: 'Todas' }]);
+      setDepartamentos([{ value: 'todos', label: 'Todos' }]);
     }
   };
 
@@ -518,18 +543,28 @@ export default function ParticipantesPage() {
   };
 
   const handleFiltersChange = (newFilters: FilterValuesParticipantes) => {
+    console.log('🔍 handleFiltersChange llamado:', {
+      activeTab,
+      newFilters,
+      estado_participante: newFilters.estado_participante
+    });
+    
     // Actualizar filtros según el tab activo
     switch (activeTab) {
       case 'externos':
+        console.log('🔍 Actualizando filtersExternos');
         setFiltersExternos(newFilters);
         break;
       case 'internos':
+        console.log('🔍 Actualizando filtersInternos');
         setFiltersInternos(newFilters);
         break;
       case 'friend_family':
+        console.log('🔍 Actualizando filtersFriendFamily');
         setFiltersFriendFamily(newFilters);
         break;
       default:
+        console.log('🔍 Actualizando filters general');
         setFilters(newFilters);
     }
   };
@@ -702,26 +737,7 @@ export default function ParticipantesPage() {
         );
       }
     },
-    {
-      key: 'created_at',
-      label: 'Fecha Registro',
-      sortable: true,
-      width: 'w-40',
-      render: (value: any, row: any) => {
-        if (!row || !row.created_at) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            {new Date(row.created_at).toLocaleDateString('es-ES', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })}
-          </div>
-        );
-      }
-    },
+
     {
       key: 'actions',
       label: 'Acciones',
@@ -1249,10 +1265,20 @@ export default function ParticipantesPage() {
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             filters={
-              activeTab === 'externos' ? filtersExternos :
-              activeTab === 'internos' ? filtersInternos :
-              activeTab === 'friend_family' ? filtersFriendFamily :
-              filters
+              (() => {
+                const selectedFilters = activeTab === 'externos' ? filtersExternos :
+                  activeTab === 'internos' ? filtersInternos :
+                  activeTab === 'friend_family' ? filtersFriendFamily :
+                  filters;
+                
+                console.log('🔍 Filtros seleccionados para ParticipantesUnifiedContainer:', {
+                  activeTab,
+                  selectedFilters,
+                  estado_participante: selectedFilters.estado_participante
+                });
+                
+                return selectedFilters;
+              })()
             }
             setFilters={handleFiltersChange}
             showFilterDrawer={showFilterDrawer}
@@ -1303,6 +1329,16 @@ export default function ParticipantesPage() {
               empresas: empresas,
               departamentos: departamentos,
             }}
+            // Log para verificar las opciones de filtro
+            {...(() => {
+              console.log('🔍 Opciones de filtro pasadas al FilterDrawer:', {
+                estados: estadosParticipante,
+                roles: rolesEmpresa,
+                empresas: empresas,
+                departamentos: departamentos,
+              });
+              return {};
+            })()}
             onSelectionChange={handleSelectionChange}
             bulkActions={bulkActions}
           />

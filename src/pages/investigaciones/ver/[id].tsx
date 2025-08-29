@@ -620,7 +620,7 @@ const VerInvestigacion: NextPage = () => {
                   </div>
                 ) : (
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('prueba');
@@ -663,7 +663,7 @@ const VerInvestigacion: NextPage = () => {
                   </div>
                 ) : (
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setCurrentLinkType('resultados');
@@ -1044,7 +1044,7 @@ const VerInvestigacion: NextPage = () => {
             {/* Botón Crear Seguimiento - Solo mostrar si la investigación está en progreso */}
             {investigacion.estado?.toLowerCase().trim() === 'en_progreso' && (
               <Button
-                variant="secondary"
+                variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => {
                   // Abrir directamente el modal de seguimiento

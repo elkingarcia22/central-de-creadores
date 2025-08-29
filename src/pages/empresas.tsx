@@ -67,8 +67,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const router = useRouter();
   
   // Estados principales
-  const [empresas, setEmpresas] = useState<Empresa[]>(initialEmpresas);
-  const [loading, setLoading] = useState(initialEmpresas.length === 0);
+  const [empresas, setEmpresas] = useState<Empresa[]>(initialEmpresas || []);
+  const [loading, setLoading] = useState((initialEmpresas?.length || 0) === 0);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     estados: [],
@@ -89,7 +89,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     tamano: 'todos',
     pais: 'todos',
     kam_id: 'todos',
-    activo: undefined,
+
     relacion: 'todos',
     producto: 'todos'
   });
@@ -117,8 +117,8 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   // Cargar datos iniciales
   useEffect(() => {
     console.log('🔄 useEffect ejecutándose - cargando datos iniciales');
-    if (initialEmpresas.length > 0) {
-      console.log('✅ Empresas ya cargadas desde SSR:', initialEmpresas.length);
+    if ((initialEmpresas?.length || 0) > 0) {
+      console.log('✅ Empresas ya cargadas desde SSR:', initialEmpresas?.length || 0);
       setLoading(false);
       // Cargar usuarios y opciones de filtros en el cliente
       Promise.all([
@@ -221,11 +221,17 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       const modalidades = modalidadesRes.ok ? await modalidadesRes.json() : [];
       console.log('✅ Modalidades cargadas:', modalidades.length);
 
+      // Cargar usuarios para KAMs
+      const usuariosRes = await fetch('/api/usuarios');
+      const usuariosData = usuariosRes.ok ? await usuariosRes.json() : [];
+      const usuarios = usuariosData?.usuarios || [];
+      console.log('✅ Usuarios cargados para KAMs:', usuarios.length);
+
       setFilterOptions({
         estados: estados.map((e: any) => ({ value: e.id, label: e.nombre })),
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
-        kams: [],
+        kams: usuarios.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || 'Sin nombre' })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre })),
         industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
@@ -275,10 +281,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
       filtradas = filtradas.filter(emp => emp?.kam_id === filters.kam_id);
     }
     
-    // Filtrar por estado activo/inactivo
-    if (filters.activo !== undefined) {
-      filtradas = filtradas.filter(emp => emp?.activo === filters.activo);
-    }
+
     
     // Filtrar por relación
     if (filters.relacion && filters.relacion !== 'todos') {
@@ -307,7 +310,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     if (filters.tamano && filters.tamano !== 'todos') count++;
     if (filters.pais && filters.pais !== 'todos') count++;
     if (filters.kam_id && filters.kam_id !== 'todos') count++;
-    if (filters.activo !== undefined) count++;
+
     if (filters.relacion && filters.relacion !== 'todos') count++;
     if (filters.producto && filters.producto !== 'todos') count++;
     return count;
@@ -857,14 +860,10 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
             getActiveFiltersCount={getActiveFiltersCount}
             columns={columns}
             onRowClick={(empresa) => {
-              setSelectedEmpresa(empresa);
-              setShowViewModal(true);
+              router.push(`/empresas/ver/${empresa.id}`);
             }}
-            filterOptions={{
-              estados: filterOptions.estados,
-              tamanos: filterOptions.tamanos,
-              paises: filterOptions.paises,
-            }}
+            filterOptions={filterOptions}
+            usuarios={usuarios}
             onSelectionChange={handleSelectionChange}
             bulkActions={bulkActions}
             clearSelection={clearTableSelection}
@@ -942,9 +941,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
       const data = await response.json();
       console.log('📊 Datos recibidos en SSR:', data?.length || 0);
       
+      // Asegurar que data sea un array válido
+      const empresas = Array.isArray(data) ? data : [];
+      
       return {
         props: {
-          initialEmpresas: data || []
+          initialEmpresas: empresas
         }
       };
     } else {

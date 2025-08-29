@@ -83,8 +83,22 @@ const Select: React.FC<SelectProps> = ({
       }
     };
 
-    const handleScroll = () => {
+    const handleScroll = (event: Event) => {
       if (isOpen) {
+        // Verificar si el scroll ocurre dentro del dropdown o del contenedor
+        const target = event.target as Element;
+        if (dropdownRef.current && dropdownRef.current.contains(target)) {
+          // Si el scroll es dentro del dropdown, no cerrar
+          return;
+        }
+        
+        // Verificar si el scroll ocurre dentro del contenedor del select
+        if (containerRef.current && containerRef.current.contains(target)) {
+          // Si el scroll es dentro del contenedor, no cerrar
+          return;
+        }
+        
+        // Si el scroll es fuera del dropdown y del contenedor, cerrar
         setIsOpen(false);
         setSearchTerm('');
         onBlur?.();

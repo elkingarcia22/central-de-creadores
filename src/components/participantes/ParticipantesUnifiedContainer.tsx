@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
@@ -81,6 +81,18 @@ export default function ParticipantesUnifiedContainer({
       document.removeEventListener('keydown', handleEscape);
     };
   }, [isSearchExpanded]);
+  // Callbacks para manejar el estado del buscador
+  const handleExpandSearch = useCallback(() => {
+    setIsSearchExpanded(true);
+  }, []);
+
+  const handleCollapseSearch = useCallback(() => {
+    setIsSearchExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, [setSearchTerm]);
 
   // Filtrar participantes basado en searchTerm, filters y activeTab
   const participantesFiltradas = useMemo(() => {
@@ -121,7 +133,20 @@ export default function ParticipantesUnifiedContainer({
     
     // Aplicar filtros avanzados específicos de participantes
     if (filters.estado_participante && filters.estado_participante !== 'todos') {
-      filtradas = filtradas.filter(p => p?.estado_participante === filters.estado_participante);
+      console.log('🔍 Aplicando filtro de estado:', filters.estado_participante);
+      console.log('🔍 Participantes antes del filtro de estado:', filtradas.length);
+      
+      // Solo aplicar filtro de estado a participantes externos
+      filtradas = filtradas.filter(p => {
+        if (p?.tipo === 'externo') {
+          const coincide = p?.estado_participante === filters.estado_participante;
+          console.log(`🔍 Participante externo ${p.nombre}: estado=${p.estado_participante}, filtro=${filters.estado_participante}, coincide=${coincide}`);
+          return coincide;
+        }
+        return true; // Mantener participantes internos y friend & family
+      });
+      
+      console.log('🔍 Participantes después del filtro de estado:', filtradas.length);
     }
     
     if (filters.rol_empresa && filters.rol_empresa !== 'todos') {
@@ -136,13 +161,7 @@ export default function ParticipantesUnifiedContainer({
       filtradas = filtradas.filter(p => p?.departamento_nombre === filters.departamento);
     }
     
-    if (filters.fecha_registro_desde) {
-      filtradas = filtradas.filter(p => p?.created_at >= filters.fecha_registro_desde);
-    }
-    
-    if (filters.fecha_registro_hasta) {
-      filtradas = filtradas.filter(p => p?.created_at <= filters.fecha_registro_hasta);
-    }
+
     
     if (filters.fecha_ultima_participacion_desde) {
       filtradas = filtradas.filter(p => p?.fecha_ultima_participacion >= filters.fecha_ultima_participacion_desde);
@@ -214,8 +233,8 @@ export default function ParticipantesUnifiedContainer({
                 <Input
                   placeholder="Buscar participantes..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-[500px] pl-10 pr-10 py-2"
+                  onChange={handleSearchChange}
+                  className="!w-[700px] pl-10 pr-10 py-2"
                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
                   iconPosition="left"
                   autoFocus
@@ -223,7 +242,7 @@ export default function ParticipantesUnifiedContainer({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsSearchExpanded(false)}
+                  onClick={handleCollapseSearch}
                   className="text-gray-500 hover:text-gray-700 border-0"
                 >
                   ✕
@@ -232,7 +251,7 @@ export default function ParticipantesUnifiedContainer({
             ) : (
               <Button
                 variant="ghost"
-                onClick={() => setIsSearchExpanded(true)}
+                onClick={handleExpandSearch}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
                 iconOnly
                 icon={<SearchIcon className="w-5 h-5" />}

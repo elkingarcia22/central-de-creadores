@@ -28,13 +28,20 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   const [open, setOpen] = useState(false);
   const submenuRef = useRef<HTMLDivElement>(null);
   
-  const isActive = href && (router.pathname === href || router.asPath === href);
+  // Mejorada la lógica de detección de ruta activa para rutas dinámicas
+  const isActive = href && (
+    router.pathname === href || 
+    router.asPath === href ||
+    // Para rutas dinámicas, verificar si la ruta actual comienza con el href
+    (href !== '/' && router.pathname.startsWith(href)) ||
+    (href !== '/' && router.asPath.startsWith(href))
+  );
   
   const baseClasses = `flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
     isCollapsed ? 'justify-center px-2' : ''
   }`;
   
-    const activeClasses = isActive
+  const activeClasses = isActive
     ? 'bg-muted text-foreground border-r-2 border-primary'
     : 'text-muted-foreground hover:bg-muted hover:text-foreground';
   
@@ -119,14 +126,24 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       href={href}
       className={`${baseClasses} ${activeClasses} ${className}`}
       onClick={e => {
-        // Prevenir navegación redundante aunque cambie el hash
+        // Solo prevenir navegación si estamos en la misma ruta exacta
         const currentPath = router.asPath.split('#')[0];
         const targetPath = (href || '').split('#')[0];
+        
+        // Solo prevenir si las rutas son exactamente iguales
         if (currentPath === targetPath) {
           e.preventDefault();
           return;
         }
-        if (onClick) onClick();
+        
+        // Si hay un onClick handler personalizado, usarlo en lugar de la navegación del Link
+        if (onClick) {
+          e.preventDefault();
+          onClick();
+          return;
+        }
+        
+        // Si no hay onClick handler, dejar que el Link maneje la navegación
       }}
     >
       <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
