@@ -47,29 +47,29 @@ const Chip: React.FC<ChipProps> = ({
     lg: 'w-5 h-5 flex-shrink-0 flex items-center justify-center'
   };
 
-  // Estilos usando tokens de colores para mejor consistencia
+  // Estilos usando clases de Tailwind directas para mejor compatibilidad
   const variantClasses = {
     default: outlined
-      ? 'border border-muted text-muted-foreground bg-transparent'
-      : 'bg-muted text-muted-foreground',
+      ? 'border border-gray-200 text-gray-600 bg-transparent dark:border-gray-700 dark:text-gray-300'
+      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
     primary: outlined
-      ? 'border border-primary text-primary bg-transparent'
-      : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary',
+      ? 'border border-blue-500 text-blue-600 bg-transparent dark:border-blue-400 dark:text-blue-400'
+      : 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-200 dark:border dark:border-blue-700/50',
     success: outlined
-      ? 'border border-success text-success bg-transparent'
-      : 'bg-success/10 text-success',
+      ? 'border border-green-500 text-green-600 bg-transparent dark:border-green-400 dark:text-green-400'
+      : 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-200 dark:border dark:border-green-700/50',
     warning: outlined
-      ? 'border border-warning text-warning-foreground bg-transparent'
-      : 'bg-warning/10 text-warning-foreground',
+      ? 'border border-yellow-500 text-yellow-600 bg-transparent dark:border-yellow-400 dark:text-yellow-400'
+      : 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border dark:border-yellow-700/50',
     danger: outlined
-      ? 'border border-destructive text-destructive bg-transparent'
-      : 'bg-destructive/10 text-destructive',
+      ? 'border border-red-500 text-red-600 bg-transparent dark:border-red-400 dark:text-red-400'
+      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50',
     info: outlined
-      ? 'border border-info text-info bg-transparent'
-      : 'bg-info/10 text-info',
+      ? 'border border-cyan-500 text-cyan-600 bg-transparent dark:border-cyan-400 dark:text-cyan-400'
+      : 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-200 dark:border dark:border-cyan-700/50',
     secondary: outlined
-      ? 'border border-secondary text-secondary-foreground bg-transparent'
-      : 'bg-secondary/20 text-secondary-foreground',
+      ? 'border border-purple-500 text-purple-600 bg-transparent dark:border-purple-400 dark:text-purple-400'
+      : 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-200 dark:border dark:border-purple-700/50',
     'accent-blue': outlined
       ? 'border border-accent-blue text-accent-blue bg-transparent'
       : 'bg-accent-blue/10 text-accent-blue',
