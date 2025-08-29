@@ -331,7 +331,6 @@ export default function DetalleParticipante() {
             </button>
             <PageHeader
               title="Ver Participante"
-              subtitle="Detalles completos del participante"
               variant="compact"
               color="purple"
               className="mb-0"
