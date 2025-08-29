@@ -168,11 +168,31 @@ export default function DetalleParticipante() {
   };
 
   const getEstadoVariant = (estado: string) => {
-    console.log('🔍 DEBUG - Estado recibido:', estado);
-    console.log('🔍 DEBUG - Estado procesado:', estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' '));
-    const variant = getEstadoParticipanteVariant(estado);
-    console.log('🔍 DEBUG - Variant resultante:', variant);
-    return variant;
+    return getEstadoParticipanteVariant(estado);
+  };
+
+  const getEstadoChipVariant = (estado: string) => {
+    console.log('🔍 DEBUG - Estado para chip:', estado);
+    const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
+    console.log('🔍 DEBUG - Estado procesado para chip:', estadoLower);
+    
+    switch (estadoLower) {
+      case 'activo': 
+        console.log('🔍 DEBUG - Retornando success para activo');
+        return 'success';
+      case 'inactivo': 
+        console.log('🔍 DEBUG - Retornando secondary para inactivo');
+        return 'secondary';
+      case 'pendiente': 
+        console.log('🔍 DEBUG - Retornando warning para pendiente');
+        return 'warning';
+      case 'pendiente de agendamiento': 
+        console.log('🔍 DEBUG - Retornando warning para pendiente de agendamiento');
+        return 'warning';
+      default: 
+        console.log('🔍 DEBUG - Retornando secondary por defecto');
+        return 'secondary';
+    }
   };
 
   const columnsInvestigaciones = [
@@ -335,7 +355,7 @@ export default function DetalleParticipante() {
               className="mb-0"
               chip={{
                 label: participante.estado_participante || 'Sin estado',
-                variant: getEstadoVariant(participante.estado_participante || 'default'),
+                variant: getEstadoChipVariant(participante.estado_participante || 'default'),
                 size: 'sm'
               }}
             />
