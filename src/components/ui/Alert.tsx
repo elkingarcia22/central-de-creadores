@@ -34,7 +34,7 @@ const Alert: React.FC<AlertProps> = ({
   const getVariantStyles = () => {
     const baseStyles = 'p-4 rounded-lg border';
     const variantStyles = {
-      info: 'bg-primary/10 border-primary/20 text-primary',
+      info: 'bg-primary/10 border-primary/20 text-primary dark:bg-primary/20 dark:border-primary/30 dark:text-primary',
       success: 'bg-green-50 border-green-200 text-green-800',
       warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
       error: 'bg-red-50 border-red-200 text-red-800'

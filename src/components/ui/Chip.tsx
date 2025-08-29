@@ -54,7 +54,7 @@ const Chip: React.FC<ChipProps> = ({
       : 'bg-muted text-muted-foreground',
     primary: outlined
       ? 'border border-primary text-primary bg-transparent'
-      : 'bg-primary/10 text-primary',
+      : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary',
     success: outlined
       ? 'border border-success text-success bg-transparent'
       : 'bg-success/10 text-success',

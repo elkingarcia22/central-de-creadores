@@ -70,7 +70,7 @@ const Toast: React.FC<ToastProps> = ({
       case 'info':
         return "text-blue-600 dark:text-blue-400";
       default:
-        return "text-muted-foreground";
+        return "text-primary";
     }
   };
 

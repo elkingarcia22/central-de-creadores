@@ -20,7 +20,7 @@ const TestParticipantCard: React.FC<TestParticipantCardProps> = ({ participant, 
       <div className="space-y-2">
         <p className="text-sm text-gray-600">
           <span className="font-medium">Participaciones:</span> 
-          <span className="font-bold text-blue-600 ml-1">{participant.total_participaciones}</span>
+          <span className="font-bold text-primary ml-1">{participant.total_participaciones}</span>
         </p>
         
         {participant.fecha_ultima_participacion && (

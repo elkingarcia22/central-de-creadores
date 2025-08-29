@@ -56,7 +56,7 @@ const Counter: React.FC<CounterProps> = ({
       success: 'text-green-600',
       warning: 'text-yellow-600',
       danger: 'text-red-600',
-      info: 'text-blue-600'
+      info: 'text-primary'
     };
     return colorStyles[color];
   };

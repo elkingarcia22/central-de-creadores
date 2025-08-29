@@ -289,9 +289,9 @@ const Select: React.FC<SelectProps> = ({
                   key={option.value}
                   type="button"
                   className={cn(
-                    'w-full px-3 py-2 text-left text-sm transition-colors hover:bg-blue-100 hover:text-blue-900 focus:bg-blue-100 focus:text-blue-900 focus:outline-none relative z-10 cursor-pointer',
+                    'w-full px-3 py-2 text-left text-sm transition-colors hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary focus:outline-none relative z-10 cursor-pointer',
                     option.disabled && 'opacity-50 cursor-not-allowed',
-                    value === option.value && 'bg-blue-100 text-blue-900'
+                    value === option.value && 'bg-primary/10 text-primary'
                   )}
                   onClick={(e) => {
                     console.log('🔍 Select - Option button clicked:', option.value);
