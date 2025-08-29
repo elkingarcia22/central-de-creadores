@@ -99,17 +99,17 @@ const Chip: React.FC<ChipProps> = ({
       : 'bg-accent-violet/10 text-accent-violet',
     // Nuevas variantes agrupadas
     pendiente: outlined
-      ? 'border border-primary text-primary bg-transparent'
-      : 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary',
+      ? 'border border-blue-500 text-blue-600 bg-transparent dark:border-blue-400 dark:text-blue-400'
+      : 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-200 dark:border dark:border-blue-700/50',
     transitoria: outlined
-      ? 'border border-warning text-warning-foreground bg-transparent'
-      : 'bg-warning/10 text-warning-foreground dark:bg-warning/20 dark:text-warning-foreground',
+      ? 'border border-yellow-500 text-yellow-600 bg-transparent dark:border-yellow-400 dark:text-yellow-400'
+      : 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border dark:border-yellow-700/50',
     terminada: outlined
-      ? 'border border-success text-success bg-transparent'
-      : 'bg-success/10 text-success dark:bg-success/20 dark:text-success',
+      ? 'border border-green-500 text-green-600 bg-transparent dark:border-green-400 dark:text-green-400'
+      : 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-200 dark:border dark:border-green-700/50',
     fallo: outlined
-      ? 'border border-destructive text-destructive bg-transparent'
-      : 'bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive'
+      ? 'border border-red-500 text-red-600 bg-transparent dark:border-red-400 dark:text-red-400'
+      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50'
   };
 
   const classes = [

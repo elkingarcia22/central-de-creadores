@@ -14,6 +14,7 @@ import { SideModal, Input, Textarea, Select } from '../../components/ui';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
+import { getChipVariant } from '../../utils/chipUtils';
 
 interface Participante {
   id: string;
@@ -173,26 +174,9 @@ export default function DetalleParticipante() {
 
   const getEstadoChipVariant = (estado: string) => {
     console.log('🔍 DEBUG - Estado para chip:', estado);
-    const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
-    console.log('🔍 DEBUG - Estado procesado para chip:', estadoLower);
-    
-    switch (estadoLower) {
-      case 'activo': 
-        console.log('🔍 DEBUG - Retornando success para activo');
-        return 'success';
-      case 'inactivo': 
-        console.log('🔍 DEBUG - Retornando secondary para inactivo');
-        return 'secondary';
-      case 'pendiente': 
-        console.log('🔍 DEBUG - Retornando warning para pendiente');
-        return 'warning';
-      case 'pendiente de agendamiento': 
-        console.log('🔍 DEBUG - Retornando warning para pendiente de agendamiento');
-        return 'warning';
-      default: 
-        console.log('🔍 DEBUG - Retornando secondary por defecto');
-        return 'secondary';
-    }
+    const variant = getChipVariant(estado);
+    console.log('🔍 DEBUG - Variant resultante:', variant);
+    return variant;
   };
 
   const columnsInvestigaciones = [
