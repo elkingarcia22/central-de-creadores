@@ -1100,7 +1100,6 @@ export default function ParticipantesPage() {
           <div className="relative">
             <PageHeader
               title="Participantes"
-              subtitle="Gestionar participantes de investigaciones"
               color="purple"
               primaryAction={{
                 label: "Nuevo Participante",

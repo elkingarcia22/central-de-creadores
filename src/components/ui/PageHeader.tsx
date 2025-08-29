@@ -93,8 +93,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       bg: 'bg-green-50 dark:bg-green-900/20'
     },
     purple: {
-      icon: 'text-purple-600',
-      bg: 'bg-purple-50 dark:bg-purple-900/20'
+      icon: 'text-primary',
+      bg: 'bg-primary/10 dark:bg-primary/20'
     },
     orange: {
       icon: 'text-orange-600',
