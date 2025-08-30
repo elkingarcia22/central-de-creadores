@@ -247,32 +247,7 @@ export default function DetalleParticipante() {
         )}
       </InfoContainer>
 
-      {/* Estadísticas de participación */}
-      <InfoContainer 
-        title="Estadísticas de Participación"
-        icon={<UsersIcon className="w-4 h-4" />}
-      >
-        <InfoItem 
-          label="Total de Participaciones" 
-          value={
-            <div className="flex items-center gap-2">
-              <AnimatedCounter
-                value={participante.total_participaciones || 0}
-                duration={2000}
-                className="text-2xl font-bold text-primary"
-              />
-            </div>
-          }
-        />
-        <InfoItem 
-          label="Última Participación" 
-          value={
-            participante.fecha_ultima_participacion ? 
-              formatearFecha(participante.fecha_ultima_participacion) : 
-              'Sin participaciones'
-          }
-        />
-      </InfoContainer>
+
 
       {/* Información del sistema */}
       <InfoContainer 
