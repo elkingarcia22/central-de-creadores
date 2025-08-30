@@ -514,7 +514,8 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     .sort(([a], [b]) => b.localeCompare(a))
                     .slice(0, 6)
                     .map(([mes, cantidad]) => {
-                      const fecha = new Date(mes + '-01');
+                      const [year, month] = mes.split('-');
+                      const fecha = new Date(parseInt(year), parseInt(month) - 1, 1);
                       const esMesActual = fecha.getMonth() === new Date().getMonth() && fecha.getFullYear() === new Date().getFullYear();
                       const maxCantidad = Math.max(...Object.values(empresaData.estadisticas.participacionesPorMes));
                       
