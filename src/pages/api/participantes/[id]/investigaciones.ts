@@ -191,15 +191,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 function calcularParticipacionesPorMes(investigaciones: any[]) {
   const participacionesPorMes: { [key: string]: number } = {};
   
+  console.log('🔍 Debug - Iniciando cálculo de participaciones por mes');
+  console.log('🔍 Debug - Total investigaciones a procesar:', investigaciones.length);
+  
   // Agregar participaciones existentes (solo finalizadas)
-  investigaciones.forEach(investigacion => {
+  investigaciones.forEach((investigacion, index) => {
+    console.log(`🔍 Debug - Procesando investigación ${index + 1}:`, {
+      id: investigacion.id,
+      fecha_participacion: investigacion.fecha_participacion,
+      estado_agendamiento: investigacion.estado_agendamiento,
+      esFinalizada: investigacion.estado_agendamiento === 'Finalizado'
+    });
+    
     if (investigacion.fecha_participacion && investigacion.estado_agendamiento === 'Finalizado') {
       const fecha = new Date(investigacion.fecha_participacion);
       const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
       
+      console.log(`🔍 Debug - Agregando participación finalizada para mes: ${mesAnio}`);
       participacionesPorMes[mesAnio] = (participacionesPorMes[mesAnio] || 0) + 1;
     }
   });
+
+  console.log('🔍 Debug - Participaciones por mes antes de agregar meses vacíos:', participacionesPorMes);
 
   // Agregar los últimos 6 meses incluso si no hay participaciones
   const ahora = new Date();
@@ -212,5 +225,6 @@ function calcularParticipacionesPorMes(investigaciones: any[]) {
     }
   }
 
+  console.log('🔍 Debug - Participaciones por mes final:', participacionesPorMes);
   return participacionesPorMes;
 }
