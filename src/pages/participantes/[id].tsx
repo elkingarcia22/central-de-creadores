@@ -9,6 +9,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
+import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
