@@ -147,7 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_fin: r.fecha_sesion,
         tipo_sesion: 'remota',
         riesgo_automatico: 'bajo',
-        fecha_participacion: r.fecha_sesion,
+        fecha_participacion: r.fecha_sesion, // Esta es la fecha real de participación
         estado_agendamiento: r.estado_agendamiento_cat?.nombre || 'Desconocido',
         duracion_sesion: r.duracion_sesion
       }));
@@ -162,8 +162,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 Debug - Fechas de participación:', investigaciones.map(inv => ({
       id: inv.id,
       fecha_participacion: inv.fecha_participacion,
-      fecha_inicio: inv.fecha_inicio
+      fecha_inicio: inv.fecha_inicio,
+      estado_agendamiento: inv.estado_agendamiento
     })));
+    
+    // Debug adicional: verificar las fechas de los reclutamientos originales
+    if (reclutamientos && reclutamientos.length > 0) {
+      console.log('🔍 Debug - Reclutamientos originales:', reclutamientos.map(r => ({
+        id: r.id,
+        fecha_sesion: r.fecha_sesion,
+        estado_agendamiento: r.estado_agendamiento_cat?.nombre
+      })));
+    }
 
     return res.status(200).json({
       investigaciones,
@@ -181,9 +191,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 function calcularParticipacionesPorMes(investigaciones: any[]) {
   const participacionesPorMes: { [key: string]: number } = {};
   
-  // Agregar participaciones existentes
+  // Agregar participaciones existentes (solo finalizadas)
   investigaciones.forEach(investigacion => {
-    if (investigacion.fecha_participacion) {
+    if (investigacion.fecha_participacion && investigacion.estado_agendamiento === 'Finalizado') {
       const fecha = new Date(investigacion.fecha_participacion);
       const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
       
