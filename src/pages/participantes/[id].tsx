@@ -119,10 +119,16 @@ export default function DetalleParticipante() {
 
   const cargarInvestigaciones = async () => {
     try {
+      console.log('🔍 DEBUG - Cargando investigaciones para participante:', id);
       const response = await fetch(`/api/participantes/${id}/investigaciones`);
+      console.log('🔍 DEBUG - Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 DEBUG - Data recibida:', data);
         setInvestigaciones(data.investigaciones || []);
+      } else {
+        console.error('🔍 DEBUG - Error en response:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error cargando investigaciones:', error);
@@ -268,6 +274,10 @@ export default function DetalleParticipante() {
 
   // Componente de contenido de estadísticas
   const EstadisticasContent = () => {
+    // Debug: Ver qué datos están llegando
+    console.log('🔍 DEBUG - Investigaciones cargadas:', investigaciones);
+    console.log('🔍 DEBUG - Participante:', participante);
+    
     // Calcular estadísticas básicas
     const totalInvestigaciones = investigaciones.length;
     const investigacionesActivas = investigaciones.filter(inv => 
@@ -276,6 +286,10 @@ export default function DetalleParticipante() {
     const investigacionesCompletadas = investigaciones.filter(inv => 
       inv.estado === 'finalizada' || inv.estado === 'completada'
     ).length;
+    
+    console.log('🔍 DEBUG - Total investigaciones:', totalInvestigaciones);
+    console.log('🔍 DEBUG - Investigaciones activas:', investigacionesActivas);
+    console.log('🔍 DEBUG - Investigaciones completadas:', investigacionesCompletadas);
     
     // Calcular tiempo total de participación (aproximado)
     const tiempoTotalHoras = Math.round((totalInvestigaciones * 2)); // Estimación: 2 horas por investigación
