@@ -22,6 +22,7 @@ import CrearParticipanteFriendFamilyModal from '../components/ui/CrearParticipan
 import EditarParticipanteModal from '../components/ui/EditarParticipanteModal';
 import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModal';
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
+import { DolorModal } from '../components/ui';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
@@ -81,9 +82,11 @@ export default function ParticipantesPage() {
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [showModalErrorEliminar, setShowModalErrorEliminar] = useState(false);
+  const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<any>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<any>(null);
+  const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   
@@ -524,8 +527,18 @@ export default function ParticipantesPage() {
   };
 
   const handleCrearDolor = (participante: Participante) => {
-    // Redirigir al detalle del participante con el tab de dolores activo
-    router.push(`/participantes/${participante.id}?tab=dolores`);
+    // Abrir modal de crear dolor
+    setParticipanteParaCrearDolor(participante);
+    setShowModalCrearDolor(true);
+  };
+
+  const handleDolorGuardado = () => {
+    // Cerrar modal y mostrar mensaje de éxito
+    setShowModalCrearDolor(false);
+    setParticipanteParaCrearDolor(null);
+    showSuccess('Dolor registrado exitosamente');
+    // Opcional: recargar datos de participantes
+    // cargarParticipantes();
   };
 
   const handleCrearComentario = (participante: Participante) => {
@@ -1288,6 +1301,17 @@ export default function ParticipantesPage() {
             }}
             participante={participanteParaEliminar}
             error={errorEliminacion}
+          />
+
+          {/* Modal de crear dolor */}
+          <DolorModal
+            isOpen={showModalCrearDolor}
+            onClose={() => {
+              setShowModalCrearDolor(false);
+              setParticipanteParaCrearDolor(null);
+            }}
+            participanteId={participanteParaCrearDolor?.id || ''}
+            onSave={handleDolorGuardado}
           />
         </div>
       </div>
