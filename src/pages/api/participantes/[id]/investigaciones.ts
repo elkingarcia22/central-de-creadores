@@ -163,6 +163,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         tipo_investigacion: 'Sesión de investigación',
         responsable: 'No asignado'
       }));
+
+      // Intentar obtener nombres reales de las investigaciones
+      try {
+        const investigacionIds = reclutamientos.map(r => r.investigacion_id);
+        console.log('🔍 Intentando obtener nombres reales para IDs:', investigacionIds);
+        
+        const { data: investigacionesReales, error: errorInvestigaciones } = await supabaseServer
+          .from('investigaciones')
+          .select('id, nombre, descripcion, estado, fecha_inicio, fecha_fin, tipo_sesion, riesgo_automatico')
+          .in('id', investigacionIds);
+
+        if (investigacionesReales && investigacionesReales.length > 0) {
+          console.log('🔍 Nombres reales obtenidos:', investigacionesReales.length);
+          
+          // Actualizar los nombres con los datos reales
+          investigaciones = investigaciones.map(inv => {
+            const investigacionReal = investigacionesReales.find(ir => ir.id === inv.id);
+            if (investigacionReal) {
+              return {
+                ...inv,
+                nombre: investigacionReal.nombre,
+                descripcion: investigacionReal.descripcion || inv.descripcion,
+                estado: investigacionReal.estado || inv.estado,
+                fecha_inicio: investigacionReal.fecha_inicio || inv.fecha_inicio,
+                fecha_fin: investigacionReal.fecha_fin || inv.fecha_fin,
+                tipo_sesion: investigacionReal.tipo_sesion || inv.tipo_sesion,
+                riesgo_automatico: investigacionReal.riesgo_automatico || inv.riesgo_automatico,
+                tipo_investigacion: investigacionReal.tipo_sesion || 'Sesión de investigación'
+              };
+            }
+            return inv;
+          });
+        } else {
+          console.log('⚠️ No se pudieron obtener nombres reales de investigaciones');
+        }
+      } catch (error) {
+        console.log('⚠️ Error obteniendo nombres reales:', error);
+        // Continuar con los nombres por defecto si hay error
+      }
     }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
