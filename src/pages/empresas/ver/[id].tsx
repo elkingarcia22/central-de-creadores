@@ -480,30 +480,27 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
             {/* Última participación y resumen del mes */}
             <InfoContainer 
-              title="Última Participación"
-              icon={<ClockIcon className="w-4 h-4" />}
+              title="Resumen de Participación"
+              icon={<UserIcon className="w-4 h-4" />}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {empresaData.estadisticas.fechaUltimaParticipacion && (
-                  <InfoItem 
-                    label="Fecha de Última Participación" 
-                    value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
-                  />
-                )}
-                
-                {/* Resumen del mes actual */}
+              {empresaData.estadisticas.fechaUltimaParticipacion && (
                 <InfoItem 
-                  label="Participaciones del Mes" 
-                  value={
-                    (() => {
-                      const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                      const participacionesMesActual = empresaData.estadisticas.participacionesPorMes[mesActual] || 0;
-                      const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                      return `${participacionesMesActual} en ${nombreMes}`;
-                    })()
-                  }
+                  label="Última Participación" 
+                  value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
                 />
-              </div>
+              )}
+              
+              <InfoItem 
+                label="Participaciones del Mes" 
+                value={
+                  (() => {
+                    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                    const participacionesMesActual = empresaData.estadisticas.participacionesPorMes[mesActual] || 0;
+                    const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    return `${participacionesMesActual} en ${nombreMes}`;
+                  })()
+                }
+              />
             </InfoContainer>
 
             {/* Participaciones por mes */}
