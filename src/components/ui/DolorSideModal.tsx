@@ -81,18 +81,26 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   const cargarInvestigaciones = async () => {
     try {
+      console.log('🔍 Cargando investigaciones para participante:', participanteId);
       const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Respuesta completa del API:', data);
+        console.log('🔍 Investigaciones encontradas:', data.investigaciones?.length || 0);
+        
         // Extraer solo las investigaciones del participante
         const investigacionesParticipante = data.investigaciones?.map((inv: any) => ({
           id: inv.id,
           nombre: inv.nombre
         })) || [];
+        
+        console.log('🔍 Investigaciones procesadas:', investigacionesParticipante);
         setInvestigaciones(investigacionesParticipante);
+      } else {
+        console.error('❌ Error en la respuesta del API:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('Error cargando investigaciones:', error);
+      console.error('❌ Error cargando investigaciones:', error);
     }
   };
 
@@ -111,9 +119,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = () => {
     if (!validateForm()) {
       return;
     }
@@ -175,6 +181,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     }))
   ];
 
+  console.log('🔍 Opciones de investigación generadas:', investigacionOptions);
+
   // Footer del modal
   const footer = (
     <div className="flex justify-end gap-3">
@@ -202,7 +210,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      size="lg"
+      width="lg"
       footer={footer}
       showCloseButton={false}
     >
@@ -220,7 +228,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         {participanteNombre && (
           <div className="bg-muted/50 rounded-lg p-4">
             <FilterLabel>Participante</FilterLabel>
-            <Typography variant="body" className="font-medium mt-1">
+            <Typography variant="body1" className="font-medium mt-1">
               {participanteNombre}
             </Typography>
           </div>
@@ -238,7 +246,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
                 value={formData.categoria_id}
                 onChange={(value) => handleInputChange('categoria_id', value)}
                 placeholder="Seleccionar categoría"
-                error={errors.categoria_id}
+                error={!!errors.categoria_id}
                 required
                 fullWidth
               />
@@ -295,7 +303,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
                 fullWidth
               />
               <div className="mt-2">
-                <Chip variant={getSeveridadColor(formData.severidad) as any}>
+                <Chip variant={getSeveridadColor(formData.severidad as SeveridadDolor) as any}>
                   {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
                 </Chip>
               </div>
