@@ -134,7 +134,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         riesgo_automatico: est.riesgo_automatico,
         fecha_participacion: est.fecha_sesion || est.fecha_participacion,
         estado_agendamiento: est.estado_agendamiento,
-        duracion_sesion: est.duracion_sesion
+        duracion_sesion: est.duracion_sesion,
+        // Agregar propiedades faltantes para la tabla
+        tipo_investigacion: est.tipo_investigacion || est.tipo_sesion || 'Sesión de investigación',
+        responsable: est.responsable || est.creado_por || 'No asignado'
       }));
     } else if (reclutamientos && reclutamientos.length > 0) {
       // Fallback: usar reclutamientos si la vista no funciona
@@ -149,7 +152,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         riesgo_automatico: 'bajo',
         fecha_participacion: r.fecha_sesion, // Esta es la fecha real de participación
         estado_agendamiento: r.estado_agendamiento_cat?.nombre || 'Desconocido',
-        duracion_sesion: r.duracion_sesion
+        duracion_sesion: r.duracion_sesion,
+        // Agregar propiedades faltantes para la tabla
+        tipo_investigacion: 'Sesión de investigación',
+        responsable: 'No asignado'
       }));
     }
 
