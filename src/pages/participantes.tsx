@@ -736,52 +736,6 @@ export default function ParticipantesPage() {
           </div>
         );
       }
-    },
-
-    {
-      key: 'actions',
-      label: 'Acciones',
-      sortable: false,
-      width: 'w-20',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <ActionsMenu
-            actions={[
-              {
-                label: 'Ver Detalles',
-                icon: <EyeIcon className="w-4 h-4" />,
-                onClick: () => handleVerParticipante(row)
-              },
-              {
-                label: 'Editar',
-                icon: <EditIcon className="w-4 h-4" />,
-                onClick: () => handleEditarParticipante(row)
-              },
-              {
-                label: 'Crear Dolor',
-                icon: <AlertTriangleIcon className="w-4 h-4" />,
-                onClick: () => handleCrearDolor(row),
-                className: 'text-orange-600 hover:text-orange-700'
-              },
-              {
-                label: 'Crear Comentario',
-                icon: <MessageIcon className="w-4 h-4" />,
-                onClick: () => handleCrearComentario(row),
-                className: 'text-popover-foreground hover:text-popover-foreground/80'
-              },
-              {
-                label: 'Eliminar',
-                icon: <TrashIcon className="w-4 h-4" />,
-                onClick: () => handleEliminarParticipante(row),
-                className: 'text-red-600 hover:text-red-700'
-              }
-            ]}
-          />
-        );
-      }
     }
   ];
 
@@ -883,52 +837,6 @@ export default function ParticipantesPage() {
           </div>
         );
       }
-    },
-
-    {
-      key: 'actions',
-      label: 'Acciones',
-      sortable: false,
-      width: 'w-20',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <ActionsMenu
-            actions={[
-              {
-                label: 'Ver detalles',
-                icon: <EyeIcon className="w-4 h-4" />,
-                onClick: () => handleVerParticipante(row)
-              },
-              {
-                label: 'Editar',
-                icon: <EditIcon className="w-4 h-4" />,
-                onClick: () => handleEditarParticipante(row)
-              },
-              {
-                label: 'Crear Dolor',
-                icon: <AlertTriangleIcon className="w-4 h-4" />,
-                onClick: () => handleCrearDolor(row),
-                className: 'text-orange-600 hover:text-orange-700'
-              },
-              {
-                label: 'Crear Comentario',
-                icon: <MessageIcon className="w-4 h-4" />,
-                onClick: () => handleCrearComentario(row),
-                className: 'text-popover-foreground hover:text-popover-foreground/80'
-              },
-              {
-                label: 'Eliminar',
-                icon: <TrashIcon className="w-4 h-4" />,
-                onClick: () => handleEliminarParticipante(row),
-                className: 'text-red-600 hover:text-red-700'
-              }
-            ]}
-          />
-        );
-      }
     }
   ];
 
@@ -1028,51 +936,6 @@ export default function ParticipantesPage() {
               year: 'numeric'
             })}
           </div>
-        );
-      }
-    },
-    {
-      key: 'actions',
-      label: 'Acciones',
-      sortable: false,
-      width: 'w-20',
-      render: (value: any, row: any) => {
-        if (!row) {
-          return <div className="text-gray-400">Sin datos</div>;
-        }
-        return (
-          <ActionsMenu
-            actions={[
-              {
-                label: 'Ver detalles',
-                icon: <EyeIcon className="w-4 h-4" />,
-                onClick: () => handleVerParticipante(row)
-              },
-              {
-                label: 'Editar',
-                icon: <EditIcon className="w-4 h-4" />,
-                onClick: () => handleEditarParticipante(row)
-              },
-              {
-                label: 'Crear Dolor',
-                icon: <AlertTriangleIcon className="w-4 h-4" />,
-                onClick: () => handleCrearDolor(row),
-                className: 'text-orange-600 hover:text-orange-700'
-              },
-              {
-                label: 'Crear Comentario',
-                icon: <MessageIcon className="w-4 h-4" />,
-                onClick: () => handleCrearComentario(row),
-                className: 'text-popover-foreground hover:text-popover-foreground/80'
-              },
-              {
-                label: 'Eliminar',
-                icon: <TrashIcon className="w-4 h-4" />,
-                onClick: () => handleEliminarParticipante(row),
-                className: 'text-red-600 hover:text-red-700'
-              }
-            ]}
-          />
         );
       }
     }
