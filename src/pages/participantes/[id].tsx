@@ -133,6 +133,16 @@ export default function DetalleParticipante() {
           cantidad,
           fecha: new Date(mes + '-01').toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
         })));
+        
+        // Debug adicional: verificar el ordenamiento y los primeros 6 meses
+        const participacionesOrdenadas = Object.entries(data.participacionesPorMes || {})
+          .sort(([a], [b]) => b.localeCompare(a))
+          .slice(0, 6);
+        console.log('🔍 Debug - Participaciones ordenadas (primeros 6):', participacionesOrdenadas.map(([mes, cantidad]) => ({
+          mes,
+          cantidad,
+          fecha: new Date(mes + '-01').toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
+        })));
       } else {
         console.error('Error cargando investigaciones:', response.status, response.statusText);
       }
