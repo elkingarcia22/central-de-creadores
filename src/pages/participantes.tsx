@@ -22,7 +22,7 @@ import CrearParticipanteFriendFamilyModal from '../components/ui/CrearParticipan
 import EditarParticipanteModal from '../components/ui/EditarParticipanteModal';
 import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModal';
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
-import { DolorModal } from '../components/ui';
+import { DolorSideModal } from '../components/ui';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
@@ -532,13 +532,30 @@ export default function ParticipantesPage() {
     setShowModalCrearDolor(true);
   };
 
-  const handleDolorGuardado = () => {
-    // Cerrar modal y mostrar mensaje de éxito
-    setShowModalCrearDolor(false);
-    setParticipanteParaCrearDolor(null);
-    showSuccess('Dolor registrado exitosamente');
-    // Opcional: recargar datos de participantes
-    // cargarParticipantes();
+  const handleDolorGuardado = async (dolorData: any) => {
+    try {
+      // Llamar al API para crear el dolor
+      const response = await fetch(`/api/participantes/${participanteParaCrearDolor?.id}/dolores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dolorData),
+      });
+
+      if (response.ok) {
+        // Cerrar modal y mostrar mensaje de éxito
+        setShowModalCrearDolor(false);
+        setParticipanteParaCrearDolor(null);
+        showSuccess('Dolor registrado exitosamente');
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al crear el dolor');
+      }
+    } catch (error) {
+      console.error('Error al crear dolor:', error);
+      showError('Error al crear el dolor');
+    }
   };
 
   const handleCrearComentario = (participante: Participante) => {
@@ -1304,13 +1321,14 @@ export default function ParticipantesPage() {
           />
 
           {/* Modal de crear dolor */}
-          <DolorModal
+          <DolorSideModal
             isOpen={showModalCrearDolor}
             onClose={() => {
               setShowModalCrearDolor(false);
               setParticipanteParaCrearDolor(null);
             }}
             participanteId={participanteParaCrearDolor?.id || ''}
+            participanteNombre={participanteParaCrearDolor?.nombre || ''}
             onSave={handleDolorGuardado}
           />
         </div>

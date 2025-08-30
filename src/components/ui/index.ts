@@ -133,4 +133,5 @@ export { default as Counter, CounterGroup } from './Counter';
 
 // Componentes de dolores
 export { DolorModal } from './DolorModal';
+export { DolorSideModal } from './DolorSideModal';
 export { ListaDolores } from './ListaDolores'; 

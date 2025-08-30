@@ -58,17 +58,17 @@ const Select: React.FC<SelectProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Filtrar opciones basado en el término de búsqueda
-  const filteredOptions = options.filter(option =>
+  const filteredOptions = (options || []).filter(option =>
     searchable && searchTerm
       ? option.label.toLowerCase().includes(searchTerm.toLowerCase())
       : true
   );
 
   // Log para debug
-  console.log('🔍 Select options:', options.length, 'filtered:', filteredOptions.length, 'isOpen:', isOpen);
+  console.log('🔍 Select options:', (options || []).length, 'filtered:', filteredOptions.length, 'isOpen:', isOpen);
 
   // Obtener la opción seleccionada
-  const selectedOption = options.find(option => option.value === value);
+  const selectedOption = (options || []).find(option => option.value === value);
 
   // Función simplificada para posicionamiento (ya no se usa)
   const getDropdownPosition = useCallback(() => ({}), []);
