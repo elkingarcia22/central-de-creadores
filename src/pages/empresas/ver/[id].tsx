@@ -506,7 +506,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             {/* Participaciones por mes */}
             {Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
               <InfoContainer 
-                title="Participaciones por Mes"
+                title="Participaciones por Mes (Finalizadas)"
                 icon={<TrendingUpIcon className="w-4 h-4" />}
               >
                 <div className="space-y-3">

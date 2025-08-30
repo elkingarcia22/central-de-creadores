@@ -449,7 +449,7 @@ export default function DetalleParticipante() {
         {/* Participaciones por mes */}
         {Object.keys(participacionesPorMes).length > 0 && (
           <InfoContainer 
-            title="Participaciones por Mes"
+            title="Participaciones por Mes (Finalizadas)"
             icon={<TrendingUpIcon className="w-4 h-4" />}
           >
             <div className="space-y-3">
