@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../../api/supabase';
+import { supabaseServer } from '../../../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseServer
         .from('dolores_participantes')
         .select('*')
         .eq('participante_id', id)
@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseServer
         .from('dolores_participantes')
         .insert([
           {
