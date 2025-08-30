@@ -128,6 +128,11 @@ export default function DetalleParticipante() {
         setParticipacionesPorMes(data.participacionesPorMes || {});
         console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
         console.log('🔍 Participaciones por mes:', data.participacionesPorMes);
+        console.log('🔍 Debug - Participaciones por mes detallado:', Object.entries(data.participacionesPorMes || {}).map(([mes, cantidad]) => ({
+          mes,
+          cantidad,
+          fecha: new Date(mes + '-01').toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
+        })));
       } else {
         console.error('Error cargando investigaciones:', response.status, response.statusText);
       }
