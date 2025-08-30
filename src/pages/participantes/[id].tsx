@@ -437,9 +437,7 @@ export default function DetalleParticipante() {
             value={
               (() => {
                 const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                const participacionesMesActual = investigaciones.filter(inv => 
-                  inv.fecha_inicio && inv.fecha_inicio.startsWith(mesActual)
-                ).length;
+                const participacionesMesActual = participacionesPorMes[mesActual] || 0;
                 const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
                 return `${participacionesMesActual} en ${nombreMes}`;
               })()

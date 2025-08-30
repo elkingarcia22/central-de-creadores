@@ -157,6 +157,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Calcular participaciones por mes
     const participacionesPorMes = calcularParticipacionesPorMes(investigaciones);
+    
+    console.log('🔍 Debug - Participaciones por mes calculadas:', participacionesPorMes);
+    console.log('🔍 Debug - Fechas de participación:', investigaciones.map(inv => ({
+      id: inv.id,
+      fecha_participacion: inv.fecha_participacion,
+      fecha_inicio: inv.fecha_inicio
+    })));
 
     return res.status(200).json({
       investigaciones,
