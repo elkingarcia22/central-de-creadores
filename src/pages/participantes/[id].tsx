@@ -273,15 +273,24 @@ export default function DetalleParticipante() {
   const EstadisticasContent = () => {
     // Calcular estadísticas básicas
     const totalInvestigaciones = investigaciones.length;
-    const investigacionesActivas = investigaciones.filter(inv => 
-      inv.estado === 'activa' || inv.estado === 'en progreso'
-    ).length;
-    const investigacionesCompletadas = investigaciones.filter(inv => 
-      inv.estado === 'finalizada' || inv.estado === 'completada'
+    
+    // Filtrar por estado_agendamiento (como en empresa)
+    const investigacionesFinalizadas = investigaciones.filter(inv => 
+      inv.estado_agendamiento === 'Finalizado' || inv.estado_agendamiento === 1
     ).length;
     
-    // Calcular tiempo total de participación (aproximado)
-    const tiempoTotalHoras = Math.round((totalInvestigaciones * 2)); // Estimación: 2 horas por investigación
+    const investigacionesEnProgreso = investigaciones.filter(inv => 
+      inv.estado_agendamiento === 'En progreso' || inv.estado_agendamiento === 2
+    ).length;
+    
+    const investigacionesPendientes = investigaciones.filter(inv => 
+      inv.estado_agendamiento === 'Pendiente' || inv.estado_agendamiento === 3
+    ).length;
+    
+    // Calcular tiempo total de participación usando duracion_sesion
+    const tiempoTotalHoras = Math.round(
+      investigaciones.reduce((total, inv) => total + (inv.duracion_sesion || 60), 0) / 60
+    );
     
     return (
       <div className="space-y-6">
@@ -308,19 +317,19 @@ export default function DetalleParticipante() {
             </div>
           </Card>
 
-          {/* Investigaciones Activas */}
+          {/* Investigaciones Finalizadas */}
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                   <AnimatedCounter
-                    value={investigacionesActivas}
+                    value={investigacionesFinalizadas}
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
                 </Typography>
                 <Typography variant="body2" color="secondary">
-                  Investigaciones Activas
+                  Finalizadas
                 </Typography>
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
@@ -329,19 +338,19 @@ export default function DetalleParticipante() {
             </div>
           </Card>
 
-          {/* Investigaciones Completadas */}
+          {/* Investigaciones En Progreso */}
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                   <AnimatedCounter
-                    value={investigacionesCompletadas}
+                    value={investigacionesEnProgreso}
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
                 </Typography>
                 <Typography variant="body2" color="secondary">
-                  Completadas
+                  En Progreso
                 </Typography>
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
@@ -368,6 +377,27 @@ export default function DetalleParticipante() {
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <ClockIconSolid className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones Pendientes */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesPendientes}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Pendientes
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <CalendarIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </div>
             </div>
           </Card>
