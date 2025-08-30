@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SideModal, Typography, Button, TextField, Select, Option, Chip } from './index';
+import { SideModal, Typography, Button, TextField, Select, Chip } from './index';
 import { CategoriaDolor, DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, SeveridadDolor, EstadoDolor } from '../../types/dolores';
 import { SaveIcon, XIcon } from '../icons';
 
