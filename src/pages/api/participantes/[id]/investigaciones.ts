@@ -20,33 +20,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let participanteData = null;
 
     // Verificar en participantes (externos)
-    let { data: participanteExterno } = await supabaseServer
+    let { data: participanteExterno, error: errorExterno } = await supabaseServer
       .from('participantes')
       .select('id, tipo')
       .eq('id', id)
       .single();
+
+    console.log('🔍 Búsqueda en participantes:', { data: participanteExterno, error: errorExterno });
 
     if (participanteExterno) {
       tipoParticipante = 'externo';
       participanteData = participanteExterno;
     } else {
       // Verificar en participantes_internos
-      let { data: participanteInterno } = await supabaseServer
+      let { data: participanteInterno, error: errorInterno } = await supabaseServer
         .from('participantes_internos')
         .select('id, tipo')
         .eq('id', id)
         .single();
+
+      console.log('🔍 Búsqueda en participantes_internos:', { data: participanteInterno, error: errorInterno });
 
       if (participanteInterno) {
         tipoParticipante = 'interno';
         participanteData = participanteInterno;
       } else {
         // Verificar en participantes_friend_family
-        let { data: participanteFriendFamily } = await supabaseServer
+        let { data: participanteFriendFamily, error: errorFriendFamily } = await supabaseServer
           .from('participantes_friend_family')
           .select('id, tipo')
           .eq('id', id)
           .single();
+
+        console.log('🔍 Búsqueda en participantes_friend_family:', { data: participanteFriendFamily, error: errorFriendFamily });
 
         if (participanteFriendFamily) {
           tipoParticipante = 'friend_family';
@@ -62,6 +68,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 Tipo de participante:', tipoParticipante);
 
     // Obtener reclutamientos usando participantes_id (como en empresa)
+    console.log('🔍 Consultando reclutamientos para participantes_id:', id);
+    
     const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
       .from('reclutamientos')
       .select(`
@@ -83,6 +91,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )
       `)
       .eq('participantes_id', id);
+
+    console.log('🔍 Resultado consulta reclutamientos:', { 
+      data: reclutamientos?.length || 0, 
+      error: errorReclutamientos,
+      sample: reclutamientos?.[0]
+    });
 
     if (errorReclutamientos) {
       console.error('❌ Error obteniendo reclutamientos:', errorReclutamientos);
