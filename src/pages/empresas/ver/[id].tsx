@@ -492,29 +492,17 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                 )}
                 
                 {/* Resumen del mes actual */}
-                {(() => {
-                  const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                  const participacionesMesActual = empresaData.estadisticas.participacionesPorMes[mesActual] || 0;
-                  
-                  return (
-                    <InfoItem 
-                      label="Participaciones del Mes Actual" 
-                      value={
-                        <div className="flex items-center space-x-2">
-                          <Typography variant="h4" weight="bold" className="text-blue-600 dark:text-blue-400">
-                            {participacionesMesActual}
-                          </Typography>
-                          <Typography variant="body2" color="secondary">
-                            en {new Date().toLocaleDateString('es-ES', { 
-                              year: 'numeric', 
-                              month: 'long' 
-                            })}
-                          </Typography>
-                        </div>
-                      }
-                    />
-                  );
-                })()}
+                <InfoItem 
+                  label="Participaciones del Mes" 
+                  value={
+                    (() => {
+                      const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                      const participacionesMesActual = empresaData.estadisticas.participacionesPorMes[mesActual] || 0;
+                      const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                      return `${participacionesMesActual} en ${nombreMes}`;
+                    })()
+                  }
+                />
               </div>
             </InfoContainer>
 
