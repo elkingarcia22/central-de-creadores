@@ -154,6 +154,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
+    
+    // Debug: verificar si hay investigaciones duplicadas
+    const investigacionesIds = investigaciones.map(inv => inv.id);
+    const idsUnicos = [...new Set(investigacionesIds)];
+    console.log('🔍 Debug - IDs únicos vs total:', idsUnicos.length, 'vs', investigaciones.length);
+    if (idsUnicos.length !== investigaciones.length) {
+      console.log('⚠️ WARNING - Hay investigaciones duplicadas!');
+      const duplicados = investigacionesIds.filter((id, index) => investigacionesIds.indexOf(id) !== index);
+      console.log('🔍 Debug - IDs duplicados:', duplicados);
+    }
 
     // Calcular participaciones por mes
     const participacionesPorMes = calcularParticipacionesPorMes(investigaciones);
@@ -164,6 +174,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fecha_participacion: inv.fecha_participacion,
       fecha_inicio: inv.fecha_inicio,
       estado_agendamiento: inv.estado_agendamiento
+    })));
+    
+    // Debug específico para participaciones finalizadas
+    const participacionesFinalizadas = investigaciones.filter(inv => inv.estado_agendamiento === 'Finalizado');
+    console.log('🔍 Debug - Participaciones finalizadas:', participacionesFinalizadas.map(inv => ({
+      id: inv.id,
+      fecha_participacion: inv.fecha_participacion,
+      mes_calculado: inv.fecha_participacion ? new Date(inv.fecha_participacion).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' }) : 'Sin fecha'
     })));
     
     // Debug adicional: verificar las fechas de los reclutamientos originales
