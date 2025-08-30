@@ -534,11 +534,15 @@ export default function ParticipantesPage() {
 
   const handleDolorGuardado = async (dolorData: any) => {
     try {
+      // Obtener el usuario actual del contexto
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
       // Llamar al API para crear el dolor
       const response = await fetch(`/api/participantes/${participanteParaCrearDolor?.id}/dolores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'user-id': user.id || '' // Agregar el ID del usuario
         },
         body: JSON.stringify(dolorData),
       });
