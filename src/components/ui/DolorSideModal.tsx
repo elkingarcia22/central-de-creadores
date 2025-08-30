@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SideModal, Typography, Button, TextField, Select, Chip } from './index';
+import { SideModal, Typography, Button, Input, Textarea, Select, Chip } from './index';
 import { CategoriaDolor, DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, SeveridadDolor, EstadoDolor } from '../../types/dolores';
 import { SaveIcon, XIcon } from '../icons';
 
@@ -212,12 +212,12 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
           {/* Título */}
           <div>
-            <TextField
+            <Input
               label="Título *"
               value={formData.titulo}
               onChange={(e) => handleInputChange('titulo', e.target.value)}
               placeholder="Describe brevemente el dolor o necesidad"
-              error={!!errors.titulo}
+              error={errors.titulo}
               required
             />
             {errors.titulo && (
@@ -229,12 +229,11 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
           {/* Descripción */}
           <div>
-            <TextField
+            <Textarea
               label="Descripción"
               value={formData.descripcion}
               onChange={(e) => handleInputChange('descripcion', e.target.value)}
               placeholder="Describe en detalle el dolor o necesidad"
-              multiline
               rows={4}
             />
           </div>
