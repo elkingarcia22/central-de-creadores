@@ -130,3 +130,7 @@ export { default as BarChart } from './BarChart';
 
 // Componentes con micro-interacciones
 export { default as Counter, CounterGroup } from './Counter'; 
+
+// Componentes de dolores
+export { DolorModal } from './DolorModal';
+export { ListaDolores } from './ListaDolores'; 

@@ -16,7 +16,7 @@ import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
-import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
+import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant } from '../../utils/chipUtils';
 
 interface Participante {
@@ -222,7 +222,8 @@ export default function DetalleParticipante() {
   };
 
   const getEstadoVariant = (estado: string) => {
-    return getEstadoParticipanteVariant(estado);
+    const variant = getEstadoParticipanteVariant(estado);
+    return variant;
   };
 
   const getEstadoChipVariant = (estado: string) => {
@@ -592,9 +593,9 @@ export default function DetalleParticipante() {
       key: 'estado',
       label: 'Estado',
       render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
-        <Badge variant={getEstadoVariant(row.estado)}>
-          {row.estado}
-        </Badge>
+        <Chip variant={getChipVariant(row.estado_agendamiento) as any}>
+          {row.estado_agendamiento}
+        </Chip>
       )
     },
     {

@@ -6,7 +6,7 @@ import Input from './Input';
 import Select from './Select';
 import SelectSimple from './SelectSimple';
 import Typography from './Typography';
-import { ChevronDownIcon, ChevronRightIcon, EditIcon, CheckIcon, CloseIcon } from '../icons';
+import { ChevronDownIcon, ChevronRightIcon, EditIcon, CheckIcon, CloseIcon, MoreVerticalIcon } from '../icons';
 
 // Tipos de datos
 export interface Column {
@@ -91,6 +91,22 @@ const DataTable: React.FC<DataTableProps> = ({
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [openActionMenus, setOpenActionMenus] = useState<{ [key: string]: boolean }>({});
+
+  // Cerrar menús cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-action-menu]')) {
+        setOpenActionMenus({});
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Filtrar datos
   const filteredData = useMemo(() => {
@@ -404,29 +420,47 @@ const DataTable: React.FC<DataTableProps> = ({
                       {/* Acciones por fila */}
                       {actions.length > 0 && (
                         <td className="px-4 py-3 text-center">
-                          <div className="flex items-center justify-center gap-1">
-                            {actions.map((action, actionIndex) => (
-                              <button
-                                key={actionIndex}
-                                onClick={() => action.onClick(row)}
-                                title={action.title || action.label}
-                                className={`p-1 rounded transition-colors duration-200 ${action.className || ''}`}
-                                style={action.className?.includes('text-red') ? {
-                                  color: '#dc2626',
-                                  backgroundColor: 'transparent'
-                                } : undefined}
-                                onMouseEnter={action.className?.includes('text-red') ? (e) => {
-                                  e.currentTarget.style.color = '#b91c1c';
-                                  e.currentTarget.style.backgroundColor = '#fef2f2';
-                                } : undefined}
-                                onMouseLeave={action.className?.includes('text-red') ? (e) => {
-                                  e.currentTarget.style.color = '#dc2626';
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                } : undefined}
-                              >
-                                {action.icon || action.label}
-                              </button>
-                            ))}
+                          <div className="relative" data-action-menu>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Toggle del menú para esta fila
+                                const rowId = row[rowKey] || row.id || row._id || index;
+                                setOpenActionMenus(prev => ({
+                                  ...prev,
+                                  [rowId]: !prev[rowId]
+                                }));
+                              }}
+                              className="p-1 rounded hover:bg-muted transition-colors duration-200"
+                              title="Acciones"
+                            >
+                              <MoreVerticalIcon className="w-4 h-4" />
+                            </button>
+                            
+                            {/* Menú desplegable */}
+                            {openActionMenus[row[rowKey] || row.id || row._id || index] && (
+                              <div className="absolute right-0 top-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 min-w-[120px]">
+                                {actions.map((action, actionIndex) => (
+                                  <button
+                                    key={actionIndex}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      action.onClick(row);
+                                      // Cerrar el menú después de la acción
+                                      setOpenActionMenus(prev => ({
+                                        ...prev,
+                                        [row[rowKey] || row.id || row._id || index]: false
+                                      }));
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors duration-200 ${action.className || ''}`}
+                                    title={action.title || action.label}
+                                  >
+                                    {action.icon && <span className="mr-2">{action.icon}</span>}
+                                    {action.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </td>
                       )}

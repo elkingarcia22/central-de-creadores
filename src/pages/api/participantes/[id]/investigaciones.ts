@@ -104,6 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_sesion,
         duracion_sesion,
         estado_agendamiento,
+        reclutador_id,
         estado_agendamiento_cat (
           id,
           nombre
@@ -128,25 +129,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Procesar las investigaciones usando la vista de estadísticas
     let investigaciones = [];
     
-    if (estadisticas && estadisticas.length > 0) {
-      investigaciones = estadisticas.map(est => ({
-        id: est.investigacion_id || est.id,
-        nombre: est.nombre_investigacion || est.nombre,
-        descripcion: est.descripcion_investigacion || est.descripcion,
-        estado: est.estado_investigacion || est.estado,
-        fecha_inicio: est.fecha_inicio,
-        fecha_fin: est.fecha_fin,
-        tipo_sesion: est.tipo_sesion,
-        riesgo_automatico: est.riesgo_automatico,
-        fecha_participacion: est.fecha_sesion || est.fecha_participacion,
-        estado_agendamiento: est.estado_agendamiento,
-        duracion_sesion: est.duracion_sesion,
-        // Agregar propiedades faltantes para la tabla
-        tipo_investigacion: est.tipo_investigacion || est.tipo_sesion || 'Sesión de investigación',
-        responsable: est.responsable || est.creado_por || 'No asignado'
-      }));
-    } else if (reclutamientos && reclutamientos.length > 0) {
-      // Fallback: usar reclutamientos si la vista no funciona
+    // Siempre usar reclutamientos como fuente principal para obtener datos detallados
+    if (reclutamientos && reclutamientos.length > 0) {
+      console.log('🔍 Procesando investigaciones desde reclutamientos:', reclutamientos.length);
+      
       investigaciones = reclutamientos.map(r => ({
         id: r.investigacion_id,
         nombre: `Investigación ${r.investigacion_id}`,
@@ -161,7 +147,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_sesion: r.duracion_sesion,
         // Agregar propiedades faltantes para la tabla
         tipo_investigacion: 'Sesión de investigación',
-        responsable: 'No asignado'
+        responsable: r.reclutador_id || 'No asignado'
       }));
 
       // Intentar obtener nombres reales de las investigaciones
@@ -202,6 +188,65 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log('⚠️ Error obteniendo nombres reales:', error);
         // Continuar con los nombres por defecto si hay error
       }
+
+      // Intentar obtener nombres de los responsables de agendamiento
+      try {
+        const responsableIds = reclutamientos
+          .map(r => r.reclutador_id)
+          .filter(id => id); // Filtrar IDs nulos o vacíos
+        
+        if (responsableIds.length > 0) {
+          console.log('🔍 Intentando obtener nombres de responsables para IDs:', responsableIds);
+          
+          const { data: responsables, error: errorResponsables } = await supabaseServer
+            .from('usuarios')
+            .select('id, nombre, correo')
+            .in('id', responsableIds);
+
+          if (responsables && responsables.length > 0) {
+            console.log('🔍 Nombres de responsables obtenidos:', responsables.length);
+            
+            // Actualizar los responsables con los nombres reales
+            investigaciones = investigaciones.map(inv => {
+              const reclutamiento = reclutamientos.find(r => r.investigacion_id === inv.id);
+              if (reclutamiento && reclutamiento.reclutador_id) {
+                const responsable = responsables.find(resp => resp.id === reclutamiento.reclutador_id);
+                if (responsable) {
+                  return {
+                    ...inv,
+                    responsable: responsable.nombre || 'Sin nombre'
+                  };
+                }
+              }
+              return inv;
+            });
+          } else {
+            console.log('⚠️ No se pudieron obtener nombres de responsables');
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ Error obteniendo nombres de responsables:', error);
+        // Continuar con los IDs si hay error
+      }
+    } else if (estadisticas && estadisticas.length > 0) {
+      // Fallback: usar estadísticas si no hay reclutamientos
+      console.log('🔍 Usando estadísticas como fallback');
+      investigaciones = estadisticas.map(est => ({
+        id: est.investigacion_id || est.id,
+        nombre: est.nombre_investigacion || est.nombre,
+        descripcion: est.descripcion_investigacion || est.descripcion,
+        estado: est.estado_investigacion || est.estado,
+        fecha_inicio: est.fecha_inicio,
+        fecha_fin: est.fecha_fin,
+        tipo_sesion: est.tipo_sesion,
+        riesgo_automatico: est.riesgo_automatico,
+        fecha_participacion: est.fecha_sesion || est.fecha_participacion,
+        estado_agendamiento: est.estado_agendamiento,
+        duracion_sesion: est.duracion_sesion,
+        // Agregar propiedades faltantes para la tabla
+        tipo_investigacion: est.tipo_investigacion || est.tipo_sesion || 'Sesión de investigación',
+        responsable: est.responsable || est.creado_por || 'No asignado'
+      }));
     }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);

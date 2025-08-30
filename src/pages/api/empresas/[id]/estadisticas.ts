@@ -68,7 +68,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Obtener todos los reclutamientos relevantes
         const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
           .from('reclutamientos')
-          .select('id, investigacion_id, participantes_id, fecha_sesion, duracion_sesion, estado_agendamiento')
+          .select(`
+            id, 
+            investigacion_id, 
+            participantes_id, 
+            fecha_sesion, 
+            duracion_sesion, 
+            estado_agendamiento,
+            reclutador_id,
+            estado_agendamiento_cat (
+              id,
+              nombre
+            )
+          `)
           .in('estado_agendamiento', estadoIds)
           .in('participantes_id', participanteIds);
 
@@ -136,24 +148,93 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       investigacionesParticipadas: investigacionesParticipadas.length,
       duracionTotalSesiones: reclutamientosFinalizados.reduce((total, r) => total + (r.duracion_sesion || 60), 0),
       participacionesPorMes: calcularParticipacionesPorMes(reclutamientosFinalizados),
-      investigaciones: investigacionesParticipadas.map(inv => ({
-        id: inv.id,
-        nombre: inv.nombre,
-        descripcion: inv.descripcion,
-        fecha_inicio: inv.fecha_inicio,
-        fecha_fin: inv.fecha_fin,
-        estado: inv.estado,
-        tipo_sesion: inv.tipo_sesion,
-        riesgo_automatico: inv.riesgo_automatico,
-        responsable: null,
-        implementador: null,
-        participaciones: reclutamientosFinalizados.filter(r => r.investigacion_id === inv.id).length
-      })),
+      investigaciones: investigacionesParticipadas.map(inv => {
+        // Obtener el estado de participación (estado del reclutamiento) para esta investigación
+        const reclutamientosInvestigacion = todosLosReclutamientos.filter(r => r.investigacion_id === inv.id);
+        let estadoParticipacion = 'Sin participación';
+        let responsable = null;
+        
+        if (reclutamientosInvestigacion.length > 0) {
+          // Si hay múltiples reclutamientos, usar el más reciente
+          const reclutamientoMasReciente = reclutamientosInvestigacion.sort((a, b) => 
+            new Date(b.fecha_sesion).getTime() - new Date(a.fecha_sesion).getTime()
+          )[0];
+          
+          // Usar el nombre del estado directamente del join, como en participantes
+          estadoParticipacion = reclutamientoMasReciente.estado_agendamiento_cat?.nombre || 'Desconocido';
+          responsable = reclutamientoMasReciente.reclutador_id;
+        }
+        
+        return {
+          id: inv.id,
+          nombre: inv.nombre,
+          descripcion: inv.descripcion,
+          fecha_inicio: inv.fecha_inicio,
+          fecha_fin: inv.fecha_fin,
+          estado: inv.estado, // Estado de la investigación
+          estado_participacion: estadoParticipacion, // Estado de la participación
+          tipo_sesion: inv.tipo_sesion,
+          riesgo_automatico: inv.riesgo_automatico,
+          responsable: responsable,
+          implementador: null,
+          participaciones: reclutamientosFinalizados.filter(r => r.investigacion_id === inv.id).length
+        };
+      }),
       // Información adicional por estado
       participacionesFinalizadas: reclutamientosFinalizados.length,
       participacionesEnProgreso: reclutamientosEnProgreso.length,
       participacionesPendientes: reclutamientosPendientes.length
     };
+
+    // Intentar obtener nombres de los responsables de agendamiento
+    try {
+      const responsableIds = todosLosReclutamientos
+        .map(r => r.reclutador_id)
+        .filter(id => id); // Filtrar IDs nulos o vacíos
+      
+      if (responsableIds.length > 0) {
+        console.log('🔍 Intentando obtener nombres de responsables para IDs:', responsableIds);
+        
+        const { data: responsables, error: errorResponsables } = await supabaseServer
+          .from('usuarios')
+          .select('id, nombre, correo')
+          .in('id', responsableIds);
+
+        if (responsables && responsables.length > 0) {
+          console.log('🔍 Nombres de responsables obtenidos:', responsables.length);
+          
+          // Actualizar los responsables con los nombres reales
+          estadisticas.investigaciones = estadisticas.investigaciones.map(inv => {
+            const reclutamientosInvestigacion = todosLosReclutamientos.filter(r => r.investigacion_id === inv.id);
+            if (reclutamientosInvestigacion.length > 0) {
+              const reclutamientoMasReciente = reclutamientosInvestigacion.sort((a, b) => 
+                new Date(b.fecha_sesion).getTime() - new Date(a.fecha_sesion).getTime()
+              )[0];
+              
+              if (reclutamientoMasReciente.reclutador_id) {
+                const responsable = responsables.find(resp => resp.id === reclutamientoMasReciente.reclutador_id);
+                if (responsable) {
+                  return {
+                    ...inv,
+                    responsable: {
+                      id: responsable.id,
+                      full_name: responsable.nombre || 'Sin nombre',
+                      email: responsable.correo || 'sin-email@ejemplo.com'
+                    }
+                  };
+                }
+              }
+            }
+            return inv;
+          });
+        } else {
+          console.log('⚠️ No se pudieron obtener nombres de responsables');
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Error obteniendo nombres de responsables:', error);
+      // Continuar con los IDs si hay error
+    }
 
     console.log(`✅ Estadísticas obtenidas para empresa ${id}:`, {
       totalParticipaciones: estadisticas.totalParticipaciones,

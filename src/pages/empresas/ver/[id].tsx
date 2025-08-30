@@ -8,7 +8,7 @@ import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
 import { Empresa } from '../../../types/empresas';
 
-import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard } from '../../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard, DataTable } from '../../../components/ui';
 import TestParticipantCard from '../../../components/ui/TestParticipantCard';
 import Typography from '../../../components/ui/Typography';
 import Card from '../../../components/ui/Card';
@@ -73,6 +73,7 @@ interface EstadisticasEmpresa {
     fecha_inicio: string;
     fecha_fin: string;
     estado: string;
+    estado_participacion: string;
     tipo_sesion: string;
     riesgo_automatico: string;
     responsable: { id: string; full_name: string; email: string } | null;
@@ -568,79 +569,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   // Componente de contenido de historial
   const HistorialContent = () => (
     <div className="space-y-6">
-      {/* Investigaciones participadas */}
-      <div>
-        <Typography variant="h4" weight="semibold" className="mb-4">
-          Investigaciones Participadas
-        </Typography>
-        
-        {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 ? (
-          <div className="space-y-4">
-            {empresaData.estadisticas.investigaciones.map((investigacion) => (
-              <Card key={investigacion.id} className="p-6 hover: transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Typography variant="body1" weight="semibold">
-                        {investigacion.nombre}
-                      </Typography>
-                      <Chip variant={getEstadoColor(investigacion.estado)}>
-                        {getChipText(investigacion.estado)}
-                      </Chip>
-                    </div>
-                    
-                    {investigacion.descripcion && (
-                      <Typography variant="body2" color="secondary" className="mb-3">
-                        {investigacion.descripcion}
-                      </Typography>
-                    )}
-                    
-                    <div className="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center space-x-1">
-                        <CalendarIcon className="w-4 h-4" />
-                        <span>{formatearFecha(investigacion.fecha_inicio)}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <UsersIcon className="w-4 h-4" />
-                        <span>{investigacion.participaciones} participaciones</span>
-                      </div>
-                      
-                      {investigacion.responsable && (
-                        <div className="flex items-center space-x-1">
-                          <UserIcon className="w-4 h-4" />
-                          <span>{investigacion.responsable.full_name}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => abrirInvestigacion(investigacion.id)}
-                    className="ml-4"
-                  >
-                    <ExternalLinkIcon className="w-4 h-4 mr-1" />
-                    Ver
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="text-center py-12">
-            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <Typography variant="h5" weight="medium" className="mb-2">
-              Sin investigaciones
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              Esta empresa no ha participado en investigaciones
-            </Typography>
-          </Card>
-        )}
-      </div>
-
       {/* Participantes de la empresa */}
       <div>
         <Typography variant="h4" weight="semibold" className="mb-4">
@@ -670,6 +598,78 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             </Typography>
             <Typography variant="body2" color="secondary">
               Esta empresa no tiene participantes registrados
+            </Typography>
+          </Card>
+        )}
+      </div>
+
+      {/* Historial de Participación */}
+      <div>
+        <Typography variant="h4" weight="semibold" className="mb-4">
+          Historial de Participación
+        </Typography>
+        
+        {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 ? (
+          <DataTable
+            data={empresaData.estadisticas.investigaciones}
+            columns={[
+              {
+                key: 'nombre',
+                label: 'Investigación',
+                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
+                  <div>
+                    <Typography variant="subtitle2" weight="medium">
+                      {row.nombre}
+                    </Typography>
+                    <Typography variant="caption" color="secondary">
+                      {row.tipo_sesion || 'Sesión de investigación'}
+                    </Typography>
+                  </div>
+                )
+              },
+              {
+                key: 'fecha_inicio',
+                label: 'Fecha de Participación',
+                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
+                  <Typography variant="body2">
+                    {formatearFecha(row.fecha_inicio)}
+                  </Typography>
+                )
+              },
+              {
+                key: 'estado',
+                label: 'Estado',
+                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
+                  <Chip variant={getEstadoColor(row.estado_participacion) as any}>
+                    {getChipText(row.estado_participacion)}
+                  </Chip>
+                )
+              },
+              {
+                key: 'responsable',
+                label: 'Responsable',
+                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
+                  <Typography variant="body2">
+                    {row.responsable?.full_name || 'Sin responsable'}
+                  </Typography>
+                )
+              }
+            ]}
+            loading={false}
+            searchable={false}
+            filterable={false}
+            selectable={false}
+            emptyMessage="No se encontraron investigaciones"
+            rowKey="id"
+          />
+        ) : (
+          <Card className="text-center py-12">
+            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Typography variant="h5" weight="medium" className="mb-2">
+              Sin investigaciones
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              Esta empresa no ha participado en investigaciones
             </Typography>
           </Card>
         )}
