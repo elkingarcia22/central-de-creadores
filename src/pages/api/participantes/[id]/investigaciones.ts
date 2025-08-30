@@ -61,74 +61,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('🔍 Tipo de participante:', tipoParticipante);
 
-    // Obtener reclutamientos según el tipo de participante
-    let reclutamientosQuery;
-    switch (tipoParticipante) {
-      case 'externo':
-        reclutamientosQuery = supabaseServer
-          .from('reclutamientos')
-          .select(`
-            id,
-            investigacion_id,
-            fecha_creacion,
-            investigaciones (
-              id,
-              nombre,
-              descripcion,
-              estado,
-              fecha_inicio,
-              fecha_fin,
-              tipo_sesion,
-              riesgo_automatico
-            )
-          `)
-          .eq('participante_externo_id', id);
-        break;
-      case 'interno':
-        reclutamientosQuery = supabaseServer
-          .from('reclutamientos')
-          .select(`
-            id,
-            investigacion_id,
-            fecha_creacion,
-            investigaciones (
-              id,
-              nombre,
-              descripcion,
-              estado,
-              fecha_inicio,
-              fecha_fin,
-              tipo_sesion,
-              riesgo_automatico
-            )
-          `)
-          .eq('participante_interno_id', id);
-        break;
-      case 'friend_family':
-        reclutamientosQuery = supabaseServer
-          .from('reclutamientos')
-          .select(`
-            id,
-            investigacion_id,
-            fecha_creacion,
-            investigaciones (
-              id,
-              nombre,
-              descripcion,
-              estado,
-              fecha_inicio,
-              fecha_fin,
-              tipo_sesion,
-              riesgo_automatico
-            )
-          `)
-          .eq('participante_friend_family_id', id);
-        break;
-      default:
-        return res.status(400).json({ error: 'Tipo de participante no válido' });
-    }
-
-    const { data: reclutamientos, error: errorReclutamientos } = await reclutamientosQuery;
+    // Obtener reclutamientos usando participantes_id (como en empresa)
+    const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
+      .from('reclutamientos')
+      .select(`
+        id,
+        investigacion_id,
+        participantes_id,
+        fecha_sesion,
+        duracion_sesion,
+        estado_agendamiento,
+        investigaciones (
+          id,
+          nombre,
+          descripcion,
+          estado,
+          fecha_inicio,
+          fecha_fin,
+          tipo_sesion,
+          riesgo_automatico
+        )
+      `)
+      .eq('participantes_id', id);
 
     if (errorReclutamientos) {
       console.error('❌ Error obteniendo reclutamientos:', errorReclutamientos);
@@ -149,7 +103,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_fin: r.investigaciones.fecha_fin,
         tipo_sesion: r.investigaciones.tipo_sesion,
         riesgo_automatico: r.investigaciones.riesgo_automatico,
-        fecha_participacion: r.fecha_creacion
+        fecha_participacion: r.fecha_sesion,
+        estado_agendamiento: r.estado_agendamiento,
+        duracion_sesion: r.duracion_sesion
       })) || [];
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
