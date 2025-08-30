@@ -11,7 +11,7 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
@@ -73,7 +73,7 @@ export default function DetalleParticipante() {
   const { id } = router.query;
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
-  const { showError } = useToast();
+  const { showError, showSuccess } = useToast();
 
   const [participante, setParticipante] = useState<Participante | null>(null);
   const [investigaciones, setInvestigaciones] = useState<InvestigacionParticipante[]>([]);
@@ -188,6 +188,37 @@ export default function DetalleParticipante() {
       }
     } catch (error) {
       console.error('Error cargando dolores:', error);
+    }
+  };
+
+  const handleDolorGuardado = async (dolorData: any) => {
+    try {
+      // Obtener el usuario actual del contexto
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      // Llamar al API para crear el dolor
+      const response = await fetch(`/api/participantes/${id}/dolores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user.id || '' // Agregar el ID del usuario
+        },
+        body: JSON.stringify(dolorData),
+      });
+
+      if (response.ok) {
+        // Cerrar modal y mostrar mensaje de éxito
+        setShowCrearDolorModal(false);
+        showSuccess('Dolor registrado exitosamente');
+        // Recargar los dolores
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al crear el dolor');
+      }
+    } catch (error) {
+      console.error('Error al crear dolor:', error);
+      showError('Error al crear el dolor');
     }
   };
 
@@ -931,14 +962,12 @@ export default function DetalleParticipante() {
       </div>
       
       {/* Modal para crear dolores */}
-      <CrearDolorModal
+      <DolorSideModal
         isOpen={showCrearDolorModal}
         onClose={() => setShowCrearDolorModal(false)}
-        onSuccess={() => {
-          cargarDolores();
-          setShowCrearDolorModal(false);
-        }}
         participanteId={id as string}
+        participanteNombre={participante?.nombre || ''}
+        onSave={handleDolorGuardado}
       />
       
       {/* Modal para crear comentarios */}
