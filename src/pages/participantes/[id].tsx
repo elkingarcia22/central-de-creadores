@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Layout, PageHeader } from '../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -11,7 +11,9 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select } from '../../components/ui';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon } from '../../components/icons';
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
+import SimpleAvatar from '../../components/ui/SimpleAvatar';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -177,6 +179,286 @@ export default function DetalleParticipante() {
     const variant = getChipVariant(estado);
     console.log('🔍 DEBUG - Variant resultante:', variant);
     return variant;
+  };
+
+  // Componente de contenido de información
+  const InformacionContent = () => (
+    <div className="space-y-6">
+      {/* Información básica */}
+      <InfoContainer 
+        title="Información Básica"
+        icon={<UserIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Nombre" 
+          value={participante.nombre}
+        />
+        <InfoItem 
+          label="Email" 
+          value={participante.email || 'No especificado'}
+        />
+        <InfoItem 
+          label="Estado" 
+          value={
+            <Chip 
+              variant={getEstadoChipVariant(participante.estado_participante || '') as any}
+              size="sm"
+            >
+              {participante.estado_participante || 'Sin estado'}
+            </Chip>
+          }
+        />
+        <InfoItem 
+          label="Tipo" 
+          value={
+            <Chip 
+              variant={getChipVariant(participante.tipo || '') as any}
+              size="sm"
+            >
+              {getTipoLabel(participante.tipo)}
+            </Chip>
+          }
+        />
+        {participante.rol_empresa && (
+          <InfoItem 
+            label="Rol en la Empresa" 
+            value={participante.rol_empresa}
+          />
+        )}
+      </InfoContainer>
+
+      {/* Información organizacional */}
+      <InfoContainer 
+        title={participante.tipo === 'externo' ? 'Información de Empresa' : 'Información Organizacional'}
+        icon={<BuildingIcon className="w-4 h-4" />}
+      >
+        {participante.tipo === 'externo' && participante.empresa_nombre && (
+          <InfoItem 
+            label="Empresa" 
+            value={participante.empresa_nombre}
+          />
+        )}
+        {(participante.tipo === 'interno' || participante.tipo === 'friend_family') && participante.departamento_nombre && (
+          <InfoItem 
+            label="Departamento" 
+            value={participante.departamento_nombre}
+          />
+        )}
+      </InfoContainer>
+
+      {/* Estadísticas de participación */}
+      <InfoContainer 
+        title="Estadísticas de Participación"
+        icon={<UsersIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Total de Participaciones" 
+          value={
+            <div className="flex items-center gap-2">
+              <AnimatedCounter
+                value={participante.total_participaciones || 0}
+                duration={2000}
+                className="text-2xl font-bold text-primary"
+              />
+            </div>
+          }
+        />
+        <InfoItem 
+          label="Última Participación" 
+          value={
+            participante.fecha_ultima_participacion ? 
+              formatearFecha(participante.fecha_ultima_participacion) : 
+              'Sin participaciones'
+          }
+        />
+      </InfoContainer>
+
+      {/* Información del sistema */}
+      <InfoContainer 
+        title="Información del Sistema"
+        icon={<CalendarIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Fecha de Registro" 
+          value={formatearFecha(participante.created_at)}
+        />
+        <InfoItem 
+          label="Última Actualización" 
+          value={formatearFecha(participante.updated_at)}
+        />
+      </InfoContainer>
+    </div>
+  );
+
+  // Componente de contenido de estadísticas
+  const EstadisticasContent = () => {
+    // Calcular estadísticas básicas
+    const totalInvestigaciones = investigaciones.length;
+    const investigacionesActivas = investigaciones.filter(inv => 
+      inv.estado === 'activa' || inv.estado === 'en progreso'
+    ).length;
+    const investigacionesCompletadas = investigaciones.filter(inv => 
+      inv.estado === 'finalizada' || inv.estado === 'completada'
+    ).length;
+    
+    // Calcular tiempo total de participación (aproximado)
+    const tiempoTotalHoras = Math.round((totalInvestigaciones * 2)); // Estimación: 2 horas por investigación
+    
+    return (
+      <div className="space-y-6">
+        {/* Estadísticas principales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Total de Participaciones */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={totalInvestigaciones}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Total Participaciones
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones Activas */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesActivas}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Investigaciones Activas
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones Completadas */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesCompletadas}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Completadas
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Tiempo Total Estimado */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter 
+                    value={tiempoTotalHoras} 
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                    suffix="h"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Tiempo Total
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <ClockIconSolid className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Información adicional */}
+        <InfoContainer 
+          title="Resumen de Participación"
+          icon={<UserIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Última Participación" 
+            value={
+              participante.fecha_ultima_participacion ? 
+                formatearFecha(participante.fecha_ultima_participacion) : 
+                'Sin participaciones'
+            }
+          />
+          <InfoItem 
+            label="Participaciones del Mes" 
+            value={
+              (() => {
+                const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                const participacionesMesActual = investigaciones.filter(inv => 
+                  inv.fecha_inicio && inv.fecha_inicio.startsWith(mesActual)
+                ).length;
+                return `${participacionesMesActual} participación${participacionesMesActual !== 1 ? 'es' : ''}`;
+              })()
+            }
+          />
+          <InfoItem 
+            label="Tipo de Participante" 
+            value={
+              <Chip 
+                variant={getChipVariant(participante.tipo || '') as any}
+                size="sm"
+              >
+                {getTipoLabel(participante.tipo)}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Estado Actual" 
+            value={
+              <Chip 
+                variant={getEstadoChipVariant(participante.estado_participante || '') as any}
+                size="sm"
+              >
+                {participante.estado_participante || 'Sin estado'}
+              </Chip>
+            }
+          />
+        </InfoContainer>
+
+        {/* Estado vacío si no hay estadísticas */}
+        {totalInvestigaciones === 0 && (
+          <Card className="border-gray-200 bg-gray-50 dark:bg-gray-900/20">
+            <div className="text-center py-12">
+              <BarChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="h5" color="secondary" className="mb-2">
+                Sin estadísticas disponibles
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Este participante aún no ha participado en investigaciones.
+              </Typography>
+            </div>
+          </Card>
+        )}
+      </div>
+    );
   };
 
   const columnsInvestigaciones = [
@@ -367,116 +649,12 @@ export default function DetalleParticipante() {
               {
                 id: 'informacion',
                 label: 'Información',
-                content: (
-                  <div className="space-y-6">
-                    {/* Información básica */}
-                    <Card className="p-6">
-                      <div className="mb-4">
-                        <Typography variant="h3" className="mb-2">{participante.nombre}</Typography>
-                        <div className="flex items-center gap-3">
-                          {participante.estado_participante && (
-                            <Badge variant={getEstadoVariant(participante.estado_participante)}>
-                              {participante.estado_participante}
-                            </Badge>
-                          )}
-                          <Badge variant="secondary">
-                            {getTipoLabel(participante.tipo)}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <Typography variant="caption" color="secondary">Email</Typography>
-                          <Typography variant="body2">{participante.email || 'No especificado'}</Typography>
-                        </div>
-
-                        {participante.rol_empresa && (
-                          <div>
-                            <Typography variant="caption" color="secondary">Rol en la Empresa</Typography>
-                            <Typography variant="body2">{participante.rol_empresa}</Typography>
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-
-                    {/* Detalles organizacionales */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Información de la organización */}
-                      <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <BuildingIcon className="w-5 h-5 text-primary" />
-                          <Typography variant="h5">
-                            {participante.tipo === 'externo' ? 'Empresa' : 'Organización'}
-                          </Typography>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          {participante.tipo === 'externo' && participante.empresa_nombre && (
-                            <div>
-                              <Typography variant="caption" color="secondary">Empresa</Typography>
-                              <Typography variant="body2">{participante.empresa_nombre}</Typography>
-                            </div>
-                          )}
-                          
-                          {(participante.tipo === 'interno' || participante.tipo === 'friend_family') && participante.departamento_nombre && (
-                            <div>
-                              <Typography variant="caption" color="secondary">Departamento</Typography>
-                              <Typography variant="body2">{participante.departamento_nombre}</Typography>
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-
-                      {/* Estadísticas de participación */}
-                      <Card className="p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <UserIcon className="w-5 h-5 text-primary" />
-                          <Typography variant="h5">Participación</Typography>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <Typography variant="caption" color="secondary">Total de Participaciones</Typography>
-                            <Typography variant="h3" className="text-primary">
-                              {participante.total_participaciones}
-                            </Typography>
-                          </div>
-                          
-                          <div>
-                            <Typography variant="caption" color="secondary">Última Participación</Typography>
-                            <Typography variant="body2">
-                              {participante.fecha_ultima_participacion ? 
-                                formatearFecha(participante.fecha_ultima_participacion) : 
-                                'Sin participaciones'
-                              }
-                            </Typography>
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-
-                    {/* Fechas del sistema */}
-                    <Card className="p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <CalendarIcon className="w-5 h-5 text-primary" />
-                        <Typography variant="h5">Información del Sistema</Typography>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <Typography variant="caption" color="secondary">Fecha de Registro</Typography>
-                          <Typography variant="body2">{formatearFecha(participante.created_at)}</Typography>
-                        </div>
-                        
-                        <div>
-                          <Typography variant="caption" color="secondary">Última Actualización</Typography>
-                          <Typography variant="body2">{formatearFecha(participante.updated_at)}</Typography>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                )
+                content: <InformacionContent />
+              },
+              {
+                id: 'estadisticas',
+                label: 'Estadísticas',
+                content: <EstadisticasContent />
               },
               {
                 id: 'historial',
