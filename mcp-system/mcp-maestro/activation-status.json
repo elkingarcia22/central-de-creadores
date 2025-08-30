@@ -11,6 +11,9 @@
     "autoSync": true,
     "autoActivateGitHub": true
   },
-  "message": "MCP Maestro activo en modo automático",
-  "pid": 76226
+  "message": "MCP Maestro activo en modo automático - SIN CONFIRMACIONES",
+  "pid": 16589,
+  "auto_activated": true,
+  "no_prompts": true,
+  "force_auto": true
 }
