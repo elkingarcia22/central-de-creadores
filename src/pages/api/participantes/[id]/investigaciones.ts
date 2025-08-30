@@ -97,7 +97,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         participantes_id,
         fecha_sesion,
         duracion_sesion,
-        estado_agendamiento
+        estado_agendamiento,
+        estado_agendamiento_cat (
+          id,
+          nombre
+        )
       `)
       .eq('participantes_id', id);
 
@@ -144,20 +148,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         tipo_sesion: 'remota',
         riesgo_automatico: 'bajo',
         fecha_participacion: r.fecha_sesion,
-        estado_agendamiento: r.estado_agendamiento,
+        estado_agendamiento: r.estado_agendamiento_cat?.nombre || 'Desconocido',
         duracion_sesion: r.duracion_sesion
       }));
     }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
 
+    // Calcular participaciones por mes
+    const participacionesPorMes = calcularParticipacionesPorMes(investigaciones);
+
     return res.status(200).json({
       investigaciones,
-      total: investigaciones.length
+      total: investigaciones.length,
+      participacionesPorMes
     });
 
   } catch (error) {
     console.error('❌ Error en endpoint investigaciones participante:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
+}
+
+// Función auxiliar para calcular participaciones por mes
+function calcularParticipacionesPorMes(investigaciones: any[]) {
+  const participacionesPorMes: { [key: string]: number } = {};
+  
+  // Agregar participaciones existentes
+  investigaciones.forEach(investigacion => {
+    if (investigacion.fecha_participacion) {
+      const fecha = new Date(investigacion.fecha_participacion);
+      const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+      
+      participacionesPorMes[mesAnio] = (participacionesPorMes[mesAnio] || 0) + 1;
+    }
+  });
+
+  // Agregar los últimos 6 meses incluso si no hay participaciones
+  const ahora = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const fecha = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+    const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+    
+    if (!participacionesPorMes[mesAnio]) {
+      participacionesPorMes[mesAnio] = 0;
+    }
+  }
+
+  return participacionesPorMes;
 }

@@ -72,6 +72,7 @@ export default function DetalleParticipante() {
   const [investigaciones, setInvestigaciones] = useState<InvestigacionParticipante[]>([]);
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
   const [comentarios, setComentarios] = useState<ComentarioParticipante[]>([]);
+  const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('informacion');
   
@@ -124,6 +125,9 @@ export default function DetalleParticipante() {
       if (response.ok) {
         const data = await response.json();
         setInvestigaciones(data.investigaciones || []);
+        setParticipacionesPorMes(data.participacionesPorMes || {});
+        console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
+        console.log('🔍 Participaciones por mes:', data.participacionesPorMes);
       } else {
         console.error('Error cargando investigaciones:', response.status, response.statusText);
       }
@@ -274,17 +278,20 @@ export default function DetalleParticipante() {
     // Calcular estadísticas básicas
     const totalInvestigaciones = investigaciones.length;
     
-    // Filtrar por estado_agendamiento (como en empresa)
+    // Debug: Ver qué estados están llegando
+    console.log('🔍 Estados de agendamiento encontrados:', investigaciones.map(inv => inv.estado_agendamiento));
+    
+    // Filtrar por estado_agendamiento usando nombres exactos
     const investigacionesFinalizadas = investigaciones.filter(inv => 
-      inv.estado_agendamiento === 'Finalizado' || inv.estado_agendamiento === 1
+      inv.estado_agendamiento === 'Finalizado'
     ).length;
     
     const investigacionesEnProgreso = investigaciones.filter(inv => 
-      inv.estado_agendamiento === 'En progreso' || inv.estado_agendamiento === 2
+      inv.estado_agendamiento === 'En progreso'
     ).length;
     
     const investigacionesPendientes = investigaciones.filter(inv => 
-      inv.estado_agendamiento === 'Pendiente' || inv.estado_agendamiento === 3
+      inv.estado_agendamiento === 'Pendiente'
     ).length;
     
     // Calcular tiempo total de participación usando duracion_sesion
@@ -411,9 +418,18 @@ export default function DetalleParticipante() {
           <InfoItem 
             label="Última Participación" 
             value={
-              participante.fecha_ultima_participacion ? 
-                formatearFecha(participante.fecha_ultima_participacion) : 
-                'Sin participaciones'
+              (() => {
+                if (investigaciones.length > 0) {
+                  // Ordenar por fecha de participación y tomar la más reciente
+                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                  );
+                  return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
+                }
+                return participante.fecha_ultima_participacion ? 
+                  formatearFecha(participante.fecha_ultima_participacion) : 
+                  'Sin participaciones';
+              })()
             }
           />
           <InfoItem 
@@ -428,29 +444,64 @@ export default function DetalleParticipante() {
               })()
             }
           />
-          <InfoItem 
-            label="Tipo de Participante" 
-            value={
-              <Chip 
-                variant={getChipVariant(participante.tipo || '') as any}
-                size="sm"
-              >
-                {getTipoLabel(participante.tipo)}
-              </Chip>
-            }
-          />
-          <InfoItem 
-            label="Estado Actual" 
-            value={
-              <Chip 
-                variant={getEstadoChipVariant(participante.estado_participante || '') as any}
-                size="sm"
-              >
-                {participante.estado_participante || 'Sin estado'}
-              </Chip>
-            }
-          />
+
         </InfoContainer>
+
+        {/* Participaciones por mes */}
+        {Object.keys(participacionesPorMes).length > 0 && (
+          <InfoContainer 
+            title="Participaciones por Mes"
+            icon={<TrendingUpIcon className="w-4 h-4" />}
+          >
+            <div className="space-y-3">
+              {Object.entries(participacionesPorMes)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .slice(0, 6)
+                .map(([mes, cantidad]) => {
+                  const fecha = new Date(mes + '-01');
+                  const esMesActual = fecha.getMonth() === new Date().getMonth() && fecha.getFullYear() === new Date().getFullYear();
+                  const maxCantidad = Math.max(...Object.values(participacionesPorMes));
+                  
+                  return (
+                    <div key={mes} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                      esMesActual 
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
+                        : 'bg-gray-50 dark:bg-gray-800/50'
+                    }`}>
+                      <div className="flex items-center space-x-2">
+                        <Typography variant="body2" color="secondary">
+                          {fecha.toLocaleDateString('es-ES', { 
+                            year: 'numeric', 
+                            month: 'long' 
+                          })}
+                        </Typography>
+                        {esMesActual && (
+                          <Chip variant="primary" size="sm">
+                            Actual
+                          </Chip>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              esMesActual ? 'bg-blue-500' : 'bg-primary'
+                            }`}
+                            style={{ 
+                              width: `${Math.min((cantidad / maxCantidad) * 100, 100)}%` 
+                            }}
+                          />
+                        </div>
+                        <Typography variant="body2" weight="medium" className="w-8 text-right">
+                          {cantidad}
+                        </Typography>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </InfoContainer>
+        )}
 
         {/* Estado vacío si no hay estadísticas */}
         {totalInvestigaciones === 0 && (
