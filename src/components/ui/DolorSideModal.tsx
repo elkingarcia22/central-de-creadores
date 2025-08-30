@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SideModal, Typography, Button, Input, Textarea, Select, Chip } from './index';
+import { SideModal, Typography, Button, Input, Textarea, Select, Chip, PageHeader, FilterLabel } from './index';
 import { CategoriaDolor, DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, SeveridadDolor, EstadoDolor } from '../../types/dolores';
 import { SaveIcon, XIcon } from '../icons';
 
@@ -146,40 +146,52 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     label: cat.nombre
   }));
 
+  // Footer del modal
+  const footer = (
+    <div className="flex justify-end gap-3">
+      <Button
+        variant="ghost"
+        onClick={onClose}
+        disabled={loading}
+      >
+        <XIcon className="w-4 h-4 mr-2" />
+        Cancelar
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleSubmit}
+        loading={loading}
+        disabled={loading}
+      >
+        <SaveIcon className="w-4 h-4 mr-2" />
+        {isEditing ? 'Actualizar' : 'Crear'}
+      </Button>
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Editar Dolor' : 'Crear Dolor'}
-      width="lg"
-      footer={
-        <div className="flex justify-end gap-3">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            disabled={loading}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            loading={loading}
-            icon={<SaveIcon className="w-4 h-4" />}
-          >
-            {isEditing ? 'Actualizar' : 'Crear'}
-          </Button>
-        </div>
-      }
+      size="lg"
+      footer={footer}
+      showCloseButton={false}
     >
       <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title={isEditing ? 'Editar Dolor' : 'Crear Dolor'}
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
+        />
+
         {/* Información del participante */}
         {participanteNombre && (
           <div className="bg-muted/50 rounded-lg p-4">
-            <Typography variant="subtitle" className="text-muted-foreground mb-1">
-              Participante
-            </Typography>
-            <Typography variant="body" className="font-medium">
+            <FilterLabel>Participante</FilterLabel>
+            <Typography variant="body" className="font-medium mt-1">
               {participanteNombre}
             </Typography>
           </div>
@@ -187,70 +199,77 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Categoría */}
-          <div>
-            <Select
-              label="Categoría *"
-              options={categoriaOptions}
-              value={formData.categoria_id}
-              onChange={(value) => handleInputChange('categoria_id', value)}
-              placeholder="Seleccionar categoría"
-              error={!!errors.categoria_id}
-              required
-            />
-            {errors.categoria_id && (
-              <Typography variant="caption" className="text-destructive mt-1">
-                {errors.categoria_id}
-              </Typography>
-            )}
-            {getCategoriaSeleccionada() && (
-              <Typography variant="caption" className="text-muted-foreground mt-1 block">
-                {getCategoriaSeleccionada()?.descripcion}
-              </Typography>
-            )}
-          </div>
+          {/* Información básica */}
+          <div className="space-y-4">
+            {/* Categoría */}
+            <div>
+              <FilterLabel>Categoría *</FilterLabel>
+              <Select
+                options={categoriaOptions}
+                value={formData.categoria_id}
+                onChange={(value) => handleInputChange('categoria_id', value)}
+                placeholder="Seleccionar categoría"
+                error={errors.categoria_id}
+                required
+                fullWidth
+              />
+              {errors.categoria_id && (
+                <Typography variant="caption" className="text-destructive mt-1">
+                  {errors.categoria_id}
+                </Typography>
+              )}
+              {getCategoriaSeleccionada() && (
+                <Typography variant="caption" className="text-muted-foreground mt-1 block">
+                  {getCategoriaSeleccionada()?.descripcion}
+                </Typography>
+              )}
+            </div>
 
-          {/* Título */}
-          <div>
-            <Input
-              label="Título *"
-              value={formData.titulo}
-              onChange={(e) => handleInputChange('titulo', e.target.value)}
-              placeholder="Describe brevemente el dolor o necesidad"
-              error={errors.titulo}
-              required
-            />
-            {errors.titulo && (
-              <Typography variant="caption" className="text-destructive mt-1">
-                {errors.titulo}
-              </Typography>
-            )}
-          </div>
+            {/* Título */}
+            <div>
+              <FilterLabel>Título *</FilterLabel>
+              <Input
+                value={formData.titulo}
+                onChange={(e) => handleInputChange('titulo', e.target.value)}
+                placeholder="Describe brevemente el dolor o necesidad"
+                error={errors.titulo}
+                required
+                fullWidth
+              />
+              {errors.titulo && (
+                <Typography variant="caption" className="text-destructive mt-1">
+                  {errors.titulo}
+                </Typography>
+              )}
+            </div>
 
-          {/* Descripción */}
-          <div>
-            <Textarea
-              label="Descripción"
-              value={formData.descripcion}
-              onChange={(e) => handleInputChange('descripcion', e.target.value)}
-              placeholder="Describe en detalle el dolor o necesidad"
-              rows={4}
-            />
-          </div>
+            {/* Descripción */}
+            <div>
+              <FilterLabel>Descripción</FilterLabel>
+              <Textarea
+                value={formData.descripcion}
+                onChange={(e) => handleInputChange('descripcion', e.target.value)}
+                placeholder="Describe en detalle el dolor o necesidad"
+                rows={4}
+                fullWidth
+              />
+            </div>
 
-          {/* Severidad */}
-          <div>
-            <Select
-              label="Severidad"
-              options={severidadOptions}
-              value={formData.severidad}
-              onChange={(value) => handleInputChange('severidad', value)}
-              placeholder="Seleccionar severidad"
-            />
-            <div className="mt-2">
-              <Chip variant={getSeveridadColor(formData.severidad) as any}>
-                {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
-              </Chip>
+            {/* Severidad */}
+            <div>
+              <FilterLabel>Severidad</FilterLabel>
+              <Select
+                options={severidadOptions}
+                value={formData.severidad}
+                onChange={(value) => handleInputChange('severidad', value)}
+                placeholder="Seleccionar severidad"
+                fullWidth
+              />
+              <div className="mt-2">
+                <Chip variant={getSeveridadColor(formData.severidad) as any}>
+                  {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
+                </Chip>
+              </div>
             </div>
           </div>
         </form>
