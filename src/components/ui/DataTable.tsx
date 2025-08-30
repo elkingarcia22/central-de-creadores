@@ -6,7 +6,8 @@ import Input from './Input';
 import Select from './Select';
 import SelectSimple from './SelectSimple';
 import Typography from './Typography';
-import { ChevronDownIcon, ChevronRightIcon, EditIcon, CheckIcon, CloseIcon, MoreVerticalIcon } from '../icons';
+import ActionsMenu from './ActionsMenu';
+import { ChevronDownIcon, ChevronRightIcon, EditIcon, CheckIcon, CloseIcon } from '../icons';
 
 // Tipos de datos
 export interface Column {
@@ -91,22 +92,6 @@ const DataTable: React.FC<DataTableProps> = ({
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [openActionMenus, setOpenActionMenus] = useState<{ [key: string]: boolean }>({});
-
-  // Cerrar menús cuando se hace clic fuera
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('[data-action-menu]')) {
-        setOpenActionMenus({});
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   // Filtrar datos
   const filteredData = useMemo(() => {
@@ -420,48 +405,14 @@ const DataTable: React.FC<DataTableProps> = ({
                       {/* Acciones por fila */}
                       {actions.length > 0 && (
                         <td className="px-4 py-3 text-center">
-                          <div className="relative" data-action-menu>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Toggle del menú para esta fila
-                                const rowId = row[rowKey] || row.id || row._id || index;
-                                setOpenActionMenus(prev => ({
-                                  ...prev,
-                                  [rowId]: !prev[rowId]
-                                }));
-                              }}
-                              className="p-1 rounded hover:bg-muted transition-colors duration-200"
-                              title="Acciones"
-                            >
-                              <MoreVerticalIcon className="w-4 h-4" />
-                            </button>
-                            
-                            {/* Menú desplegable */}
-                            {openActionMenus[row[rowKey] || row.id || row._id || index] && (
-                              <div className="absolute right-0 top-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 min-w-[120px]">
-                                {actions.map((action, actionIndex) => (
-                                  <button
-                                    key={actionIndex}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      action.onClick(row);
-                                      // Cerrar el menú después de la acción
-                                      setOpenActionMenus(prev => ({
-                                        ...prev,
-                                        [row[rowKey] || row.id || row._id || index]: false
-                                      }));
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors duration-200 ${action.className || ''}`}
-                                    title={action.title || action.label}
-                                  >
-                                    {action.icon && <span className="mr-2">{action.icon}</span>}
-                                    {action.label}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                          <ActionsMenu
+                            actions={actions.map(action => ({
+                              label: action.label,
+                              icon: action.icon || <EditIcon className="w-4 h-4" />,
+                              onClick: () => action.onClick(row),
+                              className: action.className
+                            }))}
+                          />
                         </td>
                       )}
                     </tr>

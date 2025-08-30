@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, Chip, IconButton, DataTable, DolorModal } from './index';
 import { DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, EstadoDolor } from '../../types/dolores';
+import { EditIcon, DeleteIcon } from '../icons';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -194,11 +195,13 @@ export const ListaDolores: React.FC<ListaDoloresProps> = ({
   const tableActions = [
     {
       label: 'Editar',
+      icon: <EditIcon className="w-4 h-4" />,
       onClick: (row: DolorParticipanteCompleto) => handleEditarDolor(row),
       title: 'Editar dolor'
     },
     {
       label: 'Eliminar',
+      icon: <DeleteIcon className="w-4 h-4" />,
       onClick: (row: DolorParticipanteCompleto) => handleEliminarDolor(row.id),
       title: 'Eliminar dolor',
       className: 'text-red-600 hover:text-red-700'
