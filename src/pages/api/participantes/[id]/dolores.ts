@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const { data, error } = await supabaseServer
-        .from('dolores_participantes')
+        .from('dolores_participante')
         .select('*')
         .eq('participante_id', id)
         .order('created_at', { ascending: false });
@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const { data, error } = await supabaseServer
-        .from('dolores_participantes')
+        .from('dolores_participante')
         .insert([
           {
             participante_id: id,

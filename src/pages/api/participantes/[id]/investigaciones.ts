@@ -67,8 +67,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('🔍 Tipo de participante:', tipoParticipante);
 
-    // Obtener reclutamientos usando participantes_id (como en empresa)
-    console.log('🔍 Consultando reclutamientos para participantes_id:', id);
+    // Obtener datos usando la vista sugerida por el servidor
+    console.log('🔍 Consultando vista_estadisticas_participantes para participantes_id:', id);
+    
+    const { data: estadisticas, error: errorEstadisticas } = await supabaseServer
+      .from('vista_estadisticas_participantes')
+      .select('*')
+      .eq('participante_id', id);
+
+    console.log('🔍 Resultado consulta vista_estadisticas_participantes:', { 
+      data: estadisticas?.length || 0, 
+      error: errorEstadisticas,
+      sample: estadisticas?.[0]
+    });
+
+    if (errorEstadisticas) {
+      console.error('❌ Error obteniendo estadísticas:', errorEstadisticas);
+      return res.status(500).json({ error: 'Error obteniendo estadísticas' });
+    }
+
+    // También intentar obtener reclutamientos directamente
+    console.log('🔍 Consultando reclutamientos directamente para participantes_id:', id);
     
     const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
       .from('reclutamientos')
@@ -78,17 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         participantes_id,
         fecha_sesion,
         duracion_sesion,
-        estado_agendamiento,
-        investigaciones (
-          id,
-          nombre,
-          descripcion,
-          estado,
-          fecha_inicio,
-          fecha_fin,
-          tipo_sesion,
-          riesgo_automatico
-        )
+        estado_agendamiento
       `)
       .eq('participantes_id', id);
 
@@ -104,23 +113,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('🔍 Reclutamientos encontrados:', reclutamientos?.length || 0);
+    console.log('🔍 Estadísticas encontradas:', estadisticas?.length || 0);
 
-    // Procesar las investigaciones
-    const investigaciones = reclutamientos
-      ?.filter(r => r.investigaciones) // Solo incluir si tiene investigación
-      .map(r => ({
-        id: r.investigaciones.id,
-        nombre: r.investigaciones.nombre,
-        descripcion: r.investigaciones.descripcion,
-        estado: r.investigaciones.estado,
-        fecha_inicio: r.investigaciones.fecha_inicio,
-        fecha_fin: r.investigaciones.fecha_fin,
-        tipo_sesion: r.investigaciones.tipo_sesion,
-        riesgo_automatico: r.investigaciones.riesgo_automatico,
+    // Procesar las investigaciones usando la vista de estadísticas
+    let investigaciones = [];
+    
+    if (estadisticas && estadisticas.length > 0) {
+      investigaciones = estadisticas.map(est => ({
+        id: est.investigacion_id || est.id,
+        nombre: est.nombre_investigacion || est.nombre,
+        descripcion: est.descripcion_investigacion || est.descripcion,
+        estado: est.estado_investigacion || est.estado,
+        fecha_inicio: est.fecha_inicio,
+        fecha_fin: est.fecha_fin,
+        tipo_sesion: est.tipo_sesion,
+        riesgo_automatico: est.riesgo_automatico,
+        fecha_participacion: est.fecha_sesion || est.fecha_participacion,
+        estado_agendamiento: est.estado_agendamiento,
+        duracion_sesion: est.duracion_sesion
+      }));
+    } else if (reclutamientos && reclutamientos.length > 0) {
+      // Fallback: usar reclutamientos si la vista no funciona
+      investigaciones = reclutamientos.map(r => ({
+        id: r.investigacion_id,
+        nombre: `Investigación ${r.investigacion_id}`,
+        descripcion: 'Descripción no disponible',
+        estado: 'activa',
+        fecha_inicio: r.fecha_sesion,
+        fecha_fin: r.fecha_sesion,
+        tipo_sesion: 'remota',
+        riesgo_automatico: 'bajo',
         fecha_participacion: r.fecha_sesion,
         estado_agendamiento: r.estado_agendamiento,
         duracion_sesion: r.duracion_sesion
-      })) || [];
+      }));
+    }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
 
