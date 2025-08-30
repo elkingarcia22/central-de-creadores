@@ -101,6 +101,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id,
         investigacion_id,
         participantes_id,
+        participantes_internos_id,
+        participantes_friend_family_id,
         fecha_sesion,
         duracion_sesion,
         estado_agendamiento,
@@ -110,7 +112,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           nombre
         )
       `)
-      .eq('participantes_id', id);
+      .or(`participantes_id.eq.${id},participantes_internos_id.eq.${id},participantes_friend_family_id.eq.${id}`);
 
     console.log('🔍 Resultado consulta reclutamientos:', { 
       data: reclutamientos?.length || 0, 
