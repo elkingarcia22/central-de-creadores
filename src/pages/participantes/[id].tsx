@@ -440,7 +440,8 @@ export default function DetalleParticipante() {
                 const participacionesMesActual = investigaciones.filter(inv => 
                   inv.fecha_inicio && inv.fecha_inicio.startsWith(mesActual)
                 ).length;
-                return `${participacionesMesActual} participación${participacionesMesActual !== 1 ? 'es' : ''}`;
+                const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                return `${participacionesMesActual} en ${nombreMes}`;
               })()
             }
           />
@@ -481,8 +482,8 @@ export default function DetalleParticipante() {
                           </Chip>
                         )}
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div className="flex items-center space-x-6">
+                        <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full transition-all duration-300 ${
                               esMesActual ? 'bg-blue-500' : 'bg-primary'
@@ -492,7 +493,7 @@ export default function DetalleParticipante() {
                             }}
                           />
                         </div>
-                        <Typography variant="body2" weight="medium" className="w-8 text-right">
+                        <Typography variant="body2" weight="medium" className="w-12 text-right">
                           {cantidad}
                         </Typography>
                       </div>
