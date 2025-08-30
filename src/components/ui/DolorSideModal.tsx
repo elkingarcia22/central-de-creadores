@@ -23,11 +23,13 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   loading = false
 }) => {
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
+  const [investigaciones, setInvestigaciones] = useState<Array<{id: string, nombre: string}>>([]);
   const [formData, setFormData] = useState<CrearDolorRequest>({
     categoria_id: '',
     titulo: '',
     descripcion: '',
-    severidad: SeveridadDolor.MEDIA
+    severidad: SeveridadDolor.MEDIA,
+    investigacion_relacionada_id: ''
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -37,8 +39,9 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       cargarCategorias();
+      cargarInvestigaciones();
     }
-  }, [isOpen]);
+  }, [isOpen, participanteId]);
 
   // Cargar datos del dolor si estamos editando
   useEffect(() => {
@@ -48,7 +51,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         titulo: dolor.titulo,
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad,
-        investigacion_relacionada_id: dolor.investigacion_relacionada_id,
+        investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
         sesion_relacionada_id: dolor.sesion_relacionada_id
       });
     } else if (!dolor && isOpen) {
@@ -57,7 +60,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         categoria_id: '',
         titulo: '',
         descripcion: '',
-        severidad: SeveridadDolor.MEDIA
+        severidad: SeveridadDolor.MEDIA,
+        investigacion_relacionada_id: ''
       });
     }
     setErrors({});
@@ -72,6 +76,23 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       }
     } catch (error) {
       console.error('Error cargando categorías:', error);
+    }
+  };
+
+  const cargarInvestigaciones = async () => {
+    try {
+      const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
+      if (response.ok) {
+        const data = await response.json();
+        // Extraer solo las investigaciones del participante
+        const investigacionesParticipante = data.investigaciones?.map((inv: any) => ({
+          id: inv.id,
+          nombre: inv.nombre
+        })) || [];
+        setInvestigaciones(investigacionesParticipante);
+      }
+    } catch (error) {
+      console.error('Error cargando investigaciones:', error);
     }
   };
 
@@ -145,6 +166,14 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     value: cat.id,
     label: cat.nombre
   }));
+
+  const investigacionOptions = [
+    { value: '', label: 'Sin investigación específica' },
+    ...investigaciones.map(inv => ({
+      value: inv.id,
+      label: inv.nombre
+    }))
+  ];
 
   // Footer del modal
   const footer = (
@@ -270,6 +299,23 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
                   {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
                 </Chip>
               </div>
+            </div>
+
+            {/* Investigación relacionada */}
+            <div>
+              <FilterLabel>Investigación Relacionada</FilterLabel>
+              <Select
+                options={investigacionOptions}
+                value={formData.investigacion_relacionada_id}
+                onChange={(value) => handleInputChange('investigacion_relacionada_id', value)}
+                placeholder="Seleccionar investigación (opcional)"
+                fullWidth
+              />
+              {formData.investigacion_relacionada_id && (
+                <Typography variant="caption" className="text-muted-foreground mt-1 block">
+                  Este dolor estará vinculado a la investigación seleccionada
+                </Typography>
+              )}
             </div>
           </div>
         </form>
