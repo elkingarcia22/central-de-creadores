@@ -39,8 +39,15 @@ interface Participante {
 interface InvestigacionParticipante {
   id: string;
   nombre: string;
-  fecha_participacion: string;
+  descripcion?: string;
   estado: string;
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  tipo_sesion?: string;
+  riesgo_automatico?: string;
+  fecha_participacion: string;
+  estado_agendamiento?: string;
+  duracion_sesion?: string;
   tipo_investigacion: string;
   responsable: string;
 }
@@ -74,7 +81,7 @@ export default function DetalleParticipante() {
   const [comentarios, setComentarios] = useState<ComentarioParticipante[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('informacion');
+  const [activeTab, setActiveTab] = useState('historial');
   
   // Estados para modales
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
@@ -82,6 +89,7 @@ export default function DetalleParticipante() {
 
   useEffect(() => {
     if (id) {
+      console.log('🔍 useEffect ejecutándose con id:', id);
       cargarParticipante();
       cargarInvestigaciones();
       cargarDolores();
@@ -120,14 +128,24 @@ export default function DetalleParticipante() {
 
   const cargarInvestigaciones = async () => {
     try {
+      console.log('🔍 Iniciando carga de investigaciones para participante:', id);
       const response = await fetch(`/api/participantes/${id}/investigaciones`);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Respuesta completa de la API:', JSON.stringify(data, null, 2));
         setInvestigaciones(data.investigaciones || []);
         setParticipacionesPorMes(data.participacionesPorMes || {});
         console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
         console.log('🔍 Participaciones por mes:', data.participacionesPorMes);
+        
+        // Debug detallado de las investigaciones
+        if (data.investigaciones && data.investigaciones.length > 0) {
+          console.log('🔍 Primera investigación:', JSON.stringify(data.investigaciones[0], null, 2));
+          console.log('🔍 Todas las investigaciones:', JSON.stringify(data.investigaciones, null, 2));
+        } else {
+          console.log('⚠️ No se recibieron investigaciones de la API');
+        }
         const participacionesDetalladas = Object.entries(data.participacionesPorMes || {}).map(([mes, cantidad]) => {
           const [year, month] = mes.split('-');
           const fecha = new Date(parseInt(year), parseInt(month) - 1, 1);
@@ -550,7 +568,7 @@ export default function DetalleParticipante() {
     {
       key: 'nombre',
       label: 'Investigación',
-      render: (row: InvestigacionParticipante) => (
+      render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
         <div>
           <Typography variant="subtitle2" weight="medium">
             {row.nombre}
@@ -564,7 +582,7 @@ export default function DetalleParticipante() {
     {
       key: 'fecha_participacion',
       label: 'Fecha de Participación',
-      render: (row: InvestigacionParticipante) => (
+      render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
         <Typography variant="body2">
           {formatearFecha(row.fecha_participacion)}
         </Typography>
@@ -573,7 +591,7 @@ export default function DetalleParticipante() {
     {
       key: 'estado',
       label: 'Estado',
-      render: (row: InvestigacionParticipante) => (
+      render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
         <Badge variant={getEstadoVariant(row.estado)}>
           {row.estado}
         </Badge>
@@ -582,7 +600,7 @@ export default function DetalleParticipante() {
     {
       key: 'responsable',
       label: 'Responsable',
-      render: (row: InvestigacionParticipante) => (
+      render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
         <Typography variant="body2">
           {row.responsable}
         </Typography>
@@ -718,8 +736,8 @@ export default function DetalleParticipante() {
               variant="secondary"
               className="flex items-center gap-2"
               onClick={() => {
-                setParticipanteParaEditar(participante);
-                setShowModalEditar(true);
+                // setParticipanteParaEditar(participante); // This line was commented out in the original file
+                // setShowModalEditar(true); // This line was commented out in the original file
               }}
             >
               <EditIcon className="w-4 h-4" />

@@ -94,27 +94,6 @@ const DataTable: React.FC<DataTableProps> = ({
 
   // Filtrar datos
   const filteredData = useMemo(() => {
-    console.log('🔍 DataTable - Filtrando datos:', {
-      dataLength: data.length,
-      search,
-      filter,
-      searchKeys,
-      filterKey
-    });
-    
-    // Solo loggear una vez por render para evitar spam
-    if (data.length > 0) {
-      console.log('🔍 DataTable - Datos recibidos:', data.length);
-      console.log('🔍 DataTable - Primer dato:', data[0]);
-      
-      // Verificar duplicados en los datos
-      const ids = data.map((item: any) => item[rowKey] || item.id || item._id);
-      const idsUnicos = [...new Set(ids)];
-      if (ids.length !== idsUnicos.length) {
-        console.log('⚠️ DataTable - DUPLICADOS DETECTADOS:', ids.length - idsUnicos.length);
-      }
-    }
-    
     // Si no hay datos, retornar array vacío
     if (data.length === 0) {
       return [];
@@ -243,15 +222,11 @@ const DataTable: React.FC<DataTableProps> = ({
                       { value: '', label: 'Todos' },
                       ...filterOptions
                     ];
-                    console.log('🔍 DataTable - filterOptions:', filterOptions);
-                    console.log('🔍 DataTable - allOptions:', allOptions);
-                    console.log('🔍 DataTable - current filter value:', filter);
                     return (
                       <SelectSimple
                         options={allOptions}
                         value={filter}
                         onChange={(value) => {
-                          console.log('🔍 DataTable - Filter changed to:', value);
                           setFilter(value.toString());
                         }}
                         placeholder="Filtrar..."
@@ -375,12 +350,6 @@ const DataTable: React.FC<DataTableProps> = ({
               ) : (
                 sortedData.map((row, index) => {
                   const rowId = row[rowKey] || row.id || row._id || index;
-                  
-                  // Solo loggear la primera fila para debugging
-                  if (index === 0) {
-                    console.log('🔍 DataTable - Renderizando filas, primera fila ID:', rowId);
-                    console.log('🔍 DataTable - Primera fila datos:', row);
-                  }
                   
                   return (
                     <tr 

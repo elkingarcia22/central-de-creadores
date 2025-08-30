@@ -80,6 +80,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       error: errorEstadisticas,
       sample: estadisticas?.[0]
     });
+    
+    // Debug detallado de la vista de estadísticas
+    if (estadisticas && estadisticas.length > 0) {
+      console.log('🔍 Debug - Estructura completa de la primera estadística:', JSON.stringify(estadisticas[0], null, 2));
+      console.log('🔍 Debug - Propiedades disponibles en estadísticas:', Object.keys(estadisticas[0]));
+    }
 
     if (errorEstadisticas) {
       console.error('❌ Error obteniendo estadísticas:', errorEstadisticas);
@@ -161,6 +167,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
     
+    // Debug detallado de las investigaciones procesadas
+    if (investigaciones.length > 0) {
+      console.log('🔍 Debug - Primera investigación procesada:', JSON.stringify(investigaciones[0], null, 2));
+      console.log('🔍 Debug - Todas las investigaciones:', JSON.stringify(investigaciones, null, 2));
+    } else {
+      console.log('⚠️ WARNING - No se procesaron investigaciones');
+    }
+    
     // Debug: verificar si hay investigaciones duplicadas
     const investigacionesIds = investigaciones.map(inv => inv.id);
     const idsUnicos = [...new Set(investigacionesIds)];
@@ -169,6 +183,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('⚠️ WARNING - Hay investigaciones duplicadas!');
       const duplicados = investigacionesIds.filter((id, index) => investigacionesIds.indexOf(id) !== index);
       console.log('🔍 Debug - IDs duplicados:', duplicados);
+      
+      // Eliminar duplicados manteniendo solo la primera ocurrencia
+      const investigacionesUnicas = investigaciones.filter((inv, index) => 
+        investigacionesIds.indexOf(inv.id) === index
+      );
+      console.log('🔍 Debug - Investigaciones después de eliminar duplicados:', investigacionesUnicas.length);
+      investigaciones = investigacionesUnicas;
     }
 
     // Calcular participaciones por mes
