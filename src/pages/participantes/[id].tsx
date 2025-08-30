@@ -128,21 +128,23 @@ export default function DetalleParticipante() {
         setParticipacionesPorMes(data.participacionesPorMes || {});
         console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
         console.log('🔍 Participaciones por mes:', data.participacionesPorMes);
-        console.log('🔍 Debug - Participaciones por mes detallado:', Object.entries(data.participacionesPorMes || {}).map(([mes, cantidad]) => ({
+        const participacionesDetalladas = Object.entries(data.participacionesPorMes || {}).map(([mes, cantidad]) => ({
           mes,
           cantidad,
           fecha: new Date(mes + '-01').toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
-        })));
+        }));
+        console.log('🔍 Debug - Participaciones por mes detallado:', JSON.stringify(participacionesDetalladas, null, 2));
         
         // Debug adicional: verificar el ordenamiento y los primeros 6 meses
         const participacionesOrdenadas = Object.entries(data.participacionesPorMes || {})
           .sort(([a], [b]) => b.localeCompare(a))
           .slice(0, 6);
-        console.log('🔍 Debug - Participaciones ordenadas (primeros 6):', participacionesOrdenadas.map(([mes, cantidad]) => ({
+        const participacionesOrdenadasDetalladas = participacionesOrdenadas.map(([mes, cantidad]) => ({
           mes,
           cantidad,
           fecha: new Date(mes + '-01').toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })
-        })));
+        }));
+        console.log('🔍 Debug - Participaciones ordenadas (primeros 6):', JSON.stringify(participacionesOrdenadasDetalladas, null, 2));
       } else {
         console.error('Error cargando investigaciones:', response.status, response.statusText);
       }
