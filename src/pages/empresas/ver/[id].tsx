@@ -751,9 +751,9 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           {/* Header con título, contador y controles */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Subtitle>
-                Historial de Participación
-              </Subtitle>
+                             <Subtitle>
+                 Lista de Participaciones
+               </Subtitle>
               <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
                 {historialFiltrado.length} de {empresaData.estadisticas?.investigaciones?.length || 0} participación{historialFiltrado.length !== 1 ? 'es' : ''} registrada{historialFiltrado.length !== 1 ? 's' : ''}
               </span>
@@ -991,7 +991,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     },
     {
       id: 'historial',
-      label: 'Historial de Participaciones',
+      label: 'Lista de Participaciones',
       icon: <HistoryIcon className="w-4 h-4" />,
       content: <HistorialContent />
     },
