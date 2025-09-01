@@ -82,25 +82,38 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   const cargarInvestigaciones = async () => {
     try {
       console.log('🔍 Cargando investigaciones para participante:', participanteId);
-      const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('🔍 Respuesta completa del API:', data);
-        console.log('🔍 Investigaciones encontradas:', data.investigaciones?.length || 0);
-        
-        // Extraer solo las investigaciones del participante
-        const investigacionesParticipante = data.investigaciones?.map((inv: any) => ({
-          id: inv.id,
-          nombre: inv.nombre
-        })) || [];
-        
-        console.log('🔍 Investigaciones procesadas:', investigacionesParticipante);
-        setInvestigaciones(investigacionesParticipante);
-      } else {
-        console.error('❌ Error en la respuesta del API:', response.status, response.statusText);
+      
+      // Por ahora, usar una lista vacía para evitar errores
+      // TODO: Implementar carga de investigaciones cuando la API esté estable
+      setInvestigaciones([]);
+      
+      // Intentar cargar investigaciones si la API está disponible
+      try {
+        const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('🔍 Respuesta completa del API:', data);
+          console.log('🔍 Investigaciones encontradas:', data.investigaciones?.length || 0);
+          
+          // Extraer solo las investigaciones del participante
+          const investigacionesParticipante = data.investigaciones?.map((inv: any) => ({
+            id: inv.id,
+            nombre: inv.nombre
+          })) || [];
+          
+          console.log('🔍 Investigaciones procesadas:', investigacionesParticipante);
+          setInvestigaciones(investigacionesParticipante);
+        } else {
+          console.log('⚠️ API de investigaciones no disponible, usando lista vacía');
+          setInvestigaciones([]);
+        }
+      } catch (error) {
+        console.log('⚠️ Error cargando investigaciones, usando lista vacía:', error);
+        setInvestigaciones([]);
       }
     } catch (error) {
-      console.error('❌ Error cargando investigaciones:', error);
+      console.error('❌ Error en cargarInvestigaciones:', error);
+      setInvestigaciones([]);
     }
   };
 
