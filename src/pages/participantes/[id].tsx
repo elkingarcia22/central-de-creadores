@@ -11,7 +11,7 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon } from '../../components/icons';
@@ -1015,30 +1015,27 @@ export default function DetalleParticipante() {
                 id: 'historial',
                 label: 'Historial de Investigaciones',
                 content: (
-                  <Card className="p-6">
-                    <div className="flex items-center gap-2 mb-6">
-                      <UserIcon className="w-5 h-5 text-primary" />
-                      <Typography variant="h4">Historial de Participación</Typography>
+                  <Card variant="elevated" padding="lg" className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <Subtitle>
+                        Lista de Participaciones
+                      </Subtitle>
+                      <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                        {investigaciones.length} participación{investigaciones.length !== 1 ? 'es' : ''} registrada{investigaciones.length !== 1 ? 's' : ''}
+                      </span>
                     </div>
                     
                     {investigaciones.length > 0 ? (
-                      <>
-                        <div className="mb-4">
-                          <Typography variant="body2" color="secondary">
-                            {investigaciones.length} participación{investigaciones.length !== 1 ? 'es' : ''} registrada{investigaciones.length !== 1 ? 's' : ''}
-                          </Typography>
-                        </div>
-                        <DataTable
-                          data={investigaciones}
-                          columns={columnsInvestigaciones}
-                          loading={false}
-                          searchable={false}
-                          filterable={false}
-                          selectable={false}
-                          emptyMessage="No se encontraron investigaciones"
-                          rowKey="id"
-                        />
-                      </>
+                      <DataTable
+                        data={investigaciones}
+                        columns={columnsInvestigaciones}
+                        loading={false}
+                        searchable={false}
+                        filterable={false}
+                        selectable={false}
+                        emptyMessage="No se encontraron participaciones"
+                        rowKey="id"
+                      />
                     ) : (
                       <div className="text-center py-12">
                         <UserIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />

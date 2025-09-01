@@ -132,7 +132,7 @@ export default function DoloresUnifiedContainer({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Subtitle>
-            Dolores y Necesidades
+            Lista de Dolores
           </Subtitle>
           <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
             {doloresFiltradas.length} de {dolores.length}
