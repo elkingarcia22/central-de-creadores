@@ -75,6 +75,7 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
     tamanos: [],
     paises: [],
     kams: [],
+    usuarios: [],
     relaciones: [],
     productos: [],
     industrias: [],
@@ -232,6 +233,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         tamanos: tamanos.map((t: any) => ({ value: t.id, label: t.nombre })),
         paises: paises.map((p: any) => ({ value: p.id, label: p.nombre })),
         kams: usuarios.map((u: any) => ({ value: u.id, label: u.full_name || u.nombre || u.email || 'Sin nombre' })),
+        usuarios: usuarios.map((u: any) => ({ 
+          id: u.id, 
+          full_name: u.full_name || u.nombre || u.email || 'Sin nombre',
+          email: u.email || u.correo || 'sin-email@ejemplo.com',
+          avatar_url: u.avatar_url 
+        })),
         relaciones: relaciones.map((r: any) => ({ value: r.id, label: r.nombre })),
         productos: productos.map((p: any) => ({ value: p.id, label: p.nombre })),
         industrias: industrias.map((i: any) => ({ value: i.id, label: i.nombre })),
