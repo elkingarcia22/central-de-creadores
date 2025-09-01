@@ -8,7 +8,7 @@ import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
 import { Empresa } from '../../../types/empresas';
 
-import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard, DataTable, ActionsMenu } from '../../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard, DataTable, ActionsMenu, ConfirmModal } from '../../../components/ui';
 import TestParticipantCard from '../../../components/ui/TestParticipantCard';
 import Typography from '../../../components/ui/Typography';
 import Card from '../../../components/ui/Card';
@@ -125,6 +125,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [activeTab, setActiveTab] = useState('informacion');
 
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const [usuarios, setUsuarios] = useState<any[]>([]);
@@ -263,6 +264,27 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       showError('Error al actualizar empresa');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteEmpresa = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/empresas/${empresaData.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar empresa');
+      }
+
+      showSuccess('Empresa eliminada exitosamente');
+      router.push('/empresas');
+    } catch (error) {
+      showError('Error al eliminar empresa');
+    } finally {
+      setSaving(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -1081,23 +1103,9 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                     className: 'text-popover-foreground hover:text-popover-foreground/80'
                   },
                   {
-                    label: 'Duplicar',
-                    icon: <CopyIcon className="w-4 h-4" />,
-                    onClick: () => {
-                      // Implementar duplicación de empresa
-                      console.log('Duplicar empresa:', empresaData.id);
-                      // Aquí se podría abrir un modal para duplicar
-                    },
-                    className: 'text-popover-foreground hover:text-popover-foreground/80'
-                  },
-                  {
                     label: 'Eliminar',
                     icon: <TrashIcon className="w-4 h-4" />,
-                    onClick: () => {
-                      // Implementar eliminación de empresa
-                      console.log('Eliminar empresa:', empresaData.id);
-                      // Aquí se podría abrir un modal de confirmación
-                    },
+                    onClick: () => setShowDeleteModal(true),
                     className: 'text-destructive hover:text-destructive/80'
                   }
                 ]}
@@ -1151,6 +1159,19 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         onSave={handleSaveEmpresa}
         empresa={empresaData}
         usuarios={usuarios}
+        loading={saving}
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteEmpresa}
+        title="Eliminar Empresa"
+        message={`¿Estás seguro de que deseas eliminar la empresa "${empresaData.nombre}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="error"
         loading={saving}
       />
 
