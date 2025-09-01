@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Layout from '../components/ui/Layout';
+import { Layout } from '../components/ui';
 
 const TestLayoutSidePanelPage: React.FC = () => {
   const [showSidePanel, setShowSidePanel] = useState(false);
@@ -118,7 +118,7 @@ const TestLayoutSidePanelPage: React.FC = () => {
   }, [showSidePanel, showFilterDrawer]);
 
   return (
-    <Layout>
+    <Layout rol="administrador">
       <div className="p-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">
