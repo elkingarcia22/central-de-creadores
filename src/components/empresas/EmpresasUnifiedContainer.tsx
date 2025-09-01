@@ -87,62 +87,9 @@ export default function EmpresasUnifiedContainer({
     setSearchTerm(e.target.value);
   }, [setSearchTerm]);
 
-  // Filtrar empresas basado en searchTerm y filters
-  const empresasFiltradas = useMemo(() => {
-    let filtradas = [...empresas];
-    
-    // Filtrar por término de búsqueda
-    if (searchTerm.trim()) {
-      const termino = searchTerm.toLowerCase();
-      filtradas = filtradas.filter(emp => 
-        emp?.nombre?.toLowerCase().includes(termino) ||
-        emp?.descripcion?.toLowerCase().includes(termino) ||
-        emp?.kam_nombre?.toLowerCase().includes(termino)
-      );
-    }
-    
-    // Filtrar por estado
-    if (filters.estado && filters.estado !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.estado === filters.estado);
-    }
-    
-    // Filtrar por tamaño
-    if (filters.tamano && filters.tamano !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.tamano === filters.tamano);
-    }
-    
-    // Filtrar por país
-    if (filters.pais && filters.pais !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.pais === filters.pais);
-    }
-    
-    // Filtrar por KAM
-    if (filters.kam_id && filters.kam_id !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.kam_id === filters.kam_id);
-    }
-    
-    // Filtrar por relación
-    if (filters.relacion && filters.relacion !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.relacion === filters.relacion);
-    }
-    
-    // Filtrar por producto
-    if (filters.producto && filters.producto !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.producto === filters.producto);
-    }
-    
-    // Filtrar por industria
-    if (filters.industria && filters.industria !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.industria === filters.industria);
-    }
-    
-    // Filtrar por modalidad
-    if (filters.modalidad && filters.modalidad !== 'todos') {
-      filtradas = filtradas.filter(emp => emp?.modalidad === filters.modalidad);
-    }
-    
-    return filtradas;
-  }, [empresas, searchTerm, filters]);
+  // Los datos ya vienen filtrados desde la página principal
+  // No necesitamos filtrar nuevamente aquí
+  const empresasFiltradas = empresas;
 
   const handleOpenFilters = () => {
     setShowFilterDrawer(true);
