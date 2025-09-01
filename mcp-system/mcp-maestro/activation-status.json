@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-08-28T03:46:07.406Z",
+  "timestamp": "2025-01-28T03:46:07.406Z",
   "status": "ACTIVE",
   "auto_mode": true,
   "features": {
@@ -12,8 +12,10 @@
     "autoActivateGitHub": true
   },
   "message": "MCP Maestro activo en modo automático - SIN CONFIRMACIONES",
-  "pid": 16589,
+  "pid": 3504,
   "auto_activated": true,
   "no_prompts": true,
-  "force_auto": true
+  "force_auto": true,
+  "server_running": true,
+  "last_start": "2025-01-28T03:46:07.406Z"
 }

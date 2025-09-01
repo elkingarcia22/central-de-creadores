@@ -105,25 +105,38 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   };
 
   const validateForm = () => {
+    console.log('🔍 validateForm llamado');
+    console.log('🔍 formData en validación:', formData);
+    
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.categoria_id) {
       newErrors.categoria_id = 'La categoría es requerida';
+      console.log('❌ Error: categoría requerida');
     }
     
     if (!formData.titulo.trim()) {
       newErrors.titulo = 'El título es requerido';
+      console.log('❌ Error: título requerido');
     }
     
+    console.log('🔍 Errores encontrados:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
+    console.log('🔍 handleSubmit llamado');
+    console.log('🔍 formData:', formData);
+    console.log('🔍 isEditing:', isEditing);
+    
     if (!validateForm()) {
+      console.log('❌ Validación falló');
       return;
     }
 
+    console.log('✅ Validación exitosa, llamando onSave');
+    
     if (isEditing && dolor) {
       onSave({
         id: dolor.id,

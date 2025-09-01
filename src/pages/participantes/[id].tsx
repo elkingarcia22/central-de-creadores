@@ -195,6 +195,9 @@ export default function DetalleParticipante() {
     try {
       // Obtener el usuario actual del contexto
       const user = JSON.parse(localStorage.getItem('user') || '{}');
+      console.log('🔍 Usuario obtenido del localStorage:', user);
+      console.log('🔍 user-id que se enviará:', user.id || '');
+      console.log('🔍 Datos del dolor a enviar:', dolorData);
       
       // Llamar al API para crear el dolor
       const response = await fetch(`/api/participantes/${id}/dolores`, {
@@ -206,6 +209,8 @@ export default function DetalleParticipante() {
         body: JSON.stringify(dolorData),
       });
 
+      console.log('🔍 Respuesta del API:', response.status, response.statusText);
+
       if (response.ok) {
         // Cerrar modal y mostrar mensaje de éxito
         setShowCrearDolorModal(false);
@@ -214,6 +219,7 @@ export default function DetalleParticipante() {
         await cargarDolores();
       } else {
         const errorData = await response.json();
+        console.log('❌ Error del API:', errorData);
         showError(errorData.error || 'Error al crear el dolor');
       }
     } catch (error) {
