@@ -140,6 +140,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   const handleSubmit = () => {
     console.log('🔍 handleSubmit llamado');
+    console.log('🔍 Timestamp:', new Date().toISOString());
     console.log('🔍 formData:', formData);
     console.log('🔍 isEditing:', isEditing);
     

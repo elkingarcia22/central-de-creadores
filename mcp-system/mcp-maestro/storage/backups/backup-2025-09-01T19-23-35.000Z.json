@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-09-01T19:23:35.000Z",
+  "commit_hash": "73dc35d868671a50902e745d3eaa740da8ea681c",
+  "branch": "main",
+  "status": "cambios 4",
+  "files": [
+    " M src/components/ui/DolorSideModal.tsx",
+    " M src/pages/participantes/[id].tsx",
+    "?? mcp-system/mcp-maestro/storage/backups/backup-2025-09-01T19-23-35.000Z.json",
+    "?? src/pages/api/participantes/[id]/dolores/"
+  ]
+}

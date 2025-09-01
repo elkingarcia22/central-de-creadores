@@ -234,6 +234,7 @@ export default function DetalleParticipante() {
   const handleDolorGuardado = async (dolorData: any) => {
     try {
       console.log('🔍 handleDolorGuardado llamado con datos:', dolorData);
+      console.log('🔍 Timestamp:', new Date().toISOString());
       
       // Llamar al API para crear el dolor
       const response = await fetch(`/api/participantes/${id}/dolores`, {
