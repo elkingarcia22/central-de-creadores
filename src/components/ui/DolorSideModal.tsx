@@ -24,6 +24,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
+  const submissionIdRef = useRef<string | null>(null);
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
   const [investigaciones, setInvestigaciones] = useState<Array<{id: string, nombre: string}>>([]);
   const [formData, setFormData] = useState<CrearDolorRequest>({
@@ -44,10 +45,12 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       cargarInvestigaciones();
       setIsSubmitting(false); // Resetear estado de envío al abrir
       isSubmittingRef.current = false; // Resetear ref al abrir
+      submissionIdRef.current = null; // Resetear submission ID al abrir
     } else {
       // Resetear estado cuando se cierre el modal
       setIsSubmitting(false);
       isSubmittingRef.current = false;
+      submissionIdRef.current = null;
     }
   }, [isOpen, participanteId]);
 
@@ -147,16 +150,26 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   };
 
   const handleSubmit = () => {
+    const currentSubmissionId = new Date().toISOString() + Math.random().toString(36).substr(2, 9);
+    
     console.log('🔍 handleSubmit llamado');
     console.log('🔍 Timestamp:', new Date().toISOString());
+    console.log('🔍 Submission ID:', currentSubmissionId);
     console.log('🔍 formData:', formData);
     console.log('🔍 isEditing:', isEditing);
     console.log('🔍 isSubmitting:', isSubmitting);
     console.log('🔍 isSubmittingRef.current:', isSubmittingRef.current);
+    console.log('🔍 submissionIdRef.current:', submissionIdRef.current);
     
     // Prevenir doble envío usando ref para evitar problemas de closure
     if (isSubmittingRef.current) {
       console.log('❌ Ya se está enviando (ref), ignorando llamada adicional');
+      return;
+    }
+    
+    // Verificar si ya se está procesando este mismo envío
+    if (submissionIdRef.current) {
+      console.log('❌ Ya se está procesando un envío, ignorando llamada adicional');
       return;
     }
     
@@ -168,6 +181,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     console.log('✅ Validación exitosa, llamando onSave');
     setIsSubmitting(true);
     isSubmittingRef.current = true;
+    submissionIdRef.current = currentSubmissionId;
     
     try {
       if (isEditing && dolor) {
@@ -182,6 +196,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       console.error('❌ Error en handleSubmit:', error);
       setIsSubmitting(false);
       isSubmittingRef.current = false;
+      submissionIdRef.current = null;
     }
   };
 

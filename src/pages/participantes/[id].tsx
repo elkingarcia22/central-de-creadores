@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -231,7 +231,7 @@ export default function DetalleParticipante() {
     }
   };
 
-  const handleDolorGuardado = async (dolorData: any) => {
+  const handleDolorGuardado = useCallback(async (dolorData: any) => {
     try {
       console.log('🔍 handleDolorGuardado llamado con datos:', dolorData);
       console.log('🔍 Timestamp:', new Date().toISOString());
@@ -266,7 +266,7 @@ export default function DetalleParticipante() {
       console.error('❌ Error al crear dolor:', error);
       showError('Error al crear el dolor: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
-  };
+  }, [id, showSuccess, showError]);
 
   // Funciones para acciones de la tabla de dolores
   const handleVerDolor = (dolor: DolorParticipante) => {
