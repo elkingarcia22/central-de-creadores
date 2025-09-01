@@ -653,38 +653,50 @@ export default function DetalleParticipante() {
     {
       key: 'descripcion',
       label: 'Descripción del Dolor',
-      render: (row: DolorParticipante) => (
-        <Typography variant="body2">
-          {row.descripcion}
-        </Typography>
-      )
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="body2">-</Typography>;
+        return (
+          <Typography variant="body2">
+            {row.descripcion || '-'}
+          </Typography>
+        );
+      }
     },
     {
       key: 'sesion_relacionada',
       label: 'Sesión Relacionada',
-      render: (row: DolorParticipante) => (
-        <Typography variant="caption" color="secondary">
-          {row.sesion_relacionada || 'General'}
-        </Typography>
-      )
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        return (
+          <Typography variant="caption" color="secondary">
+            {row.sesion_relacionada || 'General'}
+          </Typography>
+        );
+      }
     },
     {
       key: 'fecha_creacion',
       label: 'Fecha de Creación',
-      render: (row: DolorParticipante) => (
-        <Typography variant="caption">
-          {formatearFecha(row.fecha_creacion)}
-        </Typography>
-      )
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="caption">-</Typography>;
+        return (
+          <Typography variant="caption">
+            {formatearFecha(row.fecha_creacion)}
+          </Typography>
+        );
+      }
     },
     {
       key: 'creado_por',
       label: 'Creado por',
-      render: (row: DolorParticipante) => (
-        <Typography variant="caption" color="secondary">
-          {row.creado_por}
-        </Typography>
-      )
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        return (
+          <Typography variant="caption" color="secondary">
+            {row.creado_por || '-'}
+          </Typography>
+        );
+      }
     }
   ];
 
@@ -692,38 +704,50 @@ export default function DetalleParticipante() {
     {
       key: 'contenido',
       label: 'Comentario',
-      render: (row: ComentarioParticipante) => (
-        <Typography variant="body2">
-          {row.contenido}
-        </Typography>
-      )
+      render: (row: ComentarioParticipante) => {
+        if (!row) return <Typography variant="body2">-</Typography>;
+        return (
+          <Typography variant="body2">
+            {row.contenido || '-'}
+          </Typography>
+        );
+      }
     },
     {
       key: 'sesion_relacionada',
       label: 'Sesión Relacionada',
-      render: (row: ComentarioParticipante) => (
-        <Typography variant="caption" color="secondary">
-          {row.sesion_relacionada || 'General'}
-        </Typography>
-      )
+      render: (row: ComentarioParticipante) => {
+        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        return (
+          <Typography variant="caption" color="secondary">
+            {row.sesion_relacionada || 'General'}
+          </Typography>
+        );
+      }
     },
     {
       key: 'fecha_creacion',
       label: 'Fecha de Creación',
-      render: (row: ComentarioParticipante) => (
-        <Typography variant="caption">
-          {formatearFecha(row.fecha_creacion)}
-        </Typography>
-      )
+      render: (row: ComentarioParticipante) => {
+        if (!row) return <Typography variant="caption">-</Typography>;
+        return (
+          <Typography variant="caption">
+            {formatearFecha(row.fecha_creacion)}
+          </Typography>
+        );
+      }
     },
     {
       key: 'creado_por',
       label: 'Creado por',
-      render: (row: ComentarioParticipante) => (
-        <Typography variant="caption" color="secondary">
-          {row.creado_por}
-        </Typography>
-      )
+      render: (row: ComentarioParticipante) => {
+        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        return (
+          <Typography variant="caption" color="secondary">
+            {row.creado_por || '-'}
+          </Typography>
+        );
+      }
     }
   ];
 
