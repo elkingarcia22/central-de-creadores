@@ -4,8 +4,14 @@ import Layout from '../components/ui/Layout';
 const TestLayoutSidePanelPage: React.FC = () => {
   const [showSidePanel, setShowSidePanel] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Evitar problemas de hidratación
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (showSidePanel || showFilterDrawer) {
@@ -123,16 +129,16 @@ const TestLayoutSidePanelPage: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">Información del Viewport (con Layout)</h2>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <strong>Viewport Height:</strong> {typeof window !== 'undefined' ? window.innerHeight : 'N/A'}px
+                <strong>Viewport Height:</strong> {isClient ? window.innerHeight : 'Cargando...'}px
               </div>
               <div>
-                <strong>Document Height:</strong> {typeof document !== 'undefined' ? document.documentElement.scrollHeight : 'N/A'}px
+                <strong>Document Height:</strong> {isClient ? document.documentElement.scrollHeight : 'Cargando...'}px
               </div>
               <div>
-                <strong>Body Height:</strong> {typeof document !== 'undefined' ? document.body.scrollHeight : 'N/A'}px
+                <strong>Body Height:</strong> {isClient ? document.body.scrollHeight : 'Cargando...'}px
               </div>
               <div>
-                <strong>Window Height:</strong> {typeof window !== 'undefined' ? window.outerHeight : 'N/A'}px
+                <strong>Window Height:</strong> {isClient ? window.outerHeight : 'Cargando...'}px
               </div>
             </div>
           </div>

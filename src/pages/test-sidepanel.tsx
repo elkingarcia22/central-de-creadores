@@ -3,8 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 const TestSidePanelPage: React.FC = () => {
   const [showSidePanel, setShowSidePanel] = useState(false);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  // Evitar problemas de hidratación
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (showSidePanel || showFilterDrawer) {
@@ -92,23 +98,23 @@ const TestSidePanelPage: React.FC = () => {
           🧪 Página de Prueba - Sidepanels
         </h1>
         
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Información del Viewport</h2>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <strong>Viewport Height:</strong> {typeof window !== 'undefined' ? window.innerHeight : 'N/A'}px
-            </div>
-            <div>
-              <strong>Document Height:</strong> {typeof document !== 'undefined' ? document.documentElement.scrollHeight : 'N/A'}px
-            </div>
-            <div>
-              <strong>Body Height:</strong> {typeof document !== 'undefined' ? document.body.scrollHeight : 'N/A'}px
-            </div>
-            <div>
-              <strong>Window Height:</strong> {typeof window !== 'undefined' ? window.outerHeight : 'N/A'}px
+                  <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 className="text-xl font-semibold mb-4">Información del Viewport</h2>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <strong>Viewport Height:</strong> {isClient ? window.innerHeight : 'Cargando...'}px
+              </div>
+              <div>
+                <strong>Document Height:</strong> {isClient ? document.documentElement.scrollHeight : 'Cargando...'}px
+              </div>
+              <div>
+                <strong>Body Height:</strong> {isClient ? document.body.scrollHeight : 'Cargando...'}px
+              </div>
+              <div>
+                <strong>Window Height:</strong> {isClient ? window.outerHeight : 'Cargando...'}px
+              </div>
             </div>
           </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow-lg p-6">
