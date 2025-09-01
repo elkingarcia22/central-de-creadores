@@ -596,6 +596,10 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     const historialFiltrado = useMemo(() => {
       let filtrado = empresaData.estadisticas?.investigaciones || [];
       
+      console.log('🔍 Filtrado inicial:', filtrado.length, 'elementos');
+      console.log('🔍 Filtros actuales:', filters);
+      console.log('🔍 Término de búsqueda:', searchTerm);
+      
       // Filtro por búsqueda
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
@@ -604,16 +608,19 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           item.responsable?.full_name?.toLowerCase().includes(term) ||
           item.tipo_sesion?.toLowerCase().includes(term)
         );
+        console.log('🔍 Después de búsqueda:', filtrado.length, 'elementos');
       }
 
       // Filtro por estado
       if (filters.estado !== 'todos') {
         filtrado = filtrado.filter(item => item.estado_participacion === filters.estado);
+        console.log('🔍 Después de filtro estado:', filtrado.length, 'elementos');
       }
 
       // Filtro por responsable
       if (filters.responsable !== 'todos') {
         filtrado = filtrado.filter(item => item.responsable?.id === filters.responsable);
+        console.log('🔍 Después de filtro responsable:', filtrado.length, 'elementos');
       }
 
       // Filtro por fechas
@@ -621,14 +628,17 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         filtrado = filtrado.filter(item => 
           new Date(item.fecha_inicio) >= new Date(filters.fecha_desde)
         );
+        console.log('🔍 Después de filtro fecha desde:', filtrado.length, 'elementos');
       }
 
       if (filters.fecha_hasta) {
         filtrado = filtrado.filter(item => 
           new Date(item.fecha_inicio) <= new Date(filters.fecha_hasta)
         );
+        console.log('🔍 Después de filtro fecha hasta:', filtrado.length, 'elementos');
       }
 
+      console.log('🔍 Resultado final:', filtrado.length, 'elementos');
       return filtrado;
     }, [empresaData.estadisticas?.investigaciones, searchTerm, filters]);
 
