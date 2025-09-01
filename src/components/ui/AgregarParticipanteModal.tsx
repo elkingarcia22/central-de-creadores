@@ -532,6 +532,7 @@ export default function AgregarParticipanteModal({
           variant="title-only"
           onClose={onClose}
           icon={<UsersIcon className="w-5 h-5" />}
+          className="-mt-6 -mx-6"
         />
 
         {/* Contenido del formulario */}

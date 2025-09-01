@@ -171,6 +171,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           variant="title-only"
           onClose={handleClose}
           icon={<ClipboardListIcon className="w-5 h-5" />}
+          className="-mt-6 -mx-6"
         />
 
         {/* Contenido del formulario */}

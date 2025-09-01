@@ -530,6 +530,7 @@ export default function CrearReclutamientoModal({
             variant="title-only"
             onClose={handleClose}
             icon={<UsersIcon className="w-5 h-5" />}
+            className="-mt-6 -mx-6"
           />
 
           {/* Contenido del formulario */}
