@@ -722,8 +722,9 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             Participantes de la Empresa
           </Subtitle>
           
-          {empresaData.participantes && empresaData.participantes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mt-6">
+            {empresaData.participantes && empresaData.participantes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {empresaData.participantes.map((participante) => (
                 <CompanyParticipantCard
                   key={participante.id}
@@ -747,6 +748,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               </Typography>
             </Card>
           )}
+          </div>
         </div>
 
         {/* Historial de Participación con diseño unificado */}
@@ -848,7 +850,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
              />
              
              {/* Drawer */}
-             <div className="relative ml-auto w-full max-w-md bg-white dark:bg-gray-900 shadow-xl">
+             <div className="relative ml-auto w-full max-w-md bg-white dark:bg-gray-900 shadow-xl h-full">
                <div className="flex flex-col h-full">
                  {/* Header */}
                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
