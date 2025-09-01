@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SideModal, Typography, Button, Input, Textarea, Select, Chip, PageHeader, FilterLabel } from './index';
 import { CategoriaDolor, DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, SeveridadDolor, EstadoDolor } from '../../types/dolores';
 import { SaveIcon, XIcon } from '../icons';
@@ -23,6 +23,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   loading = false
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
   const [investigaciones, setInvestigaciones] = useState<Array<{id: string, nombre: string}>>([]);
   const [formData, setFormData] = useState<CrearDolorRequest>({
@@ -42,6 +43,11 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       cargarCategorias();
       cargarInvestigaciones();
       setIsSubmitting(false); // Resetear estado de envío al abrir
+      isSubmittingRef.current = false; // Resetear ref al abrir
+    } else {
+      // Resetear estado cuando se cierre el modal
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   }, [isOpen, participanteId]);
 
@@ -146,10 +152,11 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     console.log('🔍 formData:', formData);
     console.log('🔍 isEditing:', isEditing);
     console.log('🔍 isSubmitting:', isSubmitting);
+    console.log('🔍 isSubmittingRef.current:', isSubmittingRef.current);
     
-    // Prevenir doble envío
-    if (isSubmitting) {
-      console.log('❌ Ya se está enviando, ignorando llamada adicional');
+    // Prevenir doble envío usando ref para evitar problemas de closure
+    if (isSubmittingRef.current) {
+      console.log('❌ Ya se está enviando (ref), ignorando llamada adicional');
       return;
     }
     
@@ -160,6 +167,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
     console.log('✅ Validación exitosa, llamando onSave');
     setIsSubmitting(true);
+    isSubmittingRef.current = true;
     
     try {
       if (isEditing && dolor) {
@@ -173,6 +181,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     } catch (error) {
       console.error('❌ Error en handleSubmit:', error);
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 
