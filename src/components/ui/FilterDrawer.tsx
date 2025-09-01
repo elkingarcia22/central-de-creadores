@@ -380,11 +380,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden" style={{ height: '100vh' }}>
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
+        style={{ height: '100vh' }}
       />
       
       {/* Drawer */}
@@ -393,7 +394,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         bg-card border-l border-border
          transform transition-transform
         ${className}
-      `}>
+      `} style={{ height: '100vh' }}>
         <div className="flex flex-col h-full">
           {/* Header */}
           <PageHeader

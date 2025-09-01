@@ -50,6 +50,7 @@ import { Subtitle } from '../../../components/ui/Subtitle';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import FilterDrawer from '../../../components/ui/FilterDrawer';
+import TestSidePanel from '../../../components/ui/TestSidePanel';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
@@ -125,6 +126,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showTestPanel, setShowTestPanel] = useState(false);
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState({
     estados: [],
@@ -579,9 +581,10 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   // Componente de contenido de historial
   const HistorialContent = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [showFilterDrawer, setShowFilterDrawer] = useState(false);
-    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [filters, setFilters] = useState({
+      const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [showTestPanel, setShowTestPanel] = useState(false);
+  const [filters, setFilters] = useState({
       busqueda: '',
       estado: 'todos',
       fecha_desde: '',
@@ -1070,6 +1073,14 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
             {/* Acciones principales */}
             <div className="flex flex-wrap gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowTestPanel(true)}
+                className="text-xs"
+              >
+                🧪 Probar Panel
+              </Button>
               <ActionsMenu
                 actions={[
                   {
@@ -1150,6 +1161,12 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         empresa={empresaData}
         usuarios={usuarios}
         loading={saving}
+      />
+
+      {/* Panel de prueba */}
+      <TestSidePanel
+        isOpen={showTestPanel}
+        onClose={() => setShowTestPanel(false)}
       />
     </Layout>
   );
