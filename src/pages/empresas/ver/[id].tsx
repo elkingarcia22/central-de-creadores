@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import { useRol } from '../../../contexts/RolContext';
@@ -35,11 +35,16 @@ import {
   BarChartIcon,
   HistoryIcon,
   InfoIcon,
-  ConfiguracionesIcon
+  ConfiguracionesIcon,
+  SearchIcon,
+  FilterIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
 import { getChipVariant, getChipText } from '../../../utils/chipUtils';
+import { Subtitle } from '../../../components/ui/Subtitle';
+import Input from '../../../components/ui/Input';
+import FilterDrawer from '../../../components/ui/FilterDrawer';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
@@ -567,129 +572,296 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   };
 
   // Componente de contenido de historial
-  const HistorialContent = () => (
-    <div className="space-y-6">
-      {/* Participantes de la empresa */}
-      <div>
-        <Typography variant="h4" weight="semibold" className="mb-4">
-          Participantes de la Empresa
-        </Typography>
-        
-        {empresaData.participantes && empresaData.participantes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {empresaData.participantes.map((participante) => (
-              <CompanyParticipantCard
-                key={participante.id}
-                participant={participante}
-                onViewDetails={(id) => {
-                  // Navegar a la vista del participante en nueva pestaña
-                  window.open(`/participantes/${id}`, '_blank');
-                }}
-                showActions={true}
-                showExtendedInfo={false}
-              />
-            ))}
+  const HistorialContent = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [filters, setFilters] = useState({
+      busqueda: '',
+      estado: 'todos',
+      fecha_desde: '',
+      fecha_hasta: '',
+      responsable: 'todos'
+    });
+
+    // Filtrar datos del historial
+    const historialFiltrado = useMemo(() => {
+      let filtrado = empresaData.estadisticas?.investigaciones || [];
+      
+      // Filtro por búsqueda
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtrado = filtrado.filter(item => 
+          item.nombre?.toLowerCase().includes(term) ||
+          item.responsable?.full_name?.toLowerCase().includes(term) ||
+          item.tipo_sesion?.toLowerCase().includes(term)
+        );
+      }
+
+      // Filtro por estado
+      if (filters.estado !== 'todos') {
+        filtrado = filtrado.filter(item => item.estado_participacion === filters.estado);
+      }
+
+      // Filtro por responsable
+      if (filters.responsable !== 'todos') {
+        filtrado = filtrado.filter(item => item.responsable?.id === filters.responsable);
+      }
+
+      // Filtro por fechas
+      if (filters.fecha_desde) {
+        filtrado = filtrado.filter(item => 
+          new Date(item.fecha_inicio) >= new Date(filters.fecha_desde)
+        );
+      }
+
+      if (filters.fecha_hasta) {
+        filtrado = filtrado.filter(item => 
+          new Date(item.fecha_inicio) <= new Date(filters.fecha_hasta)
+        );
+      }
+
+      return filtrado;
+    }, [empresaData.estadisticas?.investigaciones, searchTerm, filters]);
+
+    // Contar filtros activos
+    const getActiveFiltersCount = () => {
+      let count = 0;
+      if (filters.estado !== 'todos') count++;
+      if (filters.responsable !== 'todos') count++;
+      if (filters.fecha_desde) count++;
+      if (filters.fecha_hasta) count++;
+      return count;
+    };
+
+    // Handlers para búsqueda expandible
+    const handleExpandSearch = () => setIsSearchExpanded(true);
+    const handleCollapseSearch = () => {
+      setIsSearchExpanded(false);
+      setSearchTerm('');
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    };
+
+    // Handler para filtros
+    const handleOpenFilters = () => setShowFilterDrawer(true);
+    const handleCloseFilters = () => setShowFilterDrawer(false);
+
+    // Cerrar búsqueda con Escape
+    useEffect(() => {
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && isSearchExpanded) {
+          handleCollapseSearch();
+        }
+      };
+
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }, [isSearchExpanded]);
+
+    // Columnas para la tabla de historial
+    const columnsHistorial = [
+      {
+        key: 'nombre',
+        label: 'Investigación',
+        render: (value: any, row: any) => (
+          <div>
+            <Typography variant="subtitle2" weight="medium">
+              {row.nombre}
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              {row.tipo_sesion || 'Sesión de investigación'}
+            </Typography>
           </div>
-        ) : (
-          <Card className="text-center py-12">
-            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <Typography variant="h5" weight="medium" className="mb-2">
-              Sin participantes
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              Esta empresa no tiene participantes registrados
-            </Typography>
-          </Card>
-        )}
-      </div>
+        )
+      },
+      {
+        key: 'fecha_inicio',
+        label: 'Fecha de Participación',
+        sortable: true,
+        render: (value: any, row: any) => (
+          <Typography variant="body2">
+            {formatearFecha(row.fecha_inicio)}
+          </Typography>
+        )
+      },
+      {
+        key: 'estado_participacion',
+        label: 'Estado',
+        sortable: true,
+        render: (value: any, row: any) => (
+          <Chip variant={getEstadoColor(row.estado_participacion) as any}>
+            {getChipText(row.estado_participacion)}
+          </Chip>
+        )
+      },
+      {
+        key: 'responsable',
+        label: 'Responsable',
+        sortable: true,
+        render: (value: any, row: any) => (
+          <Typography variant="body2">
+            {row.responsable?.full_name || 'Sin responsable'}
+          </Typography>
+        )
+      }
+    ];
 
-      {/* Historial de Participación */}
-      <div>
-        <Typography variant="h4" weight="semibold" className="mb-4">
-          Historial de Participación
-        </Typography>
-        
-        {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 ? (
-          <DataTable
-            data={empresaData.estadisticas.investigaciones}
-            columns={[
-              {
-                key: 'nombre',
-                label: 'Investigación',
-                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
-                  <div>
-                    <Typography variant="subtitle2" weight="medium">
-                      {row.nombre}
-                    </Typography>
-                    <Typography variant="caption" color="secondary">
-                      {row.tipo_sesion || 'Sesión de investigación'}
-                    </Typography>
+    return (
+      <div className="space-y-6">
+        {/* Participantes de la empresa */}
+        <div>
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Participantes de la Empresa
+          </Typography>
+          
+          {empresaData.participantes && empresaData.participantes.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {empresaData.participantes.map((participante) => (
+                <CompanyParticipantCard
+                  key={participante.id}
+                  participant={participante}
+                  onViewDetails={(id) => {
+                    window.open(`/participantes/${id}`, '_blank');
+                  }}
+                  showActions={true}
+                  showExtendedInfo={false}
+                />
+              ))}
+            </div>
+          ) : (
+            <Card className="text-center py-12">
+              <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <Typography variant="h5" weight="medium" className="mb-2">
+                Sin participantes
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Esta empresa no tiene participantes registrados
+              </Typography>
+            </Card>
+          )}
+        </div>
+
+        {/* Historial de Participación con diseño unificado */}
+        <Card variant="elevated" padding="lg" className="space-y-6">
+          {/* Header con título, contador y controles */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Subtitle>
+                Historial de Participación
+              </Subtitle>
+              <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                {historialFiltrado.length} de {empresaData.estadisticas?.investigaciones?.length || 0} participación{historialFiltrado.length !== 1 ? 'es' : ''} registrada{historialFiltrado.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+            
+            {/* Iconos de búsqueda y filtro en la misma línea */}
+            <div className="flex items-center gap-2">
+              {/* Icono de búsqueda que se expande */}
+              <div className="relative">
+                {isSearchExpanded ? (
+                  <div className="flex items-center gap-2">
+                                         <Input
+                       placeholder="Buscar en historial..."
+                       value={searchTerm}
+                       onChange={handleSearchChange}
+                       className="!w-[500px] pl-10 pr-10 py-2"
+                       icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                       iconPosition="left"
+                     />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCollapseSearch}
+                      className="text-gray-500 hover:text-gray-700 border-0"
+                    >
+                      ✕
+                    </Button>
                   </div>
-                )
-              },
-              {
-                key: 'fecha_inicio',
-                label: 'Fecha de Participación',
-                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
-                  <Typography variant="body2">
-                    {formatearFecha(row.fecha_inicio)}
-                  </Typography>
-                )
-              },
-              {
-                key: 'estado',
-                label: 'Estado',
-                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
-                  <Chip variant={getEstadoColor(row.estado_participacion) as any}>
-                    {getChipText(row.estado_participacion)}
-                  </Chip>
-                )
-              },
-              {
-                key: 'responsable',
-                label: 'Responsable',
-                render: (value: any, row: any, isEditing: boolean, onSave: (value: any) => void) => (
-                  <Typography variant="body2">
-                    {row.responsable?.full_name || 'Sin responsable'}
-                  </Typography>
-                )
-              }
-            ]}
-            loading={false}
-            searchable={false}
-            filterable={false}
-            selectable={false}
-            emptyMessage="No se encontraron investigaciones"
-            rowKey="id"
-          />
-        ) : (
-          <Card className="text-center py-12">
-            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <Typography variant="h5" weight="medium" className="mb-2">
-              Sin investigaciones
-            </Typography>
-            <Typography variant="body2" color="secondary">
-              Esta empresa no ha participado en investigaciones
-            </Typography>
-          </Card>
-        )}
-      </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={handleExpandSearch}
+                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                    iconOnly
+                    icon={<SearchIcon className="w-5 h-5" />}
+                  />
+                )}
+              </div>
+              
+              {/* Icono de filtro */}
+              <Button
+                variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
+                onClick={handleOpenFilters}
+                className="relative p-2 border-0"
+                iconOnly
+                icon={<FilterIcon />}
+              >
+                {getActiveFiltersCount() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                    {getActiveFiltersCount()}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
 
-      {/* Estado vacío solo si no hay investigaciones ni participantes */}
-      {(!empresaData.estadisticas?.investigaciones || empresaData.estadisticas.investigaciones.length === 0) &&
-       (!empresaData.participantes || empresaData.participantes.length === 0) && (
-        <Card className="text-center py-12">
-          <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <Typography variant="h5" weight="medium" className="mb-2">
-            Sin historial de participaciones
-          </Typography>
-          <Typography variant="body2" color="secondary">
-            Esta empresa aún no ha participado en investigaciones
-          </Typography>
+          {/* Tabla de historial */}
+          {historialFiltrado.length > 0 ? (
+            <DataTable
+              data={historialFiltrado}
+              columns={columnsHistorial}
+              loading={false}
+              searchable={false}
+              filterable={false}
+              selectable={false}
+              emptyMessage="No se encontraron participaciones"
+              rowKey="id"
+            />
+          ) : (
+            <div className="text-center py-12">
+              <HistoryIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="h5" color="secondary" className="mb-2">
+                Sin participaciones
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Esta empresa aún no ha participado en investigaciones
+              </Typography>
+            </div>
+          )}
         </Card>
-      )}
-    </div>
-  );
+
+                 {/* Drawer de filtros avanzados */}
+         <FilterDrawer
+           isOpen={showFilterDrawer}
+           onClose={handleCloseFilters}
+           filters={filters}
+           onFiltersChange={(newFilters: any) => setFilters(newFilters)}
+           type="empresa"
+           options={{
+             estados: [
+               { value: 'todos', label: 'Todos los estados' },
+               { value: 'completada', label: 'Completada' },
+               { value: 'en_progreso', label: 'En Progreso' },
+               { value: 'cancelada', label: 'Cancelada' },
+               { value: 'reprogramada', label: 'Reprogramada' }
+             ],
+             responsables: [
+               { value: 'todos', label: 'Todos los responsables' },
+               ...(empresaData.estadisticas?.investigaciones?.reduce((acc: any[], item: any) => {
+                 if (item.responsable && !acc.find(r => r.value === item.responsable.id)) {
+                   acc.push({ value: item.responsable.id, label: item.responsable.full_name });
+                 }
+                 return acc;
+               }, []) || [])
+             ]
+           }}
+         />
+      </div>
+    );
+  };
 
 
 
