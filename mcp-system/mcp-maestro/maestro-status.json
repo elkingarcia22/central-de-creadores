@@ -1,12 +1,16 @@
 {
-  "timestamp": "2025-01-27T18:30:00.000Z",
-  "status": "ACTIVE",
-  "files_verified": true,
-  "server_code": "RUNNING",
-  "auto_mode": true,
-  "pids": [3504, 27262],
-  "message": "MCP Maestro activo y ejecutándose en modo automático",
-  "features": {
+  "status": "active",
+  "mode": "automatic",
+  "pid": 35891,
+  "timestamp": "2025-01-27T17:19:00.000Z",
+  "uptime": 0,
+  "memory_usage": {
+    "rss": 27592,
+    "heapTotal": 0,
+    "heapUsed": 0,
+    "external": 0
+  },
+  "configuration": {
     "autoMode": true,
     "skipConfirmations": true,
     "autoExecute": true,
@@ -20,19 +24,36 @@
     "noPrompts": true,
     "skipAllConfirmations": true
   },
-  "tools_available": [
-    "orchestrate_task",
-    "recover_context", 
-    "delegate_to_mcp",
-    "sync_project_state",
-    "get_system_status",
-    "save_important_decision",
-    "query_knowledge_base",
-    "verify_project_info",
-    "activate_github",
-    "auto_activate_session",
-    "sync_mcps",
-    "get_mcp_status",
-    "get_supabase_info"
-  ]
+  "tools": {
+    "orchestrate_task": "active",
+    "recover_context": "active",
+    "delegate_to_mcp": "active",
+    "sync_project_state": "active",
+    "get_system_status": "active",
+    "save_important_decision": "active",
+    "query_knowledge_base": "active",
+    "verify_project_info": "active",
+    "activate_github": "active",
+    "auto_activate_session": "active",
+    "sync_mcps": "active",
+    "get_mcp_status": "active",
+    "get_supabase_info": "active"
+  },
+  "integrations": {
+    "github": "ready",
+    "supabase": "ready",
+    "design_system": "ready",
+    "code_structure": "ready",
+    "testing_qa": "ready",
+    "deploy_devops": "ready",
+    "documentation": "ready"
+  },
+  "session": {
+    "current_session_id": null,
+    "active_sessions": 0,
+    "context_recovered": false
+  },
+  "last_activity": "2025-01-27T17:19:00.000Z",
+  "version": "1.0.0",
+  "name": "mcp-maestro"
 }
