@@ -1290,8 +1290,7 @@ export default function ParticipantesPage() {
               {
                 label: 'Crear Dolor',
                 icon: <AlertTriangleIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleCrearDolor(row),
-                className: 'text-orange-600 hover:text-orange-700'
+                onClick: (row: any) => handleCrearDolor(row)
               },
               {
                 label: 'Crear Comentario',
