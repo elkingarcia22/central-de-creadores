@@ -566,15 +566,50 @@ html {
 /* 🔧 Fix específico para altura de sidepanels */
 .fixed.inset-0.z-50 {
   height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  position: fixed !important;
+  z-index: 50 !important;
 }
 
 .fixed.inset-0.z-50 .absolute.inset-0 {
   height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
 
 .fixed.inset-0.z-50 .absolute.right-0.top-0,
 .fixed.inset-0.z-50 .absolute.left-0.top-0 {
   height: 100vh !important;
   top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* 🔧 Fix adicional para sidepanels dentro del Layout */
+.fixed.inset-0.z-50[style*="height: 100vh"] {
+  height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* 🔧 Override para cualquier elemento con position fixed y z-50 */
+[style*="position: fixed"][style*="z-50"],
+[style*="position: fixed"][style*="z-index: 50"] {
+  height: 100vh !important;
+  width: 100vw !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   bottom: 0 !important;
 }
