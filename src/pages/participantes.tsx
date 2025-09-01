@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { useRol } from '../contexts/RolContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
+import { useFastUser } from '../contexts/FastUserContext';
+import { supabase } from '../api/supabase';
 
 import { Layout, PageHeader } from '../components/ui';
 import Typography from '../components/ui/Typography';
@@ -68,6 +70,7 @@ export default function ParticipantesPage() {
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
+  const { userId, isAuthenticated } = useFastUser();
   const router = useRouter();
   
   // Estados principales
@@ -577,14 +580,12 @@ export default function ParticipantesPage() {
         // Si la API de test funciona, intentar con la API real
         console.log('🔍 Intentando con API real...');
         
-        // Obtener el usuario actual del contexto
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('🔍 Usuario obtenido del localStorage:', user);
-        console.log('🔍 user-id que se enviará:', user.id || '');
+        // Verificar autenticación usando el contexto
+        console.log('🔍 Estado de autenticación:', { isAuthenticated, userId });
         
-        if (!user.id) {
+        if (!isAuthenticated || !userId) {
           console.error('❌ Error: Usuario no autenticado');
-          showError('Error: Usuario no autenticado');
+          showError('Error: Usuario no autenticado. Por favor, inicia sesión nuevamente.');
           return;
         }
         
@@ -593,7 +594,7 @@ export default function ParticipantesPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'user-id': user.id
+            'user-id': userId
           },
           body: JSON.stringify(dolorData),
         });
