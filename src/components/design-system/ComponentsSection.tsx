@@ -1856,23 +1856,7 @@ const ComponentsSection: React.FC = () => {
                 <Chip variant="accent-pink">Accent Pink</Chip>
               </div>
             </div>
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-2">Estados de Dolor</Typography>
-              <div className="flex flex-wrap gap-2">
-                <Chip variant="sin_resolver">Sin Resolver</Chip>
-                <Chip variant="resuelto">Resuelto</Chip>
-                <Chip variant="archivado">Archivado</Chip>
-              </div>
-            </div>
-            <div>
-              <Typography variant="h4" weight="semibold" className="mb-2">Niveles de Severidad</Typography>
-              <div className="flex flex-wrap gap-2">
-                <Chip variant="baja">Baja</Chip>
-                <Chip variant="media">Media</Chip>
-                <Chip variant="alta">Alta</Chip>
-                <Chip variant="critica">Crítica</Chip>
-              </div>
-            </div>
+
           </div>
         </Card>
 
@@ -2005,6 +1989,23 @@ const ComponentsSection: React.FC = () => {
                     <Chip variant="pendiente">Por Agendar</Chip>
                     <Chip variant="pendiente">En Borrador</Chip>
                     <Chip variant="pendiente">En Enfriamiento</Chip>
+                  </div>
+                </div>
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Estados de Dolor (Nuevo)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="sin_resolver">Sin Resolver</Chip>
+                    <Chip variant="resuelto">Resuelto</Chip>
+                    <Chip variant="archivado">Archivado</Chip>
+                  </div>
+                </div>
+                <div>
+                  <Typography variant="body2" color="secondary" className="mb-2">Niveles de Severidad (Nuevo)</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    <Chip variant="baja">Baja</Chip>
+                    <Chip variant="media">Media</Chip>
+                    <Chip variant="alta">Alta</Chip>
+                    <Chip variant="critica">Crítica</Chip>
                   </div>
                 </div>
               </div>
