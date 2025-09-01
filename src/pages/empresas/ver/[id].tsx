@@ -8,7 +8,7 @@ import { useUser } from '../../../contexts/UserContext';
 import { usePermisos } from '../../../utils/permisosUtils';
 import { Empresa } from '../../../types/empresas';
 
-import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard, DataTable } from '../../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem, CompanyParticipantCard, DataTable, ActionsMenu } from '../../../components/ui';
 import TestParticipantCard from '../../../components/ui/TestParticipantCard';
 import Typography from '../../../components/ui/Typography';
 import Card from '../../../components/ui/Card';
@@ -38,7 +38,10 @@ import {
   ConfiguracionesIcon,
   SearchIcon,
   FilterIcon,
-  CloseIcon
+  CloseIcon,
+  EyeIcon,
+  CopyIcon,
+  TrashIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
@@ -1026,14 +1029,45 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
             {/* Acciones principales */}
             <div className="flex flex-wrap gap-3">
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => setShowEditModal(true)}
-              >
-                <EditIcon className="w-4 h-4" />
-                Editar
-              </Button>
+              <ActionsMenu
+                actions={[
+                  {
+                    label: 'Ver detalles',
+                    icon: <EyeIcon className="w-4 h-4" />,
+                    onClick: () => {
+                      // La empresa ya está siendo vista, pero podríamos abrir en nueva pestaña
+                      window.open(`/empresas/ver/${empresaData.id}`, '_blank');
+                    },
+                    className: 'text-popover-foreground hover:text-popover-foreground/80'
+                  },
+                  {
+                    label: 'Editar',
+                    icon: <EditIcon className="w-4 h-4" />,
+                    onClick: () => setShowEditModal(true),
+                    className: 'text-popover-foreground hover:text-popover-foreground/80'
+                  },
+                  {
+                    label: 'Duplicar',
+                    icon: <CopyIcon className="w-4 h-4" />,
+                    onClick: () => {
+                      // Implementar duplicación de empresa
+                      console.log('Duplicar empresa:', empresaData.id);
+                      // Aquí se podría abrir un modal para duplicar
+                    },
+                    className: 'text-popover-foreground hover:text-popover-foreground/80'
+                  },
+                  {
+                    label: 'Eliminar',
+                    icon: <TrashIcon className="w-4 h-4" />,
+                    onClick: () => {
+                      // Implementar eliminación de empresa
+                      console.log('Eliminar empresa:', empresaData.id);
+                      // Aquí se podría abrir un modal de confirmación
+                    },
+                    className: 'text-destructive hover:text-destructive/80'
+                  }
+                ]}
+              />
             </div>
           </div>
 
