@@ -650,21 +650,59 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       setSearchTerm(e.target.value);
     };
 
-    // Handler para filtros
-    const handleOpenFilters = () => setShowFilterDrawer(true);
-    const handleCloseFilters = () => setShowFilterDrawer(false);
+      // Handler para filtros
+  const handleOpenFilters = () => {
+    console.log('🔍 Abriendo filtros - showFilterDrawer:', true);
+    console.log('🔍 Viewport height:', window.innerHeight);
+    console.log('🔍 Document height:', document.documentElement.scrollHeight);
+    setShowFilterDrawer(true);
+  };
+  
+  const handleCloseFilters = () => {
+    console.log('🔍 Cerrando filtros - showFilterDrawer:', false);
+    setShowFilterDrawer(false);
+  };
 
-    // Cerrar búsqueda con Escape
-    useEffect(() => {
-      const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && isSearchExpanded) {
-          handleCollapseSearch();
+      // Cerrar búsqueda con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchExpanded) {
+        handleCollapseSearch();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isSearchExpanded]);
+
+  // Debug: Monitorear estado del sidepanel
+  useEffect(() => {
+    if (showFilterDrawer) {
+      console.log('🔍 Sidepanel abierto - Estado actual:');
+      console.log('🔍 showFilterDrawer:', showFilterDrawer);
+      console.log('🔍 Viewport height:', window.innerHeight);
+      console.log('🔍 Document height:', document.documentElement.scrollHeight);
+      console.log('🔍 Body height:', document.body.scrollHeight);
+      
+      // Verificar elementos del DOM
+      setTimeout(() => {
+        const overlay = document.querySelector('[class*="fixed inset-0"]');
+        const drawer = document.querySelector('[class*="absolute right-0"]');
+        
+        if (overlay) {
+          console.log('🔍 Overlay encontrado:', overlay);
+          console.log('🔍 Overlay height:', (overlay as HTMLElement).offsetHeight);
+          console.log('🔍 Overlay style height:', (overlay as HTMLElement).style.height);
         }
-      };
-
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }, [isSearchExpanded]);
+        
+        if (drawer) {
+          console.log('🔍 Drawer encontrado:', drawer);
+          console.log('🔍 Drawer height:', (drawer as HTMLElement).offsetHeight);
+          console.log('🔍 Drawer style height:', (drawer as HTMLElement).style.height);
+        }
+      }, 100);
+    }
+  }, [showFilterDrawer]);
 
     // Columnas para la tabla de historial
     const columnsHistorial = [
@@ -842,15 +880,16 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                  {/* Drawer de filtros avanzados personalizado para historial */}
          {showFilterDrawer && (
-           <div className="fixed inset-0 z-50 overflow-hidden">
+           <div className="fixed inset-0 z-50 overflow-hidden" style={{ height: '100vh' }}>
              {/* Overlay */}
              <div 
                className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
                onClick={handleCloseFilters}
+               style={{ height: '100vh' }}
              />
              
              {/* Drawer */}
-             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
+             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700" style={{ height: '100vh' }}>
                <div className="flex flex-col h-full">
                  {/* Header */}
                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
