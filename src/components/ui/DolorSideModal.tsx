@@ -161,9 +161,9 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     console.log('🔍 isSubmittingRef.current:', isSubmittingRef.current);
     console.log('🔍 submissionIdRef.current:', submissionIdRef.current);
     
-    // PROTECCIÓN MÁXIMA: Si ya se está enviando, NO HACER NADA
-    if (isSubmitting || isSubmittingRef.current || submissionIdRef.current) {
-      console.log('❌ PROTECCIÓN MÁXIMA: Ya se está enviando, IGNORANDO COMPLETAMENTE');
+    // PROTECCIÓN SIMPLE: Si ya se está enviando, NO HACER NADA
+    if (isSubmitting || isSubmittingRef.current) {
+      console.log('❌ PROTECCIÓN: Ya se está enviando, IGNORANDO');
       return;
     }
     
@@ -179,24 +179,21 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     isSubmittingRef.current = true;
     submissionIdRef.current = currentSubmissionId;
     
-    // Usar setTimeout para asegurar que el estado se actualice antes de continuar
-    setTimeout(() => {
-      try {
-        if (isEditing && dolor) {
-          onSave({
-            id: dolor.id,
-            ...formData
-          } as ActualizarDolorRequest);
-        } else {
-          onSave(formData);
-        }
-      } catch (error) {
-        console.error('❌ Error en handleSubmit:', error);
-        setIsSubmitting(false);
-        isSubmittingRef.current = false;
-        submissionIdRef.current = null;
+    try {
+      if (isEditing && dolor) {
+        onSave({
+          id: dolor.id,
+          ...formData
+        } as ActualizarDolorRequest);
+      } else {
+        onSave(formData);
       }
-    }, 0);
+    } catch (error) {
+      console.error('❌ Error en handleSubmit:', error);
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
+      submissionIdRef.current = null;
+    }
   };
 
   const handleInputChange = (field: keyof CrearDolorRequest, value: any) => {

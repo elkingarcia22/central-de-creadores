@@ -554,82 +554,46 @@ export default function ParticipantesPage() {
         return;
       }
       
-      // Primero probar con la API de test para verificar que funciona
-      console.log('🧪 Probando con API de test...');
-      const testResponse = await fetch('/api/test-dolores', {
+      // Verificar autenticación usando el contexto
+      console.log('🔍 Estado de autenticación:', { isAuthenticated, userId });
+      
+      if (!isAuthenticated || !userId) {
+        console.error('❌ Error: Usuario no autenticado');
+        showError('Error: Usuario no autenticado. Por favor, inicia sesión nuevamente.');
+        return;
+      }
+      
+      // Llamar directamente al API real para crear el dolor
+      console.log('🔍 Llamando al API real...');
+      const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'user-id': userId
         },
-        body: JSON.stringify({
-          participanteId: participanteParaCrearDolor.id,
-          categoriaId: dolorData.categoria_id,
-          titulo: dolorData.titulo,
-          descripcion: dolorData.descripcion,
-          severidad: dolorData.severidad,
-          investigacionId: dolorData.investigacion_relacionada_id
-        }),
+        body: JSON.stringify(dolorData),
       });
 
-      console.log('🧪 Respuesta del API de test:', testResponse.status, testResponse.statusText);
+      console.log('🔍 Respuesta del API real:', response.status, response.statusText);
 
-      if (testResponse.ok) {
-        const testResult = await testResponse.json();
-        console.log('✅ API de test exitosa:', testResult);
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Dolor creado exitosamente:', result);
         
-        // Si la API de test funciona, intentar con la API real
-        console.log('🔍 Intentando con API real...');
-        
-        // Verificar autenticación usando el contexto
-        console.log('🔍 Estado de autenticación:', { isAuthenticated, userId });
-        
-        if (!isAuthenticated || !userId) {
-          console.error('❌ Error: Usuario no autenticado');
-          showError('Error: Usuario no autenticado. Por favor, inicia sesión nuevamente.');
-          return;
-        }
-        
-        // Llamar al API real para crear el dolor
-        const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'user-id': userId
-          },
-          body: JSON.stringify(dolorData),
-        });
-
-        console.log('🔍 Respuesta del API real:', response.status, response.statusText);
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Dolor creado exitosamente:', result);
-          
-          // Cerrar modal y mostrar mensaje de éxito
-          setShowModalCrearDolor(false);
-          setParticipanteParaCrearDolor(null);
-          showSuccess('Dolor registrado exitosamente');
-        } else {
-          let errorMessage = 'Error al crear el dolor';
-          try {
-            const errorData = await response.json();
-            console.log('❌ Error del API real:', errorData);
-            errorMessage = errorData.error || errorMessage;
-          } catch (parseError) {
-            console.log('❌ Error parseando respuesta:', parseError);
-          }
-          showError(errorMessage);
-        }
+        // Cerrar modal y mostrar mensaje de éxito
+        setShowModalCrearDolor(false);
+        setParticipanteParaCrearDolor(null);
+        showSuccess('Dolor registrado exitosamente');
       } else {
-        let testErrorMessage = 'Error en API de test';
+        let errorMessage = 'Error al crear el dolor';
         try {
-          const testErrorData = await testResponse.json();
-          console.log('❌ Error del API de test:', testErrorData);
-          testErrorMessage = testErrorData.error || testErrorMessage;
+          const errorData = await response.json();
+          console.log('❌ Error del API real:', errorData);
+          errorMessage = errorData.error || errorMessage;
         } catch (parseError) {
-          console.log('❌ Error parseando respuesta de test:', parseError);
+          console.log('❌ Error parseando respuesta:', parseError);
         }
-        showError('Error en verificación: ' + testErrorMessage);
+        showError(errorMessage);
       }
     } catch (error) {
       console.error('❌ Error al crear dolor:', error);
