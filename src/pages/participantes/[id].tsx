@@ -1108,7 +1108,6 @@ export default function DetalleParticipante() {
                             label: 'Marcar como Resuelto',
                             icon: <CheckIcon className="w-4 h-4" />,
                             onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
-                            className: 'text-green-600 hover:text-green-700',
                             title: 'Marcar dolor como resuelto',
                             show: (dolor: DolorParticipante) => dolor.estado === 'activo'
                           },
@@ -1116,7 +1115,6 @@ export default function DetalleParticipante() {
                             label: 'Archivar',
                             icon: <CheckCircleIcon className="w-4 h-4" />,
                             onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
-                            className: 'text-blue-600 hover:text-blue-700',
                             title: 'Archivar dolor',
                             show: (dolor: DolorParticipante) => dolor.estado === 'activo' || dolor.estado === 'resuelto'
                           },
