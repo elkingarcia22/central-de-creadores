@@ -670,7 +670,7 @@ export default function DetalleParticipante() {
     {
       key: 'titulo',
       label: 'Título',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         console.log('🔍 Renderizando título, row:', row);
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
@@ -683,7 +683,7 @@ export default function DetalleParticipante() {
     {
       key: 'categoria_nombre',
       label: 'Categoría',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
         return (
           <div className="flex items-center gap-2">
@@ -703,7 +703,7 @@ export default function DetalleParticipante() {
     {
       key: 'severidad',
       label: 'Severidad',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         const getSeveridadColor = (severidad: string) => {
           switch (severidad) {
@@ -724,7 +724,7 @@ export default function DetalleParticipante() {
     {
       key: 'descripcion',
       label: 'Descripción',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
           <Typography variant="body2" className="max-w-xs truncate">
@@ -736,7 +736,7 @@ export default function DetalleParticipante() {
     {
       key: 'estado',
       label: 'Estado',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         const getEstadoColor = (estado: string) => {
           switch (estado) {
@@ -756,7 +756,7 @@ export default function DetalleParticipante() {
     {
       key: 'fecha_creacion',
       label: 'Fecha de Creación',
-      render: (row: DolorParticipante) => {
+      render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         return (
           <Typography variant="caption">
@@ -771,7 +771,7 @@ export default function DetalleParticipante() {
     {
       key: 'contenido',
       label: 'Comentario',
-      render: (row: ComentarioParticipante) => {
+      render: (value: any, row: ComentarioParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
           <Typography variant="body2">
@@ -783,7 +783,7 @@ export default function DetalleParticipante() {
     {
       key: 'sesion_relacionada',
       label: 'Sesión Relacionada',
-      render: (row: ComentarioParticipante) => {
+      render: (value: any, row: ComentarioParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
         return (
           <Typography variant="caption" color="secondary">
@@ -795,7 +795,7 @@ export default function DetalleParticipante() {
     {
       key: 'fecha_creacion',
       label: 'Fecha de Creación',
-      render: (row: ComentarioParticipante) => {
+      render: (value: any, row: ComentarioParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         return (
           <Typography variant="caption">
@@ -807,7 +807,7 @@ export default function DetalleParticipante() {
     {
       key: 'creado_por',
       label: 'Creado por',
-      render: (row: ComentarioParticipante) => {
+      render: (value: any, row: ComentarioParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
         return (
           <Typography variant="caption" color="secondary">
