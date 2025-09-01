@@ -14,7 +14,7 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -304,6 +304,30 @@ export default function DetalleParticipante() {
     } finally {
       setShowDeleteConfirmModal(false);
       setDolorParaEliminar(null);
+    }
+  };
+
+  const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ estado: nuevoEstado })
+      });
+
+      if (response.ok) {
+        const estadoText = nuevoEstado === 'resuelto' ? 'resuelto' : 'archivado';
+        showSuccess(`Dolor marcado como ${estadoText} exitosamente`);
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al cambiar el estado del dolor');
+      }
+    } catch (error) {
+      console.error('Error al cambiar estado del dolor:', error);
+      showError('Error al cambiar el estado del dolor');
     }
   };
 
@@ -1079,6 +1103,22 @@ export default function DetalleParticipante() {
                             icon: <EditIcon className="w-4 h-4" />,
                             onClick: handleEditarDolor,
                             title: 'Editar dolor'
+                          },
+                          {
+                            label: 'Marcar como Resuelto',
+                            icon: <CheckIcon className="w-4 h-4" />,
+                            onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
+                            className: 'text-green-600 hover:text-green-700',
+                            title: 'Marcar dolor como resuelto',
+                            show: (dolor: DolorParticipante) => dolor.estado === 'activo'
+                          },
+                          {
+                            label: 'Archivar',
+                            icon: <CheckCircleIcon className="w-4 h-4" />,
+                            onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
+                            className: 'text-blue-600 hover:text-blue-700',
+                            title: 'Archivar dolor',
+                            show: (dolor: DolorParticipante) => dolor.estado === 'activo' || dolor.estado === 'resuelto'
                           },
                           {
                             label: 'Eliminar',

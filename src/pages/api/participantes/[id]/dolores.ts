@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return await crearDolor(req, res, id);
       case 'PUT':
         return await actualizarDolor(req, res);
+      case 'PATCH':
+        return await actualizarEstadoDolor(req, res);
       case 'DELETE':
         return await eliminarDolor(req, res);
       default:
@@ -159,6 +161,53 @@ async function eliminarDolor(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({ message: 'Dolor eliminado exitosamente' });
   } catch (error) {
     console.error('❌ Error eliminando dolor:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+// Actualizar solo el estado de un dolor
+async function actualizarEstadoDolor(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const { id } = req.query;
+    const { estado } = req.body;
+
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'ID del dolor es requerido' });
+    }
+
+    if (!estado || !['activo', 'resuelto', 'archivado'].includes(estado)) {
+      return res.status(400).json({ error: 'Estado válido es requerido (activo, resuelto, archivado)' });
+    }
+
+    console.log('🔍 Actualizando estado del dolor:', id, 'a:', estado);
+
+    const updateData: any = {
+      estado,
+      fecha_actualizacion: new Date().toISOString()
+    };
+
+    // Si se está marcando como resuelto, agregar fecha de resolución
+    if (estado === 'resuelto') {
+      updateData.fecha_resolucion = new Date().toISOString();
+    }
+
+    const { data: dolorActualizado, error } = await supabaseServer
+      .from('dolores_participantes')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Error actualizando estado del dolor:', error);
+      return res.status(500).json({ error: 'Error al actualizar estado del dolor' });
+    }
+
+    console.log('✅ Estado del dolor actualizado:', dolorActualizado.id, 'a:', estado);
+
+    return res.status(200).json(dolorActualizado);
+  } catch (error) {
+    console.error('❌ Error actualizando estado del dolor:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
