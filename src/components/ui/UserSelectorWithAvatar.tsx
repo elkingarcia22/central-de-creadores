@@ -45,8 +45,11 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
 
   // Lista de usuarios a mostrar con validación
   const usersToShow = React.useMemo(() => {
+    console.log('🔍 UserSelectorWithAvatar - users recibidos:', users);
     if (!users || !Array.isArray(users)) return [];
-    return users.filter(user => user && user.id && (user.full_name || user.email));
+    const filtered = users.filter(user => user && user.id && (user.full_name || user.email));
+    console.log('🔍 UserSelectorWithAvatar - usuarios filtrados:', filtered);
+    return filtered;
   }, [users]);
 
   // Función para manejar selección de "Todos"
@@ -83,6 +86,13 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log('🔍 UserSelectorWithAvatar - handleToggle:', {
+      disabled,
+      loading,
+      usersToShowLength: usersToShow.length,
+      usersLength: users.length,
+      isOpen
+    });
     if (!disabled && !loading && usersToShow.length > 0) {
       setIsOpen(!isOpen);
     }
