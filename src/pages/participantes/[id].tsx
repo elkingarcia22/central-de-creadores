@@ -14,7 +14,7 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -101,6 +101,9 @@ export default function DetalleParticipante() {
   // Estados para modales
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
   const [showCrearComentarioModal, setShowCrearComentarioModal] = useState(false);
+  const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
+  const [showVerDolorModal, setShowVerDolorModal] = useState(false);
+  const [showEditarDolorModal, setShowEditarDolorModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -245,6 +248,65 @@ export default function DetalleParticipante() {
     } catch (error) {
       console.error('❌ Error al crear dolor:', error);
       showError('Error al crear el dolor: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+    }
+  };
+
+  // Funciones para acciones de la tabla de dolores
+  const handleVerDolor = (dolor: DolorParticipante) => {
+    setDolorSeleccionado(dolor);
+    setShowVerDolorModal(true);
+  };
+
+  const handleEditarDolor = (dolor: DolorParticipante) => {
+    setDolorSeleccionado(dolor);
+    setShowEditarDolorModal(true);
+  };
+
+  const handleEliminarDolor = async (dolor: DolorParticipante) => {
+    if (confirm(`¿Estás seguro de que quieres eliminar el dolor "${dolor.titulo}"?`)) {
+      try {
+        const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          showSuccess('Dolor eliminado exitosamente');
+          await cargarDolores();
+        } else {
+          const errorData = await response.json();
+          showError(errorData.error || 'Error al eliminar el dolor');
+        }
+      } catch (error) {
+        console.error('Error al eliminar dolor:', error);
+        showError('Error al eliminar el dolor');
+      }
+    }
+  };
+
+  const handleActualizarDolor = async (dolorData: any) => {
+    if (!dolorSeleccionado) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dolorData),
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor actualizado exitosamente');
+        setShowEditarDolorModal(false);
+        setDolorSeleccionado(null);
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al actualizar el dolor');
+      }
+    } catch (error) {
+      console.error('Error al actualizar dolor:', error);
+      showError('Error al actualizar el dolor');
     }
   };
 
@@ -670,8 +732,8 @@ export default function DetalleParticipante() {
     {
       key: 'titulo',
       label: 'Título',
+      sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
-        console.log('🔍 Renderizando título, row:', row);
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
           <Typography variant="body2" weight="semibold">
@@ -683,6 +745,7 @@ export default function DetalleParticipante() {
     {
       key: 'categoria_nombre',
       label: 'Categoría',
+      sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
         return (
@@ -703,6 +766,7 @@ export default function DetalleParticipante() {
     {
       key: 'severidad',
       label: 'Severidad',
+      sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         const getSeveridadColor = (severidad: string) => {
@@ -736,6 +800,7 @@ export default function DetalleParticipante() {
     {
       key: 'estado',
       label: 'Estado',
+      sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         const getEstadoColor = (estado: string) => {
@@ -756,6 +821,7 @@ export default function DetalleParticipante() {
     {
       key: 'fecha_creacion',
       label: 'Fecha de Creación',
+      sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
         return (
@@ -964,9 +1030,38 @@ export default function DetalleParticipante() {
                           data={dolores}
                           columns={columnsDolores}
                           loading={false}
-                          searchable={false}
-                          filterable={false}
+                          searchable={true}
+                          searchPlaceholder="Buscar dolores..."
+                          searchKeys={['titulo', 'descripcion', 'categoria_nombre']}
+                          filterable={true}
+                          filterKey="estado"
+                          filterOptions={[
+                            { value: 'activo', label: 'Activo' },
+                            { value: 'resuelto', label: 'Resuelto' },
+                            { value: 'archivado', label: 'Archivado' }
+                          ]}
                           selectable={false}
+                          actions={[
+                            {
+                              label: 'Ver detalles',
+                              icon: <EyeIcon className="w-4 h-4" />,
+                              onClick: handleVerDolor,
+                              title: 'Ver detalles del dolor'
+                            },
+                            {
+                              label: 'Editar',
+                              icon: <EditIcon className="w-4 h-4" />,
+                              onClick: handleEditarDolor,
+                              title: 'Editar dolor'
+                            },
+                            {
+                              label: 'Eliminar',
+                              icon: <TrashIcon className="w-4 h-4" />,
+                              onClick: handleEliminarDolor,
+                              className: 'text-red-600 hover:text-red-700',
+                              title: 'Eliminar dolor'
+                            }
+                          ]}
                           emptyMessage="No se encontraron dolores registrados"
                           rowKey="id"
                         />
@@ -1079,6 +1174,34 @@ export default function DetalleParticipante() {
           setShowCrearComentarioModal(false);
         }}
         participanteId={id as string}
+      />
+
+      {/* Modal para ver detalles del dolor */}
+      <DolorSideModal
+        isOpen={showVerDolorModal}
+        onClose={() => {
+          setShowVerDolorModal(false);
+          setDolorSeleccionado(null);
+        }}
+        participanteId={id as string}
+        participanteNombre={participante?.nombre || ''}
+        dolor={dolorSeleccionado}
+        onSave={() => {}} // No se guarda nada en modo vista
+        loading={false}
+      />
+
+      {/* Modal para editar dolor */}
+      <DolorSideModal
+        isOpen={showEditarDolorModal}
+        onClose={() => {
+          setShowEditarDolorModal(false);
+          setDolorSeleccionado(null);
+        }}
+        participanteId={id as string}
+        participanteNombre={participante?.nombre || ''}
+        dolor={dolorSeleccionado}
+        onSave={handleActualizarDolor}
+        loading={false}
       />
     </Layout>
   );
