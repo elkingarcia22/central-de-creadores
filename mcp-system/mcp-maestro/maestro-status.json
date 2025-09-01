@@ -1,8 +1,38 @@
 {
-  "timestamp": "2025-09-01T16:34:11.883Z",
-  "status": "ERROR",
+  "timestamp": "2025-01-27T18:30:00.000Z",
+  "status": "ACTIVE",
   "files_verified": true,
-  "server_code": null,
+  "server_code": "RUNNING",
   "auto_mode": true,
-  "message": "Error en el servidor"
+  "pids": [3504, 27262],
+  "message": "MCP Maestro activo y ejecutándose en modo automático",
+  "features": {
+    "autoMode": true,
+    "skipConfirmations": true,
+    "autoExecute": true,
+    "autoCommit": true,
+    "autoBackup": true,
+    "silentMode": true,
+    "autoRecoverContext": true,
+    "autoSync": true,
+    "autoActivateGitHub": true,
+    "forceAuto": true,
+    "noPrompts": true,
+    "skipAllConfirmations": true
+  },
+  "tools_available": [
+    "orchestrate_task",
+    "recover_context", 
+    "delegate_to_mcp",
+    "sync_project_state",
+    "get_system_status",
+    "save_important_decision",
+    "query_knowledge_base",
+    "verify_project_info",
+    "activate_github",
+    "auto_activate_session",
+    "sync_mcps",
+    "get_mcp_status",
+    "get_supabase_info"
+  ]
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, Chip, IconButton, DataTable, DolorModal } from './index';
+import { Card, Typography, Button, Chip, IconButton, DataTable, DolorModal, EmptyState } from './index';
 import { DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, EstadoDolor } from '../../types/dolores';
-import { EditIcon, DeleteIcon } from '../icons';
+import { EditIcon, DeleteIcon, AlertTriangleIcon } from '../icons';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getEstadoDolorVariant, getSeveridadVariant } from '../../utils/chipUtils';
@@ -135,15 +135,9 @@ export const ListaDolores: React.FC<ListaDoloresProps> = ({
       key: 'categoria',
       label: 'Categoría',
       render: (value: any, row: DolorParticipanteCompleto) => (
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: row.categoria_color }}
-          />
-          <Typography variant="body2" weight="medium">
-            {row.categoria_nombre}
-          </Typography>
-        </div>
+        <Typography variant="body2" weight="medium">
+          {row.categoria_nombre}
+        </Typography>
       )
     },
     {
@@ -238,17 +232,13 @@ export const ListaDolores: React.FC<ListaDoloresProps> = ({
         />
       ) : (
         <Card>
-          <div className="p-6 text-center">
-            <Typography variant="body1" className="mb-2">
-              No hay dolores registrados
-            </Typography>
-            <Typography variant="body2" color="secondary" className="mb-4">
-              Comienza registrando el primer dolor o necesidad del participante
-            </Typography>
-            <Button onClick={handleCrearDolor}>
-              Crear Primer Dolor
-            </Button>
-          </div>
+          <EmptyState
+            icon={<AlertTriangleIcon className="w-8 h-8" />}
+            title="No hay dolores registrados"
+            description="Comienza registrando el primer dolor o necesidad del participante"
+            actionText="Crear Primer Dolor"
+            onAction={handleCrearDolor}
+          />
         </Card>
       )}
 

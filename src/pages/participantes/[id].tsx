@@ -11,13 +11,13 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
-import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant } from '../../utils/chipUtils';
+import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
@@ -311,7 +311,9 @@ export default function DetalleParticipante() {
 
   const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
     try {
-      const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
+      console.log('🔍 Cambiando estado del dolor:', dolor.id, 'a:', nuevoEstado);
+      
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}/estado-final`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -319,17 +321,20 @@ export default function DetalleParticipante() {
         body: JSON.stringify({ estado: nuevoEstado })
       });
 
+      const responseData = await response.json();
+      console.log('🔍 Respuesta del servidor:', response.status, responseData);
+
       if (response.ok) {
-        const estadoText = nuevoEstado === 'resuelto' ? 'resuelto' : 'archivado';
+        const estadoText = nuevoEstado === 'resuelto' ? 'resuelto' : nuevoEstado === 'archivado' ? 'archivado' : 'activo';
         showSuccess(`Dolor marcado como ${estadoText} exitosamente`);
         await cargarDolores();
       } else {
-        const errorData = await response.json();
-        showError(errorData.error || 'Error al cambiar el estado del dolor');
+        console.error('❌ Error en la respuesta:', responseData);
+        showError(responseData.error || responseData.details || 'Error al cambiar el estado del dolor');
       }
     } catch (error) {
-      console.error('Error al cambiar estado del dolor:', error);
-      showError('Error al cambiar el estado del dolor');
+      console.error('❌ Error al cambiar estado del dolor:', error);
+      showError('Error de conexión al cambiar el estado del dolor');
     }
   };
 
@@ -829,17 +834,9 @@ export default function DetalleParticipante() {
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
         return (
-          <div className="flex items-center gap-2">
-            {row.categoria_color && (
-              <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: row.categoria_color }}
-              />
-            )}
-            <Typography variant="caption" color="secondary">
-              {row.categoria_nombre || '-'}
-            </Typography>
-          </div>
+          <Typography variant="caption" color="secondary">
+            {row.categoria_nombre || '-'}
+          </Typography>
         );
       }
     },
@@ -879,10 +876,12 @@ export default function DetalleParticipante() {
         if (!row) return <Typography variant="caption">-</Typography>;
         console.log('🔍 DEBUG - Estado del dolor:', row.estado);
         const variant = getEstadoDolorVariant(row.estado);
+        const text = getEstadoDolorText(row.estado);
         console.log('🔍 DEBUG - Variant resultante:', variant);
+        console.log('🔍 DEBUG - Texto resultante:', text);
         return (
           <Chip variant={variant} size="sm">
-            {row.estado ? row.estado.charAt(0).toUpperCase() + row.estado.slice(1) : '-'}
+            {text}
           </Chip>
         );
       }
@@ -1100,14 +1099,21 @@ export default function DetalleParticipante() {
                             icon: <CheckIcon className="w-4 h-4" />,
                             onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
                             title: 'Marcar dolor como resuelto',
-                            show: (dolor: DolorParticipante) => dolor.estado === 'activo'
+                            show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
                           },
                           {
                             label: 'Archivar',
                             icon: <CheckCircleIcon className="w-4 h-4" />,
                             onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
                             title: 'Archivar dolor',
-                            show: (dolor: DolorParticipante) => dolor.estado === 'activo' || dolor.estado === 'resuelto'
+                            show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
+                          },
+                          {
+                            label: 'Reactivar',
+                            icon: <RefreshIcon className="w-4 h-4" />,
+                            onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
+                            title: 'Reactivar dolor',
+                            show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
                           },
                           {
                             label: 'Eliminar',
@@ -1120,23 +1126,13 @@ export default function DetalleParticipante() {
                         filterOptions={filterOptions}
                       />
                     ) : (
-                      <div className="text-center py-12">
-                        <AlertTriangleIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <Typography variant="h5" color="secondary" className="mb-2">
-                          Sin dolores registrados
-                        </Typography>
-                        <Typography variant="body2" color="secondary" className="mb-4">
-                          Este participante no tiene dolores o necesidades registradas.
-                        </Typography>
-                        <Button
-                          variant="primary"
-                          onClick={() => setShowCrearDolorModal(true)}
-                          className="flex items-center gap-2"
-                        >
-                          <PlusIcon className="w-4 h-4" />
-                          Registrar Primer Dolor
-                        </Button>
-                      </div>
+                      <EmptyState
+                        icon={<AlertTriangleIcon className="w-8 h-8" />}
+                        title="Sin dolores registrados"
+                        description="Este participante no tiene dolores o necesidades registradas."
+                        actionText="Registrar Primer Dolor"
+                        onAction={() => setShowCrearDolorModal(true)}
+                      />
                     )}
                   </>
                 )
@@ -1146,20 +1142,6 @@ export default function DetalleParticipante() {
                 label: 'Comentarios',
                 content: (
                   <Card className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2">
-                        <MessageIcon className="w-5 h-5 text-primary" />
-                        <Typography variant="h4">Comentarios</Typography>
-                      </div>
-                      <Button
-                        variant="primary"
-                        onClick={() => setShowCrearComentarioModal(true)}
-                        className="flex items-center gap-2"
-                      >
-                        <PlusIcon className="w-4 h-4" />
-                        Nuevo Comentario
-                      </Button>
-                    </div>
                     
                     {comentarios.length > 0 ? (
                       <>
@@ -1180,23 +1162,13 @@ export default function DetalleParticipante() {
                         />
                       </>
                     ) : (
-                      <div className="text-center py-12">
-                        <MessageIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <Typography variant="h5" color="secondary" className="mb-2">
-                          Sin comentarios
-                        </Typography>
-                        <Typography variant="body2" color="secondary" className="mb-4">
-                          Este participante no tiene comentarios registrados.
-                        </Typography>
-                        <Button
-                          variant="primary"
-                          onClick={() => setShowCrearComentarioModal(true)}
-                          className="flex items-center gap-2"
-                        >
-                          <PlusIcon className="w-4 h-4" />
-                          Crear Primer Comentario
-                        </Button>
-                      </div>
+                      <EmptyState
+                        icon={<MessageIcon className="w-8 h-8" />}
+                        title="Sin comentarios"
+                        description="Este participante no tiene comentarios registrados."
+                        actionText="Crear Primer Comentario"
+                        onAction={() => setShowCrearComentarioModal(true)}
+                      />
                     )}
                   </Card>
                 )

@@ -72,6 +72,13 @@ const EstadosSection: React.FC = () => {
               <Typography variant="caption" color="secondary">Azul</Typography>
             </div>
           </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="archivado">Archivado</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Archivado</Typography>
+              <Typography variant="caption" color="secondary">Azul</Typography>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -124,6 +131,20 @@ const EstadosSection: React.FC = () => {
             <Chip variant="transitoria">Edición</Chip>
             <div>
               <Typography variant="body2" weight="medium">Edición</Typography>
+              <Typography variant="caption" color="secondary">Amarillo fuerte</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="media">Media</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Media</Typography>
+              <Typography variant="caption" color="secondary">Amarillo fuerte</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="alta">Alta</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Alta</Typography>
               <Typography variant="caption" color="secondary">Amarillo fuerte</Typography>
             </div>
           </div>
@@ -204,6 +225,20 @@ const EstadosSection: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="resuelto">Resuelto</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Resuelto</Typography>
+              <Typography variant="caption" color="secondary">Verde</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="baja">Baja</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Baja</Typography>
+              <Typography variant="caption" color="secondary">Verde</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
             <Chip variant="terminada">Creación</Chip>
             <div>
               <Typography variant="body2" weight="medium">Creación</Typography>
@@ -269,6 +304,20 @@ const EstadosSection: React.FC = () => {
             <Chip variant="fallo">Muy Mala</Chip>
             <div>
               <Typography variant="body2" weight="medium">Muy Mala</Typography>
+              <Typography variant="caption" color="secondary">Rojo</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="sin_resolver">Sin Resolver</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Sin Resolver</Typography>
+              <Typography variant="caption" color="secondary">Rojo</Typography>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="critica">Crítica</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Crítica</Typography>
               <Typography variant="caption" color="secondary">Rojo</Typography>
             </div>
           </div>

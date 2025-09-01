@@ -96,13 +96,40 @@ async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, partic
 // Actualizar solo el estado de un dolor
 async function actualizarEstadoDolor(req: NextApiRequest, res: NextApiResponse, participanteId: string, dolorId: string) {
   try {
+    console.log('🔍 Iniciando actualización de estado del dolor');
+    console.log('🔍 Participante ID:', participanteId);
+    console.log('🔍 Dolor ID:', dolorId);
+    console.log('🔍 Request body:', req.body);
+
     const { estado } = req.body;
 
     if (!estado || !['activo', 'resuelto', 'archivado'].includes(estado)) {
+      console.error('❌ Estado inválido:', estado);
       return res.status(400).json({ error: 'Estado válido es requerido (activo, resuelto, archivado)' });
     }
 
-    console.log('🔍 Actualizando estado del dolor:', dolorId, 'a:', estado);
+    console.log('🔍 Estado válido recibido:', estado);
+
+    // Primero verificar que el dolor existe y pertenece al participante
+    console.log('🔍 Verificando existencia del dolor...');
+    const { data: dolorExistente, error: checkError } = await supabaseServer
+      .from('dolores_participantes')
+      .select('id, estado')
+      .eq('id', dolorId)
+      .eq('participante_id', participanteId)
+      .single();
+
+    if (checkError) {
+      console.error('❌ Error verificando dolor:', checkError);
+      return res.status(404).json({ error: 'Dolor no encontrado o no pertenece al participante' });
+    }
+
+    if (!dolorExistente) {
+      console.error('❌ Dolor no encontrado');
+      return res.status(404).json({ error: 'Dolor no encontrado' });
+    }
+
+    console.log('🔍 Dolor encontrado, estado actual:', dolorExistente.estado);
 
     const updateData: any = {
       estado,
@@ -114,6 +141,8 @@ async function actualizarEstadoDolor(req: NextApiRequest, res: NextApiResponse, 
       updateData.fecha_resolucion = new Date().toISOString();
     }
 
+    console.log('🔍 Datos a actualizar:', updateData);
+
     const { data: dolorActualizado, error } = await supabaseServer
       .from('dolores_participantes')
       .update(updateData)
@@ -124,14 +153,24 @@ async function actualizarEstadoDolor(req: NextApiRequest, res: NextApiResponse, 
 
     if (error) {
       console.error('❌ Error actualizando estado del dolor:', error);
-      return res.status(500).json({ error: 'Error al actualizar estado del dolor' });
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ 
+        error: 'Error al actualizar estado del dolor',
+        details: error.message || 'Error desconocido'
+      });
     }
 
-    console.log('✅ Estado del dolor actualizado:', dolorActualizado.id, 'a:', estado);
+    console.log('✅ Estado del dolor actualizado exitosamente');
+    console.log('✅ Dolor actualizado:', dolorActualizado.id, 'a:', estado);
+    
     return res.status(200).json(dolorActualizado);
   } catch (error) {
-    console.error('❌ Error actualizando estado del dolor:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('❌ Error inesperado actualizando estado del dolor:', error);
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack available');
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 }
 

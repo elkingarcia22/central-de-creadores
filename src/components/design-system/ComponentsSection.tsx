@@ -1791,6 +1791,9 @@ const ComponentsSection: React.FC = () => {
   };
 
   const renderChipComponent = () => {
+    console.log('🔍 renderChipComponent - Función ejecutada');
+    console.log('🔍 renderChipComponent - activeComponent:', activeComponent);
+    
     return (
       <div className="space-y-8">
         <Card className="p-6">
@@ -1954,7 +1957,7 @@ const ComponentsSection: React.FC = () => {
               </div>
             </div>
             <div>
-              <Typography variant="h4" weight="semibold" className="mb-2">Manejo de Estados</Typography>
+              <Typography variant="h4" weight="semibold" className="mb-2">Manejo de Estados (Actualizado)</Typography>
               <div className="space-y-4">
                 <div>
                   <Typography variant="body2" color="secondary" className="mb-2">Estados Terminados (Verde)</Typography>
@@ -1963,6 +1966,8 @@ const ComponentsSection: React.FC = () => {
                     <Chip variant="terminada">Excelente</Chip>
                     <Chip variant="terminada">Creación</Chip>
                     <Chip variant="terminada">Activo</Chip>
+                    <Chip variant="resuelto">Resuelto</Chip>
+                    <Chip variant="baja">Baja</Chip>
                   </div>
                 </div>
                 <div>
@@ -1972,6 +1977,8 @@ const ComponentsSection: React.FC = () => {
                     <Chip variant="transitoria">Edición</Chip>
                     <Chip variant="transitoria">En Progreso</Chip>
                     <Chip variant="transitoria">Pendiente</Chip>
+                    <Chip variant="media">Media</Chip>
+                    <Chip variant="alta">Alta</Chip>
                   </div>
                 </div>
                 <div>
@@ -1981,6 +1988,8 @@ const ComponentsSection: React.FC = () => {
                     <Chip variant="fallo">Muy Mala</Chip>
                     <Chip variant="fallo">Inactivo</Chip>
                     <Chip variant="fallo">Cancelado</Chip>
+                    <Chip variant="sin_resolver">Sin Resolver</Chip>
+                    <Chip variant="critica">Crítica</Chip>
                   </div>
                 </div>
                 <div>
@@ -1989,25 +1998,10 @@ const ComponentsSection: React.FC = () => {
                     <Chip variant="pendiente">Por Agendar</Chip>
                     <Chip variant="pendiente">En Borrador</Chip>
                     <Chip variant="pendiente">En Enfriamiento</Chip>
-                  </div>
-                </div>
-                <div>
-                  <Typography variant="body2" color="secondary" className="mb-2">Estados de Dolor (Nuevo)</Typography>
-                  <div className="flex flex-wrap gap-2">
-                    <Chip variant="sin_resolver">Sin Resolver</Chip>
-                    <Chip variant="resuelto">Resuelto</Chip>
                     <Chip variant="archivado">Archivado</Chip>
                   </div>
                 </div>
-                <div>
-                  <Typography variant="body2" color="secondary" className="mb-2">Niveles de Severidad (Nuevo)</Typography>
-                  <div className="flex flex-wrap gap-2">
-                    <Chip variant="baja">Baja</Chip>
-                    <Chip variant="media">Media</Chip>
-                    <Chip variant="alta">Alta</Chip>
-                    <Chip variant="critica">Crítica</Chip>
-                  </div>
-                </div>
+
               </div>
             </div>
             <div>

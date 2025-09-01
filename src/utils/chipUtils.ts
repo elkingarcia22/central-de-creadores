@@ -202,6 +202,24 @@ export const getSeveridadVariant = (severidad: string): 'baja' | 'media' | 'alta
   }
 };
 
+// Función específica para obtener el texto de estado de dolor
+export const getEstadoDolorText = (estado: string): string => {
+  const estadoLower = estado?.toLowerCase()?.trim();
+  
+  switch (estadoLower) {
+    case 'sin resolver':
+    case 'sin_resolver':
+    case 'activo':
+      return 'Sin Resolver';
+    case 'resuelto':
+      return 'Resuelto';
+    case 'archivado':
+      return 'Archivado';
+    default:
+      return 'Sin Resolver';
+  }
+};
+
 // Función para obtener el texto formateado del chip
 export const getChipText = (value: string): string => {
   const valueLower = value?.toLowerCase()?.trim();

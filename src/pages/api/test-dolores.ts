@@ -2,131 +2,83 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer } from '../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
-  }
-
+  console.log('🔍 Endpoint de prueba de dolores llamado');
+  
   try {
-    console.log('🧪 Test API de dolores iniciado');
-    
-    const { participanteId, categoriaId, titulo, descripcion, severidad, investigacionId } = req.body;
-
-    console.log('🔍 Datos recibidos:', {
-      participanteId,
-      categoriaId,
-      titulo,
-      descripcion,
-      severidad,
-      investigacionId
-    });
-
-    // Verificar que las tablas existen
-    console.log('🔍 Verificando existencia de tablas...');
-    
-    // Verificar tabla categorias_dolores
-    const { data: categorias, error: errorCategorias } = await supabaseServer
-      .from('categorias_dolores')
-      .select('count')
-      .limit(1);
-
-    if (errorCategorias) {
-      console.error('❌ Error verificando categorias_dolores:', errorCategorias);
-      return res.status(500).json({ 
-        error: 'Error verificando tabla categorias_dolores',
-        details: errorCategorias 
-      });
-    }
-
-    console.log('✅ Tabla categorias_dolores existe');
-
-    // Verificar tabla dolores_participantes
-    const { data: dolores, error: errorDolores } = await supabaseServer
+    // 1. Probar conexión básica
+    console.log('🔍 Probando conexión con Supabase...');
+    const { data: testData, error: testError } = await supabaseServer
       .from('dolores_participantes')
       .select('count')
       .limit(1);
-
-    if (errorDolores) {
-      console.error('❌ Error verificando dolores_participantes:', errorDolores);
+    
+    if (testError) {
+      console.error('❌ Error de conexión:', testError);
       return res.status(500).json({ 
-        error: 'Error verificando tabla dolores_participantes',
-        details: errorDolores 
+        error: 'Error de conexión con Supabase',
+        details: testError.message,
+        code: testError.code
       });
     }
-
-    console.log('✅ Tabla dolores_participantes existe');
-
-    // Verificar que el participante existe
-    console.log('🔍 Verificando existencia del participante...');
-    const { data: participante, error: errorParticipante } = await supabaseServer
-      .from('participantes')
-      .select('id, nombre')
-      .eq('id', participanteId)
-      .single();
-
-    if (errorParticipante) {
-      console.error('❌ Error verificando participante:', errorParticipante);
-      return res.status(404).json({ 
-        error: 'Participante no encontrado',
-        details: errorParticipante 
-      });
-    }
-
-    console.log('✅ Participante encontrado:', participante.nombre);
-
-    // Verificar que la categoría existe
-    console.log('🔍 Verificando existencia de la categoría...');
-    const { data: categoria, error: errorCategoria } = await supabaseServer
-      .from('categorias_dolores')
-      .select('id, nombre')
-      .eq('id', categoriaId)
-      .single();
-
-    if (errorCategoria) {
-      console.error('❌ Error verificando categoría:', errorCategoria);
-      return res.status(404).json({ 
-        error: 'Categoría no encontrada',
-        details: errorCategoria 
-      });
-    }
-
-    console.log('✅ Categoría encontrada:', categoria.nombre);
-
-    // Intentar crear el dolor
-    console.log('🔍 Intentando crear dolor...');
-    const { data: nuevoDolor, error: errorCrear } = await supabaseServer
+    
+    console.log('✅ Conexión exitosa');
+    
+    // 2. Probar consulta de dolores
+    console.log('🔍 Probando consulta de dolores...');
+    const { data: dolores, error: doloresError } = await supabaseServer
       .from('dolores_participantes')
-      .insert({
-        participante_id: participanteId,
-        categoria_id: categoriaId,
-        titulo,
-        descripcion,
-        severidad: severidad || 'media',
-        investigacion_relacionada_id: investigacionId,
-        creado_por: 'e1d4eb8b-83ae-4acc-9d31-6cedc776b64d' // Usuario de prueba
-      })
-      .select()
-      .single();
-
-    if (errorCrear) {
-      console.error('❌ Error creando dolor:', errorCrear);
+      .select('id, participante_id, estado, titulo')
+      .limit(5);
+    
+    if (doloresError) {
+      console.error('❌ Error consultando dolores:', doloresError);
       return res.status(500).json({ 
-        error: 'Error al crear dolor',
-        details: errorCrear 
+        error: 'Error consultando dolores',
+        details: doloresError.message,
+        code: doloresError.code
       });
     }
-
-    console.log('✅ Dolor creado exitosamente:', nuevoDolor.id);
-
-    return res.status(201).json({
+    
+    console.log('✅ Consulta exitosa, dolores encontrados:', dolores?.length || 0);
+    
+    // 3. Probar actualización simple
+    if (dolores && dolores.length > 0) {
+      const primerDolor = dolores[0];
+      console.log('🔍 Probando actualización con dolor:', primerDolor.id);
+      
+      const { data: updatedDolor, error: updateError } = await supabaseServer
+        .from('dolores_participantes')
+        .update({ 
+          fecha_actualizacion: new Date().toISOString(),
+          estado: primerDolor.estado // Mantener el mismo estado para evitar problemas
+        })
+        .eq('id', primerDolor.id)
+        .select('id, estado, fecha_actualizacion')
+        .single();
+      
+      if (updateError) {
+        console.error('❌ Error en actualización:', updateError);
+        return res.status(500).json({ 
+          error: 'Error en actualización de prueba',
+          details: updateError.message,
+          code: updateError.code
+        });
+      }
+      
+      console.log('✅ Actualización exitosa:', updatedDolor);
+    }
+    
+    return res.status(200).json({
       success: true,
-      message: 'Dolor creado exitosamente',
-      dolor: nuevoDolor
+      message: 'Pruebas completadas exitosamente',
+      dolores_count: dolores?.length || 0,
+      dolores_sample: dolores?.slice(0, 3) || []
     });
-
+    
   } catch (error) {
-    console.error('❌ Error en test API de dolores:', error);
+    console.error('❌ Error inesperado:', error);
     return res.status(500).json({ 
-      error: 'Error interno del servidor',
+      error: 'Error inesperado en pruebas',
       details: error instanceof Error ? error.message : 'Error desconocido'
     });
   }
