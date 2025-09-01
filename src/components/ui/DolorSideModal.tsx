@@ -22,6 +22,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   onSave,
   loading = false
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
   const [investigaciones, setInvestigaciones] = useState<Array<{id: string, nombre: string}>>([]);
   const [formData, setFormData] = useState<CrearDolorRequest>({
@@ -40,6 +41,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     if (isOpen) {
       cargarCategorias();
       cargarInvestigaciones();
+      setIsSubmitting(false); // Resetear estado de envío al abrir
     }
   }, [isOpen, participanteId]);
 
@@ -143,6 +145,13 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     console.log('🔍 Timestamp:', new Date().toISOString());
     console.log('🔍 formData:', formData);
     console.log('🔍 isEditing:', isEditing);
+    console.log('🔍 isSubmitting:', isSubmitting);
+    
+    // Prevenir doble envío
+    if (isSubmitting) {
+      console.log('❌ Ya se está enviando, ignorando llamada adicional');
+      return;
+    }
     
     if (!validateForm()) {
       console.log('❌ Validación falló');
@@ -150,14 +159,20 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     }
 
     console.log('✅ Validación exitosa, llamando onSave');
+    setIsSubmitting(true);
     
-    if (isEditing && dolor) {
-      onSave({
-        id: dolor.id,
-        ...formData
-      } as ActualizarDolorRequest);
-    } else {
-      onSave(formData);
+    try {
+      if (isEditing && dolor) {
+        onSave({
+          id: dolor.id,
+          ...formData
+        } as ActualizarDolorRequest);
+      } else {
+        onSave(formData);
+      }
+    } catch (error) {
+      console.error('❌ Error en handleSubmit:', error);
+      setIsSubmitting(false);
     }
   };
 
