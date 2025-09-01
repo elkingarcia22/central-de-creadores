@@ -882,10 +882,10 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
                        placeholder="Seleccionar estado..."
                        options={[
                          { value: 'todos', label: 'Todos los estados' },
-                         { value: 'completada', label: 'Completada' },
-                         { value: 'en_progreso', label: 'En Progreso' },
-                         { value: 'cancelada', label: 'Cancelada' },
-                         { value: 'reprogramada', label: 'Reprogramada' }
+                         { value: 'Finalizado', label: 'Finalizado' },
+                         { value: 'En progreso', label: 'En Progreso' },
+                         { value: 'Pendiente', label: 'Pendiente' },
+                         { value: 'Pendiente de agendamiento', label: 'Pendiente de Agendamiento' }
                        ]}
                        value={filters.estado}
                        onChange={(value) => setFilters(prev => ({ ...prev, estado: value.toString() }))}
@@ -1031,15 +1031,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
             <div className="flex flex-wrap gap-3">
               <ActionsMenu
                 actions={[
-                  {
-                    label: 'Ver detalles',
-                    icon: <EyeIcon className="w-4 h-4" />,
-                    onClick: () => {
-                      // La empresa ya está siendo vista, pero podríamos abrir en nueva pestaña
-                      window.open(`/empresas/ver/${empresaData.id}`, '_blank');
-                    },
-                    className: 'text-popover-foreground hover:text-popover-foreground/80'
-                  },
                   {
                     label: 'Editar',
                     icon: <EditIcon className="w-4 h-4" />,
