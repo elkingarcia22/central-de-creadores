@@ -54,10 +54,25 @@ interface InvestigacionParticipante {
 
 interface DolorParticipante {
   id: string;
-  descripcion: string;
-  sesion_relacionada?: string;
+  participante_id: string;
+  participante_nombre: string;
+  participante_email: string;
+  categoria_id: string;
+  categoria_nombre: string;
+  categoria_color: string;
+  categoria_icono?: string;
+  titulo: string;
+  descripcion?: string;
+  severidad: 'baja' | 'media' | 'alta' | 'critica';
+  estado: 'activo' | 'resuelto' | 'archivado';
+  investigacion_relacionada_id?: string;
+  investigacion_nombre?: string;
+  sesion_relacionada_id?: string;
+  creado_por?: string;
+  creado_por_nombre?: string;
   fecha_creacion: string;
-  creado_por: string;
+  fecha_resolucion?: string;
+  fecha_actualizacion: string;
 }
 
 interface ComentarioParticipante {
@@ -651,26 +666,87 @@ export default function DetalleParticipante() {
 
   const columnsDolores = [
     {
-      key: 'descripcion',
-      label: 'Descripción del Dolor',
+      key: 'titulo',
+      label: 'Título',
       render: (row: DolorParticipante) => {
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
-          <Typography variant="body2">
+          <Typography variant="body2" weight="semibold">
+            {row.titulo || '-'}
+          </Typography>
+        );
+      }
+    },
+    {
+      key: 'categoria_nombre',
+      label: 'Categoría',
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        return (
+          <div className="flex items-center gap-2">
+            {row.categoria_color && (
+              <div 
+                className="w-3 h-3 rounded-full" 
+                style={{ backgroundColor: row.categoria_color }}
+              />
+            )}
+            <Typography variant="caption" color="secondary">
+              {row.categoria_nombre || '-'}
+            </Typography>
+          </div>
+        );
+      }
+    },
+    {
+      key: 'severidad',
+      label: 'Severidad',
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="caption">-</Typography>;
+        const getSeveridadColor = (severidad: string) => {
+          switch (severidad) {
+            case 'baja': return 'bg-green-100 text-green-800';
+            case 'media': return 'bg-yellow-100 text-yellow-800';
+            case 'alta': return 'bg-red-100 text-red-800';
+            case 'critica': return 'bg-red-200 text-red-900';
+            default: return 'bg-gray-100 text-gray-800';
+          }
+        };
+        return (
+          <Chip variant="default" className={getSeveridadColor(row.severidad)}>
+            {row.severidad || '-'}
+          </Chip>
+        );
+      }
+    },
+    {
+      key: 'descripcion',
+      label: 'Descripción',
+      render: (row: DolorParticipante) => {
+        if (!row) return <Typography variant="body2">-</Typography>;
+        return (
+          <Typography variant="body2" className="max-w-xs truncate">
             {row.descripcion || '-'}
           </Typography>
         );
       }
     },
     {
-      key: 'sesion_relacionada',
-      label: 'Sesión Relacionada',
+      key: 'estado',
+      label: 'Estado',
       render: (row: DolorParticipante) => {
-        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
+        if (!row) return <Typography variant="caption">-</Typography>;
+        const getEstadoColor = (estado: string) => {
+          switch (estado) {
+            case 'activo': return 'bg-red-100 text-red-800';
+            case 'resuelto': return 'bg-green-100 text-green-800';
+            case 'archivado': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 text-gray-800';
+          }
+        };
         return (
-          <Typography variant="caption" color="secondary">
-            {row.sesion_relacionada || 'General'}
-          </Typography>
+          <Chip variant="default" className={getEstadoColor(row.estado)}>
+            {row.estado || '-'}
+          </Chip>
         );
       }
     },
@@ -682,18 +758,6 @@ export default function DetalleParticipante() {
         return (
           <Typography variant="caption">
             {formatearFecha(row.fecha_creacion)}
-          </Typography>
-        );
-      }
-    },
-    {
-      key: 'creado_por',
-      label: 'Creado por',
-      render: (row: DolorParticipante) => {
-        if (!row) return <Typography variant="caption" color="secondary">-</Typography>;
-        return (
-          <Typography variant="caption" color="secondary">
-            {row.creado_por || '-'}
           </Typography>
         );
       }

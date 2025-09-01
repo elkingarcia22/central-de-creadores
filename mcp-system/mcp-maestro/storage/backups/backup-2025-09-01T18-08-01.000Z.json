@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-09-01T18:08:01.000Z",
+  "commit_hash": "082001b64b37d6d65584c55264d9d4704f75c9bd",
+  "branch": "main",
+  "status": "cambios 2",
+  "files": [
+    " M src/pages/participantes/[id].tsx",
+    "?? mcp-system/mcp-maestro/storage/backups/backup-2025-09-01T18-08-01.000Z.json"
+  ]
+}
