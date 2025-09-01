@@ -201,6 +201,8 @@ export default function DetalleParticipante() {
       if (response.ok) {
         const data = await response.json();
         console.log('🔍 Dolores cargados:', data);
+        console.log('🔍 Primer dolor:', data[0]);
+        console.log('🔍 Campos del primer dolor:', Object.keys(data[0] || {}));
         setDolores(data || []);
       } else {
         console.error('❌ Error cargando dolores:', response.status, response.statusText);
@@ -669,6 +671,7 @@ export default function DetalleParticipante() {
       key: 'titulo',
       label: 'Título',
       render: (row: DolorParticipante) => {
+        console.log('🔍 Renderizando título, row:', row);
         if (!row) return <Typography variant="body2">-</Typography>;
         return (
           <Typography variant="body2" weight="semibold">
