@@ -29,6 +29,7 @@ export { Layout } from "./Layout";
 // Componentes de modales
 export { Modal } from "./Modal";
 export { default as SeguimientoSideModal } from "./SeguimientoSideModal";
+export { default as FullScreenSidePanel } from "./FullScreenSidePanel";
 
 // Componentes de tipografía específicos
 export { 
