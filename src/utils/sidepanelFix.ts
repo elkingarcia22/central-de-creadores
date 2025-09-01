@@ -4,7 +4,7 @@
  * Aplica las clases CSS de fix a los sidepanels existentes
  */
 export const applySidePanelFix = () => {
-  console.log('🔧 Aplicando fix de sidepanels...');
+  console.log('🔧 Aplicando fix de sidepanels y Layout...');
   
   // Buscar todos los contenedores de sidepanels
   const sidePanelContainers = document.querySelectorAll('[class*="fixed inset-0"][class*="z-50"]');
@@ -81,32 +81,71 @@ export const applySidePanelFix = () => {
     }
   });
   
-  // Aplicar clase al body para prevenir scroll
+  // Aplicar fix al Layout
+  console.log('🔧 Aplicando fix al Layout...');
+  
+  // Buscar elementos del Layout problemáticos
+  const layoutElements = document.querySelectorAll('.min-h-screen, .flex-1, main, .mx-auto.max-w-7xl, .overflow-y-visible');
+  console.log('🔧 Elementos del Layout encontrados:', layoutElements.length);
+  
+  layoutElements.forEach((layoutElement, index) => {
+    const element = layoutElement as HTMLElement;
+    console.log(`🔧 Aplicando fix al elemento del Layout ${index + 1}:`, element);
+    
+    // Aplicar clases de debug
+    if (element.classList.contains('min-h-screen')) {
+      element.classList.add('layout-debug');
+    }
+    if (element.classList.contains('flex-1')) {
+      element.classList.add('layout-debug');
+    }
+    if (element.tagName === 'MAIN') {
+      element.classList.add('layout-debug-main');
+    }
+    if (element.classList.contains('mx-auto') && element.classList.contains('max-w-7xl')) {
+      element.classList.add('layout-debug-container');
+    }
+    
+    // Forzar estilos para prevenir interferencia
+    element.style.overflow = 'hidden';
+    element.style.height = '100vh';
+    element.style.width = '100vw';
+    element.style.maxWidth = '100vw';
+  });
+  
+  // Aplicar clase al body para prevenir scroll y activar CSS del Layout
   document.body.classList.add('sidepanel-open');
   document.documentElement.classList.add('sidepanel-open');
   
-  console.log('🔧 Fix de sidepanels aplicado correctamente');
+  console.log('🔧 Fix de sidepanels y Layout aplicado correctamente');
 };
 
 /**
  * Remueve las clases CSS de fix de los sidepanels
  */
 export const removeSidePanelFix = () => {
-  console.log('🔧 Removiendo fix de sidepanels...');
+  console.log('🔧 Removiendo fix de sidepanels y Layout...');
   
-  // Remover clases de todos los elementos
-  const elements = document.querySelectorAll('.sidepanel-container, .sidepanel-overlay, .sidepanel-drawer, .sidepanel-content');
-  elements.forEach(element => {
+  // Remover clases de todos los elementos de sidepanels
+  const sidepanelElements = document.querySelectorAll('.sidepanel-container, .sidepanel-overlay, .sidepanel-drawer, .sidepanel-content');
+  sidepanelElements.forEach(element => {
     const el = element as HTMLElement;
     el.classList.remove('sidepanel-container', 'sidepanel-overlay', 'sidepanel-drawer', 'sidepanel-content');
     el.classList.remove('sidepanel-debug', 'sidepanel-debug-overlay', 'sidepanel-debug-drawer');
+  });
+  
+  // Remover clases de todos los elementos del Layout
+  const layoutElements = document.querySelectorAll('.layout-debug, .layout-debug-main, .layout-debug-container');
+  layoutElements.forEach(element => {
+    const el = element as HTMLElement;
+    el.classList.remove('layout-debug', 'layout-debug-main', 'layout-debug-container');
   });
   
   // Remover clases del body
   document.body.classList.remove('sidepanel-open');
   document.documentElement.classList.remove('sidepanel-open');
   
-  console.log('🔧 Fix de sidepanels removido correctamente');
+  console.log('🔧 Fix de sidepanels y Layout removido correctamente');
 };
 
 /**

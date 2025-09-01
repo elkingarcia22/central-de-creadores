@@ -7,6 +7,7 @@ import { ToastProvider, useToast } from '../contexts/ToastContext';
 import ToastContainer from '../components/ui/ToastContainer';
 import '../styles/globals.css';
 import '../styles/sidepanel-fix.css';
+import '../styles/layout-fix.css';
 
 // Componente interno para usar useToast
 function AppContent({ Component, pageProps, router }: AppProps) {

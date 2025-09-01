@@ -51,6 +51,7 @@ import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import FilterDrawer from '../../../components/ui/FilterDrawer';
 import TestSidePanel from '../../../components/ui/TestSidePanel';
+import TestLayoutSidePanel from '../../../components/ui/TestLayoutSidePanel';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
@@ -127,6 +128,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showTestPanel, setShowTestPanel] = useState(false);
+  const [showTestLayoutPanel, setShowTestLayoutPanel] = useState(false);
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState({
     estados: [],
@@ -1081,6 +1083,14 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
               >
                 🧪 Probar Panel
               </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowTestLayoutPanel(true)}
+                className="text-xs"
+              >
+                🔧 Probar Layout
+              </Button>
               <ActionsMenu
                 actions={[
                   {
@@ -1167,6 +1177,12 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
       <TestSidePanel
         isOpen={showTestPanel}
         onClose={() => setShowTestPanel(false)}
+      />
+
+      {/* Panel de prueba del Layout */}
+      <TestLayoutSidePanel
+        isOpen={showTestLayoutPanel}
+        onClose={() => setShowTestLayoutPanel(false)}
       />
     </Layout>
   );
