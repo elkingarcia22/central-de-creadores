@@ -1054,22 +1054,7 @@ export default function DetalleParticipante() {
                 id: 'dolores',
                 label: 'Dolores',
                 content: (
-                  <Card className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangleIcon className="w-5 h-5 text-primary" />
-                        <Typography variant="h4">Dolores y Necesidades</Typography>
-                      </div>
-                      <Button
-                        variant="primary"
-                        onClick={() => setShowCrearDolorModal(true)}
-                        className="flex items-center gap-2"
-                      >
-                        <PlusIcon className="w-4 h-4" />
-                        Registrar Dolor
-                      </Button>
-                    </div>
-                    
+                  <>
                     {dolores.length > 0 ? (
                       <DoloresUnifiedContainer
                         dolores={dolores}
@@ -1124,7 +1109,7 @@ export default function DetalleParticipante() {
                         </Button>
                       </div>
                     )}
-                  </Card>
+                  </>
                 )
               },
               {
