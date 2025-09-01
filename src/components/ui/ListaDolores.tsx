@@ -4,6 +4,7 @@ import { DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, E
 import { EditIcon, DeleteIcon } from '../icons';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getEstadoDolorVariant, getSeveridadVariant } from '../../utils/chipUtils';
 
 interface ListaDoloresProps {
   participanteId: string;
@@ -110,29 +111,20 @@ export const ListaDolores: React.FC<ListaDoloresProps> = ({
   };
 
   const getSeveridadChip = (severidad: string) => {
-    const variants = {
-      baja: 'success' as const,
-      media: 'warning' as const,
-      alta: 'error' as const,
-      critica: 'error' as const
-    };
+    const variant = getSeveridadVariant(severidad);
     
     return (
-      <Chip variant={variants[severidad as keyof typeof variants] || 'default'} size="sm">
+      <Chip variant={variant} size="sm">
         {severidad.charAt(0).toUpperCase() + severidad.slice(1)}
       </Chip>
     );
   };
 
   const getEstadoChip = (estado: string) => {
-    const variants = {
-      activo: 'error' as const,
-      resuelto: 'success' as const,
-      archivado: 'default' as const
-    };
+    const variant = getEstadoDolorVariant(estado);
     
     return (
-      <Chip variant={variants[estado as keyof typeof variants] || 'default'} size="sm">
+      <Chip variant={variant} size="sm">
         {estado.charAt(0).toUpperCase() + estado.slice(1)}
       </Chip>
     );

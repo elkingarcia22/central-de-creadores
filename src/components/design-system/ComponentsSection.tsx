@@ -1856,6 +1856,23 @@ const ComponentsSection: React.FC = () => {
                 <Chip variant="accent-pink">Accent Pink</Chip>
               </div>
             </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Estados de Dolor</Typography>
+              <div className="flex flex-wrap gap-2">
+                <Chip variant="sin_resolver">Sin Resolver</Chip>
+                <Chip variant="resuelto">Resuelto</Chip>
+                <Chip variant="archivado">Archivado</Chip>
+              </div>
+            </div>
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Niveles de Severidad</Typography>
+              <div className="flex flex-wrap gap-2">
+                <Chip variant="baja">Baja</Chip>
+                <Chip variant="media">Media</Chip>
+                <Chip variant="alta">Alta</Chip>
+                <Chip variant="critica">Crítica</Chip>
+              </div>
+            </div>
           </div>
         </Card>
 

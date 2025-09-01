@@ -3,7 +3,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChipProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet' | 'pendiente' | 'transitoria' | 'terminada' | 'fallo';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet' | 'pendiente' | 'transitoria' | 'terminada' | 'fallo' | 'sin_resolver' | 'resuelto' | 'archivado' | 'baja' | 'media' | 'alta' | 'critica';
   size?: 'sm' | 'md' | 'lg';
   outlined?: boolean;
   rounded?: boolean;
@@ -109,7 +109,28 @@ const Chip: React.FC<ChipProps> = ({
       : 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-200 dark:border dark:border-green-700/50',
     fallo: outlined
       ? 'border border-red-500 text-red-600 bg-transparent dark:border-red-400 dark:text-red-400'
-      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50'
+      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50',
+    'sin_resolver': outlined
+      ? 'border border-red-500 text-red-600 bg-transparent dark:border-red-400 dark:text-red-400'
+      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50',
+    'resuelto': outlined
+      ? 'border border-green-500 text-green-600 bg-transparent dark:border-green-400 dark:text-green-400'
+      : 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-200 dark:border dark:border-green-700/50',
+    'archivado': outlined
+      ? 'border border-blue-500 text-blue-600 bg-transparent dark:border-blue-400 dark:text-blue-400'
+      : 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-200 dark:border dark:border-blue-700/50',
+    'baja': outlined
+      ? 'border border-green-500 text-green-600 bg-transparent dark:border-green-400 dark:text-green-400'
+      : 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-200 dark:border dark:border-green-700/50',
+    'media': outlined
+      ? 'border border-yellow-500 text-yellow-600 bg-transparent dark:border-yellow-400 dark:text-yellow-400'
+      : 'bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border dark:border-yellow-700/50',
+    'alta': outlined
+      ? 'border border-red-500 text-red-600 bg-transparent dark:border-red-400 dark:text-red-400'
+      : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50',
+    'critica': outlined
+      ? 'border border-red-900 text-red-600 bg-transparent dark:border-red-700 dark:text-red-400'
+      : 'bg-red-900/30 text-red-600 dark:bg-red-900/30 dark:text-red-200 dark:border dark:border-red-700/50'
   };
 
   const classes = [

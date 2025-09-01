@@ -17,7 +17,7 @@ import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
-import { getChipVariant } from '../../utils/chipUtils';
+import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
@@ -849,18 +849,10 @@ export default function DetalleParticipante() {
       sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
-        const getSeveridadColor = (severidad: string) => {
-          switch (severidad) {
-            case 'baja': return 'bg-green-100 text-green-800';
-            case 'media': return 'bg-yellow-100 text-yellow-800';
-            case 'alta': return 'bg-red-100 text-red-800';
-            case 'critica': return 'bg-red-200 text-red-900';
-            default: return 'bg-gray-100 text-gray-800';
-          }
-        };
+        const variant = getSeveridadVariant(row.severidad);
         return (
-          <Chip variant="default" className={getSeveridadColor(row.severidad)}>
-            {row.severidad || '-'}
+          <Chip variant={variant} size="sm">
+            {row.severidad ? row.severidad.charAt(0).toUpperCase() + row.severidad.slice(1) : '-'}
           </Chip>
         );
       }
@@ -883,17 +875,10 @@ export default function DetalleParticipante() {
       sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
-        const getEstadoColor = (estado: string) => {
-          switch (estado) {
-            case 'activo': return 'bg-red-100 text-red-800';
-            case 'resuelto': return 'bg-green-100 text-green-800';
-            case 'archivado': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
-          }
-        };
+        const variant = getEstadoDolorVariant(row.estado);
         return (
-          <Chip variant="default" className={getEstadoColor(row.estado)}>
-            {row.estado || '-'}
+          <Chip variant={variant} size="sm">
+            {row.estado ? row.estado.charAt(0).toUpperCase() + row.estado.slice(1) : '-'}
           </Chip>
         );
       }

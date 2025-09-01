@@ -77,6 +77,22 @@ export const TIPOS_ACTIVIDAD = [
   'eliminacion'
 ];
 
+// Estados de dolor (nuevas agrupaciones)
+export const ESTADOS_DOLOR = [
+  'sin resolver',
+  'sin_resolver',
+  'resuelto',
+  'archivado'
+];
+
+// Niveles de severidad (nuevas agrupaciones)
+export const SEVERIDADES = [
+  'baja',
+  'media',
+  'alta',
+  'critica'
+];
+
 // Función para obtener la variante de chip basada en el valor
 export const getChipVariant = (value: string): string => {
   const valueLower = value?.toLowerCase()?.trim();
@@ -148,6 +164,42 @@ export const getChipVariant = (value: string): string => {
   
   // Por defecto
   return 'default';
+};
+
+// Función específica para obtener la variante de chip de estado de dolor
+export const getEstadoDolorVariant = (estado: string): 'sin_resolver' | 'resuelto' | 'archivado' => {
+  const estadoLower = estado?.toLowerCase()?.trim();
+  
+  switch (estadoLower) {
+    case 'sin resolver':
+    case 'sin_resolver':
+    case 'activo':
+      return 'sin_resolver'; // Rojo
+    case 'resuelto':
+      return 'resuelto'; // Verde
+    case 'archivado':
+      return 'archivado'; // Azul
+    default:
+      return 'sin_resolver'; // Por defecto rojo
+  }
+};
+
+// Función específica para obtener la variante de chip de severidad
+export const getSeveridadVariant = (severidad: string): 'baja' | 'media' | 'alta' | 'critica' => {
+  const severidadLower = severidad?.toLowerCase()?.trim();
+  
+  switch (severidadLower) {
+    case 'baja':
+      return 'baja'; // Verde
+    case 'media':
+      return 'media'; // Amarillo
+    case 'alta':
+      return 'alta'; // Rojo
+    case 'critica':
+      return 'critica'; // Rojo oscuro
+    default:
+      return 'media'; // Por defecto amarillo
+  }
 };
 
 // Función para obtener el texto formateado del chip
