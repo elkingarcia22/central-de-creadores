@@ -534,11 +534,23 @@ export default function ParticipantesPage() {
 
   const handleDolorGuardado = async (dolorData: any) => {
     try {
+      console.log('🔍 handleDolorGuardado llamado');
+      console.log('🔍 participanteParaCrearDolor:', participanteParaCrearDolor);
+      console.log('🔍 dolorData:', dolorData);
+      
+      if (!participanteParaCrearDolor?.id) {
+        console.error('❌ Error: No hay participante seleccionado');
+        showError('Error: No hay participante seleccionado');
+        return;
+      }
+      
       // Obtener el usuario actual del contexto
       const user = JSON.parse(localStorage.getItem('user') || '{}');
+      console.log('🔍 Usuario obtenido del localStorage:', user);
+      console.log('🔍 user-id que se enviará:', user.id || '');
       
       // Llamar al API para crear el dolor
-      const response = await fetch(`/api/participantes/${participanteParaCrearDolor?.id}/dolores`, {
+      const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -547,6 +559,8 @@ export default function ParticipantesPage() {
         body: JSON.stringify(dolorData),
       });
 
+      console.log('🔍 Respuesta del API:', response.status, response.statusText);
+
       if (response.ok) {
         // Cerrar modal y mostrar mensaje de éxito
         setShowModalCrearDolor(false);
@@ -554,6 +568,7 @@ export default function ParticipantesPage() {
         showSuccess('Dolor registrado exitosamente');
       } else {
         const errorData = await response.json();
+        console.log('❌ Error del API:', errorData);
         showError(errorData.error || 'Error al crear el dolor');
       }
     } catch (error) {
