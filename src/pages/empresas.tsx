@@ -248,6 +248,12 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
   const filtrarEmpresas = useCallback((empresas: Empresa[], searchTerm: string, filters: FilterValuesEmpresa) => {
     let filtradas = [...empresas];
     
+    console.log('🔍 Filtrando empresas:', {
+      total: empresas.length,
+      searchTerm,
+      filters
+    });
+    
     // Filtrar por término de búsqueda
     if (searchTerm.trim()) {
       const termino = searchTerm.toLowerCase();
@@ -257,44 +263,46 @@ export default function EmpresasPage({ initialEmpresas }: EmpresasPageProps) {
         emp?.kam_nombre?.toLowerCase().includes(termino) ||
         emp?.pais_nombre?.toLowerCase().includes(termino)
       );
+      console.log('🔍 Después de búsqueda:', filtradas.length, 'empresas');
     }
     
     // Filtrar por estado
     if (filters.estado && filters.estado !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.estado_id === filters.estado);
+      console.log('🔍 Después de filtro estado:', filtradas.length, 'empresas');
     }
-    
-
     
     // Filtrar por tamaño
     if (filters.tamano && filters.tamano !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.tamano_id === filters.tamano);
+      console.log('🔍 Después de filtro tamaño:', filtradas.length, 'empresas');
     }
     
     // Filtrar por país
     if (filters.pais && filters.pais !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.pais_id === filters.pais);
+      console.log('🔍 Después de filtro país:', filtradas.length, 'empresas');
     }
     
     // Filtrar por KAM
     if (filters.kam_id && filters.kam_id !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.kam_id === filters.kam_id);
+      console.log('🔍 Después de filtro KAM:', filtradas.length, 'empresas');
     }
-    
-
     
     // Filtrar por relación
     if (filters.relacion && filters.relacion !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.relacion_id === filters.relacion);
+      console.log('🔍 Después de filtro relación:', filtradas.length, 'empresas');
     }
     
     // Filtrar por producto
     if (filters.producto && filters.producto !== 'todos') {
       filtradas = filtradas.filter(emp => emp?.producto_id === filters.producto);
+      console.log('🔍 Después de filtro producto:', filtradas.length, 'empresas');
     }
     
-
-    
+    console.log('🔍 Resultado final:', filtradas.length, 'empresas');
     return filtradas;
   }, []);
 
