@@ -50,8 +50,7 @@ import { Subtitle } from '../../../components/ui/Subtitle';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import FilterDrawer from '../../../components/ui/FilterDrawer';
-import TestSidePanel from '../../../components/ui/TestSidePanel';
-import TestLayoutSidePanel from '../../../components/ui/TestLayoutSidePanel';
+
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
@@ -127,8 +126,7 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [showTestPanel, setShowTestPanel] = useState(false);
-  const [showTestLayoutPanel, setShowTestLayoutPanel] = useState(false);
+
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState({
     estados: [],
@@ -885,16 +883,15 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                  {/* Drawer de filtros avanzados personalizado para historial */}
          {showFilterDrawer && (
-           <div className="fixed inset-0 z-50 overflow-hidden" style={{ height: '100vh' }}>
+           <div className="fixed inset-0 z-50 overflow-hidden">
              {/* Overlay */}
              <div 
                className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
                onClick={handleCloseFilters}
-               style={{ height: '100vh' }}
              />
              
              {/* Drawer */}
-             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700" style={{ height: '100vh' }}>
+             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
                <div className="flex flex-col h-full">
                  {/* Header */}
                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -1075,22 +1072,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
             {/* Acciones principales */}
             <div className="flex flex-wrap gap-3">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowTestPanel(true)}
-                className="text-xs"
-              >
-                🧪 Probar Panel
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowTestLayoutPanel(true)}
-                className="text-xs"
-              >
-                🔧 Probar Layout
-              </Button>
               <ActionsMenu
                 actions={[
                   {
@@ -1173,17 +1154,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         loading={saving}
       />
 
-      {/* Panel de prueba */}
-      <TestSidePanel
-        isOpen={showTestPanel}
-        onClose={() => setShowTestPanel(false)}
-      />
-
-      {/* Panel de prueba del Layout */}
-      <TestLayoutSidePanel
-        isOpen={showTestLayoutPanel}
-        onClose={() => setShowTestLayoutPanel(false)}
-      />
     </Layout>
   );
 }

@@ -96,13 +96,12 @@ const SideModal: React.FC<SideModalProps> = ({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex" style={{ height: '100vh' }}>
+    <div className="fixed inset-0 z-50 flex">
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-40 transition-opacity"
         onClick={closeOnOverlayClick ? onClose : undefined}
         aria-hidden="true"
-        style={{ height: '100vh' }}
       />
       
       {/* Side Modal */}
