@@ -883,15 +883,41 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                  {/* Drawer de filtros avanzados personalizado para historial */}
          {showFilterDrawer && (
-           <div className="fixed inset-0 z-50 overflow-hidden">
+           <div 
+             className="fixed inset-0 z-50 overflow-hidden"
+             style={{ 
+               height: '100vh',
+               width: '100vw',
+               top: 0,
+               left: 0,
+               right: 0,
+               bottom: 0
+             }}
+           >
              {/* Overlay */}
              <div 
                className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
                onClick={handleCloseFilters}
+               style={{ 
+                 height: '100vh',
+                 width: '100vw',
+                 top: 0,
+                 left: 0,
+                 right: 0,
+                 bottom: 0
+               }}
              />
              
              {/* Drawer */}
-             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
+             <div 
+               className="absolute right-0 top-0 w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700"
+               style={{ 
+                 height: '100vh',
+                 top: 0,
+                 right: 0,
+                 bottom: 0
+               }}
+             >
                <div className="flex flex-col h-full">
                  {/* Header */}
                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
