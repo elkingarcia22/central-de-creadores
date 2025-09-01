@@ -849,7 +849,9 @@ export default function DetalleParticipante() {
       sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
+        console.log('🔍 DEBUG - Severidad del dolor:', row.severidad);
         const variant = getSeveridadVariant(row.severidad);
+        console.log('🔍 DEBUG - Variant resultante severidad:', variant);
         return (
           <Chip variant={variant} size="sm">
             {row.severidad ? row.severidad.charAt(0).toUpperCase() + row.severidad.slice(1) : '-'}
@@ -875,7 +877,9 @@ export default function DetalleParticipante() {
       sortable: true,
       render: (value: any, row: DolorParticipante, isEditing: boolean, onSave: (value: any) => void) => {
         if (!row) return <Typography variant="caption">-</Typography>;
+        console.log('🔍 DEBUG - Estado del dolor:', row.estado);
         const variant = getEstadoDolorVariant(row.estado);
+        console.log('🔍 DEBUG - Variant resultante:', variant);
         return (
           <Chip variant={variant} size="sm">
             {row.estado ? row.estado.charAt(0).toUpperCase() + row.estado.slice(1) : '-'}
