@@ -261,7 +261,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         )}
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form className="space-y-6">
           {/* Información básica */}
           <div className="space-y-4">
             {/* Categoría */}
