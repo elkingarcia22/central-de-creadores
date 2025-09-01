@@ -37,13 +37,15 @@ import {
   InfoIcon,
   ConfiguracionesIcon,
   SearchIcon,
-  FilterIcon
+  FilterIcon,
+  CloseIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
 import { getChipVariant, getChipText } from '../../../utils/chipUtils';
 import { Subtitle } from '../../../components/ui/Subtitle';
 import Input from '../../../components/ui/Input';
+import Select from '../../../components/ui/Select';
 import FilterDrawer from '../../../components/ui/FilterDrawer';
 
 // Funciones de utilidad para colores
@@ -833,32 +835,141 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           )}
         </Card>
 
-                 {/* Drawer de filtros avanzados */}
-         <FilterDrawer
-           isOpen={showFilterDrawer}
-           onClose={handleCloseFilters}
-           filters={filters}
-           onFiltersChange={(newFilters: any) => setFilters(newFilters)}
-           type="empresa"
-           options={{
-             estados: [
-               { value: 'todos', label: 'Todos los estados' },
-               { value: 'completada', label: 'Completada' },
-               { value: 'en_progreso', label: 'En Progreso' },
-               { value: 'cancelada', label: 'Cancelada' },
-               { value: 'reprogramada', label: 'Reprogramada' }
-             ],
-             responsables: [
-               { value: 'todos', label: 'Todos los responsables' },
-               ...(empresaData.estadisticas?.investigaciones?.reduce((acc: any[], item: any) => {
-                 if (item.responsable && !acc.find(r => r.value === item.responsable.id)) {
-                   acc.push({ value: item.responsable.id, label: item.responsable.full_name });
-                 }
-                 return acc;
-               }, []) || [])
-             ]
-           }}
-         />
+                 {/* Drawer de filtros avanzados personalizado para historial */}
+         {showFilterDrawer && (
+           <div className="fixed inset-0 z-50 flex">
+             {/* Overlay */}
+             <div 
+               className="fixed inset-0 bg-black/50" 
+               onClick={handleCloseFilters}
+             />
+             
+             {/* Drawer */}
+             <div className="relative ml-auto w-full max-w-md bg-white dark:bg-gray-900 shadow-xl">
+               <div className="flex flex-col h-full">
+                 {/* Header */}
+                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                   <div className="flex items-center gap-2">
+                     <FilterIcon className="w-5 h-5 text-gray-600" />
+                     <Typography variant="h5" weight="semibold">
+                       Filtros de Historial
+                     </Typography>
+                     {getActiveFiltersCount() > 0 && (
+                       <span className="px-2 py-1 text-xs bg-primary text-white rounded-full">
+                         {getActiveFiltersCount()}
+                       </span>
+                     )}
+                   </div>
+                   <Button
+                     variant="ghost"
+                     size="sm"
+                     onClick={handleCloseFilters}
+                     icon={<CloseIcon className="w-4 h-4" />}
+                   />
+                 </div>
+                 
+                 {/* Content */}
+                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                   {/* Estado */}
+                   <div>
+                     <Typography variant="subtitle2" weight="medium" className="mb-2">
+                       Estado de Participación
+                     </Typography>
+                     <Select
+                       placeholder="Seleccionar estado..."
+                       options={[
+                         { value: 'todos', label: 'Todos los estados' },
+                         { value: 'completada', label: 'Completada' },
+                         { value: 'en_progreso', label: 'En Progreso' },
+                         { value: 'cancelada', label: 'Cancelada' },
+                         { value: 'reprogramada', label: 'Reprogramada' }
+                       ]}
+                       value={filters.estado}
+                       onChange={(value) => setFilters(prev => ({ ...prev, estado: value.toString() }))}
+                       fullWidth
+                     />
+                   </div>
+                   
+                   {/* Responsable */}
+                   <div>
+                     <Typography variant="subtitle2" weight="medium" className="mb-2">
+                       Responsable
+                     </Typography>
+                     <Select
+                       placeholder="Seleccionar responsable..."
+                       options={[
+                         { value: 'todos', label: 'Todos los responsables' },
+                         ...(empresaData.estadisticas?.investigaciones?.reduce((acc: any[], item: any) => {
+                           if (item.responsable && !acc.find(r => r.value === item.responsable.id)) {
+                             acc.push({ value: item.responsable.id, label: item.responsable.full_name });
+                           }
+                           return acc;
+                         }, []) || [])
+                       ]}
+                       value={filters.responsable}
+                       onChange={(value) => setFilters(prev => ({ ...prev, responsable: value.toString() }))}
+                       fullWidth
+                     />
+                   </div>
+                   
+                   {/* Fecha desde */}
+                   <div>
+                     <Typography variant="subtitle2" weight="medium" className="mb-2">
+                       Fecha desde
+                     </Typography>
+                     <Input
+                       type="datetime-local"
+                       value={filters.fecha_desde}
+                       onChange={(e) => setFilters(prev => ({ ...prev, fecha_desde: e.target.value }))}
+                       placeholder="Seleccionar fecha..."
+                       fullWidth
+                     />
+                   </div>
+                   
+                   {/* Fecha hasta */}
+                   <div>
+                     <Typography variant="subtitle2" weight="medium" className="mb-2">
+                       Fecha hasta
+                     </Typography>
+                     <Input
+                       type="datetime-local"
+                       value={filters.fecha_hasta}
+                       onChange={(e) => setFilters(prev => ({ ...prev, fecha_hasta: e.target.value }))}
+                       placeholder="Seleccionar fecha..."
+                       fullWidth
+                     />
+                   </div>
+                 </div>
+                 
+                 {/* Footer */}
+                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                   <div className="flex gap-2">
+                     <Button
+                       variant="outline"
+                       onClick={() => setFilters({
+                         busqueda: '',
+                         estado: 'todos',
+                         fecha_desde: '',
+                         fecha_hasta: '',
+                         responsable: 'todos'
+                       })}
+                       className="flex-1"
+                     >
+                       Limpiar Filtros
+                     </Button>
+                     <Button
+                       variant="primary"
+                       onClick={handleCloseFilters}
+                       className="flex-1"
+                     >
+                       Aplicar
+                     </Button>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         )}
       </div>
     );
   };
