@@ -108,6 +108,9 @@ export interface FilterOptions {
   relaciones?: Array<{ value: string; label: string }>;
   productos?: Array<{ value: string; label: string }>;
   usuarios?: Array<{ id: string; full_name?: string; nombre?: string; email?: string; correo?: string; avatar_url?: string }>;
+  // Campos específicos para dolores
+  severidades?: Array<{ value: string; label: string }>;
+  categorias?: Array<{ value: string; label: string }>;
 }
 
 // Interface específica para filtros de participantes
@@ -141,14 +144,24 @@ export interface FilterValuesEmpresa {
   producto?: string | 'todos';
 }
 
+// Interface específica para filtros de dolores
+export interface FilterValuesDolores {
+  busqueda?: string;
+  estado?: string | 'todos';
+  severidad?: string | 'todos';
+  categoria?: string | 'todos';
+  fecha_creacion_desde?: string;
+  fecha_creacion_hasta?: string;
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores';
   participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
@@ -220,6 +233,15 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         relacion: 'todos',
         producto: 'todos'
       } as FilterValuesEmpresa);
+    } else if (type === 'dolores') {
+      onFiltersChange({
+        busqueda: '',
+        estado: 'todos',
+        severidad: 'todos',
+        categoria: 'todos',
+        fecha_creacion_desde: '',
+        fecha_creacion_hasta: ''
+      } as FilterValuesDolores);
     } else {
       onFiltersChange({
         estados: [],
@@ -293,6 +315,13 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (empFilters.activo !== undefined) count++;
       if (empFilters.relacion && empFilters.relacion !== 'todos') count++;
       if (empFilters.producto && empFilters.producto !== 'todos') count++;
+    } else if (type === 'dolores') {
+      const dolFilters = filters as FilterValuesDolores;
+      if (dolFilters.estado && dolFilters.estado !== 'todos') count++;
+      if (dolFilters.severidad && dolFilters.severidad !== 'todos') count++;
+      if (dolFilters.categoria && dolFilters.categoria !== 'todos') count++;
+      if (dolFilters.fecha_creacion_desde) count++;
+      if (dolFilters.fecha_creacion_hasta) count++;
     } else {
       const recFilters = filters as FilterValuesReclutamiento;
       if (recFilters.estados.length > 0) count++;
@@ -885,6 +914,71 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     onChange={(value) => handleFilterChange('producto', value)}
                     fullWidth
                   />
+                </div>
+              </>
+            ) : type === 'dolores' ? (
+              // Filtros específicos para dolores
+              <>
+                {/* Estado */}
+                <div>
+                  <FilterLabel>Estado</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar estado..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.estados || [])
+                    ]}
+                    value={(filters as FilterValuesDolores).estado || 'todos'}
+                    onChange={(value) => handleFilterChange('estado', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Severidad */}
+                <div>
+                  <FilterLabel>Severidad</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar severidad..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.severidades || [])
+                    ]}
+                    value={(filters as FilterValuesDolores).severidad || 'todos'}
+                    onChange={(value) => handleFilterChange('severidad', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Categoría */}
+                <div>
+                  <FilterLabel>Categoría</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar categoría..."
+                    options={[
+                      { value: 'todos', label: 'Todos' },
+                      ...(options.categorias || [])
+                    ]}
+                    value={(filters as FilterValuesDolores).categoria || 'todos'}
+                    onChange={(value) => handleFilterChange('categoria', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Fecha de Creación */}
+                <div>
+                  <FilterLabel>Fecha de Creación</FilterLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    <DatePicker
+                      placeholder="Desde..."
+                      value={(filters as FilterValuesDolores).fecha_creacion_desde || ''}
+                      onChange={(e) => handleFilterChange('fecha_creacion_desde', e.target.value)}
+                    />
+                    <DatePicker
+                      placeholder="Hasta..."
+                      value={(filters as FilterValuesDolores).fecha_creacion_hasta || ''}
+                      onChange={(e) => handleFilterChange('fecha_creacion_hasta', e.target.value)}
+                    />
+                  </div>
                 </div>
               </>
             ) : (

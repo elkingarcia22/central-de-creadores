@@ -11,13 +11,15 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select, DolorSideModal } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant } from '../../utils/chipUtils';
+import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
+import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
   id: string;
@@ -104,6 +106,20 @@ export default function DetalleParticipante() {
   const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
   const [showVerDolorModal, setShowVerDolorModal] = useState(false);
   const [showEditarDolorModal, setShowEditarDolorModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
+  
+  // Estados para búsqueda y filtros
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [filters, setFilters] = useState<FilterValuesDolores>({
+    busqueda: '',
+    estado: 'todos',
+    severidad: 'todos',
+    categoria: 'todos',
+    fecha_creacion_desde: '',
+    fecha_creacion_hasta: ''
+  });
 
   useEffect(() => {
     if (id) {
@@ -262,24 +278,32 @@ export default function DetalleParticipante() {
     setShowEditarDolorModal(true);
   };
 
-  const handleEliminarDolor = async (dolor: DolorParticipante) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar el dolor "${dolor.titulo}"?`)) {
-      try {
-        const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
-          method: 'DELETE',
-        });
+  const handleEliminarDolor = (dolor: DolorParticipante) => {
+    setDolorParaEliminar(dolor);
+    setShowDeleteConfirmModal(true);
+  };
 
-        if (response.ok) {
-          showSuccess('Dolor eliminado exitosamente');
-          await cargarDolores();
-        } else {
-          const errorData = await response.json();
-          showError(errorData.error || 'Error al eliminar el dolor');
-        }
-      } catch (error) {
-        console.error('Error al eliminar dolor:', error);
-        showError('Error al eliminar el dolor');
+  const confirmarEliminarDolor = async () => {
+    if (!dolorParaEliminar) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor eliminado exitosamente');
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al eliminar el dolor');
       }
+    } catch (error) {
+      console.error('Error al eliminar dolor:', error);
+      showError('Error al eliminar el dolor');
+    } finally {
+      setShowDeleteConfirmModal(false);
+      setDolorParaEliminar(null);
     }
   };
 
@@ -308,6 +332,36 @@ export default function DetalleParticipante() {
       console.error('Error al actualizar dolor:', error);
       showError('Error al actualizar el dolor');
     }
+  };
+
+  // Función para contar filtros activos
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filters.estado && filters.estado !== 'todos') count++;
+    if (filters.severidad && filters.severidad !== 'todos') count++;
+    if (filters.categoria && filters.categoria !== 'todos') count++;
+    if (filters.fecha_creacion_desde) count++;
+    if (filters.fecha_creacion_hasta) count++;
+    return count;
+  };
+
+  // Opciones de filtros para dolores
+  const filterOptions = {
+    estados: [
+      { value: 'activo', label: 'Activo' },
+      { value: 'resuelto', label: 'Resuelto' },
+      { value: 'archivado', label: 'Archivado' }
+    ],
+    severidades: [
+      { value: 'baja', label: 'Baja' },
+      { value: 'media', label: 'Media' },
+      { value: 'alta', label: 'Alta' },
+      { value: 'critica', label: 'Crítica' }
+    ],
+    categorias: [
+      { value: '72bbd72c-e735-44d9-ad0e-e44cac8e700d', label: 'Falta de funcionalidades' },
+      { value: '390a0fe2-fcc2-41eb-8b92-ed21451371dc', label: 'Limitaciones técnicas' }
+    ]
   };
 
   const cargarComentarios = async () => {
@@ -1020,52 +1074,40 @@ export default function DetalleParticipante() {
                     </div>
                     
                     {dolores.length > 0 ? (
-                      <>
-                        <div className="mb-4">
-                          <Typography variant="body2" color="secondary">
-                            {dolores.length} dolor{dolores.length !== 1 ? 'es' : ''} registrado{dolores.length !== 1 ? 's' : ''}
-                          </Typography>
-                        </div>
-                        <DataTable
-                          data={dolores}
-                          columns={columnsDolores}
-                          loading={false}
-                          searchable={true}
-                          searchPlaceholder="Buscar dolores..."
-                          searchKeys={['titulo', 'descripcion', 'categoria_nombre']}
-                          filterable={true}
-                          filterKey="estado"
-                          filterOptions={[
-                            { value: 'activo', label: 'Activo' },
-                            { value: 'resuelto', label: 'Resuelto' },
-                            { value: 'archivado', label: 'Archivado' }
-                          ]}
-                          selectable={false}
-                          actions={[
-                            {
-                              label: 'Ver detalles',
-                              icon: <EyeIcon className="w-4 h-4" />,
-                              onClick: handleVerDolor,
-                              title: 'Ver detalles del dolor'
-                            },
-                            {
-                              label: 'Editar',
-                              icon: <EditIcon className="w-4 h-4" />,
-                              onClick: handleEditarDolor,
-                              title: 'Editar dolor'
-                            },
-                            {
-                              label: 'Eliminar',
-                              icon: <TrashIcon className="w-4 h-4" />,
-                              onClick: handleEliminarDolor,
-                              className: 'text-red-600 hover:text-red-700',
-                              title: 'Eliminar dolor'
-                            }
-                          ]}
-                          emptyMessage="No se encontraron dolores registrados"
-                          rowKey="id"
-                        />
-                      </>
+                      <DoloresUnifiedContainer
+                        dolores={dolores}
+                        loading={false}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        filters={filters}
+                        setFilters={setFilters}
+                        showFilterDrawer={showFilterDrawer}
+                        setShowFilterDrawer={setShowFilterDrawer}
+                        getActiveFiltersCount={getActiveFiltersCount}
+                        columns={columnsDolores}
+                        actions={[
+                          {
+                            label: 'Ver detalles',
+                            icon: <EyeIcon className="w-4 h-4" />,
+                            onClick: handleVerDolor,
+                            title: 'Ver detalles del dolor'
+                          },
+                          {
+                            label: 'Editar',
+                            icon: <EditIcon className="w-4 h-4" />,
+                            onClick: handleEditarDolor,
+                            title: 'Editar dolor'
+                          },
+                          {
+                            label: 'Eliminar',
+                            icon: <TrashIcon className="w-4 h-4" />,
+                            onClick: handleEliminarDolor,
+                            className: 'text-red-600 hover:text-red-700',
+                            title: 'Eliminar dolor'
+                          }
+                        ]}
+                        filterOptions={filterOptions}
+                      />
                     ) : (
                       <div className="text-center py-12">
                         <AlertTriangleIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -1202,6 +1244,22 @@ export default function DetalleParticipante() {
         dolor={dolorSeleccionado}
         onSave={handleActualizarDolor}
         loading={false}
+      />
+
+      {/* Modal de confirmación para eliminar dolor */}
+      <ConfirmModal
+        isOpen={showDeleteConfirmModal}
+        onClose={() => {
+          setShowDeleteConfirmModal(false);
+          setDolorParaEliminar(null);
+        }}
+        onConfirm={confirmarEliminarDolor}
+        title="Eliminar Dolor"
+        message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar?.titulo}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        size="md"
       />
     </Layout>
   );
