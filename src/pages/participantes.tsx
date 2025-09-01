@@ -544,17 +544,6 @@ export default function ParticipantesPage() {
         return;
       }
       
-      // Obtener el usuario actual del contexto
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      console.log('🔍 Usuario obtenido del localStorage:', user);
-      console.log('🔍 user-id que se enviará:', user.id || '');
-      
-      if (!user.id) {
-        console.error('❌ Error: Usuario no autenticado');
-        showError('Error: Usuario no autenticado');
-        return;
-      }
-      
       // Validar datos del dolor
       if (!dolorData.categoria_id || !dolorData.titulo) {
         console.error('❌ Error: Datos del dolor incompletos');
@@ -562,36 +551,84 @@ export default function ParticipantesPage() {
         return;
       }
       
-      // Llamar al API para crear el dolor
-      const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
+      // Primero probar con la API de test para verificar que funciona
+      console.log('🧪 Probando con API de test...');
+      const testResponse = await fetch('/api/test-dolores', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'user-id': user.id
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(dolorData),
+        body: JSON.stringify({
+          participanteId: participanteParaCrearDolor.id,
+          categoriaId: dolorData.categoria_id,
+          titulo: dolorData.titulo,
+          descripcion: dolorData.descripcion,
+          severidad: dolorData.severidad,
+          investigacionId: dolorData.investigacion_relacionada_id
+        }),
       });
 
-      console.log('🔍 Respuesta del API:', response.status, response.statusText);
+      console.log('🧪 Respuesta del API de test:', testResponse.status, testResponse.statusText);
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Dolor creado exitosamente:', result);
+      if (testResponse.ok) {
+        const testResult = await testResponse.json();
+        console.log('✅ API de test exitosa:', testResult);
         
-        // Cerrar modal y mostrar mensaje de éxito
-        setShowModalCrearDolor(false);
-        setParticipanteParaCrearDolor(null);
-        showSuccess('Dolor registrado exitosamente');
-      } else {
-        let errorMessage = 'Error al crear el dolor';
-        try {
-          const errorData = await response.json();
-          console.log('❌ Error del API:', errorData);
-          errorMessage = errorData.error || errorMessage;
-        } catch (parseError) {
-          console.log('❌ Error parseando respuesta:', parseError);
+        // Si la API de test funciona, intentar con la API real
+        console.log('🔍 Intentando con API real...');
+        
+        // Obtener el usuario actual del contexto
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        console.log('🔍 Usuario obtenido del localStorage:', user);
+        console.log('🔍 user-id que se enviará:', user.id || '');
+        
+        if (!user.id) {
+          console.error('❌ Error: Usuario no autenticado');
+          showError('Error: Usuario no autenticado');
+          return;
         }
-        showError(errorMessage);
+        
+        // Llamar al API real para crear el dolor
+        const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'user-id': user.id
+          },
+          body: JSON.stringify(dolorData),
+        });
+
+        console.log('🔍 Respuesta del API real:', response.status, response.statusText);
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Dolor creado exitosamente:', result);
+          
+          // Cerrar modal y mostrar mensaje de éxito
+          setShowModalCrearDolor(false);
+          setParticipanteParaCrearDolor(null);
+          showSuccess('Dolor registrado exitosamente');
+        } else {
+          let errorMessage = 'Error al crear el dolor';
+          try {
+            const errorData = await response.json();
+            console.log('❌ Error del API real:', errorData);
+            errorMessage = errorData.error || errorMessage;
+          } catch (parseError) {
+            console.log('❌ Error parseando respuesta:', parseError);
+          }
+          showError(errorMessage);
+        }
+      } else {
+        let testErrorMessage = 'Error en API de test';
+        try {
+          const testErrorData = await testResponse.json();
+          console.log('❌ Error del API de test:', testErrorData);
+          testErrorMessage = testErrorData.error || testErrorMessage;
+        } catch (parseError) {
+          console.log('❌ Error parseando respuesta de test:', parseError);
+        }
+        showError('Error en verificación: ' + testErrorMessage);
       }
     } catch (error) {
       console.error('❌ Error al crear dolor:', error);
