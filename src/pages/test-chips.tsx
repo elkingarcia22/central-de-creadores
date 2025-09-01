@@ -1,6 +1,6 @@
 import React from 'react';
 import Chip from '../components/ui/Chip';
-import Layout from '../components/ui/Layout';
+import { Layout } from '../components/ui/Layout';
 
 export default function TestChips() {
   return (
