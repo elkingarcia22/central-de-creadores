@@ -596,10 +596,6 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
     const historialFiltrado = useMemo(() => {
       let filtrado = empresaData.estadisticas?.investigaciones || [];
       
-      console.log('🔍 Filtrado inicial:', filtrado.length, 'elementos');
-      console.log('🔍 Filtros actuales:', filters);
-      console.log('🔍 Término de búsqueda:', searchTerm);
-      
       // Filtro por búsqueda
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
@@ -608,19 +604,16 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
           item.responsable?.full_name?.toLowerCase().includes(term) ||
           item.tipo_sesion?.toLowerCase().includes(term)
         );
-        console.log('🔍 Después de búsqueda:', filtrado.length, 'elementos');
       }
 
       // Filtro por estado
       if (filters.estado !== 'todos') {
         filtrado = filtrado.filter(item => item.estado_participacion === filters.estado);
-        console.log('🔍 Después de filtro estado:', filtrado.length, 'elementos');
       }
 
       // Filtro por responsable
       if (filters.responsable !== 'todos') {
         filtrado = filtrado.filter(item => item.responsable?.id === filters.responsable);
-        console.log('🔍 Después de filtro responsable:', filtrado.length, 'elementos');
       }
 
       // Filtro por fechas
@@ -628,17 +621,14 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
         filtrado = filtrado.filter(item => 
           new Date(item.fecha_inicio) >= new Date(filters.fecha_desde)
         );
-        console.log('🔍 Después de filtro fecha desde:', filtrado.length, 'elementos');
       }
 
       if (filters.fecha_hasta) {
         filtrado = filtrado.filter(item => 
           new Date(item.fecha_inicio) <= new Date(filters.fecha_hasta)
         );
-        console.log('🔍 Después de filtro fecha hasta:', filtrado.length, 'elementos');
       }
 
-      console.log('🔍 Resultado final:', filtrado.length, 'elementos');
       return filtrado;
     }, [empresaData.estadisticas?.investigaciones, searchTerm, filters]);
 
@@ -893,41 +883,15 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
 
                  {/* Drawer de filtros avanzados personalizado para historial */}
          {showFilterDrawer && (
-           <div 
-             className="fixed inset-0 z-50 overflow-hidden"
-             style={{ 
-               height: '100vh',
-               width: '100vw',
-               top: 0,
-               left: 0,
-               right: 0,
-               bottom: 0
-             }}
-           >
+           <div className="fixed inset-0 z-50 overflow-hidden">
              {/* Overlay */}
              <div 
                className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
                onClick={handleCloseFilters}
-               style={{ 
-                 height: '100vh',
-                 width: '100vw',
-                 top: 0,
-                 left: 0,
-                 right: 0,
-                 bottom: 0
-               }}
              />
              
              {/* Drawer */}
-             <div 
-               className="absolute right-0 top-0 w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700"
-               style={{ 
-                 height: '100vh',
-                 top: 0,
-                 right: 0,
-                 bottom: 0
-               }}
-             >
+             <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
                <div className="flex flex-col h-full">
                  {/* Header */}
                  <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
