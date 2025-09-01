@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import Button from './Button';
 import Select from './Select';
@@ -379,21 +380,47 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+  const drawerContent = (
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden"
+      style={{ 
+        height: '100vh',
+        width: '100vw',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }}
+    >
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+        style={{ 
+          height: '100vh',
+          width: '100vw',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
         onClick={onClose}
       />
       
       {/* Drawer */}
-      <div className={`
-        absolute right-0 top-0 h-full w-full max-w-md
-        bg-card border-l border-border
-         transform transition-transform
-        ${className}
-      `}>
+      <div 
+        className={`
+          absolute right-0 top-0 w-full max-w-md
+          bg-card border-l border-border
+          transform transition-transform
+          ${className}
+        `}
+        style={{ 
+          height: '100vh',
+          top: 0,
+          right: 0,
+          bottom: 0
+        }}
+      >
         <div className="flex flex-col h-full">
           {/* Header */}
           <PageHeader
@@ -1016,6 +1043,9 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       </div>
     </div>
   );
+
+  // Usar Portal para renderizar fuera del DOM normal
+  return createPortal(drawerContent, document.body);
 }; 
 
 export default FilterDrawer; 
