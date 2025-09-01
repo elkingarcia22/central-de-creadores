@@ -549,12 +549,25 @@ export default function ParticipantesPage() {
       console.log('🔍 Usuario obtenido del localStorage:', user);
       console.log('🔍 user-id que se enviará:', user.id || '');
       
+      if (!user.id) {
+        console.error('❌ Error: Usuario no autenticado');
+        showError('Error: Usuario no autenticado');
+        return;
+      }
+      
+      // Validar datos del dolor
+      if (!dolorData.categoria_id || !dolorData.titulo) {
+        console.error('❌ Error: Datos del dolor incompletos');
+        showError('Error: Categoría y título son requeridos');
+        return;
+      }
+      
       // Llamar al API para crear el dolor
       const response = await fetch(`/api/participantes/${participanteParaCrearDolor.id}/dolores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'user-id': user.id || '' // Agregar el ID del usuario
+          'user-id': user.id
         },
         body: JSON.stringify(dolorData),
       });
@@ -562,18 +575,27 @@ export default function ParticipantesPage() {
       console.log('🔍 Respuesta del API:', response.status, response.statusText);
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Dolor creado exitosamente:', result);
+        
         // Cerrar modal y mostrar mensaje de éxito
         setShowModalCrearDolor(false);
         setParticipanteParaCrearDolor(null);
         showSuccess('Dolor registrado exitosamente');
       } else {
-        const errorData = await response.json();
-        console.log('❌ Error del API:', errorData);
-        showError(errorData.error || 'Error al crear el dolor');
+        let errorMessage = 'Error al crear el dolor';
+        try {
+          const errorData = await response.json();
+          console.log('❌ Error del API:', errorData);
+          errorMessage = errorData.error || errorMessage;
+        } catch (parseError) {
+          console.log('❌ Error parseando respuesta:', parseError);
+        }
+        showError(errorMessage);
       }
     } catch (error) {
-      console.error('Error al crear dolor:', error);
-      showError('Error al crear el dolor');
+      console.error('❌ Error al crear dolor:', error);
+      showError('Error al crear el dolor: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 

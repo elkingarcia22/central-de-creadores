@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-09-01T17:51:23.000Z",
+  "commit_hash": "f4a1e7b65ced59af804d6cdcf0d9a9b9209a1f70",
+  "branch": "main",
+  "status": "cambios 3",
+  "files": [
+    " M src/pages/participantes.tsx",
+    "?? mcp-system/mcp-maestro/storage/backups/backup-2025-09-01T17-51-23.000Z.json",
+    "?? src/pages/api/test-dolores.ts"
+  ]
+}
