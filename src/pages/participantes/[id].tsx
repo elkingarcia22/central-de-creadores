@@ -181,30 +181,29 @@ export default function DetalleParticipante() {
 
   const cargarDolores = async () => {
     try {
+      console.log('🔍 Cargando dolores para participante:', id);
       const response = await fetch(`/api/participantes/${id}/dolores`);
       if (response.ok) {
         const data = await response.json();
-        setDolores(data.dolores || []);
+        console.log('🔍 Dolores cargados:', data);
+        setDolores(data || []);
+      } else {
+        console.error('❌ Error cargando dolores:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('Error cargando dolores:', error);
+      console.error('❌ Error cargando dolores:', error);
     }
   };
 
   const handleDolorGuardado = async (dolorData: any) => {
     try {
-      // Obtener el usuario actual del contexto
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      console.log('🔍 Usuario obtenido del localStorage:', user);
-      console.log('🔍 user-id que se enviará:', user.id || '');
-      console.log('🔍 Datos del dolor a enviar:', dolorData);
+      console.log('🔍 handleDolorGuardado llamado con datos:', dolorData);
       
       // Llamar al API para crear el dolor
       const response = await fetch(`/api/participantes/${id}/dolores`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'user-id': user.id || '' // Agregar el ID del usuario
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(dolorData),
       });
@@ -212,9 +211,13 @@ export default function DetalleParticipante() {
       console.log('🔍 Respuesta del API:', response.status, response.statusText);
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Dolor creado exitosamente:', result);
+        
         // Cerrar modal y mostrar mensaje de éxito
         setShowCrearDolorModal(false);
         showSuccess('Dolor registrado exitosamente');
+        
         // Recargar los dolores
         await cargarDolores();
       } else {
@@ -223,8 +226,8 @@ export default function DetalleParticipante() {
         showError(errorData.error || 'Error al crear el dolor');
       }
     } catch (error) {
-      console.error('Error al crear dolor:', error);
-      showError('Error al crear el dolor');
+      console.error('❌ Error al crear dolor:', error);
+      showError('Error al crear el dolor: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     }
   };
 
