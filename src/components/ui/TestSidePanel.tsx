@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { applySidePanelFix, removeSidePanelFix } from '../../utils/sidepanelFix';
 
 interface TestSidePanelProps {
   isOpen: boolean;
@@ -16,8 +17,11 @@ const TestSidePanel: React.FC<TestSidePanelProps> = ({ isOpen, onClose }) => {
       console.log('🧪 Document height:', document.documentElement.scrollHeight);
       console.log('🧪 Body height:', document.body.scrollHeight);
       
-      // Verificar elementos después de renderizar
+      // Aplicar fix de sidepanel
       setTimeout(() => {
+        applySidePanelFix();
+        
+        // Verificar elementos después de renderizar
         if (overlayRef.current) {
           const overlay = overlayRef.current;
           console.log('🧪 Overlay encontrado:', overlay);
@@ -38,6 +42,9 @@ const TestSidePanel: React.FC<TestSidePanelProps> = ({ isOpen, onClose }) => {
           console.log('🧪 Drawer getBoundingClientRect:', drawer.getBoundingClientRect());
         }
       }, 100);
+    } else {
+      // Remover fix cuando se cierra
+      removeSidePanelFix();
     }
   }, [isOpen]);
 
