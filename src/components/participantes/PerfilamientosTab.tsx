@@ -16,7 +16,7 @@ import {
   FilterIcon,
   CalendarIcon,
   UserIcon,
-  TargetIcon
+  InfoIcon
 } from '../icons';
 import { SeleccionarCategoriaPerfilamientoModal } from './SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from './CrearPerfilamientoModal';
@@ -126,7 +126,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <TargetIcon className="w-5 h-5 text-gray-500" />
+            <InfoIcon className="w-5 h-5 text-gray-500" />
             <Typography variant="h3" weight="semibold">
               Perfilamiento del Participante
             </Typography>
@@ -190,7 +190,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         </Card>
       ) : perfilamientosFiltrados.length === 0 ? (
         <EmptyState
-          icon={<TargetIcon className="w-12 h-12 text-gray-400" />}
+          icon={<InfoIcon className="w-12 h-12 text-gray-400" />}
           title="No hay perfilamientos"
           description={
             searchTerm || selectedCategoria
