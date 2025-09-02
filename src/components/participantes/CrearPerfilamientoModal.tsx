@@ -152,7 +152,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   };
 
   const opcionesCategoria = OPCIONES_POR_CATEGORIA[categoria] || [];
-  const nombreCategoria = obtenerNombreCategoria(categoria);
+  const nombreCategoria = categoria ? obtenerNombreCategoria(categoria) : 'Categoría';
 
   // Footer del modal
   const footer = (
@@ -176,6 +176,11 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       </Button>
     </div>
   );
+
+  // Validar que tengamos todos los datos necesarios
+  if (!categoria || !participanteId || !participanteNombre) {
+    return null;
+  }
 
   return (
     <SideModal
