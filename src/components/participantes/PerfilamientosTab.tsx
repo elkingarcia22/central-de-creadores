@@ -374,14 +374,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
             )}
           </Button>
 
-          {/* Botón de crear perfilamiento */}
-          <Button
-            variant="primary"
-            onClick={() => setShowCategoriaModal(true)}
-            icon={<PlusIcon className="w-4 h-4" />}
-          >
-            Crear Perfilamiento
-          </Button>
+
         </div>
       </div>
 
