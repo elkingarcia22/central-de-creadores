@@ -27,6 +27,7 @@ import { SeleccionarCategoriaPerfilamientoModal } from './SeleccionarCategoriaPe
 import { CrearPerfilamientoModal } from './CrearPerfilamientoModal';
 import { PerfilamientosService } from '../../api/supabase-perfilamientos';
 import ConfirmModal from '../ui/ConfirmModal';
+import { useToast } from '../../contexts/ToastContext';
 import { 
   PerfilamientoParticipante, 
   CategoriaPerfilamiento,
@@ -43,6 +44,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   participanteId,
   participanteNombre
 }) => {
+  const { showSuccess, showError } = useToast();
   const [perfilamientos, setPerfilamientos] = useState<PerfilamientoParticipante[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -295,16 +297,16 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       
       if (error) {
         console.error('Error eliminando perfilamiento:', error);
-        alert('Error al eliminar el perfilamiento');
+        showError('Error al eliminar el perfilamiento', error);
         return;
       }
       
       // Recargar la lista
       await cargarPerfilamientos();
-      alert('Perfilamiento eliminado exitosamente');
+      showSuccess('Perfilamiento eliminado exitosamente');
     } catch (error) {
       console.error('Error inesperado:', error);
-      alert('Error inesperado al eliminar el perfilamiento');
+      showError('Error inesperado al eliminar el perfilamiento');
     } finally {
       setEliminando(false);
       setPerfilamientoParaEliminar(null);
