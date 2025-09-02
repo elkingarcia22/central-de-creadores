@@ -1081,10 +1081,23 @@ export default function ParticipantesPage() {
               >
                 Test Modal Externo
               </button>
+              <br />
+              <button 
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="bg-green-500 text-white px-2 py-1 rounded text-xs mt-1"
+              >
+                Toggle Dropdown
+              </button>
             </div>
             
+            {/* Debug: Lista visible siempre */}
+            <div className="absolute right-0 top-0 mt-20 w-80 z-50 bg-red-100 border-2 border-red-500 p-2">
+              <div className="text-xs text-red-600 mb-2">
+                DEBUG: showDropdown = {showDropdown.toString()}
+              </div>
+              
             {showDropdown && (
-              <div className="absolute right-0 top-0 mt-20 w-80 z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+              <div className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                 <div className="p-2 space-y-1">
                   <button
                     onClick={() => {
@@ -1130,6 +1143,7 @@ export default function ParticipantesPage() {
                 </div>
               </div>
             )}
+              </div>
           </div>
 
           {/* Estadísticas del Dashboard */}
