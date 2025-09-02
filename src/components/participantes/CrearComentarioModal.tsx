@@ -3,7 +3,7 @@
 // =====================================================
 
 import React, { useState } from 'react';
-import { SideModal } from '../ui/SideModal';
+import SideModal from '../ui/SideModal';
 import { Button } from '../ui/Button';
 import Input from '../ui/Input';
 import Textarea from '../ui/Textarea';
@@ -173,7 +173,7 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
           </div>
         </div>
 
-        <FormContainer onSubmit={handleSubmit}>
+        <FormContainer>
           {/* Información básica */}
           <div className="space-y-4">
             <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
