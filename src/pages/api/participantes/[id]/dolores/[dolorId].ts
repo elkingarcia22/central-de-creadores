@@ -88,6 +88,10 @@ async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, partic
     updateData.fecha_actualizacion = new Date().toISOString();
 
     console.log('🔍 Datos a actualizar en la base de datos:', updateData);
+    console.log('🔍 Ejecutando query de Supabase...');
+    console.log('🔍 Tabla: dolores_participantes');
+    console.log('🔍 ID del dolor:', dolorId);
+    console.log('🔍 ID del participante:', participanteId);
 
     const { data: dolorActualizado, error } = await supabaseServer
       .from('dolores_participantes')
