@@ -44,7 +44,8 @@ interface PerfilamientosTabProps {
 
 export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   participanteId,
-  participanteNombre
+  participanteNombre,
+  usuarios
 }) => {
   const { showSuccess, showError } = useToast();
   const [perfilamientos, setPerfilamientos] = useState<PerfilamientoParticipante[]>([]);
