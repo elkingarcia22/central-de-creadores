@@ -59,13 +59,9 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       label: 'Categoría',
       sortable: true,
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Chip 
-          variant="outline" 
-          size="sm"
-          className={`border-${obtenerColorCategoria(row.categoria_perfilamiento)}-200 text-${obtenerColorCategoria(row.categoria_perfilamiento)}-700`}
-        >
+        <Typography variant="body2" weight="medium">
           {obtenerNombreCategoria(row.categoria_perfilamiento)}
-        </Chip>
+        </Typography>
       )
     },
     {
@@ -94,7 +90,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         <div className="flex flex-wrap gap-1">
           {row.etiquetas && row.etiquetas.length > 0 ? (
             row.etiquetas.map((etiqueta, index) => (
-              <Chip key={index} variant="outline" size="sm" className="text-xs">
+              <Chip key={index} variant="default" size="sm" outlined={true}>
                 {etiqueta.replace('_', ' ')}
               </Chip>
             ))
@@ -112,7 +108,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         const getColorConfianza = (confianza: number) => {
           if (confianza >= 4) return 'success';
           if (confianza >= 3) return 'warning';
-          return 'destructive';
+          return 'danger';
         };
         
         const getTextoConfianza = (confianza: number) => {
@@ -294,10 +290,8 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const formatearFecha = (fecha: string) => {
     return new Date(fecha).toLocaleDateString('es-ES', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      month: '2-digit',
+      day: '2-digit'
     });
   };
 
