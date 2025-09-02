@@ -1096,8 +1096,15 @@ export default function ParticipantesPage() {
                 DEBUG: showDropdown = {showDropdown.toString()}
               </div>
               
+              {/* Lista SIEMPRE visible para debug */}
+              <div className="w-full bg-yellow-200 border-2 border-yellow-500 p-2 mb-2">
+                <div className="text-xs text-yellow-800">
+                  LISTA SIEMPRE VISIBLE - Estado: {showDropdown ? 'ABIERTO' : 'CERRADO'}
+                </div>
+              </div>
+              
             {showDropdown && (
-              <div className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+              <div className="w-full bg-green-200 border-2 border-green-500 rounded-lg shadow-lg">
                 <div className="p-2 space-y-1">
                   <button
                     onClick={() => {
