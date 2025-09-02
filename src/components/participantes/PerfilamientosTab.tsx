@@ -429,6 +429,6 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           onSuccess={handlePerfilamientoCreado}
         />
       )}
-    </div>
+    </Card>
   );
 };
