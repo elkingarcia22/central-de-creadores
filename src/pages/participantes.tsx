@@ -1396,36 +1396,39 @@ export default function ParticipantesPage() {
               console.log('🔍 Participante actual:', participanteParaPerfilamiento);
               setCategoriaSeleccionada(categoria);
               setShowModalCrearPerfilamiento(true);
-              // NO cerrar el modal de categoría hasta que se complete la creación
+              // Cerrar el modal de categoría para mostrar el de creación
+              setShowModalPerfilamiento(false);
             }}
           />
 
           {/* Modal de crear perfilamiento específico */}
-          <CrearPerfilamientoModal
-            isOpen={showModalCrearPerfilamiento && !!categoriaSeleccionada && !!participanteParaPerfilamiento}
-            onClose={() => {
-              // Si se cancela, limpiar todo
-              setShowModalCrearPerfilamiento(false);
-              setCategoriaSeleccionada(null);
-              setParticipanteParaPerfilamiento(null);
-            }}
-            participanteId={participanteParaPerfilamiento?.id || ''}
-            participanteNombre={participanteParaPerfilamiento?.nombre || ''}
-            categoria={categoriaSeleccionada}
-            onBack={() => {
-              // Volver al modal de selección de categoría
-              setShowModalCrearPerfilamiento(false);
-              setCategoriaSeleccionada(null);
-              setShowModalPerfilamiento(true);
-            }}
-            onSuccess={() => {
-              // Si se crea exitosamente, limpiar todo
-              setShowModalCrearPerfilamiento(false);
-              setCategoriaSeleccionada(null);
-              setParticipanteParaPerfilamiento(null);
-              showSuccess('Perfilamiento creado exitosamente');
-            }}
-          />
+          {showModalCrearPerfilamiento && categoriaSeleccionada && participanteParaPerfilamiento && (
+            <CrearPerfilamientoModal
+              isOpen={true}
+              onClose={() => {
+                // Si se cancela, limpiar todo
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setParticipanteParaPerfilamiento(null);
+              }}
+              participanteId={participanteParaPerfilamiento.id}
+              participanteNombre={participanteParaPerfilamiento.nombre}
+              categoria={categoriaSeleccionada}
+              onBack={() => {
+                // Volver al modal de selección de categoría
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setShowModalPerfilamiento(true);
+              }}
+              onSuccess={() => {
+                // Si se crea exitosamente, limpiar todo
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setParticipanteParaPerfilamiento(null);
+                showSuccess('Perfilamiento creado exitosamente');
+              }}
+            />
+          )}
         </div>
       </div>
     </Layout>
