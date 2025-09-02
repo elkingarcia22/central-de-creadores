@@ -1221,6 +1221,11 @@ export default function DetalleParticipante() {
         onSave={() => {}} // No se guarda nada en modo vista
         loading={false}
         readOnly={true} // Modo solo lectura
+        onEdit={() => {
+          // Cerrar modal de ver y abrir modal de editar
+          setShowVerDolorModal(false);
+          setShowEditarDolorModal(true);
+        }}
       />
 
       {/* Modal para editar dolor */}

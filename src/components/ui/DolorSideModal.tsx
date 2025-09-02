@@ -12,6 +12,7 @@ interface DolorSideModalProps {
   onSave: (dolor: CrearDolorRequest | ActualizarDolorRequest) => void;
   loading?: boolean;
   readOnly?: boolean; // Nueva prop para modo solo lectura
+  onEdit?: () => void; // Nueva prop para cambiar a modo edición
 }
 
 export const DolorSideModal: React.FC<DolorSideModalProps> = ({
@@ -22,7 +23,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   dolor,
   onSave,
   loading = false,
-  readOnly = false
+  readOnly = false,
+  onEdit
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
@@ -247,56 +249,16 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   console.log('🔍 Opciones de investigación generadas:', investigacionOptions);
 
-  // Footer del modal
-  const footer = readOnly ? (
-    <div className="flex justify-end">
-      <Button
-        variant="ghost"
-        onClick={onClose}
-      >
-        <XIcon className="w-4 h-4 mr-2" />
-        Cerrar
-      </Button>
-    </div>
-  ) : (
-    <div className="flex justify-end gap-3">
-      <Button
-        variant="ghost"
-        onClick={onClose}
-        disabled={loading}
-      >
-        <XIcon className="w-4 h-4 mr-2" />
-        Cancelar
-      </Button>
-      <Button
-        variant="primary"
-        onClick={handleSubmit}
-        loading={loading || isSubmitting}
-        disabled={loading || isSubmitting}
-      >
-        <SaveIcon className="w-4 h-4 mr-2" />
-        {isEditing ? 'Actualizar' : 'Crear'}
-      </Button>
-    </div>
-  );
+
 
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
+      title={readOnly ? 'Ver Dolor' : (isEditing ? 'Editar Dolor' : 'Crear Dolor')}
       width="lg"
-      footer={footer}
-      showCloseButton={false}
     >
       <div className="space-y-6">
-        {/* Header */}
-        <PageHeader
-          title={readOnly ? 'Ver Dolor' : (isEditing ? 'Editar Dolor' : 'Crear Dolor')}
-          variant="title-only"
-          color="gray"
-          className="mb-0 -mx-6 -mt-6"
-          onClose={onClose}
-        />
 
         {/* Información del participante */}
         {participanteNombre && (
@@ -460,6 +422,57 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
             </div>
           </form>
         )}
+
+        {/* Footer con botones */}
+        <div className="flex gap-4 pt-6 border-t border-border">
+          {readOnly ? (
+            <>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onClose}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => {
+                  onClose();
+                  if (onEdit) {
+                    onEdit();
+                  }
+                }}
+                className="flex-1"
+              >
+                Editar Dolor
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={onClose}
+                disabled={loading}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleSubmit}
+                loading={loading || isSubmitting}
+                disabled={loading || isSubmitting}
+                className="flex-1"
+              >
+                {isEditing ? 'Actualizar' : 'Crear'}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </SideModal>
   );
