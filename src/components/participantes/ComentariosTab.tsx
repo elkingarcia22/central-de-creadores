@@ -10,13 +10,12 @@ import { Typography } from '../ui/Typography';
 import { Chip } from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import { 
-  MessageSquareIcon, 
+  MessageIcon, 
   PlusIcon, 
   SearchIcon,
   FilterIcon,
   CalendarIcon,
-  UserIcon,
-  TagIcon
+  UserIcon
 } from '../icons';
 import { CrearComentarioModal } from './CrearComentarioModal';
 import { ComentariosService } from '../../api/supabase-comentarios';
@@ -172,7 +171,7 @@ export const ComentariosTab: React.FC<ComentariosTabProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <MessageSquareIcon className="w-5 h-5 text-gray-500" />
+            <MessageIcon className="w-5 h-5 text-gray-500" />
             <Typography variant="h3" weight="semibold">
               Comentarios de Perfil
             </Typography>
@@ -209,7 +208,7 @@ export const ComentariosTab: React.FC<ComentariosTabProps> = ({
         </div>
       ) : comentariosFiltrados.length === 0 ? (
         <EmptyState
-          icon={<MessageSquareIcon className="w-12 h-12 text-gray-400" />}
+          icon={<MessageIcon className="w-12 h-12 text-gray-400" />}
           title="No hay comentarios"
           description={
             searchTerm 
