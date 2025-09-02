@@ -11,6 +11,7 @@ import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import DataTable from '../ui/DataTable';
 import { Subtitle } from '../ui/Subtitle';
+import Tabs from '../ui/Tabs';
 import {
   MessageIcon,
   PlusIcon,
@@ -43,6 +44,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoria, setSelectedCategoria] = useState<CategoriaPerfilamiento | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('todas');
   
   // Estados para modales
   const [showCategoriaModal, setShowCategoriaModal] = useState(false);
@@ -202,6 +204,45 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     setSearchTerm(e.target.value);
   }, []);
 
+  // Definir tabs por categorías
+  const tabs = [
+    {
+      value: 'todas',
+      label: 'Todas',
+      count: perfilamientos.length
+    },
+    {
+      value: 'comunicacion',
+      label: 'Estilo',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'comunicacion').length
+    },
+    {
+      value: 'decisiones',
+      label: 'Toma',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'decisiones').length
+    },
+    {
+      value: 'proveedores',
+      label: 'Relación',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'proveedores').length
+    },
+    {
+      value: 'cultura',
+      label: 'Cultura',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'cultura').length
+    },
+    {
+      value: 'comportamiento',
+      label: 'Comportamiento',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'comportamiento').length
+    },
+    {
+      value: 'motivaciones',
+      label: 'Motivaciones',
+      count: perfilamientos.filter(p => p.categoria_perfilamiento === 'motivaciones').length
+    }
+  ];
+
   // Filtrar perfilamientos
   const perfilamientosFiltrados = perfilamientos.filter(perfilamiento => {
     const matchesSearch = searchTerm === '' || 
@@ -209,9 +250,10 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       perfilamiento.observaciones?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       perfilamiento.contexto_interaccion?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategoria = !selectedCategoria || perfilamiento.categoria_perfilamiento === selectedCategoria;
+    // Filtrar por tab activo
+    const matchesTab = activeTab === 'todas' || perfilamiento.categoria_perfilamiento === activeTab;
     
-    return matchesSearch && matchesCategoria;
+    return matchesSearch && matchesTab;
   });
 
   // Manejar selección de categoría
@@ -325,13 +367,13 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           
           {/* Icono de filtro */}
           <Button
-            variant={selectedCategoria ? "primary" : "ghost"}
+            variant={activeTab !== 'todas' ? "primary" : "ghost"}
             onClick={() => setShowCategoriaModal(true)}
             className="relative p-2 border-0"
             iconOnly
             icon={<FilterIcon />}
           >
-            {selectedCategoria && (
+            {activeTab !== 'todas' && (
               <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
                 1
               </span>
@@ -349,26 +391,13 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         </div>
       </div>
 
-      {/* Filtros de categoría */}
-      <div className="flex gap-2">
-        <Button
-          variant={!selectedCategoria ? "primary" : "outline"}
-          onClick={() => setSelectedCategoria(null)}
-          size="sm"
-        >
-          Todas
-        </Button>
-        {(['comunicacion', 'decisiones', 'proveedores', 'cultura', 'comportamiento', 'motivaciones'] as CategoriaPerfilamiento[]).map((categoria) => (
-          <Button
-            key={categoria}
-            variant={selectedCategoria === categoria ? "primary" : "outline"}
-            onClick={() => setSelectedCategoria(categoria)}
-            size="sm"
-          >
-            {obtenerNombreCategoria(categoria).split(' ')[0]}
-          </Button>
-        ))}
-      </div>
+      {/* Tabs por categorías */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        items={tabs}
+        className="w-full"
+      />
 
       {/* Lista de perfilamientos */}
       {loading ? (
@@ -385,7 +414,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           icon={<InfoIcon className="w-12 h-12 text-gray-400" />}
           title="No hay perfilamientos"
           description={
-            searchTerm || selectedCategoria
+            searchTerm || activeTab !== 'todas'
               ? "No se encontraron perfilamientos con los filtros aplicados."
               : "Este participante no tiene perfilamientos registrados. Comienza creando el primero."
           }

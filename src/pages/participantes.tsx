@@ -1300,7 +1300,7 @@ export default function ParticipantesPage() {
                 label: 'Crear Dolor',
                 icon: <AlertTriangleIcon className="w-4 h-4" />,
                 onClick: (row: any) => handleCrearDolor(row)
-              },
+                            },
               {
                 label: 'Crear Perfilamiento',
                 icon: <MessageIcon className="w-4 h-4" />,
