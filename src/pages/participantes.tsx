@@ -1395,11 +1395,12 @@ export default function ParticipantesPage() {
               setCategoriaSeleccionada(categoria);
               setShowModalPerfilamiento(false);
               setShowModalCrearPerfilamiento(true);
+              // NO limpiar participanteParaPerfilamiento aquí, se necesita para el siguiente modal
             }}
           />
 
           {/* Modal de crear perfilamiento específico */}
-          {categoriaSeleccionada && (
+          {categoriaSeleccionada && participanteParaPerfilamiento && (
             <CrearPerfilamientoModal
               isOpen={showModalCrearPerfilamiento}
               onClose={() => {
@@ -1407,8 +1408,8 @@ export default function ParticipantesPage() {
                 setCategoriaSeleccionada(null);
                 setParticipanteParaPerfilamiento(null);
               }}
-              participanteId={participanteParaPerfilamiento?.id || ''}
-              participanteNombre={participanteParaPerfilamiento?.nombre || ''}
+              participanteId={participanteParaPerfilamiento.id}
+              participanteNombre={participanteParaPerfilamiento.nombre}
               categoria={categoriaSeleccionada}
               onSuccess={() => {
                 setShowModalCrearPerfilamiento(false);
