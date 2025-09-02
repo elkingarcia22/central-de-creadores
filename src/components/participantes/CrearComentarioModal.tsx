@@ -6,11 +6,12 @@ import React, { useState } from 'react';
 import { SideModal } from '../ui/SideModal';
 import { Button } from '../ui/Button';
 import Input from '../ui/Input';
-import { Textarea } from '../ui/Textarea';
+import Textarea from '../ui/Textarea';
 import Select from '../ui/Select';
 import Chip from '../ui/Chip';
 import Typography from '../ui/Typography';
-import { FormContainer, FormItem } from '../ui/FormContainer';
+import { FormContainer } from '../ui/FormContainer';
+import { FormItem } from '../ui/FormItem';
 import { 
   MessageIcon, 
   UserIcon,
