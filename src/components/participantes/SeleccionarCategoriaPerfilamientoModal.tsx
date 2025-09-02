@@ -36,49 +36,42 @@ const CATEGORIAS: Array<{
   nombre: string;
   descripcion: string;
   icono: React.ReactNode;
-  color: string;
 }> = [
   {
     id: 'comunicacion',
     nombre: 'Estilo de Comunicación',
     descripcion: 'Cómo se expresa y comunica el participante',
-    icono: <MessageIcon className="w-6 h-6" />,
-    color: 'blue'
+    icono: <MessageIcon className="w-6 h-6" />
   },
   {
     id: 'decisiones',
     nombre: 'Toma de Decisiones',
     descripcion: 'Proceso y estilo de toma de decisiones',
-    icono: <CheckCircleIcon className="w-6 h-6" />,
-    color: 'green'
+    icono: <CheckCircleIcon className="w-6 h-6" />
   },
   {
     id: 'proveedores',
     nombre: 'Relación con Proveedores',
     descripcion: 'Cómo se relaciona con proveedores y socios',
-    icono: <UserIcon className="w-6 h-6" />,
-    color: 'purple'
+    icono: <UserIcon className="w-6 h-6" />
   },
   {
     id: 'cultura',
     nombre: 'Cultura Organizacional',
     descripcion: 'Valores y cultura de la organización',
-    icono: <BuildingIcon className="w-6 h-6" />,
-    color: 'orange'
+    icono: <BuildingIcon className="w-6 h-6" />
   },
   {
     id: 'comportamiento',
     nombre: 'Comportamiento en la Relación',
     descripcion: 'Patrones de comportamiento en interacciones',
-    icono: <UserIcon className="w-6 h-6" />,
-    color: 'teal'
+    icono: <UserIcon className="w-6 h-6" />
   },
   {
     id: 'motivaciones',
     nombre: 'Motivaciones y Drivers',
     descripcion: 'Qué motiva y impulsa al participante',
-    icono: <InfoIcon className="w-6 h-6" />,
-    color: 'indigo'
+    icono: <InfoIcon className="w-6 h-6" />
   }
 ];
 
@@ -130,33 +123,33 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
         </div>
 
         {/* Categorías */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-3">
           {CATEGORIAS.map((categoria) => (
             <div
               key={categoria.id}
               className="border border-border rounded-lg p-4 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
               onClick={() => handleCategoriaSeleccionada(categoria.id)}
             >
-              <div className="flex items-start gap-3">
-                <div className={`text-${categoria.color}-600 group-hover:text-${categoria.color}-700 transition-colors`}>
+              <div className="flex items-center gap-4">
+                <div className="text-gray-600 group-hover:text-gray-700 transition-colors flex-shrink-0">
                   {categoria.icono}
                 </div>
-                <div className="flex-1 space-y-2">
+                <div className="flex-1 space-y-1">
                   <Typography variant="h6" weight="semibold" className="text-gray-900 dark:text-gray-100">
                     {categoria.nombre}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
                     {categoria.descripcion}
                   </Typography>
-                  <div className="flex items-center gap-2">
-                    <Chip 
-                      variant="outline" 
-                      size="sm"
-                      className={`border-${categoria.color}-200 text-${categoria.color}-700`}
-                    >
-                      Seleccionar
-                    </Chip>
-                  </div>
+                </div>
+                <div className="flex-shrink-0">
+                  <Chip 
+                    variant="outline" 
+                    size="sm"
+                    className="border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                  >
+                    Seleccionar
+                  </Chip>
                 </div>
               </div>
             </div>
