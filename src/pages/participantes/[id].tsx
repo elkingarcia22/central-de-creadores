@@ -19,7 +19,7 @@ import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
-import { ComentariosTab } from '../../components/participantes/ComentariosTab';
+import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -1139,10 +1139,10 @@ export default function DetalleParticipante() {
                 )
               },
               {
-                id: 'comentarios',
-                label: 'Comentarios de Perfil',
+                id: 'perfilamientos',
+                label: 'Perfilamiento',
                 content: (
-                  <ComentariosTab
+                  <PerfilamientosTab
                     participanteId={id as string}
                     participanteNombre={participante?.nombre || ''}
                   />
