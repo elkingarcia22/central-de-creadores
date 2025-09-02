@@ -598,7 +598,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           setShowModalVerDetalle(false);
           setPerfilamientoParaVer(null);
         }}
-        size="lg"
+        size="xl"
         showCloseButton={false}
         footer={
           <div className="flex gap-4 px-2">
