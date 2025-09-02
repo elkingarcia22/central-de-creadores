@@ -10,7 +10,7 @@ import Typography from '../ui/Typography';
 import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import FilterDrawer from '../ui/FilterDrawer';
-import { SideModal } from '../ui/SideModal';
+import SideModal from '../ui/SideModal';
 import DataTable from '../ui/DataTable';
 import { Subtitle } from '../ui/Subtitle';
 import Tabs from '../ui/Tabs';
