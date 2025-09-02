@@ -83,6 +83,9 @@ async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, partic
     if (severidad) updateData.severidad = severidad;
     if (estado) updateData.estado = estado;
     if (fecha_resolucion) updateData.fecha_resolucion = fecha_resolucion;
+    
+    // Agregar fecha de actualización automática
+    updateData.fecha_actualizacion = new Date().toISOString();
 
     console.log('🔍 Datos a actualizar en la base de datos:', updateData);
 
