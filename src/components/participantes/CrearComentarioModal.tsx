@@ -10,8 +10,9 @@ import Textarea from '../ui/Textarea';
 import Select from '../ui/Select';
 import Chip from '../ui/Chip';
 import Typography from '../ui/Typography';
-import { FormContainer } from '../ui/FormContainer';
-import { FormItem } from '../ui/FormItem';
+import { PageHeader } from '../ui/PageHeader';
+import FilterLabel from '../ui/FilterLabel';
+import { ContainerTitle } from '../ui/ContainerTitle';
 import { 
   MessageIcon, 
   UserIcon,
@@ -130,188 +131,212 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
     }
   };
 
+  // Footer del modal
+  const footer = (
+    <div className="flex justify-end gap-3">
+      <Button
+        variant="ghost"
+        onClick={onClose}
+        disabled={loading}
+      >
+        <XIcon className="w-4 h-4 mr-2" />
+        Cancelar
+      </Button>
+      <Button
+        variant="primary"
+        onClick={handleSubmit}
+        loading={loading}
+        disabled={loading}
+      >
+        <SaveIcon className="w-4 h-4 mr-2" />
+        Guardar Comentario
+      </Button>
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Crear Comentario de Perfil"
       width="lg"
-      closeOnOverlayClick={false}
-      footer={
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            loading={loading}
-            icon={<SaveIcon className="w-4 h-4" />}
-          >
-            Guardar Comentario
-          </Button>
-        </div>
-      }
+      footer={footer}
+      showCloseButton={false}
     >
       <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title="Crear Comentario de Perfil"
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
+        />
+
         {/* Información del participante */}
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <div className="flex items-center gap-3">
-            <UserIcon className="w-5 h-5 text-gray-500" />
-            <div>
-              <Typography variant="body2" weight="medium" className="text-gray-700 dark:text-gray-300">
-                Participante
-              </Typography>
-              <Typography variant="body1" className="text-gray-900 dark:text-gray-100">
-                {participanteNombre}
-              </Typography>
-            </div>
-          </div>
+        <div className="bg-muted/50 rounded-lg p-4">
+          <FilterLabel>Participante</FilterLabel>
+          <Typography variant="body1" className="font-medium mt-1">
+            {participanteNombre}
+          </Typography>
         </div>
 
-        <FormContainer>
+        {/* Formulario */}
+        <form className="space-y-6">
           {/* Información básica */}
           <div className="space-y-4">
-            <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-              Información Básica
-            </Typography>
+            <ContainerTitle title="Información Básica" />
             
-            <FormItem label="Título del comentario" required>
+            <div>
+              <FilterLabel>Título del comentario *</FilterLabel>
               <Input
                 placeholder="Ej: Primera reunión de presentación"
                 value={formData.titulo}
                 onChange={(e) => handleInputChange('titulo', e.target.value)}
                 required
+                fullWidth
               />
-            </FormItem>
+            </div>
 
-            <FormItem label="Descripción">
+            <div>
+              <FilterLabel>Descripción</FilterLabel>
               <Textarea
                 placeholder="Describe el contexto o situación del comentario..."
                 value={formData.descripcion}
                 onChange={(e) => handleInputChange('descripcion', e.target.value)}
                 rows={3}
+                fullWidth
               />
-            </FormItem>
+            </div>
           </div>
 
           {/* Categorías de perfil */}
-          <div className="space-y-6">
-            <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-              Perfil del Cliente
-            </Typography>
+          <div className="space-y-4">
+            <ContainerTitle title="Perfil del Cliente" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormItem label="Estilo de Comunicación">
+              <div>
+                <FilterLabel>Estilo de Comunicación</FilterLabel>
                 <Select
                   placeholder="Seleccionar estilo..."
                   options={OPCIONES_ESTILO_COMUNICACION}
                   value={formData.estilo_comunicacion}
                   onChange={(value) => handleInputChange('estilo_comunicacion', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Toma de Decisiones">
+              <div>
+                <FilterLabel>Toma de Decisiones</FilterLabel>
                 <Select
                   placeholder="Seleccionar tipo..."
                   options={OPCIONES_TOMA_DECISIONES}
                   value={formData.toma_decisiones}
                   onChange={(value) => handleInputChange('toma_decisiones', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Relación con Proveedores">
+              <div>
+                <FilterLabel>Relación con Proveedores</FilterLabel>
                 <Select
                   placeholder="Seleccionar tipo..."
                   options={OPCIONES_RELACION_PROVEEDORES}
                   value={formData.relacion_proveedores}
                   onChange={(value) => handleInputChange('relacion_proveedores', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Cultura Organizacional">
+              <div>
+                <FilterLabel>Cultura Organizacional</FilterLabel>
                 <Select
                   placeholder="Seleccionar cultura..."
                   options={OPCIONES_CULTURA_ORGANIZACIONAL}
                   value={formData.cultura_organizacional}
                   onChange={(value) => handleInputChange('cultura_organizacional', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Nivel de Apertura">
+              <div>
+                <FilterLabel>Nivel de Apertura</FilterLabel>
                 <Select
                   placeholder="Seleccionar nivel..."
                   options={OPCIONES_NIVEL_APERTURA}
                   value={formData.nivel_apertura}
                   onChange={(value) => handleInputChange('nivel_apertura', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Expectativas de Respuesta">
+              <div>
+                <FilterLabel>Expectativas de Respuesta</FilterLabel>
                 <Select
                   placeholder="Seleccionar expectativa..."
                   options={OPCIONES_EXPECTATIVAS_RESPUESTA}
                   value={formData.expectativas_respuesta}
                   onChange={(value) => handleInputChange('expectativas_respuesta', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Tipo de Feedback">
+              <div>
+                <FilterLabel>Tipo de Feedback</FilterLabel>
                 <Select
                   placeholder="Seleccionar tipo..."
                   options={OPCIONES_TIPO_FEEDBACK}
                   value={formData.tipo_feedback}
                   onChange={(value) => handleInputChange('tipo_feedback', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem label="Motivación Principal">
+              <div>
+                <FilterLabel>Motivación Principal</FilterLabel>
                 <Select
                   placeholder="Seleccionar motivación..."
                   options={OPCIONES_MOTIVACION_PRINCIPAL}
                   value={formData.motivacion_principal}
                   onChange={(value) => handleInputChange('motivacion_principal', value)}
+                  fullWidth
                 />
-              </FormItem>
+              </div>
             </div>
           </div>
 
           {/* Observaciones y recomendaciones */}
           <div className="space-y-4">
-            <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-              Observaciones y Recomendaciones
-            </Typography>
+            <ContainerTitle title="Observaciones y Recomendaciones" />
             
-            <FormItem label="Observaciones Adicionales">
+            <div>
+              <FilterLabel>Observaciones Adicionales</FilterLabel>
               <Textarea
                 placeholder="Observaciones específicas sobre el comportamiento o interacciones..."
                 value={formData.observaciones_adicionales}
                 onChange={(e) => handleInputChange('observaciones_adicionales', e.target.value)}
                 rows={4}
+                fullWidth
               />
-            </FormItem>
+            </div>
 
-            <FormItem label="Recomendaciones">
+            <div>
+              <FilterLabel>Recomendaciones</FilterLabel>
               <Textarea
                 placeholder="Recomendaciones para futuras interacciones..."
                 value={formData.recomendaciones}
                 onChange={(e) => handleInputChange('recomendaciones', e.target.value)}
                 rows={4}
+                fullWidth
               />
-            </FormItem>
+            </div>
           </div>
 
           {/* Etiquetas */}
           <div className="space-y-4">
-            <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-              Etiquetas
-            </Typography>
+            <ContainerTitle title="Etiquetas" />
             
-            <FormItem label="Agregar etiquetas">
+            <div>
+              <FilterLabel>Agregar etiquetas</FilterLabel>
               <div className="flex gap-2">
                 <Input
                   placeholder="Nueva etiqueta..."
@@ -319,6 +344,7 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
                   onChange={(e) => setNuevaEtiqueta(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="flex-1"
+                  fullWidth
                 />
                 <Button
                   variant="secondary"
@@ -328,7 +354,7 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
                   Agregar
                 </Button>
               </div>
-            </FormItem>
+            </div>
 
             {/* Mostrar etiquetas existentes */}
             {formData.etiquetas && formData.etiquetas.length > 0 && (
@@ -346,7 +372,7 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
               </div>
             )}
           </div>
-        </FormContainer>
+        </form>
       </div>
     </SideModal>
   );
