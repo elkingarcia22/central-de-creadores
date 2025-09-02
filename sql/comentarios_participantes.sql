@@ -127,16 +127,11 @@ $$ LANGUAGE plpgsql;
 -- Políticas de seguridad RLS (Row Level Security)
 ALTER TABLE comentarios_participantes ENABLE ROW LEVEL SECURITY;
 
--- Política para usuarios autenticados pueden ver comentarios de participantes de sus empresas
-CREATE POLICY "Usuarios pueden ver comentarios de participantes de sus empresas" ON comentarios_participantes
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM participantes p
-            JOIN usuarios u ON u.empresa_id = p.empresa_id
-            WHERE p.id = comentarios_participantes.participante_id
-            AND u.id = auth.uid()
-        )
-    );
+-- Política para usuarios autenticados pueden ver comentarios de participantes
+-- Por ahora permitimos que todos los usuarios autenticados vean todos los comentarios
+-- Se puede ajustar según las reglas de negocio específicas
+CREATE POLICY "Usuarios autenticados pueden ver comentarios" ON comentarios_participantes
+    FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Política para usuarios autenticados pueden crear comentarios
 CREATE POLICY "Usuarios pueden crear comentarios" ON comentarios_participantes
