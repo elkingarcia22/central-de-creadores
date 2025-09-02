@@ -25,7 +25,7 @@ import {
   obtenerNombreCategoria
 } from '../../types/perfilamientos';
 import { PerfilamientosService } from '../../api/supabase-perfilamientos';
-import { useAuth } from '../../contexts/AuthContext';
+import { useUser } from '../../contexts/UserContext';
 
 interface CrearPerfilamientoModalProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   categoria,
   onSuccess
 }) => {
-  const { user } = useAuth();
+  const { userProfile } = useUser();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<PerfilamientoParticipanteForm>({
     participante_id: participanteId,
@@ -112,7 +112,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       return;
     }
 
-    if (!user?.id) {
+    if (!userProfile?.id) {
       alert('Debes estar autenticado para crear un perfilamiento');
       return;
     }
@@ -122,7 +122,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
     try {
       const perfilamientoCompleto = {
         ...formData,
-        usuario_perfilador_id: user.id
+        usuario_perfilador_id: userProfile.id
       };
 
       const { error } = await PerfilamientosService.crearPerfilamiento(perfilamientoCompleto);
