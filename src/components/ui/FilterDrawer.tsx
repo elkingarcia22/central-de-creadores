@@ -434,7 +434,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               variant: "primary",
               size: "sm"
             } : undefined}
-            className="-mt-6 -mx-6"
+            className=""
           />
 
           {/* Content */}
