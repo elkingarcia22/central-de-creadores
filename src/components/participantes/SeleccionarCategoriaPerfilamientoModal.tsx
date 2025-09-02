@@ -12,10 +12,9 @@ import Chip from '../ui/Chip';
 import { 
   MessageIcon, 
   CheckCircleIcon, 
-  HandshakeIcon, 
-  BuildingIcon, 
   UserIcon, 
-  TargetIcon 
+  BuildingIcon, 
+  InfoIcon 
 } from '../icons';
 import { 
   CategoriaPerfilamiento,
@@ -57,7 +56,7 @@ const CATEGORIAS: Array<{
     id: 'proveedores',
     nombre: 'Relación con Proveedores',
     descripcion: 'Cómo se relaciona con proveedores y socios',
-    icono: <HandshakeIcon className="w-6 h-6" />,
+    icono: <UserIcon className="w-6 h-6" />,
     color: 'purple'
   },
   {
@@ -78,7 +77,7 @@ const CATEGORIAS: Array<{
     id: 'motivaciones',
     nombre: 'Motivaciones y Drivers',
     descripcion: 'Qué motiva y impulsa al participante',
-    icono: <TargetIcon className="w-6 h-6" />,
+    icono: <InfoIcon className="w-6 h-6" />,
     color: 'indigo'
   }
 ];
