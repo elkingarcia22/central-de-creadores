@@ -1393,9 +1393,8 @@ export default function ParticipantesPage() {
             onCategoriaSeleccionada={(categoria) => {
               // Guardar la categoría seleccionada y abrir modal de creación
               setCategoriaSeleccionada(categoria);
-              setShowModalPerfilamiento(false);
               setShowModalCrearPerfilamiento(true);
-              // NO limpiar participanteParaPerfilamiento aquí, se necesita para el siguiente modal
+              // NO cerrar el modal de categoría hasta que se complete la creación
             }}
           />
 
