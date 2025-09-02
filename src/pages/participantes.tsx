@@ -96,6 +96,7 @@ export default function ParticipantesPage() {
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
   const [participanteParaPerfilamiento, setParticipanteParaPerfilamiento] = useState<any>(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any>(null);
+  const [participantePerfilamientoTemp, setParticipantePerfilamientoTemp] = useState<any>(null);
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   
@@ -608,7 +609,8 @@ export default function ParticipantesPage() {
   };
 
   const handleCrearPerfilamiento = (participante: Participante) => {
-    // Abrir modal de perfilamiento directamente
+    // Guardar participante en estado temporal y abrir modal de categoría
+    setParticipantePerfilamientoTemp(participante);
     setParticipanteParaPerfilamiento(participante);
     setShowModalPerfilamiento(true);
   };
@@ -1393,7 +1395,7 @@ export default function ParticipantesPage() {
             onCategoriaSeleccionada={(categoria) => {
               // Guardar la categoría seleccionada y abrir modal de creación
               console.log('🔍 Categoría seleccionada:', categoria);
-              console.log('🔍 Participante actual:', participanteParaPerfilamiento);
+              console.log('🔍 Participante temporal:', participantePerfilamientoTemp);
               setCategoriaSeleccionada(categoria);
               setShowModalCrearPerfilamiento(true);
               // Cerrar el modal de categoría para mostrar el de creación
@@ -1402,17 +1404,17 @@ export default function ParticipantesPage() {
           />
 
           {/* Modal de crear perfilamiento específico */}
-          {showModalCrearPerfilamiento && categoriaSeleccionada && participanteParaPerfilamiento && (
+          {showModalCrearPerfilamiento && categoriaSeleccionada && participantePerfilamientoTemp && (
             <CrearPerfilamientoModal
               isOpen={true}
               onClose={() => {
                 // Si se cancela, limpiar todo
                 setShowModalCrearPerfilamiento(false);
                 setCategoriaSeleccionada(null);
-                setParticipanteParaPerfilamiento(null);
+                setParticipantePerfilamientoTemp(null);
               }}
-              participanteId={participanteParaPerfilamiento.id}
-              participanteNombre={participanteParaPerfilamiento.nombre}
+              participanteId={participantePerfilamientoTemp.id}
+              participanteNombre={participantePerfilamientoTemp.nombre}
               categoria={categoriaSeleccionada}
               onBack={() => {
                 // Volver al modal de selección de categoría
@@ -1424,7 +1426,7 @@ export default function ParticipantesPage() {
                 // Si se crea exitosamente, limpiar todo
                 setShowModalCrearPerfilamiento(false);
                 setCategoriaSeleccionada(null);
-                setParticipanteParaPerfilamiento(null);
+                setParticipantePerfilamientoTemp(null);
                 showSuccess('Perfilamiento creado exitosamente');
               }}
             />
