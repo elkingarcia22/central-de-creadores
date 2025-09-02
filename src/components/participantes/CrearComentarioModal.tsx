@@ -323,7 +323,6 @@ export const CrearComentarioModal: React.FC<CrearComentarioModalProps> = ({
                   variant="secondary"
                   onClick={handleAgregarEtiqueta}
                   disabled={!nuevaEtiqueta.trim()}
-                  icon={<TagIcon className="w-4 h-4" />}
                 >
                   Agregar
                 </Button>
