@@ -601,7 +601,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         size="lg"
         showCloseButton={false}
         footer={
-          <div className="flex gap-3">
+          <div className="flex gap-4 px-2">
             <Button
               variant="secondary"
               onClick={() => {
@@ -610,7 +610,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
               }}
               className="flex-1"
             >
-              Cerrar
+              Cancelar
             </Button>
             <Button
               variant="primary"
@@ -621,7 +621,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
               }}
               className="flex-1"
             >
-              Editar Perfilamiento
+              Actualizar Perfilamiento
             </Button>
           </div>
         }
@@ -641,45 +641,45 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
             />
 
             {/* Información detallada */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Columna izquierda */}
-              <div className="space-y-4">
-                <div>
-                  <FilterLabel>Observaciones</FilterLabel>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
-                    <Typography variant="body2" className="whitespace-pre-wrap break-words">
-                      {perfilamientoParaVer.observaciones || 'Sin observaciones'}
-                    </Typography>
-                  </div>
-                </div>
-
-                <div>
-                  <FilterLabel>Contexto de Interacción</FilterLabel>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
-                    <Typography variant="body2" className="whitespace-pre-wrap break-words">
-                      {perfilamientoParaVer.contexto_interaccion || 'Sin contexto especificado'}
-                    </Typography>
-                  </div>
-                </div>
-
-                <div>
-                  <FilterLabel>Etiquetas</FilterLabel>
-                  <div className="flex flex-wrap gap-2">
-                    {perfilamientoParaVer.etiquetas && perfilamientoParaVer.etiquetas.length > 0 ? (
-                      perfilamientoParaVer.etiquetas.map((etiqueta, index) => (
-                        <Chip key={index} variant="default" size="sm" outlined={true}>
-                          {etiqueta.replace('_', ' ')}
-                        </Chip>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="secondary">Sin etiquetas</Typography>
-                    )}
-                  </div>
+            <div className="space-y-6">
+              {/* Observaciones */}
+              <div>
+                <FilterLabel>Observaciones</FilterLabel>
+                <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
+                  <Typography variant="body2" className="whitespace-pre-wrap break-words">
+                    {perfilamientoParaVer.observaciones || 'Sin observaciones'}
+                  </Typography>
                 </div>
               </div>
 
-              {/* Columna derecha */}
-              <div className="space-y-4">
+              {/* Contexto de Interacción */}
+              <div>
+                <FilterLabel>Contexto de Interacción</FilterLabel>
+                <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
+                  <Typography variant="body2" className="whitespace-pre-wrap break-words">
+                    {perfilamientoParaVer.contexto_interaccion || 'Sin contexto especificado'}
+                  </Typography>
+                </div>
+              </div>
+
+              {/* Etiquetas */}
+              <div>
+                <FilterLabel>Etiquetas</FilterLabel>
+                <div className="flex flex-wrap gap-2">
+                  {perfilamientoParaVer.etiquetas && perfilamientoParaVer.etiquetas.length > 0 ? (
+                    perfilamientoParaVer.etiquetas.map((etiqueta, index) => (
+                      <Chip key={index} variant="default" size="sm" outlined={true}>
+                        {etiqueta.replace('_', ' ')}
+                      </Chip>
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="secondary">Sin etiquetas</Typography>
+                  )}
+                </div>
+              </div>
+
+              {/* Información adicional en grid de 2 columnas */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <FilterLabel>Nivel de Confianza</FilterLabel>
                   <div className="flex items-center gap-2">
