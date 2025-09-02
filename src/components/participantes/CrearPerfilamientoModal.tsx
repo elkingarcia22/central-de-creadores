@@ -43,7 +43,8 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   participanteId,
   participanteNombre,
   categoria,
-  onSuccess
+  onSuccess,
+  onBack
 }) => {
   const { userProfile } = useUser();
   const [loading, setLoading] = useState(false);
