@@ -601,9 +601,9 @@ export default function ParticipantesPage() {
     }
   };
 
-  const handleCrearComentario = (participante: Participante) => {
-    // Redirigir al detalle del participante con el tab de comentarios activo
-    router.push(`/participantes/${participante.id}?tab=comentarios`);
+  const handleCrearPerfilamiento = (participante: Participante) => {
+    // Redirigir al detalle del participante con el tab de perfilamiento activo
+    router.push(`/participantes/${participante.id}?tab=perfilamientos`);
   };
 
   // Funciones para manejar filtros
@@ -1293,9 +1293,9 @@ export default function ParticipantesPage() {
                 onClick: (row: any) => handleCrearDolor(row)
               },
               {
-                label: 'Crear Comentario',
+                label: 'Crear Perfilamiento',
                 icon: <MessageIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleCrearComentario(row),
+                onClick: (row: any) => handleCrearPerfilamiento(row),
                 className: 'text-popover-foreground hover:text-popover-foreground/80'
               },
               {
