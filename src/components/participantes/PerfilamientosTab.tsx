@@ -26,6 +26,7 @@ import {
 import { SeleccionarCategoriaPerfilamientoModal } from './SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from './CrearPerfilamientoModal';
 import { PerfilamientosService } from '../../api/supabase-perfilamientos';
+import ConfirmModal from '../ui/ConfirmModal';
 import { 
   PerfilamientoParticipante, 
   CategoriaPerfilamiento,
@@ -279,14 +280,18 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   };
 
   // Manejar eliminación
-  const handleEliminarPerfilamiento = async (perfilamiento: PerfilamientoParticipante) => {
-    if (!confirm(`¿Estás seguro de que quieres eliminar el perfilamiento "${perfilamiento.valor_principal}"?`)) {
-      return;
-    }
+  const handleEliminarPerfilamiento = (perfilamiento: PerfilamientoParticipante) => {
+    setPerfilamientoParaEliminar(perfilamiento);
+    setShowModalEliminar(true);
+  };
+
+  // Confirmar eliminación
+  const confirmarEliminacion = async () => {
+    if (!perfilamientoParaEliminar) return;
 
     setEliminando(true);
     try {
-      const { error } = await PerfilamientosService.eliminarPerfilamiento(perfilamiento.id);
+      const { error } = await PerfilamientosService.eliminarPerfilamiento(perfilamientoParaEliminar.id);
       
       if (error) {
         console.error('Error eliminando perfilamiento:', error);
@@ -303,6 +308,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     } finally {
       setEliminando(false);
       setPerfilamientoParaEliminar(null);
+      setShowModalEliminar(false);
     }
   };
 
@@ -505,6 +511,23 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           onSuccess={handlePerfilamientoEditado}
         />
       )}
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmModal
+        isOpen={showModalEliminar}
+        onClose={() => {
+          setShowModalEliminar(false);
+          setPerfilamientoParaEliminar(null);
+        }}
+        onConfirm={confirmarEliminacion}
+        title="Eliminar Perfilamiento"
+        message={`¿Estás seguro de que quieres eliminar el perfilamiento "${perfilamientoParaEliminar?.valor_principal}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        loading={eliminando}
+        size="md"
+      />
     </Card>
   );
 };
