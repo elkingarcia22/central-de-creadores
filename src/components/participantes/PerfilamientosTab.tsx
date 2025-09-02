@@ -12,7 +12,7 @@ import { EmptyState } from '../ui/EmptyState';
 import FilterDrawer from '../ui/FilterDrawer';
 import SideModal from '../ui/SideModal';
 import DataTable from '../ui/DataTable';
-import { Subtitle } from '../ui/Subtitle';
+import { Subtitle, PageHeader, FilterLabel } from '../ui/';
 import Tabs from '../ui/Tabs';
 import {
   MessageIcon,
@@ -598,36 +598,29 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           setShowModalVerDetalle(false);
           setPerfilamientoParaVer(null);
         }}
-        title="Detalle del Perfilamiento"
-        width="lg"
+        size="lg"
+        showCloseButton={false}
       >
         {perfilamientoParaVer && (
           <div className="space-y-6">
-            {/* Header con información principal */}
-            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <InfoIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <Typography variant="h5" weight="semibold">
-                    {perfilamientoParaVer.valor_principal}
-                  </Typography>
-                  <Typography variant="body2" color="secondary">
-                    {obtenerNombreCategoria(perfilamientoParaVer.categoria_perfilamiento)}
-                  </Typography>
-                </div>
-              </div>
-            </div>
+            {/* Header */}
+            <PageHeader
+              title="Detalle del Perfilamiento"
+              variant="title-only"
+              color="gray"
+              className="mb-0 -mx-6 -mt-6"
+              onClose={() => {
+                setShowModalVerDetalle(false);
+                setPerfilamientoParaVer(null);
+              }}
+            />
 
             {/* Información detallada */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Columna izquierda */}
               <div className="space-y-4">
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Observaciones
-                  </Typography>
+                  <FilterLabel>Observaciones</FilterLabel>
                   <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
                     <Typography variant="body2">
                       {perfilamientoParaVer.observaciones || 'Sin observaciones'}
@@ -636,9 +629,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
                 </div>
 
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Contexto de Interacción
-                  </Typography>
+                  <FilterLabel>Contexto de Interacción</FilterLabel>
                   <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
                     <Typography variant="body2">
                       {perfilamientoParaVer.contexto_interaccion || 'Sin contexto especificado'}
@@ -647,9 +638,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
                 </div>
 
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Etiquetas
-                  </Typography>
+                  <FilterLabel>Etiquetas</FilterLabel>
                   <div className="flex flex-wrap gap-2">
                     {perfilamientoParaVer.etiquetas && perfilamientoParaVer.etiquetas.length > 0 ? (
                       perfilamientoParaVer.etiquetas.map((etiqueta, index) => (
@@ -667,9 +656,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
               {/* Columna derecha */}
               <div className="space-y-4">
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Nivel de Confianza
-                  </Typography>
+                  <FilterLabel>Nivel de Confianza</FilterLabel>
                   <div className="flex items-center gap-2">
                     <Chip 
                       variant={getColorConfianza(perfilamientoParaVer.confianza_observacion) as any}
@@ -684,27 +671,21 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
                 </div>
 
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Fecha de Perfilamiento
-                  </Typography>
+                  <FilterLabel>Fecha de Perfilamiento</FilterLabel>
                   <Typography variant="body2">
                     {formatearFecha(perfilamientoParaVer.fecha_perfilamiento)}
                   </Typography>
                 </div>
 
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Usuario Perfilador
-                  </Typography>
+                  <FilterLabel>Usuario Perfilador</FilterLabel>
                   <Typography variant="body2">
                     {perfilamientoParaVer.usuario_perfilador_nombre || 'No especificado'}
                   </Typography>
                 </div>
 
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Participante
-                  </Typography>
+                  <FilterLabel>Participante</FilterLabel>
                   <Typography variant="body2">
                     {participanteNombre}
                   </Typography>
