@@ -89,8 +89,8 @@ SELECT
     
     -- Información del usuario que creó el comentario
     u.nombre AS usuario_nombre,
-    u.email AS usuario_email,
-    u.rol AS usuario_rol
+    u.correo AS usuario_email,
+    u.rol_plataforma AS usuario_rol
     
 FROM comentarios_participantes cp
 LEFT JOIN participantes p ON cp.participante_id = p.id
