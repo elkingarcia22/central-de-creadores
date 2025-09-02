@@ -35,6 +35,7 @@ interface CrearPerfilamientoModalProps {
   categoria: CategoriaPerfilamiento;
   onSuccess: () => void;
   onBack?: () => void; // Nueva prop para volver atrás
+  perfilamientoExistente?: PerfilamientoParticipanteForm; // Para edición
 }
 
 export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = ({
@@ -44,7 +45,8 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   participanteNombre,
   categoria,
   onSuccess,
-  onBack
+  onBack,
+  perfilamientoExistente
 }) => {
   const { userProfile } = useUser();
   const [loading, setLoading] = useState(false);
@@ -60,18 +62,32 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
 
   const [nuevaEtiqueta, setNuevaEtiqueta] = useState('');
 
-  // Resetear formulario cuando cambie la categoría
+  // Resetear formulario cuando cambie la categoría o cargar datos existentes para edición
   useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      categoria_perfilamiento: categoria,
-      valor_principal: '',
-      observaciones: '',
-      contexto_interaccion: '',
-      etiquetas: [],
-      confianza_observacion: 3
-    }));
-  }, [categoria]);
+    if (perfilamientoExistente) {
+      // Modo edición: cargar datos existentes
+      setFormData({
+        participante_id: participanteId,
+        categoria_perfilamiento: perfilamientoExistente.categoria_perfilamiento,
+        valor_principal: perfilamientoExistente.valor_principal || '',
+        observaciones: perfilamientoExistente.observaciones || '',
+        contexto_interaccion: perfilamientoExistente.contexto_interaccion || '',
+        etiquetas: perfilamientoExistente.etiquetas || [],
+        confianza_observacion: perfilamientoExistente.confianza_observacion || 3
+      });
+    } else {
+      // Modo creación: resetear formulario
+      setFormData(prev => ({
+        ...prev,
+        categoria_perfilamiento: categoria,
+        valor_principal: '',
+        observaciones: '',
+        contexto_interaccion: '',
+        etiquetas: [],
+        confianza_observacion: 3
+      }));
+    }
+  }, [categoria, perfilamientoExistente, participanteId]);
 
   const handleInputChange = (field: keyof PerfilamientoParticipanteForm, value: any) => {
     setFormData(prev => ({
@@ -127,10 +143,23 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
         usuario_perfilador_id: userProfile.id
       };
 
-      const { error } = await PerfilamientosService.crearPerfilamiento(perfilamientoCompleto);
+      let error;
+      
+      if (perfilamientoExistente) {
+        // Modo edición
+        const { error: updateError } = await PerfilamientosService.actualizarPerfilamiento(
+          perfilamientoExistente.id || '',
+          perfilamientoCompleto
+        );
+        error = updateError;
+      } else {
+        // Modo creación
+        const { error: createError } = await PerfilamientosService.crearPerfilamiento(perfilamientoCompleto);
+        error = createError;
+      }
       
       if (error) {
-        alert(`Error al crear perfilamiento: ${error}`);
+        alert(`Error al ${perfilamientoExistente ? 'actualizar' : 'crear'} perfilamiento: ${error}`);
         return;
       }
 
@@ -138,7 +167,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       onClose();
     } catch (error) {
       console.error('Error inesperado:', error);
-      alert('Error inesperado al crear perfilamiento');
+      alert(`Error inesperado al ${perfilamientoExistente ? 'actualizar' : 'crear'} perfilamiento`);
     } finally {
       setLoading(false);
     }
@@ -172,7 +201,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
         disabled={loading}
       >
         <SaveIcon className="w-4 h-4 mr-2" />
-        Crear Perfilamiento
+        {perfilamientoExistente ? 'Actualizar' : 'Crear'} Perfilamiento
       </Button>
     </div>
   );
@@ -193,7 +222,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       <div className="space-y-6">
         {/* Header */}
         <PageHeader
-          title={`Crear Perfilamiento - ${nombreCategoria}`}
+          title={`${perfilamientoExistente ? 'Editar' : 'Crear'} Perfilamiento - ${nombreCategoria}`}
           variant="title-only"
           color="gray"
           className="mb-0 -mx-6 -mt-6"

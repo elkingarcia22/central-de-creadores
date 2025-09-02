@@ -19,7 +19,9 @@ import {
   FilterIcon,
   CalendarIcon,
   UserIcon,
-  InfoIcon
+  InfoIcon,
+  EditIcon,
+  TrashIcon
 } from '../icons';
 import { SeleccionarCategoriaPerfilamientoModal } from './SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from './CrearPerfilamientoModal';
@@ -51,6 +53,13 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const [showCrearModal, setShowCrearModal] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  
+  // Estados para edición y eliminación
+  const [perfilamientoParaEditar, setPerfilamientoParaEditar] = useState<PerfilamientoParticipante | null>(null);
+  const [perfilamientoParaEliminar, setPerfilamientoParaEliminar] = useState<PerfilamientoParticipante | null>(null);
+  const [showModalEditar, setShowModalEditar] = useState(false);
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
 
   // Definir columnas para la tabla
   const columns = [
@@ -263,24 +272,59 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     cargarPerfilamientos();
   };
 
+  // Manejar edición
+  const handleEditarPerfilamiento = (perfilamiento: PerfilamientoParticipante) => {
+    setPerfilamientoParaEditar(perfilamiento);
+    setShowModalEditar(true);
+  };
+
+  // Manejar eliminación
+  const handleEliminarPerfilamiento = async (perfilamiento: PerfilamientoParticipante) => {
+    if (!confirm(`¿Estás seguro de que quieres eliminar el perfilamiento "${perfilamiento.valor_principal}"?`)) {
+      return;
+    }
+
+    setEliminando(true);
+    try {
+      const { error } = await PerfilamientosService.eliminarPerfilamiento(perfilamiento.id);
+      
+      if (error) {
+        console.error('Error eliminando perfilamiento:', error);
+        alert('Error al eliminar el perfilamiento');
+        return;
+      }
+      
+      // Recargar la lista
+      await cargarPerfilamientos();
+      alert('Perfilamiento eliminado exitosamente');
+    } catch (error) {
+      console.error('Error inesperado:', error);
+      alert('Error inesperado al eliminar el perfilamiento');
+    } finally {
+      setEliminando(false);
+      setPerfilamientoParaEliminar(null);
+    }
+  };
+
+  // Manejar éxito en edición
+  const handlePerfilamientoEditado = () => {
+    cargarPerfilamientos();
+    setShowModalEditar(false);
+    setPerfilamientoParaEditar(null);
+  };
+
   // Definir acciones para la tabla
   const actions = [
     {
       label: 'Editar',
-      icon: <MessageIcon className="w-4 h-4" />,
-      onClick: (perfilamiento: PerfilamientoParticipante) => {
-        // TODO: Implementar edición
-        console.log('Editar perfilamiento:', perfilamiento);
-      },
+      icon: <EditIcon className="w-4 h-4" />,
+      onClick: (perfilamiento: PerfilamientoParticipante) => handleEditarPerfilamiento(perfilamiento),
       title: 'Editar perfilamiento'
     },
     {
       label: 'Eliminar',
-      icon: <MessageIcon className="w-4 h-4" />,
-      onClick: (perfilamiento: PerfilamientoParticipante) => {
-        // TODO: Implementar eliminación
-        console.log('Eliminar perfilamiento:', perfilamiento);
-      },
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (perfilamiento: PerfilamientoParticipante) => handleEliminarPerfilamiento(perfilamiento),
       className: 'text-red-600 hover:text-red-700',
       title: 'Eliminar perfilamiento'
     }
@@ -443,6 +487,22 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           participanteNombre={participanteNombre}
           categoria={categoriaSeleccionada}
           onSuccess={handlePerfilamientoCreado}
+        />
+      )}
+
+      {/* Modal de editar perfilamiento */}
+      {perfilamientoParaEditar && (
+        <CrearPerfilamientoModal
+          isOpen={showModalEditar}
+          onClose={() => {
+            setShowModalEditar(false);
+            setPerfilamientoParaEditar(null);
+          }}
+          participanteId={participanteId}
+          participanteNombre={participanteNombre}
+          categoria={perfilamientoParaEditar.categoria_perfilamiento}
+          perfilamientoExistente={perfilamientoParaEditar}
+          onSuccess={handlePerfilamientoEditado}
         />
       )}
     </Card>
