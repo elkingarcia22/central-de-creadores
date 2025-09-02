@@ -1072,6 +1072,15 @@ export default function ParticipantesPage() {
             {/* Debug: Estado del dropdown */}
             <div className="absolute right-0 top-0 mt-20 text-xs text-red-500 bg-yellow-100 p-2 rounded z-50">
               showDropdown: {showDropdown ? 'true' : 'false'}
+              <br />
+              showModalExterno: {showModalExterno ? 'true' : 'false'}
+              <br />
+              <button 
+                onClick={() => setShowModalExterno(true)}
+                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
+              >
+                Test Modal Externo
+              </button>
             </div>
             
             {showDropdown && (
