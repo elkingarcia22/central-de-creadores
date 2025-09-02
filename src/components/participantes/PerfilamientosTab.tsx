@@ -9,6 +9,7 @@ import Input from '../ui/Input';
 import Typography from '../ui/Typography';
 import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
+import DataTable from '../ui/DataTable';
 import {
   MessageIcon,
   PlusIcon,
@@ -46,6 +47,105 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const [showCategoriaModal, setShowCategoriaModal] = useState(false);
   const [showCrearModal, setShowCrearModal] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
+
+  // Definir columnas para la tabla
+  const columns = [
+    {
+      key: 'categoria_perfilamiento',
+      label: 'Categoría',
+      sortable: true,
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <Chip 
+          variant="outline" 
+          size="sm"
+          className={`border-${obtenerColorCategoria(row.categoria_perfilamiento)}-200 text-${obtenerColorCategoria(row.categoria_perfilamiento)}-700`}
+        >
+          {obtenerNombreCategoria(row.categoria_perfilamiento)}
+        </Chip>
+      )
+    },
+    {
+      key: 'valor_principal',
+      label: 'Valor Principal',
+      sortable: true,
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <Typography variant="body2" weight="semibold">
+          {row.valor_principal}
+        </Typography>
+      )
+    },
+    {
+      key: 'observaciones',
+      label: 'Observaciones',
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <Typography variant="body2" className="max-w-xs truncate">
+          {row.observaciones || '-'}
+        </Typography>
+      )
+    },
+    {
+      key: 'etiquetas',
+      label: 'Etiquetas',
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <div className="flex flex-wrap gap-1">
+          {row.etiquetas && row.etiquetas.length > 0 ? (
+            row.etiquetas.map((etiqueta, index) => (
+              <Chip key={index} variant="outline" size="sm" className="text-xs">
+                {etiqueta.replace('_', ' ')}
+              </Chip>
+            ))
+          ) : (
+            <Typography variant="caption" color="secondary">-</Typography>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'confianza_observacion',
+      label: 'Confianza',
+      sortable: true,
+      render: (value: any, row: PerfilamientoParticipante) => {
+        const getColorConfianza = (confianza: number) => {
+          if (confianza >= 4) return 'success';
+          if (confianza >= 3) return 'warning';
+          return 'destructive';
+        };
+        
+        const getTextoConfianza = (confianza: number) => {
+          if (confianza === 5) return 'Muy alta';
+          if (confianza === 4) return 'Alta';
+          if (confianza === 3) return 'Media';
+          if (confianza === 2) return 'Baja';
+          return 'Muy baja';
+        };
+
+        return (
+          <Chip variant={getColorConfianza(row.confianza_observacion) as any} size="sm">
+            {getTextoConfianza(row.confianza_observacion)}
+          </Chip>
+        );
+      }
+    },
+    {
+      key: 'usuario_perfilador_nombre',
+      label: 'Perfilado por',
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <Typography variant="body2" color="secondary">
+          {row.usuario_perfilador_nombre || '-'}
+        </Typography>
+      )
+    },
+    {
+      key: 'fecha_perfilamiento',
+      label: 'Fecha',
+      sortable: true,
+      render: (value: any, row: PerfilamientoParticipante) => (
+        <Typography variant="caption">
+          {formatearFecha(row.fecha_perfilamiento)}
+        </Typography>
+      )
+    }
+  ];
 
   // Cargar perfilamientos
   const cargarPerfilamientos = async () => {
@@ -92,6 +192,29 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const handlePerfilamientoCreado = () => {
     cargarPerfilamientos();
   };
+
+  // Definir acciones para la tabla
+  const actions = [
+    {
+      label: 'Editar',
+      icon: <MessageIcon className="w-4 h-4" />,
+      onClick: (perfilamiento: PerfilamientoParticipante) => {
+        // TODO: Implementar edición
+        console.log('Editar perfilamiento:', perfilamiento);
+      },
+      title: 'Editar perfilamiento'
+    },
+    {
+      label: 'Eliminar',
+      icon: <MessageIcon className="w-4 h-4" />,
+      onClick: (perfilamiento: PerfilamientoParticipante) => {
+        // TODO: Implementar eliminación
+        console.log('Eliminar perfilamiento:', perfilamiento);
+      },
+      className: 'text-red-600 hover:text-red-700',
+      title: 'Eliminar perfilamiento'
+    }
+  ];
 
   // Formatear fecha
   const formatearFecha = (fecha: string) => {
@@ -201,99 +324,17 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
           onAction={() => setShowCategoriaModal(true)}
         />
       ) : (
-        <div className="space-y-4">
-          {perfilamientosFiltrados.map((perfilamiento) => (
-            <Card key={perfilamiento.id} className="p-6">
-              <div className="space-y-4">
-                {/* Header del perfilamiento */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Chip 
-                      variant="outline" 
-                      size="sm"
-                      className={`border-${obtenerColorCategoria(perfilamiento.categoria_perfilamiento)}-200 text-${obtenerColorCategoria(perfilamiento.categoria_perfilamiento)}-700`}
-                    >
-                      {obtenerNombreCategoria(perfilamiento.categoria_perfilamiento)}
-                    </Chip>
-                    <Typography variant="h5" weight="semibold">
-                      {perfilamiento.valor_principal}
-                    </Typography>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Chip 
-                      variant={getColorConfianza(perfilamiento.confianza_observacion) as any}
-                      size="sm"
-                    >
-                      {getTextoConfianza(perfilamiento.confianza_observacion)}
-                    </Chip>
-                    <Typography variant="caption" className="text-muted-foreground">
-                      {formatearFecha(perfilamiento.fecha_perfilamiento)}
-                    </Typography>
-                  </div>
-                </div>
-
-                {/* Contenido */}
-                <div className="space-y-3">
-                  {perfilamiento.observaciones && (
-                    <div>
-                      <Typography variant="body2" weight="medium" className="text-gray-700 dark:text-gray-300 mb-1">
-                        Observaciones:
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                        {perfilamiento.observaciones}
-                      </Typography>
-                    </div>
-                  )}
-
-                  {perfilamiento.contexto_interaccion && (
-                    <div>
-                      <Typography variant="body2" weight="medium" className="text-gray-700 dark:text-gray-300 mb-1">
-                        Contexto:
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                        {perfilamiento.contexto_interaccion}
-                      </Typography>
-                    </div>
-                  )}
-
-                  {/* Etiquetas */}
-                  {perfilamiento.etiquetas && perfilamiento.etiquetas.length > 0 && (
-                    <div>
-                      <Typography variant="body2" weight="medium" className="text-gray-700 dark:text-gray-300 mb-2">
-                        Etiquetas:
-                      </Typography>
-                      <div className="flex flex-wrap gap-2">
-                        {perfilamiento.etiquetas.map((etiqueta, index) => (
-                          <Chip key={index} variant="outline" size="sm">
-                            {etiqueta.replace('_', ' ')}
-                          </Chip>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-border">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <UserIcon className="w-4 h-4" />
-                    <span>Perfilado por: {perfilamiento.usuario_perfilador_nombre}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                      Editar
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-destructive">
-                      Eliminar
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <DataTable
+          data={perfilamientosFiltrados}
+          columns={columns}
+          loading={false}
+          searchable={false}
+          filterable={false}
+          selectable={false}
+          actions={actions}
+          emptyMessage="No se encontraron perfilamientos que coincidan con los criterios de búsqueda"
+          rowKey="id"
+        />
       )}
 
       {/* Modal de selección de categoría */}
