@@ -463,24 +463,15 @@ export default function ParticipantesPage() {
   };
 
   const handleCrearParticipanteExterno = () => {
-    console.log('🔍 handleCrearParticipanteExterno llamado');
-    console.log('🔍 showModalExterno antes:', showModalExterno);
     setShowModalExterno(true);
-    console.log('🔍 showModalExterno después: true');
   };
 
   const handleCrearParticipanteInterno = () => {
-    console.log('🔍 handleCrearParticipanteInterno llamado');
-    console.log('🔍 showModalInterno antes:', showModalInterno);
     setShowModalInterno(true);
-    console.log('🔍 showModalInterno después: true');
   };
 
   const handleCrearParticipanteFriendFamily = () => {
-    console.log('🔍 handleCrearParticipanteFriendFamily llamado');
-    console.log('🔍 showModalFriendFamily antes:', showModalFriendFamily);
     setShowModalFriendFamily(true);
-    console.log('🔍 showModalFriendFamily después: true');
   };
 
   const handleParticipanteCreado = () => {
@@ -1057,55 +1048,17 @@ export default function ParticipantesPage() {
               color="purple"
               primaryAction={{
                 label: "Nuevo Participante",
-                onClick: () => {
-                  console.log('🔍 Click en Nuevo Participante');
-                  console.log('🔍 showDropdown antes:', showDropdown);
-                  setShowDropdown(!showDropdown);
-                  console.log('🔍 showDropdown después:', !showDropdown);
-                },
+                onClick: () => setShowDropdown(!showDropdown),
                 variant: "primary",
                 icon: <PlusIcon className="w-4 h-4" />
               }}
             />
             
             {/* Lista de tipos de participantes */}
-            {/* Debug: Estado del dropdown */}
-            <div className="absolute right-0 top-0 mt-20 text-xs text-red-500 bg-yellow-100 p-2 rounded z-50">
-              showDropdown: {showDropdown ? 'true' : 'false'}
-              <br />
-              showModalExterno: {showModalExterno ? 'true' : 'false'}
-              <br />
-              <button 
-                onClick={() => setShowModalExterno(true)}
-                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
-              >
-                Test Modal Externo
-              </button>
-              <br />
-              <button 
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="bg-green-500 text-white px-2 py-1 rounded text-xs mt-1"
-              >
-                Toggle Dropdown
-              </button>
-            </div>
-            
-            {/* Debug: Lista visible siempre */}
-            <div className="absolute right-0 top-0 mt-20 w-80 z-50 bg-red-100 border-2 border-red-500 p-2">
-              <div className="text-xs text-red-600 mb-2">
-                DEBUG: showDropdown = {showDropdown.toString()}
-              </div>
-              
-              {/* Lista SIEMPRE visible para debug */}
-              <div className="w-full bg-yellow-200 border-2 border-yellow-500 p-2 mb-2">
-                <div className="text-xs text-yellow-800">
-                  LISTA SIEMPRE VISIBLE - Estado: {showDropdown ? 'ABIERTO' : 'CERRADO'}
-                </div>
-              </div>
-              
+            {/* Lista de tipos de participantes usando el sistema de diseño */}
             {showDropdown && (
-              <div className="w-full bg-green-200 border-2 border-green-500 rounded-lg shadow-lg">
-                <div className="p-2 space-y-1">
+              <Card className="absolute right-0 top-0 mt-20 w-80 z-50">
+                <div className="p-3 space-y-2">
                   <button
                     onClick={() => {
                       handleCrearParticipanteExterno();
@@ -1148,9 +1101,8 @@ export default function ParticipantesPage() {
                     </div>
                   </button>
                 </div>
-              </div>
+              </Card>
             )}
-              </div>
           </div>
 
           {/* Estadísticas del Dashboard */}
