@@ -3,11 +3,11 @@
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
-import { Card } from '../ui/Card';
+import Card from '../ui/Card';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { Typography } from '../ui/Typography';
-import { Chip } from '../ui/Chip';
+import Input from '../ui/Input';
+import Typography from '../ui/Typography';
+import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import { 
   MessageIcon, 
