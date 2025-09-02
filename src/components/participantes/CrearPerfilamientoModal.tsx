@@ -276,7 +276,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
                 {ETIQUETAS_CONTEXTO.map((etiqueta) => (
                   <Chip
                     key={etiqueta}
-                    variant="outline"
+                    outlined={true}
                     size="sm"
                     onClick={() => handleEtiquetaPredefinida(etiqueta)}
                     className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
@@ -321,7 +321,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
                   {formData.etiquetas.map((etiqueta, index) => (
                     <Chip
                       key={index}
-                      variant="outline"
+                      outlined={true}
                       size="sm"
                       onRemove={() => handleEliminarEtiqueta(etiqueta)}
                       className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800"
