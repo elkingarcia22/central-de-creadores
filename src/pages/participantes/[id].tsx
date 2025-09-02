@@ -1220,6 +1220,7 @@ export default function DetalleParticipante() {
         dolor={dolorSeleccionado}
         onSave={() => {}} // No se guarda nada en modo vista
         loading={false}
+        readOnly={true} // Modo solo lectura
       />
 
       {/* Modal para editar dolor */}

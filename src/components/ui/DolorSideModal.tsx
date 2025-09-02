@@ -11,6 +11,7 @@ interface DolorSideModalProps {
   dolor?: DolorParticipanteCompleto | null;
   onSave: (dolor: CrearDolorRequest | ActualizarDolorRequest) => void;
   loading?: boolean;
+  readOnly?: boolean; // Nueva prop para modo solo lectura
 }
 
 export const DolorSideModal: React.FC<DolorSideModalProps> = ({
@@ -20,7 +21,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   participanteNombre = '',
   dolor,
   onSave,
-  loading = false
+  loading = false,
+  readOnly = false
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
@@ -246,7 +248,17 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   console.log('🔍 Opciones de investigación generadas:', investigacionOptions);
 
   // Footer del modal
-  const footer = (
+  const footer = readOnly ? (
+    <div className="flex justify-end">
+      <Button
+        variant="ghost"
+        onClick={onClose}
+      >
+        <XIcon className="w-4 h-4 mr-2" />
+        Cerrar
+      </Button>
+    </div>
+  ) : (
     <div className="flex justify-end gap-3">
       <Button
         variant="ghost"
@@ -279,7 +291,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       <div className="space-y-6">
         {/* Header */}
         <PageHeader
-          title={isEditing ? 'Editar Dolor' : 'Crear Dolor'}
+          title={readOnly ? 'Ver Dolor' : (isEditing ? 'Editar Dolor' : 'Crear Dolor')}
           variant="title-only"
           color="gray"
           className="mb-0 -mx-6 -mt-6"
@@ -296,99 +308,158 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
           </div>
         )}
 
-        {/* Formulario */}
-        <form className="space-y-6">
-          {/* Información básica */}
-          <div className="space-y-4">
-            {/* Categoría */}
-            <div>
-              <FilterLabel>Categoría *</FilterLabel>
-              <Select
-                options={categoriaOptions}
-                value={formData.categoria_id}
-                onChange={(value) => handleInputChange('categoria_id', value)}
-                placeholder="Seleccionar categoría"
-                error={!!errors.categoria_id}
-                required
-                fullWidth
-              />
-              {errors.categoria_id && (
-                <Typography variant="caption" className="text-destructive mt-1">
-                  {errors.categoria_id}
+        {/* Contenido del modal */}
+        {readOnly ? (
+          // Modo solo lectura - mostrar información como texto
+          <div className="space-y-6">
+            {/* Información básica */}
+            <div className="space-y-4">
+              {/* Categoría */}
+              <div>
+                <FilterLabel>Categoría</FilterLabel>
+                <Typography variant="body2" className="mt-1">
+                  {getCategoriaSeleccionada()?.nombre || 'No especificada'}
                 </Typography>
-              )}
-              {getCategoriaSeleccionada() && (
-                <Typography variant="caption" className="text-muted-foreground mt-1 block">
-                  {getCategoriaSeleccionada()?.descripcion}
+                {getCategoriaSeleccionada()?.descripcion && (
+                  <Typography variant="caption" className="text-muted-foreground mt-1 block">
+                    {getCategoriaSeleccionada()?.descripcion}
+                  </Typography>
+                )}
+              </div>
+
+              {/* Título */}
+              <div>
+                <FilterLabel>Título</FilterLabel>
+                <Typography variant="body2" className="mt-1">
+                  {formData.titulo || 'No especificado'}
                 </Typography>
-              )}
-            </div>
+              </div>
 
-            {/* Título */}
-            <div>
-              <FilterLabel>Título *</FilterLabel>
-              <Input
-                value={formData.titulo}
-                onChange={(e) => handleInputChange('titulo', e.target.value)}
-                placeholder="Describe brevemente el dolor o necesidad"
-                error={errors.titulo}
-                required
-                fullWidth
-              />
-              {errors.titulo && (
-                <Typography variant="caption" className="text-destructive mt-1">
-                  {errors.titulo}
+              {/* Descripción */}
+              <div>
+                <FilterLabel>Descripción</FilterLabel>
+                <Typography variant="body2" className="mt-1">
+                  {formData.descripcion || 'No especificada'}
                 </Typography>
-              )}
-            </div>
+              </div>
 
-            {/* Descripción */}
-            <div>
-              <FilterLabel>Descripción</FilterLabel>
-              <Textarea
-                value={formData.descripcion}
-                onChange={(e) => handleInputChange('descripcion', e.target.value)}
-                placeholder="Describe en detalle el dolor o necesidad"
-                rows={4}
-                fullWidth
-              />
-            </div>
+              {/* Severidad */}
+              <div>
+                <FilterLabel>Severidad</FilterLabel>
+                <div className="mt-1">
+                  <Chip variant={getSeveridadColor(formData.severidad as SeveridadDolor) as any}>
+                    {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
+                  </Chip>
+                </div>
+              </div>
 
-            {/* Severidad */}
-            <div>
-              <FilterLabel>Severidad</FilterLabel>
-              <Select
-                options={severidadOptions}
-                value={formData.severidad}
-                onChange={(value) => handleInputChange('severidad', value)}
-                placeholder="Seleccionar severidad"
-                fullWidth
-              />
-              <div className="mt-2">
-                <Chip variant={getSeveridadColor(formData.severidad as SeveridadDolor) as any}>
-                  {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
-                </Chip>
+              {/* Investigación relacionada */}
+              <div>
+                <FilterLabel>Investigación Relacionada</FilterLabel>
+                <Typography variant="body2" className="mt-1">
+                  {formData.investigacion_relacionada_id ? 
+                    investigacionOptions.find(opt => opt.value === formData.investigacion_relacionada_id)?.label || 'No encontrada' :
+                    'No especificada'
+                  }
+                </Typography>
               </div>
             </div>
-
-            {/* Investigación relacionada */}
-            <div>
-              <FilterLabel>Investigación Relacionada</FilterLabel>
-              <Select
-                options={investigacionOptions}
-                value={formData.investigacion_relacionada_id}
-                onChange={(value) => handleInputChange('investigacion_relacionada_id', value)}
-                placeholder="Seleccionar investigación (opcional)"
-                fullWidth
-              />
-              {formData.investigacion_relacionada_id && (
-                <Typography variant="caption" className="text-muted-foreground mt-1 block">
-                  Este dolor estará vinculado a la investigación seleccionada
-                </Typography>
-              )}
-            </div>
           </div>
-        </form>
+        ) : (
+          // Modo edición - mostrar formulario
+          <form className="space-y-6">
+            {/* Información básica */}
+            <div className="space-y-4">
+              {/* Categoría */}
+              <div>
+                <FilterLabel>Categoría *</FilterLabel>
+                <Select
+                  options={categoriaOptions}
+                  value={formData.categoria_id}
+                  onChange={(value) => handleInputChange('categoria_id', value)}
+                  placeholder="Seleccionar categoría"
+                  error={!!errors.categoria_id}
+                  required
+                  fullWidth
+                />
+                {errors.categoria_id && (
+                  <Typography variant="caption" className="text-destructive mt-1">
+                    {errors.categoria_id}
+                  </Typography>
+                )}
+                {getCategoriaSeleccionada() && (
+                  <Typography variant="caption" className="text-muted-foreground mt-1 block">
+                    {getCategoriaSeleccionada()?.descripcion}
+                  </Typography>
+                )}
+              </div>
+
+              {/* Título */}
+              <div>
+                <FilterLabel>Título *</FilterLabel>
+                <Input
+                  value={formData.titulo}
+                  onChange={(e) => handleInputChange('titulo', e.target.value)}
+                  placeholder="Describe brevemente el dolor o necesidad"
+                  error={errors.titulo}
+                  required
+                  fullWidth
+                />
+                {errors.titulo && (
+                  <Typography variant="caption" className="text-destructive mt-1">
+                    {errors.titulo}
+                  </Typography>
+                )}
+              </div>
+
+              {/* Descripción */}
+              <div>
+                <FilterLabel>Descripción</FilterLabel>
+                <Textarea
+                  value={formData.descripcion}
+                  onChange={(e) => handleInputChange('descripcion', e.target.value)}
+                  placeholder="Describe en detalle el dolor o necesidad"
+                  rows={4}
+                  fullWidth
+                />
+              </div>
+
+              {/* Severidad */}
+              <div>
+                <FilterLabel>Severidad</FilterLabel>
+                <Select
+                  options={severidadOptions}
+                  value={formData.severidad}
+                  onChange={(value) => handleInputChange('severidad', value)}
+                  placeholder="Seleccionar severidad"
+                  fullWidth
+                />
+                <div className="mt-2">
+                  <Chip variant={getSeveridadColor(formData.severidad as SeveridadDolor) as any}>
+                    {severidadOptions.find(opt => opt.value === formData.severidad)?.label}
+                  </Chip>
+                </div>
+              </div>
+
+              {/* Investigación relacionada */}
+              <div>
+                <FilterLabel>Investigación Relacionada</FilterLabel>
+                <Select
+                  options={investigacionOptions}
+                  value={formData.investigacion_relacionada_id}
+                  onChange={(value) => handleInputChange('investigacion_relacionada_id', value)}
+                  placeholder="Seleccionar investigación (opcional)"
+                  fullWidth
+                />
+                {formData.investigacion_relacionada_id && (
+                  <Typography variant="caption" className="text-muted-foreground mt-1 block">
+                    Este dolor estará vinculado a la investigación seleccionada
+                  </Typography>
+                )}
+              </div>
+            </div>
+          </form>
+        )}
       </div>
     </SideModal>
   );
