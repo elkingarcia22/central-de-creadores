@@ -14,12 +14,13 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
+import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -110,6 +111,9 @@ export default function DetalleParticipante() {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
   
+  // Estado dedicado para editar dolor - SOLUCIÓN ROBUSTA
+  const [dolorParaEditar, setDolorParaEditar] = useState<DolorParticipante | null>(null);
+  
   // Estado para usuarios (para filtros de perfilamiento)
   const [usuarios, setUsuarios] = useState<any[]>([]);
   
@@ -123,6 +127,20 @@ export default function DetalleParticipante() {
     categoria: 'todos',
     fecha_creacion_desde: '',
     fecha_creacion_hasta: ''
+  });
+
+  // Estados para filtros de participaciones
+  const [searchTermParticipaciones, setSearchTermParticipaciones] = useState('');
+  const [showFilterDrawerParticipaciones, setShowFilterDrawerParticipaciones] = useState(false);
+  const [filtersParticipaciones, setFiltersParticipaciones] = useState<FilterValuesParticipaciones>({
+    busqueda: '',
+    estado_agendamiento: 'todos',
+    tipo_investigacion: 'todos',
+    responsable: 'todos',
+    fecha_participacion_desde: '',
+    fecha_participacion_hasta: '',
+    duracion_sesion_min: '',
+    duracion_sesion_max: ''
   });
 
   useEffect(() => {
@@ -408,6 +426,83 @@ export default function DetalleParticipante() {
     return count;
   };
 
+  // Función para contar filtros activos de participaciones
+  const getActiveFiltersCountParticipaciones = () => {
+    let count = 0;
+    if (filtersParticipaciones.estado_agendamiento && filtersParticipaciones.estado_agendamiento !== 'todos') count++;
+    if (filtersParticipaciones.tipo_investigacion && filtersParticipaciones.tipo_investigacion !== 'todos') count++;
+    if (filtersParticipaciones.responsable && filtersParticipaciones.responsable !== 'todos') count++;
+    if (filtersParticipaciones.fecha_participacion_desde) count++;
+    if (filtersParticipaciones.fecha_participacion_hasta) count++;
+    if (filtersParticipaciones.duracion_sesion_min) count++;
+    if (filtersParticipaciones.duracion_sesion_max) count++;
+    return count;
+  };
+
+  // Filtrar participaciones según los filtros aplicados
+  const participacionesFiltradas = useMemo(() => {
+    let filtered = [...investigaciones];
+
+    // Filtro por búsqueda de texto
+    if (searchTermParticipaciones) {
+      const searchLower = searchTermParticipaciones.toLowerCase();
+      filtered = filtered.filter(inv => 
+        inv.nombre?.toLowerCase().includes(searchLower) ||
+        inv.tipo_investigacion?.toLowerCase().includes(searchLower) ||
+        inv.responsable?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filtro por estado de agendamiento
+    if (filtersParticipaciones.estado_agendamiento && filtersParticipaciones.estado_agendamiento !== 'todos') {
+      filtered = filtered.filter(inv => inv.estado_agendamiento === filtersParticipaciones.estado_agendamiento);
+    }
+
+    // Filtro por tipo de investigación
+    if (filtersParticipaciones.tipo_investigacion && filtersParticipaciones.tipo_investigacion !== 'todos') {
+      filtered = filtered.filter(inv => inv.tipo_investigacion === filtersParticipaciones.tipo_investigacion);
+    }
+
+    // Filtro por responsable
+    if (filtersParticipaciones.responsable && filtersParticipaciones.responsable !== 'todos') {
+      filtered = filtered.filter(inv => inv.responsable === filtersParticipaciones.responsable);
+    }
+
+    // Filtro por fecha de participación
+    if (filtersParticipaciones.fecha_participacion_desde) {
+      filtered = filtered.filter(inv => {
+        const fechaInv = new Date(inv.fecha_participacion);
+        const fechaDesde = new Date(filtersParticipaciones.fecha_participacion_desde);
+        return fechaInv >= fechaDesde;
+      });
+    }
+
+    if (filtersParticipaciones.fecha_participacion_hasta) {
+      filtered = filtered.filter(inv => {
+        const fechaInv = new Date(inv.fecha_participacion);
+        const fechaHasta = new Date(filtersParticipaciones.fecha_participacion_hasta);
+        return fechaInv <= fechaHasta;
+      });
+    }
+
+    // Filtro por duración de sesión
+    if (filtersParticipaciones.duracion_sesion_min) {
+      filtered = filtered.filter(inv => {
+        const duracion = Number(inv.duracion_sesion) || 0;
+        return duracion >= Number(filtersParticipaciones.duracion_sesion_min);
+      });
+    }
+
+    if (filtersParticipaciones.duracion_sesion_max) {
+      filtered = filtered.filter(inv => {
+        const duracion = Number(inv.duracion_sesion) || 0;
+        return duracion <= Number(filtersParticipaciones.duracion_sesion_max);
+      });
+    }
+
+    return filtered;
+  }, [investigaciones, searchTermParticipaciones, filtersParticipaciones]);
+
   // Opciones de filtros para dolores
   const filterOptions = {
     estados: [
@@ -425,6 +520,26 @@ export default function DetalleParticipante() {
       { value: '72bbd72c-e735-44d9-ad0e-e44cac8e700d', label: 'Falta de funcionalidades' },
       { value: '390a0fe2-fcc2-41eb-8b92-ed21451371dc', label: 'Limitaciones técnicas' }
     ]
+  };
+
+  // Opciones de filtros para participaciones
+  const filterOptionsParticipaciones = {
+    estados_agendamiento: [
+      { value: 'Pendiente', label: 'Pendiente' },
+      { value: 'En progreso', label: 'En progreso' },
+      { value: 'Finalizado', label: 'Finalizado' },
+      { value: 'Cancelado', label: 'Cancelado' }
+    ],
+    tipos_investigacion: [
+      { value: 'usabilidad', label: 'Usabilidad' },
+      { value: 'entrevista', label: 'Entrevista' },
+      { value: 'focus_group', label: 'Focus Group' },
+      { value: 'survey', label: 'Encuesta' }
+    ],
+    responsables_participaciones: usuarios.map(user => ({
+      value: user.id,
+      label: user.nombre || user.full_name || user.email || 'Sin nombre'
+    }))
   };
 
   const cargarComentarios = async () => {
@@ -1022,7 +1137,7 @@ export default function DetalleParticipante() {
               className="mb-0"
               chip={{
                 label: participante.estado_participante || 'Sin estado',
-                variant: getEstadoChipVariant(participante.estado_participante || 'default'),
+                variant: getEstadoChipVariant(participante.estado_participante || 'default') as any,
                 size: 'sm'
               }}
             />
@@ -1062,6 +1177,7 @@ export default function DetalleParticipante() {
                 label: 'Historial de Investigaciones',
                 content: (
                   <Card variant="elevated" padding="lg" className="space-y-6">
+                    {/* Header con título y contador */}
                     <div className="flex items-center gap-3">
                       <Subtitle>
                         Lista de Participaciones
@@ -1070,16 +1186,46 @@ export default function DetalleParticipante() {
                         {investigaciones.length} participación{investigaciones.length !== 1 ? 'es' : ''} registrada{investigaciones.length !== 1 ? 's' : ''}
                       </span>
                     </div>
+
+                    {/* Barra de búsqueda y filtros */}
+                    <div className="flex flex-col lg:flex-row gap-4 items-center">
+                      <div className="flex-1 relative">
+                        <Input
+                          placeholder="Buscar participaciones..."
+                          value={searchTermParticipaciones}
+                          onChange={e => setSearchTermParticipaciones(e.target.value)}
+                          className="pl-10 pr-4 py-2"
+                          icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                          iconPosition="left"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant={getActiveFiltersCountParticipaciones() > 0 ? "primary" : "secondary"}
+                          onClick={() => setShowFilterDrawerParticipaciones(true)}
+                          className="relative flex items-center gap-2"
+                        >
+                          <FilterIcon className="w-4 h-4" />
+                          Filtros Avanzados
+                          {getActiveFiltersCountParticipaciones() > 0 && (
+                            <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                              {getActiveFiltersCountParticipaciones()}
+                            </span>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                     
+                    {/* Tabla de participaciones */}
                     {investigaciones.length > 0 ? (
                       <DataTable
-                        data={investigaciones}
+                        data={participacionesFiltradas}
                         columns={columnsInvestigaciones}
                         loading={false}
                         searchable={false}
                         filterable={false}
                         selectable={false}
-                        emptyMessage="No se encontraron participaciones"
+                        emptyMessage="No se encontraron participaciones que coincidan con los criterios de búsqueda"
                         rowKey="id"
                       />
                     ) : (
@@ -1093,6 +1239,16 @@ export default function DetalleParticipante() {
                         </Typography>
                       </div>
                     )}
+
+                    {/* Drawer de filtros avanzados */}
+                    <FilterDrawer
+                      isOpen={showFilterDrawerParticipaciones}
+                      onClose={() => setShowFilterDrawerParticipaciones(false)}
+                      filters={filtersParticipaciones}
+                      onFiltersChange={setFiltersParticipaciones}
+                      type="participaciones"
+                      options={filterOptionsParticipaciones}
+                    />
                   </Card>
                 )
               },
@@ -1224,13 +1380,17 @@ export default function DetalleParticipante() {
         onEdit={() => {
           console.log('🔍 onEdit llamado desde modal de ver dolor');
           console.log('🔍 dolorSeleccionado antes de cambiar:', dolorSeleccionado);
-          // NO limpiar dolorSeleccionado, solo cambiar modales
+          
+          // SOLUCIÓN ROBUSTA: Usar estado dedicado para editar
+          if (dolorSeleccionado) {
+            setDolorParaEditar(dolorSeleccionado);
+            console.log('🔍 dolorParaEditar establecido:', dolorSeleccionado);
+          }
+          
+          // Cerrar modal de ver y abrir modal de editar
           setShowVerDolorModal(false);
-          // Pequeño delay para asegurar que el modal de ver se cierre primero
-          setTimeout(() => {
-            setShowEditarDolorModal(true);
-            console.log('🔍 showEditarDolorModal establecido a true');
-          }, 100);
+          setShowEditarDolorModal(true);
+          console.log('🔍 showEditarDolorModal establecido a true');
         }}
       />
 
@@ -1240,15 +1400,16 @@ export default function DetalleParticipante() {
         onClose={() => {
           console.log('🔍 Cerrando modal de edición de dolor');
           setShowEditarDolorModal(false);
-          // NO limpiar dolorSeleccionado aquí para mantener los datos
+          // Limpiar solo el estado dedicado de editar
+          setDolorParaEditar(null);
         }}
         participanteId={id as string}
         participanteNombre={participante?.nombre || ''}
-        dolor={dolorSeleccionado as any}
+        dolor={dolorParaEditar as any} // USAR ESTADO DEDICADO
         onSave={handleActualizarDolor}
         loading={false}
         readOnly={false} // Explícitamente modo edición
-        key={`editar-${dolorSeleccionado?.id}-${showEditarDolorModal}`} // Forzar re-render cuando cambie el dolor
+        key={`editar-${dolorParaEditar?.id}-${showEditarDolorModal}`} // Key basado en estado dedicado
       />
 
       {/* Modal de confirmación para eliminar dolor */}
@@ -1324,7 +1485,6 @@ function CrearDolorModal({ isOpen, onClose, onSuccess, participanteId }: {
       isOpen={isOpen}
       onClose={onClose}
       title="Registrar Dolor o Necesidad"
-      size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -1432,7 +1592,6 @@ function CrearComentarioModal({ isOpen, onClose, onSuccess, participanteId }: {
       isOpen={isOpen}
       onClose={onClose}
       title="Crear Comentario"
-      size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
