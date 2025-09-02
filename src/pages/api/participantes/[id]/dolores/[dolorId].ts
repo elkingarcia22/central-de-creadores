@@ -60,9 +60,21 @@ async function obtenerDolor(req: NextApiRequest, res: NextApiResponse, participa
 // Actualizar un dolor existente
 async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, participanteId: string, dolorId: string) {
   try {
+    console.log('🔍 Iniciando actualización de dolor');
+    console.log('🔍 Participante ID:', participanteId);
+    console.log('🔍 Dolor ID:', dolorId);
+    console.log('🔍 Request body:', req.body);
+
     const { categoria_id, titulo, descripcion, severidad, estado, fecha_resolucion } = req.body;
 
-    console.log('🔍 Actualizando dolor:', dolorId);
+    console.log('🔍 Datos extraídos del body:', {
+      categoria_id,
+      titulo,
+      descripcion,
+      severidad,
+      estado,
+      fecha_resolucion
+    });
 
     const updateData: any = {};
     if (categoria_id) updateData.categoria_id = categoria_id;
@@ -71,6 +83,8 @@ async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, partic
     if (severidad) updateData.severidad = severidad;
     if (estado) updateData.estado = estado;
     if (fecha_resolucion) updateData.fecha_resolucion = fecha_resolucion;
+
+    console.log('🔍 Datos a actualizar en la base de datos:', updateData);
 
     const { data: dolorActualizado, error } = await supabaseServer
       .from('dolores_participantes')
@@ -82,14 +96,23 @@ async function actualizarDolor(req: NextApiRequest, res: NextApiResponse, partic
 
     if (error) {
       console.error('❌ Error actualizando dolor:', error);
-      return res.status(500).json({ error: 'Error al actualizar dolor' });
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
+      return res.status(500).json({ 
+        error: 'Error al actualizar dolor',
+        details: error.message || 'Error desconocido'
+      });
     }
 
+    console.log('✅ Dolor actualizado exitosamente');
     console.log('✅ Dolor actualizado:', dolorActualizado.id);
     return res.status(200).json(dolorActualizado);
   } catch (error) {
-    console.error('❌ Error actualizando dolor:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('❌ Error inesperado actualizando dolor:', error);
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack available');
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 }
 
