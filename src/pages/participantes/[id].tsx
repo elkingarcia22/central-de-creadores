@@ -1224,10 +1224,13 @@ export default function DetalleParticipante() {
         onEdit={() => {
           console.log('🔍 onEdit llamado desde modal de ver dolor');
           console.log('🔍 dolorSeleccionado antes de cambiar:', dolorSeleccionado);
-          // Cerrar modal de ver y abrir modal de editar
+          // NO limpiar dolorSeleccionado, solo cambiar modales
           setShowVerDolorModal(false);
-          setShowEditarDolorModal(true);
-          console.log('🔍 showEditarDolorModal establecido a true');
+          // Pequeño delay para asegurar que el modal de ver se cierre primero
+          setTimeout(() => {
+            setShowEditarDolorModal(true);
+            console.log('🔍 showEditarDolorModal establecido a true');
+          }, 100);
         }}
       />
 
