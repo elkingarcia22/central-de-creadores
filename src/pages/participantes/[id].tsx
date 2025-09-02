@@ -295,8 +295,10 @@ export default function DetalleParticipante() {
   };
 
   const handleEditarDolor = (dolor: DolorParticipante) => {
+    console.log('🔍 handleEditarDolor llamado con:', dolor);
     setDolorSeleccionado(dolor);
     setShowEditarDolorModal(true);
+    console.log('🔍 showEditarDolorModal establecido a true');
   };
 
   const handleEliminarDolor = (dolor: DolorParticipante) => {
@@ -305,9 +307,16 @@ export default function DetalleParticipante() {
   };
 
   const handleActualizarDolor = async (dolorData: any) => {
-    if (!dolorSeleccionado) return;
+    console.log('🔍 handleActualizarDolor llamado con datos:', dolorData);
+    console.log('🔍 dolorSeleccionado:', dolorSeleccionado);
+    
+    if (!dolorSeleccionado) {
+      console.log('❌ No hay dolor seleccionado');
+      return;
+    }
     
     try {
+      console.log('🔍 Enviando PUT request a:', `/api/participantes/${id}/dolores/${dolorSeleccionado.id}`);
       const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
         method: 'PUT',
         headers: {
@@ -316,17 +325,21 @@ export default function DetalleParticipante() {
         body: JSON.stringify(dolorData),
       });
 
+      console.log('🔍 Respuesta del servidor:', response.status, response.statusText);
+
       if (response.ok) {
+        console.log('✅ Dolor actualizado exitosamente');
         showSuccess('Dolor actualizado exitosamente');
         setShowEditarDolorModal(false);
         setDolorSeleccionado(null);
         await cargarDolores();
       } else {
         const errorData = await response.json();
+        console.log('❌ Error del servidor:', errorData);
         showError(errorData.error || 'Error al actualizar el dolor');
       }
     } catch (error) {
-      console.error('Error al actualizar dolor:', error);
+      console.error('❌ Error al actualizar dolor:', error);
       showError('Error al actualizar el dolor');
     }
   };
@@ -1213,6 +1226,7 @@ export default function DetalleParticipante() {
       <DolorSideModal
         isOpen={showEditarDolorModal}
         onClose={() => {
+          console.log('🔍 Cerrando modal de edición de dolor');
           setShowEditarDolorModal(false);
           setDolorSeleccionado(null);
         }}
