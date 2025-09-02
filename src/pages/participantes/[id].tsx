@@ -1232,7 +1232,7 @@ export default function DetalleParticipante() {
         }}
         participanteId={id as string}
         participanteNombre={participante?.nombre || ''}
-        dolor={dolorSeleccionado}
+        dolor={dolorSeleccionado as any}
         onSave={handleActualizarDolor}
         loading={false}
       />
