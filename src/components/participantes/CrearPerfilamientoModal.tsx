@@ -247,11 +247,11 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
               <Select
                 placeholder="Seleccionar nivel de confianza..."
                 options={[
-                  { value: 1, label: '1 - Muy baja confianza' },
-                  { value: 2, label: '2 - Baja confianza' },
-                  { value: 3, label: '3 - Confianza media' },
-                  { value: 4, label: '4 - Alta confianza' },
-                  { value: 5, label: '5 - Muy alta confianza' }
+                  { value: '1', label: '1 - Muy baja confianza' },
+                  { value: '2', label: '2 - Baja confianza' },
+                  { value: '3', label: '3 - Confianza media' },
+                  { value: '4', label: '4 - Alta confianza' },
+                  { value: '5', label: '5 - Muy alta confianza' }
                 ]}
                 value={formData.confianza_observacion.toString()}
                 onChange={(value) => handleInputChange('confianza_observacion', parseInt(value))}
@@ -279,7 +279,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
                     variant="outline"
                     size="sm"
                     onClick={() => handleEtiquetaPredefinida(etiqueta)}
-                    className="cursor-pointer hover:bg-primary/10"
+                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                   >
                     {etiqueta.replace('_', ' ')}
                   </Chip>
@@ -324,6 +324,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
                       variant="outline"
                       size="sm"
                       onRemove={() => handleEliminarEtiqueta(etiqueta)}
+                      className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800"
                     >
                       {etiqueta.replace('_', ' ')}
                     </Chip>
