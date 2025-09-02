@@ -10,6 +10,7 @@ import Typography from '../ui/Typography';
 import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import FilterDrawer from '../ui/FilterDrawer';
+import { SideModal } from '../ui/SideModal';
 import DataTable from '../ui/DataTable';
 import { Subtitle } from '../ui/Subtitle';
 import Tabs from '../ui/Tabs';
@@ -63,8 +64,10 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   // Estados para edición y eliminación
   const [perfilamientoParaEditar, setPerfilamientoParaEditar] = useState<PerfilamientoParticipante | null>(null);
   const [perfilamientoParaEliminar, setPerfilamientoParaEliminar] = useState<PerfilamientoParticipante | null>(null);
+  const [perfilamientoParaVer, setPerfilamientoParaVer] = useState<PerfilamientoParticipante | null>(null);
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [showModalVerDetalle, setShowModalVerDetalle] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   
   // Estados para filtros adicionales
@@ -103,7 +106,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       key: 'observaciones',
       label: 'Observaciones',
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Typography variant="body2" className="max-w-xs truncate">
+        <Typography variant="body2" className="max-w-32 truncate">
           {row.observaciones || '-'}
         </Typography>
       )
@@ -320,6 +323,12 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     cargarPerfilamientos();
   };
 
+  // Manejar ver detalle
+  const handleVerDetalle = (perfilamiento: PerfilamientoParticipante) => {
+    setPerfilamientoParaVer(perfilamiento);
+    setShowModalVerDetalle(true);
+  };
+
   // Manejar edición
   const handleEditarPerfilamiento = (perfilamiento: PerfilamientoParticipante) => {
     setPerfilamientoParaEditar(perfilamiento);
@@ -368,6 +377,12 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
 
   // Definir acciones para la tabla
   const actions = [
+    {
+      label: 'Ver Detalle',
+      icon: <InfoIcon className="w-4 h-4" />,
+      onClick: (perfilamiento: PerfilamientoParticipante) => handleVerDetalle(perfilamiento),
+      title: 'Ver detalle del perfilamiento'
+    },
     {
       label: 'Editar',
       icon: <EditIcon className="w-4 h-4" />,
@@ -575,6 +590,155 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         loading={eliminando}
         size="md"
       />
+
+      {/* Modal para ver detalle del perfilamiento */}
+      <SideModal
+        isOpen={showModalVerDetalle}
+        onClose={() => {
+          setShowModalVerDetalle(false);
+          setPerfilamientoParaVer(null);
+        }}
+        title="Detalle del Perfilamiento"
+        width="lg"
+      >
+        {perfilamientoParaVer && (
+          <div className="space-y-6">
+            {/* Header con información principal */}
+            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <InfoIcon className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <Typography variant="h5" weight="semibold">
+                    {perfilamientoParaVer.valor_principal}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    {obtenerNombreCategoria(perfilamientoParaVer.categoria_perfilamiento)}
+                  </Typography>
+                </div>
+              </div>
+            </div>
+
+            {/* Información detallada */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Columna izquierda */}
+              <div className="space-y-4">
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Observaciones
+                  </Typography>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <Typography variant="body2">
+                      {perfilamientoParaVer.observaciones || 'Sin observaciones'}
+                    </Typography>
+                  </div>
+                </div>
+
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Contexto de Interacción
+                  </Typography>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                    <Typography variant="body2">
+                      {perfilamientoParaVer.contexto_interaccion || 'Sin contexto especificado'}
+                    </Typography>
+                  </div>
+                </div>
+
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Etiquetas
+                  </Typography>
+                  <div className="flex flex-wrap gap-2">
+                    {perfilamientoParaVer.etiquetas && perfilamientoParaVer.etiquetas.length > 0 ? (
+                      perfilamientoParaVer.etiquetas.map((etiqueta, index) => (
+                        <Chip key={index} variant="default" size="sm" outlined={true}>
+                          {etiqueta.replace('_', ' ')}
+                        </Chip>
+                      ))
+                    ) : (
+                      <Typography variant="body2" color="secondary">Sin etiquetas</Typography>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Columna derecha */}
+              <div className="space-y-4">
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Nivel de Confianza
+                  </Typography>
+                  <div className="flex items-center gap-2">
+                    <Chip 
+                      variant={getColorConfianza(perfilamientoParaVer.confianza_observacion) as any}
+                      size="sm"
+                    >
+                      {getTextoConfianza(perfilamientoParaVer.confianza_observacion)}
+                    </Chip>
+                    <Typography variant="body2" color="secondary">
+                      ({perfilamientoParaVer.confianza_observacion}/5)
+                    </Typography>
+                  </div>
+                </div>
+
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Fecha de Perfilamiento
+                  </Typography>
+                  <Typography variant="body2">
+                    {formatearFecha(perfilamientoParaVer.fecha_perfilamiento)}
+                  </Typography>
+                </div>
+
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Usuario Perfilador
+                  </Typography>
+                  <Typography variant="body2">
+                    {perfilamientoParaVer.usuario_perfilador_nombre || 'No especificado'}
+                  </Typography>
+                </div>
+
+                <div>
+                  <Typography variant="subtitle2" weight="medium" className="mb-2">
+                    Participante
+                  </Typography>
+                  <Typography variant="body2">
+                    {participanteNombre}
+                  </Typography>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer con acciones */}
+            <div className="border-t pt-4 flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowModalVerDetalle(false);
+                  setPerfilamientoParaVer(null);
+                }}
+                className="flex-1"
+              >
+                Cerrar
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setShowModalVerDetalle(false);
+                  setPerfilamientoParaVer(null);
+                  handleEditarPerfilamiento(perfilamientoParaVer);
+                }}
+                className="flex-1"
+              >
+                Editar Perfilamiento
+              </Button>
+            </div>
+          </div>
+        )}
+      </SideModal>
 
       {/* Drawer de filtros avanzados */}
       <FilterDrawer
