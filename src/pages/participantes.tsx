@@ -1404,6 +1404,7 @@ export default function ParticipantesPage() {
             <CrearPerfilamientoModal
               isOpen={showModalCrearPerfilamiento}
               onClose={() => {
+                // Si se cancela, limpiar todo
                 setShowModalCrearPerfilamiento(false);
                 setCategoriaSeleccionada(null);
                 setParticipanteParaPerfilamiento(null);
@@ -1411,7 +1412,14 @@ export default function ParticipantesPage() {
               participanteId={participanteParaPerfilamiento.id}
               participanteNombre={participanteParaPerfilamiento.nombre}
               categoria={categoriaSeleccionada}
+              onBack={() => {
+                // Volver al modal de selección de categoría
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setShowModalPerfilamiento(true);
+              }}
               onSuccess={() => {
+                // Si se crea exitosamente, limpiar todo
                 setShowModalCrearPerfilamiento(false);
                 setCategoriaSeleccionada(null);
                 setParticipanteParaPerfilamiento(null);

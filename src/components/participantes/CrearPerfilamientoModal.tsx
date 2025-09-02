@@ -34,6 +34,7 @@ interface CrearPerfilamientoModalProps {
   participanteNombre: string;
   categoria: CategoriaPerfilamiento;
   onSuccess: () => void;
+  onBack?: () => void; // Nueva prop para volver atrás
 }
 
 export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = ({
@@ -192,6 +193,20 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
           className="mb-0 -mx-6 -mt-6"
           onClose={onClose}
         />
+        
+        {/* Botón de volver */}
+        {onBack && (
+          <div className="flex justify-start">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              ← Volver a categorías
+            </Button>
+          </div>
+        )}
 
         {/* Información del participante */}
         <div className="bg-muted/50 rounded-lg p-4">
