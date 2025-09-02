@@ -621,7 +621,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
               }}
               className="flex-1"
             >
-              Actualizar Perfilamiento
+              Actualizar
             </Button>
           </div>
         }
