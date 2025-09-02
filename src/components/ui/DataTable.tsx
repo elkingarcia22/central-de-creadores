@@ -393,7 +393,7 @@ const DataTable: React.FC<DataTableProps> = ({
                         const value = getNestedValue(row, column.key);
                         
                         return (
-                          <td key={column.key} className="px-4 py-3 text-sm text-foreground">
+                          <td key={column.key} className={`px-4 py-3 text-sm text-foreground ${column.width || ''}`}>
                             {column.render ? 
                               column.render(value, row, false, () => {}) :
                               value || '-'

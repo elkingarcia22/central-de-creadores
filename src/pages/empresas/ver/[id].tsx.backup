@@ -34,11 +34,15 @@ import {
   BarChartIcon,
   HistoryIcon,
   InfoIcon,
-  ConfiguracionesIcon
+  ConfiguracionesIcon,
+  FilterIcon,
+  CloseIcon
 } from '../../../components/icons';
 import { formatearFecha } from '../../../utils/fechas';
 
 import { getChipVariant, getChipText } from '../../../utils/chipUtils';
+import Select from '../../../components/ui/Select';
+import Input from '../../../components/ui/Input';
 
 // Funciones de utilidad para colores
 const getEstadoColor = (estado: string): any => {
@@ -610,127 +614,365 @@ export default function EmpresaVerPage({ empresa }: EmpresaVerPageProps) {
   );
 
   // Componente de contenido de historial
-  const HistorialContent = () => (
-    <div className="space-y-6">
-      {/* Investigaciones participadas */}
-      {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 && (
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Investigaciones Participadas
-          </Typography>
-          
-          <div className="space-y-4">
-            {empresaData.estadisticas.investigaciones.map((investigacion) => (
-              <Card key={investigacion.id} className="p-6 hover: transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Typography variant="body1" weight="semibold">
-                        {investigacion.nombre}
-                      </Typography>
-                      <Chip variant={getEstadoColor(investigacion.estado)}>
-                        {investigacion.estado}
-                      </Chip>
-                    </div>
-                    
-                    {investigacion.descripcion && (
-                      <Typography variant="body2" color="secondary" className="mb-3">
-                        {investigacion.descripcion}
-                      </Typography>
-                    )}
-                    
-                    <div className="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center space-x-1">
-                        <CalendarIcon className="w-4 h-4" />
-                        <span>{formatearFecha(investigacion.fecha_inicio)}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <UsersIcon className="w-4 h-4" />
-                        <span>{investigacion.participaciones} participaciones</span>
-                      </div>
-                      
-                      {investigacion.responsable && (
-                        <div className="flex items-center space-x-1">
-                          <UserIcon className="w-4 h-4" />
-                          <span>{investigacion.responsable.full_name}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => abrirInvestigacion(investigacion.id)}
-                    className="ml-4"
-                  >
-                    <ExternalLinkIcon className="w-4 h-4 mr-1" />
-                    Ver
-                  </Button>
-                </div>
-              </Card>
-            ))}
+  const HistorialContent = () => {
+    const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+    const [filters, setFilters] = useState({
+      busqueda: '',
+      estado: 'todos',
+      fecha_desde: '',
+      fecha_hasta: '',
+      responsable: 'todos'
+    });
+
+    const handleCloseFilters = () => {
+      setShowFilterDrawer(false);
+    };
+
+    const getActiveFiltersCount = () => {
+      let count = 0;
+      if (filters.estado !== 'todos') count++;
+      if (filters.responsable !== 'todos') count++;
+      if (filters.fecha_desde) count++;
+      if (filters.fecha_hasta) count++;
+      return count;
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/empresas')}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title={empresaData.nombre || 'Empresa'}
+              variant="compact"
+              color="green"
+              className="mb-0"
+              chip={{
+                label: empresaData.estado_nombre || 'Sin estado',
+                variant: getEstadoColor(empresaData.estado_nombre || ''),
+                size: 'sm'
+              }}
+            />
+          </div>
+
+          {/* Acciones principales */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => setShowEditModal(true)}
+            >
+              <EditIcon className="w-4 h-4" />
+              Editar
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => setShowFilterDrawer(true)}
+            >
+              <FilterIcon className="w-4 h-4" />
+              Filtros
+            </Button>
           </div>
         </div>
-      )}
 
-      {/* Participantes de la empresa */}
-      {empresaData.participantes && empresaData.participantes.length > 0 && (
-        <div>
-          <Typography variant="h4" weight="semibold" className="mb-4">
-            Participantes de la Empresa
-          </Typography>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {empresaData.participantes.map((participante) => (
-              <Card key={participante.id} className="p-6 hover: transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <Typography variant="body1" weight="medium" className="mb-2">
-                      {participante.nombre}
-                    </Typography>
-                    
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="flex items-center space-x-1">
-                        <TrendingUpIcon className="w-4 h-4" />
-                        <span>{participante.total_participaciones} participaciones</span>
+        {/* Tabs */}
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          variant="default"
+          fullWidth={true}
+        />
+
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <Typography variant="body1" className="ml-3">
+              Cargando estadísticas...
+            </Typography>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+            <Typography variant="body1" color="danger">
+              Error: {error}
+            </Typography>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+              onClick={() => empresaData.id && cargarEstadisticas(empresaData.id)}
+            >
+              Reintentar
+            </Button>
+          </Card>
+        )}
+
+        {/* Investigaciones participadas */}
+        {empresaData.estadisticas?.investigaciones && empresaData.estadisticas.investigaciones.length > 0 && (
+          <div>
+            <Typography variant="h4" weight="semibold" className="mb-4">
+              Investigaciones Participadas
+            </Typography>
+            
+            <div className="space-y-4">
+              {empresaData.estadisticas.investigaciones.map((investigacion) => (
+                <Card key={investigacion.id} className="p-6 hover: transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Typography variant="body1" weight="semibold">
+                          {investigacion.nombre}
+                        </Typography>
+                        <Chip variant={getEstadoColor(investigacion.estado)}>
+                          {investigacion.estado}
+                        </Chip>
                       </div>
                       
-                      {participante.fecha_ultima_participacion && (
+                      {investigacion.descripcion && (
+                        <Typography variant="body2" color="secondary" className="mb-3">
+                          {investigacion.descripcion}
+                        </Typography>
+                      )}
+                      
+                      <div className="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="w-4 h-4" />
-                          <span>Última: {formatearFecha(participante.fecha_ultima_participacion)}</span>
+                          <span>{formatearFecha(investigacion.fecha_inicio)}</span>
                         </div>
-                      )}
+                        
+                        <div className="flex items-center space-x-1">
+                          <UsersIcon className="w-4 h-4" />
+                          <span>{investigacion.participaciones} participaciones</span>
+                        </div>
+                        
+                        {investigacion.responsable && (
+                          <div className="flex items-center space-x-1">
+                            <UserIcon className="w-4 h-4" />
+                            <span>{investigacion.responsable.full_name}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => abrirInvestigacion(investigacion.id)}
+                      className="ml-4"
+                    >
+                      <ExternalLinkIcon className="w-4 h-4 mr-1" />
+                      Ver
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Participantes de la empresa */}
+        {empresaData.participantes && empresaData.participantes.length > 0 && (
+          <div>
+            <Typography variant="h4" weight="semibold" className="mb-4">
+              Participantes de la Empresa
+            </Typography>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {empresaData.participantes.map((participante) => (
+                <Card key={participante.id} className="p-6 hover: transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <Typography variant="body1" weight="medium" className="mb-2">
+                        {participante.nombre}
+                      </Typography>
+                      
+                      <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center space-x-1">
+                          <TrendingUpIcon className="w-4 h-4" />
+                          <span>{participante.total_participaciones} participaciones</span>
+                        </div>
+                        
+                        {participante.fecha_ultima_participacion && (
+                          <div className="flex items-center space-x-1">
+                            <CalendarIcon className="w-4 h-4" />
+                            <span>Última: {formatearFecha(participante.fecha_ultima_participacion)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <Chip variant="default">
+                      {participante.total_participaciones > 0 ? 'Activo' : 'Sin participación'}
+                    </Chip>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Estado vacío */}
+        {(!empresaData.estadisticas?.investigaciones || empresaData.estadisticas.investigaciones.length === 0) &&
+         (!empresaData.participantes || empresaData.participantes.length === 0) && (
+          <Card className="text-center py-12">
+            <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Typography variant="h5" weight="medium" className="mb-2">
+              Sin historial de participaciones
+            </Typography>
+            <Typography variant="body2" color="secondary">
+              Esta empresa aún no ha participado en investigaciones
+            </Typography>
+          </Card>
+        )}
+
+        {/* Drawer de filtros avanzados personalizado para historial */}
+        {showFilterDrawer && (
+          <div className="fixed inset-0 z-50 overflow-hidden">
+            {/* Overlay */}
+            <div 
+              className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
+              onClick={handleCloseFilters}
+            />
+            
+            {/* Drawer */}
+            <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2">
+                    <FilterIcon className="w-5 h-5 text-gray-600" />
+                    <Typography variant="h5" weight="semibold">
+                      Filtros de Historial
+                    </Typography>
+                    {getActiveFiltersCount() > 0 && (
+                      <span className="px-2 py-1 text-xs bg-primary text-white rounded-full">
+                        {getActiveFiltersCount()}
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCloseFilters}
+                    icon={<CloseIcon className="w-4 h-4" />}
+                  />
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {/* Estado */}
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Estado de Participación
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar estado..."
+                      options={[
+                        { value: 'todos', label: 'Todos los estados' },
+                        { value: 'Finalizado', label: 'Finalizado' },
+                        { value: 'En progreso', label: 'En Progreso' },
+                        { value: 'Pendiente', label: 'Pendiente' },
+                        { value: 'Pendiente de agendamiento', label: 'Pendiente de Agendamiento' }
+                      ]}
+                      value={filters.estado}
+                      onChange={(value) => setFilters(prev => ({ ...prev, estado: value.toString() }))}
+                      fullWidth
+                    />
                   </div>
                   
-                  <Chip variant="default">
-                    {participante.total_participaciones > 0 ? 'Activo' : 'Sin participación'}
-                  </Chip>
+                  {/* Responsable */}
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Responsable
+                    </Typography>
+                    <Select
+                      placeholder="Seleccionar responsable..."
+                      options={[
+                        { value: 'todos', label: 'Todos los responsables' },
+                        ...(empresaData.estadisticas?.investigaciones?.reduce((acc: any[], item: any) => {
+                          if (item.responsable && !acc.find(r => r.value === item.responsable.id)) {
+                            acc.push({ value: item.responsable.id, label: item.responsable.full_name });
+                          }
+                        }, []) || [])
+                      ]}
+                      value={filters.responsable}
+                      onChange={(value) => setFilters(prev => ({ ...prev, responsable: value.toString() }))}
+                      fullWidth
+                    />
+                  </div>
+                  
+                  {/* Fecha desde */}
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Fecha desde
+                    </Typography>
+                    <Input
+                      type="datetime-local"
+                      value={filters.fecha_desde}
+                      onChange={(e) => setFilters(prev => ({ ...prev, fecha_desde: e.target.value }))}
+                      placeholder="Seleccionar fecha..."
+                      fullWidth
+                    />
+                  </div>
+                  
+                  {/* Fecha hasta */}
+                  <div>
+                    <Typography variant="subtitle2" weight="medium" className="mb-2">
+                      Fecha hasta
+                    </Typography>
+                    <Input
+                      type="datetime-local"
+                      value={filters.fecha_hasta}
+                      onChange={(e) => setFilters(prev => ({ ...prev, fecha_hasta: e.target.value }))}
+                      placeholder="Seleccionar fecha..."
+                      fullWidth
+                    />
+                  </div>
                 </div>
-              </Card>
-            ))}
+                
+                {/* Footer */}
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setFilters({
+                        busqueda: '',
+                        estado: 'todos',
+                        fecha_desde: '',
+                        fecha_hasta: '',
+                        responsable: 'todos'
+                      })}
+                      className="flex-1"
+                    >
+                      Limpiar Filtros
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleCloseFilters}
+                      className="flex-1"
+                    >
+                      Aplicar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Estado vacío */}
-      {(!empresaData.estadisticas?.investigaciones || empresaData.estadisticas.investigaciones.length === 0) &&
-       (!empresaData.participantes || empresaData.participantes.length === 0) && (
-        <Card className="text-center py-12">
-          <HistoryIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <Typography variant="h5" weight="medium" className="mb-2">
-            Sin historial de participaciones
-          </Typography>
-          <Typography variant="body2" color="secondary">
-            Esta empresa aún no ha participado en investigaciones
-          </Typography>
-        </Card>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   const tabs = [
     {

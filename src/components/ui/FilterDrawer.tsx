@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import Button from './Button';
 import Select from './Select';
-import DatePicker from '../../../mcp-system/mcp-design-system/src/components/composite/DatePicker';
+import DatePicker from './DatePicker';
 import Typography from './Typography';
 import Chip from './Chip';
 import MultiSelect from './MultiSelect';
@@ -181,14 +181,23 @@ export interface FilterValuesParticipaciones {
   duracion_sesion_max?: string;
 }
 
+// Interface específica para filtros de historial de empresas
+export interface FilterValuesHistorialEmpresa {
+  busqueda?: string;
+  estado?: string | 'todos';
+  responsable?: string | 'todos';
+  fecha_desde?: string;
+  fecha_hasta?: string;
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento' | 'participaciones';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento' | 'participaciones' | 'historial_empresa';
   participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
@@ -278,6 +287,17 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         fecha_hasta: '',
         usuario_perfilador: 'todos'
       } as FilterValuesPerfilamiento);
+    } else if (type === 'participaciones') {
+      onFiltersChange({
+        busqueda: '',
+        estado_agendamiento: 'todos',
+        tipo_investigacion: 'todos',
+        responsable: 'todos',
+        fecha_participacion_desde: '',
+        fecha_participacion_hasta: '',
+        duracion_sesion_min: '',
+        duracion_sesion_max: ''
+      } as FilterValuesParticipaciones);
     } else {
       onFiltersChange({
         estados: [],
@@ -365,6 +385,21 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (perfFilters.fecha_desde) count++;
       if (perfFilters.fecha_hasta) count++;
       if (perfFilters.usuario_perfilador && perfFilters.usuario_perfilador !== 'todos') count++;
+    } else if (type === 'participaciones') {
+      const partFilters = filters as FilterValuesParticipaciones;
+      if (partFilters.estado_agendamiento && partFilters.estado_agendamiento !== 'todos') count++;
+      if (partFilters.tipo_investigacion && partFilters.tipo_investigacion !== 'todos') count++;
+      if (partFilters.responsable && partFilters.responsable !== 'todos') count++;
+      if (partFilters.fecha_participacion_desde) count++;
+      if (partFilters.fecha_participacion_hasta) count++;
+      if (partFilters.duracion_sesion_min) count++;
+      if (partFilters.duracion_sesion_max) count++;
+    } else if (type === 'historial_empresa') {
+      const histFilters = filters as FilterValuesHistorialEmpresa;
+      if (histFilters.estado && histFilters.estado !== 'todos') count++;
+      if (histFilters.responsable && histFilters.responsable !== 'todos') count++;
+      if (histFilters.fecha_desde) count++;
+      if (histFilters.fecha_hasta) count++;
     } else {
       const recFilters = filters as FilterValuesReclutamiento;
       if (recFilters.estados.length > 0) count++;
@@ -423,64 +458,48 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   if (!isOpen) return null;
 
   const drawerContent = (
-    <div 
-      className="fixed inset-0 z-50 overflow-hidden"
-      style={{ 
-        height: '100vh',
-        width: '100vw',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}
-    >
+    <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Overlay */}
       <div 
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
-        style={{ 
-          height: '100vh',
-          width: '100vw',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0
-        }}
         onClick={onClose}
       />
       
       {/* Drawer */}
       <div 
         className={`
-          absolute right-0 top-0 w-full max-w-md
-          bg-card border-l border-border
+          absolute right-0 top-0 h-full w-full max-w-md
+          bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700
           transform transition-transform
           ${className}
         `}
-        style={{ 
-          height: '100vh',
-          top: 0,
-          right: 0,
-          bottom: 0
-        }}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <PageHeader
-            title={type === 'empresa' ? 'Filtros de Empresas' : 'Filtros Avanzados'}
-            variant="title-only"
-            color="gray"
-            icon={<FilterIcon className="w-5 h-5 text-foreground" />}
-            onClose={onClose}
-            chip={getActiveFiltersCount() > 0 ? {
-              label: getActiveFiltersCount().toString(),
-              variant: "primary",
-              size: "sm"
-            } : undefined}
-            className=""
-          />
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-2">
+              <FilterIcon className="w-5 h-5 text-gray-600" />
+              <Typography variant="h5" weight="semibold">
+                {type === 'empresa' ? 'Filtros de Empresas' : 
+                 type === 'historial_empresa' ? 'Filtros de Historial' : 
+                 'Filtros Avanzados'}
+              </Typography>
+              {getActiveFiltersCount() > 0 && (
+                <span className="px-2 py-1 text-xs bg-primary text-white rounded-full">
+                  {getActiveFiltersCount()}
+                </span>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              icon={<CloseIcon className="w-4 h-4" />}
+            />
+          </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-card">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {type === 'investigacion' ? (
               // Filtros específicos para investigaciones
               <>
@@ -1209,6 +1228,62 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   </div>
                 </div>
               </>
+            ) : type === 'historial_empresa' ? (
+              // Filtros específicos para historial de empresas
+              <>
+                {/* Estado de Participación */}
+                <div>
+                  <FilterLabel>Estado de Participación</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar estado..."
+                    options={[
+                      { value: 'todos', label: 'Todos los estados' },
+                      { value: 'Finalizado', label: 'Finalizado' },
+                      { value: 'En progreso', label: 'En Progreso' },
+                      { value: 'Pendiente', label: 'Pendiente' },
+                      { value: 'Pendiente de agendamiento', label: 'Pendiente de Agendamiento' }
+                    ]}
+                    value={(filters as FilterValuesHistorialEmpresa).estado || 'todos'}
+                    onChange={(value) => handleFilterChange('estado', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Responsable */}
+                <div>
+                  <FilterLabel>Responsable</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar responsable..."
+                    options={[
+                      { value: 'todos', label: 'Todos los responsables' },
+                      ...(options.responsables_participaciones || [])
+                    ]}
+                    value={(filters as FilterValuesHistorialEmpresa).responsable || 'todos'}
+                    onChange={(value) => handleFilterChange('responsable', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Fecha Desde */}
+                <div>
+                  <FilterLabel>Fecha Desde</FilterLabel>
+                  <DatePicker
+                    placeholder="Seleccionar fecha..."
+                    value={(filters as FilterValuesHistorialEmpresa).fecha_desde || ''}
+                    onChange={(e) => handleFilterChange('fecha_desde', e.target.value)}
+                  />
+                </div>
+
+                {/* Fecha Hasta */}
+                <div>
+                  <FilterLabel>Fecha Hasta</FilterLabel>
+                  <DatePicker
+                    placeholder="Seleccionar fecha..."
+                    value={(filters as FilterValuesHistorialEmpresa).fecha_hasta || ''}
+                    onChange={(e) => handleFilterChange('fecha_hasta', e.target.value)}
+                  />
+                </div>
+              </>
             ) : (
               // Filtros por defecto o para otros tipos
               <div className="p-4">
@@ -1220,10 +1295,10 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-6 border-t border-border bg-card">
-            <div className="flex gap-3">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-2">
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={clearAllFilters}
                 className="flex-1 flex items-center justify-center gap-2"
               >
@@ -1235,7 +1310,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                 onClick={onClose}
                 className="flex-1"
               >
-                Aplicar Filtros
+                Aplicar
               </Button>
             </div>
           </div>

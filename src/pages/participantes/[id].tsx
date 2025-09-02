@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -12,16 +12,21 @@ import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
+import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
+import ParticipacionesUnifiedContainer from '../../components/participantes/ParticipacionesUnifiedContainer';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../components/ui/FilterDrawer';
+import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
+import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
+import EditarParticipanteModal from '../../components/ui/EditarParticipanteModal';
 
 interface Participante {
   id: string;
@@ -116,6 +121,20 @@ export default function DetalleParticipante() {
   
   // Estado para usuarios (para filtros de perfilamiento)
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  
+  // Estados para acciones del header
+  const [showModalEditar, setShowModalEditar] = useState(false);
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
+  const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
+  const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
+  const [participanteParaEditar, setParticipanteParaEditar] = useState<any>(null);
+  const [participanteParaEliminar, setParticipanteParaEliminar] = useState<any>(null);
+  const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
+  const [participanteParaPerfilamiento, setParticipanteParaPerfilamiento] = useState<any>(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any>(null);
+  const [participantePerfilamientoTemp, setParticipantePerfilamientoTemp] = useState<any>(null);
+  const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   
   // Estados para búsqueda y filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -582,6 +601,61 @@ export default function DetalleParticipante() {
     const variant = getChipVariant(estado);
     console.log('🔍 DEBUG - Variant resultante:', variant);
     return variant;
+  };
+
+  // Funciones para manejar acciones del header
+  const handleEditarParticipante = (participante: any) => {
+    setParticipanteParaEditar(participante);
+    setShowModalEditar(true);
+  };
+
+  const handleEliminarParticipante = (participante: any) => {
+    setParticipanteParaEliminar(participante);
+    setShowModalEliminar(true);
+  };
+
+  const confirmarEliminacion = async () => {
+    if (!participanteParaEliminar) return;
+    
+    try {
+      setEliminandoParticipante(true);
+      
+      const response = await fetch(`/api/participantes/eliminar?id=${participanteParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        showSuccess('Participante eliminado correctamente');
+        setShowModalEliminar(false);
+        setParticipanteParaEliminar(null);
+        // Redirigir a la lista de participantes
+        router.push('/participantes');
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al eliminar participante');
+        if (errorData.detail) {
+          showError(errorData.detail);
+        }
+      }
+    } catch (error) {
+      console.error('Error eliminando participante:', error);
+      showError('Error al eliminar participante');
+    } finally {
+      setEliminandoParticipante(false);
+    }
+  };
+
+  const handleCrearDolor = (participante: any) => {
+    // Abrir modal de crear dolor
+    setParticipanteParaCrearDolor(participante);
+    setShowModalCrearDolor(true);
+  };
+
+  const handleCrearPerfilamiento = (participante: any) => {
+    // Guardar participante en estado temporal y abrir modal de categoría
+    setParticipantePerfilamientoTemp(participante);
+    setParticipanteParaPerfilamiento(participante);
+    setShowModalPerfilamiento(true);
   };
 
   // Componente de contenido de información
@@ -1145,17 +1219,32 @@ export default function DetalleParticipante() {
 
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
-            <Button
-              variant="secondary"
-              className="flex items-center gap-2"
-              onClick={() => {
-                // setParticipanteParaEditar(participante); // This line was commented out in the original file
-                // setShowModalEditar(true); // This line was commented out in the original file
-              }}
-            >
-              <EditIcon className="w-4 h-4" />
-              Editar Participante
-            </Button>
+            <ActionsMenu
+              actions={[
+                {
+                  label: 'Editar',
+                  icon: <EditIcon className="w-4 h-4" />,
+                  onClick: () => handleEditarParticipante(participante)
+                },
+                {
+                  label: 'Crear Dolor',
+                  icon: <AlertTriangleIcon className="w-4 h-4" />,
+                  onClick: () => handleCrearDolor(participante)
+                },
+                {
+                  label: 'Crear Perfilamiento',
+                  icon: <MessageIcon className="w-4 h-4" />,
+                  onClick: () => handleCrearPerfilamiento(participante),
+                  className: 'text-popover-foreground hover:text-popover-foreground/80'
+                },
+                {
+                  label: 'Eliminar',
+                  icon: <TrashIcon className="w-4 h-4" />,
+                  onClick: () => handleEliminarParticipante(participante),
+                  className: 'text-red-600 hover:text-red-700'
+                }
+              ]}
+            />
           </div>
         </div>
 
@@ -1176,80 +1265,19 @@ export default function DetalleParticipante() {
                 id: 'historial',
                 label: 'Historial de Investigaciones',
                 content: (
-                  <Card variant="elevated" padding="lg" className="space-y-6">
-                    {/* Header con título y contador */}
-                    <div className="flex items-center gap-3">
-                      <Subtitle>
-                        Lista de Participaciones
-                      </Subtitle>
-                      <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
-                        {investigaciones.length} participación{investigaciones.length !== 1 ? 'es' : ''} registrada{investigaciones.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-
-                    {/* Barra de búsqueda y filtros */}
-                    <div className="flex flex-col lg:flex-row gap-4 items-center">
-                      <div className="flex-1 relative">
-                        <Input
-                          placeholder="Buscar participaciones..."
-                          value={searchTermParticipaciones}
-                          onChange={e => setSearchTermParticipaciones(e.target.value)}
-                          className="pl-10 pr-4 py-2"
-                          icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
-                          iconPosition="left"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant={getActiveFiltersCountParticipaciones() > 0 ? "primary" : "secondary"}
-                          onClick={() => setShowFilterDrawerParticipaciones(true)}
-                          className="relative flex items-center gap-2"
-                        >
-                          <FilterIcon className="w-4 h-4" />
-                          Filtros Avanzados
-                          {getActiveFiltersCountParticipaciones() > 0 && (
-                            <span className="ml-2 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                              {getActiveFiltersCountParticipaciones()}
-                            </span>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Tabla de participaciones */}
-                    {investigaciones.length > 0 ? (
-                      <DataTable
-                        data={participacionesFiltradas}
-                        columns={columnsInvestigaciones}
-                        loading={false}
-                        searchable={false}
-                        filterable={false}
-                        selectable={false}
-                        emptyMessage="No se encontraron participaciones que coincidan con los criterios de búsqueda"
-                        rowKey="id"
-                      />
-                    ) : (
-                      <div className="text-center py-12">
-                        <UserIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <Typography variant="h5" color="secondary" className="mb-2">
-                          Sin participaciones
-                        </Typography>
-                        <Typography variant="body2" color="secondary">
-                          Este participante aún no ha participado en ninguna investigación.
-                        </Typography>
-                      </div>
-                    )}
-
-                    {/* Drawer de filtros avanzados */}
-                    <FilterDrawer
-                      isOpen={showFilterDrawerParticipaciones}
-                      onClose={() => setShowFilterDrawerParticipaciones(false)}
-                      filters={filtersParticipaciones}
-                      onFiltersChange={setFiltersParticipaciones}
-                      type="participaciones"
-                      options={filterOptionsParticipaciones}
-                    />
-                  </Card>
+                  <ParticipacionesUnifiedContainer
+                    participaciones={investigaciones}
+                    loading={false}
+                    searchTerm={searchTermParticipaciones}
+                    setSearchTerm={setSearchTermParticipaciones}
+                    filters={filtersParticipaciones}
+                    setFilters={setFiltersParticipaciones}
+                    showFilterDrawer={showFilterDrawerParticipaciones}
+                    setShowFilterDrawer={setShowFilterDrawerParticipaciones}
+                    getActiveFiltersCount={getActiveFiltersCountParticipaciones}
+                    columns={columnsInvestigaciones}
+                    filterOptions={filterOptionsParticipaciones}
+                  />
                 )
               },
               {
@@ -1427,6 +1455,101 @@ export default function DetalleParticipante() {
         cancelText="Cancelar"
         size="md"
       />
+
+      {/* Modales para acciones del header */}
+      <EditarParticipanteModal
+        isOpen={showModalEditar}
+        onClose={() => {
+          setShowModalEditar(false);
+          setParticipanteParaEditar(null);
+        }}
+        onSuccess={() => {
+          cargarParticipante();
+          setShowModalEditar(false);
+          setParticipanteParaEditar(null);
+        }}
+        participante={participanteParaEditar}
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={showModalEliminar}
+        onClose={() => {
+          setShowModalEliminar(false);
+          setParticipanteParaEliminar(null);
+        }}
+        onConfirm={confirmarEliminacion}
+        title="Eliminar Participante"
+        message={`¿Estás seguro de que quieres eliminar al participante "${participanteParaEliminar?.nombre}"? Esta acción no se puede deshacer.`}
+        type="error"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        size="md"
+        loading={eliminandoParticipante}
+      />
+
+
+
+      {/* Modal de crear dolor desde header */}
+      <DolorSideModal
+        isOpen={showModalCrearDolor}
+        onClose={() => {
+          setShowModalCrearDolor(false);
+          setParticipanteParaCrearDolor(null);
+        }}
+        participanteId={participanteParaCrearDolor?.id || ''}
+        participanteNombre={participanteParaCrearDolor?.nombre || ''}
+        onSave={handleDolorGuardado}
+      />
+
+      {/* Modal de perfilamiento */}
+      <SeleccionarCategoriaPerfilamientoModal
+        isOpen={showModalPerfilamiento}
+        onClose={() => {
+          setShowModalPerfilamiento(false);
+          setParticipanteParaPerfilamiento(null);
+        }}
+        participanteId={participanteParaPerfilamiento?.id || ''}
+        participanteNombre={participanteParaPerfilamiento?.nombre || ''}
+        onCategoriaSeleccionada={(categoria) => {
+          // Guardar la categoría seleccionada y abrir modal de creación
+          console.log('🔍 Categoría seleccionada:', categoria);
+          console.log('🔍 Participante temporal:', participantePerfilamientoTemp);
+          setCategoriaSeleccionada(categoria);
+          setShowModalCrearPerfilamiento(true);
+          // Cerrar el modal de categoría para mostrar el de creación
+          setShowModalPerfilamiento(false);
+        }}
+      />
+
+      {/* Modal de crear perfilamiento específico */}
+      {showModalCrearPerfilamiento && categoriaSeleccionada && participantePerfilamientoTemp && (
+        <CrearPerfilamientoModal
+          isOpen={true}
+          onClose={() => {
+            // Si se cancela, limpiar todo
+            setShowModalCrearPerfilamiento(false);
+            setCategoriaSeleccionada(null);
+            setParticipantePerfilamientoTemp(null);
+          }}
+          participanteId={participantePerfilamientoTemp.id}
+          participanteNombre={participantePerfilamientoTemp.nombre}
+          categoria={categoriaSeleccionada}
+          onBack={() => {
+            // Volver al modal de selección de categoría
+            setShowModalCrearPerfilamiento(false);
+            setCategoriaSeleccionada(null);
+            setShowModalPerfilamiento(true);
+          }}
+          onSuccess={() => {
+            // Si se crea exitosamente, limpiar todo
+            setShowModalCrearPerfilamiento(false);
+            setCategoriaSeleccionada(null);
+            setParticipantePerfilamientoTemp(null);
+            showSuccess('Perfilamiento creado exitosamente');
+          }}
+        />
+      )}
     </Layout>
   );
 }

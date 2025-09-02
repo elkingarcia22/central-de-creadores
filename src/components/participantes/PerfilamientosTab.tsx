@@ -86,8 +86,9 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       key: 'categoria_perfilamiento',
       label: 'Categoría',
       sortable: true,
+      width: 'w-44 min-w-44',
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Typography variant="body2" weight="medium">
+        <Typography variant="body2" weight="medium" className="truncate">
           {obtenerNombreCategoria(row.categoria_perfilamiento)}
         </Typography>
       )
@@ -96,8 +97,9 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       key: 'valor_principal',
       label: 'Valor Principal',
       sortable: true,
+      width: 'w-36 min-w-36',
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Typography variant="body2" weight="semibold">
+        <Typography variant="body2" weight="semibold" className="truncate">
           {row.valor_principal}
         </Typography>
       )
@@ -105,8 +107,9 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     {
       key: 'observaciones',
       label: 'Observaciones',
+      width: 'w-44 min-w-44',
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Typography variant="body2" className="max-w-32 truncate">
+        <Typography variant="body2" className="truncate" title={row.observaciones || '-'}>
           {row.observaciones || '-'}
         </Typography>
       )
@@ -114,6 +117,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     {
       key: 'etiquetas',
       label: 'Etiquetas',
+      width: 'w-36 min-w-36',
       render: (value: any, row: PerfilamientoParticipante) => (
         <div className="flex flex-wrap gap-1">
           {row.etiquetas && row.etiquetas.length > 0 ? (
@@ -132,6 +136,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       key: 'confianza_observacion',
       label: 'Confianza',
       sortable: true,
+      width: 'w-30 min-w-30',
       render: (value: any, row: PerfilamientoParticipante) => {
         const getColorConfianza = (confianza: number) => {
           if (confianza >= 4) return 'success';
@@ -157,8 +162,9 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     {
       key: 'usuario_perfilador_nombre',
       label: 'Perfilado por',
+      width: 'w-36 min-w-36',
       render: (value: any, row: PerfilamientoParticipante) => (
-        <Typography variant="body2" color="secondary">
+        <Typography variant="body2" color="secondary" className="truncate">
           {row.usuario_perfilador_nombre || '-'}
         </Typography>
       )
@@ -167,6 +173,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       key: 'fecha_perfilamiento',
       label: 'Fecha',
       sortable: true,
+      width: 'w-30 min-w-30',
       render: (value: any, row: PerfilamientoParticipante) => (
         <Typography variant="caption">
           {formatearFecha(row.fecha_perfilamiento)}
@@ -193,6 +200,12 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
       setLoading(false);
     }
   };
+
+  // Verificar que el componente se esté montando correctamente
+  useEffect(() => {
+    console.log('🔍 PerfilamientosTab montado con columnas:', columns);
+    console.log('🔍 Columna observaciones width:', columns.find(c => c.key === 'observaciones')?.width);
+  }, []);
 
   useEffect(() => {
     cargarPerfilamientos();

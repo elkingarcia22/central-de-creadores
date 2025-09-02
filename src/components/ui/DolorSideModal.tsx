@@ -265,12 +265,13 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   // Footer para el modal
   const footer = (
-    <div className="flex justify-end space-x-3">
+    <div className="flex gap-4 px-2">
       {readOnly ? (
         <>
           <Button
             variant="secondary"
             onClick={onClose}
+            className="flex-1"
           >
             Cancelar
           </Button>
@@ -282,8 +283,9 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
                 onEdit();
               }
             }}
+            className="flex-1"
           >
-            Editar Dolor
+            Editar
           </Button>
         </>
       ) : (
@@ -292,6 +294,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
             variant="secondary"
             onClick={onClose}
             disabled={loading}
+            className="flex-1"
           >
             Cancelar
           </Button>
@@ -300,6 +303,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
             onClick={handleSubmit}
             loading={loading || isSubmitting}
             disabled={loading || isSubmitting}
+            className="flex-1"
           >
             {isEditing ? 'Actualizar' : 'Crear'}
           </Button>
@@ -312,7 +316,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      width="lg"
+      width="xl"
       footer={footer}
       showCloseButton={false}
     >
