@@ -1241,6 +1241,7 @@ export default function DetalleParticipante() {
         dolor={dolorSeleccionado as any}
         onSave={handleActualizarDolor}
         loading={false}
+        readOnly={false} // Explícitamente modo edición
       />
 
       {/* Modal de confirmación para eliminar dolor */}
