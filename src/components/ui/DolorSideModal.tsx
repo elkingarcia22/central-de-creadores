@@ -251,14 +251,68 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
 
 
+  // Footer para el modal
+  const footer = (
+    <div className="flex justify-end space-x-3">
+      {readOnly ? (
+        <>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              onClose();
+              if (onEdit) {
+                onEdit();
+              }
+            }}
+          >
+            Editar Dolor
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            loading={loading || isSubmitting}
+            disabled={loading || isSubmitting}
+          >
+            {isEditing ? 'Actualizar' : 'Crear'}
+          </Button>
+        </>
+      )}
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title={readOnly ? 'Ver Dolor' : (isEditing ? 'Editar Dolor' : 'Crear Dolor')}
       width="lg"
+      footer={footer}
+      showCloseButton={false}
     >
       <div className="space-y-6">
+        {/* Header */}
+        <PageHeader
+          title={readOnly ? 'Ver Dolor' : (isEditing ? 'Editar Dolor' : 'Crear Dolor')}
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
+        />
 
         {/* Información del participante */}
         {participanteNombre && (
@@ -422,57 +476,6 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
             </div>
           </form>
         )}
-
-        {/* Footer con botones */}
-        <div className="flex gap-4 pt-6 border-t border-border">
-          {readOnly ? (
-            <>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  onClose();
-                  if (onEdit) {
-                    onEdit();
-                  }
-                }}
-                className="flex-1"
-              >
-                Editar Dolor
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                disabled={loading}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                variant="primary"
-                onClick={handleSubmit}
-                loading={loading || isSubmitting}
-                disabled={loading || isSubmitting}
-                className="flex-1"
-              >
-                {isEditing ? 'Actualizar' : 'Crear'}
-              </Button>
-            </>
-          )}
-        </div>
       </div>
     </SideModal>
   );
