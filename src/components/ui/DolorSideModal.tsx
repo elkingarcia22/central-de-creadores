@@ -60,16 +60,24 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   // Cargar datos del dolor si estamos editando
   useEffect(() => {
+    console.log('🔍 DolorSideModal useEffect - dolor:', dolor);
+    console.log('🔍 DolorSideModal useEffect - isOpen:', isOpen);
+    console.log('🔍 DolorSideModal useEffect - readOnly:', readOnly);
+    
     if (dolor && isOpen) {
-      setFormData({
+      console.log('🔍 Configurando formulario para edición con dolor:', dolor);
+      const newFormData = {
         categoria_id: dolor.categoria_id,
         titulo: dolor.titulo,
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad,
         investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
         sesion_relacionada_id: dolor.sesion_relacionada_id
-      });
+      };
+      console.log('🔍 Nuevo formData configurado:', newFormData);
+      setFormData(newFormData);
     } else if (!dolor && isOpen) {
+      console.log('🔍 Configurando formulario para nuevo dolor');
       // Resetear formulario para nuevo dolor
       setFormData({
         categoria_id: '',
@@ -248,6 +256,10 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   ];
 
   console.log('🔍 Opciones de investigación generadas:', investigacionOptions);
+  console.log('🔍 DolorSideModal render - readOnly:', readOnly);
+  console.log('🔍 DolorSideModal render - isEditing:', isEditing);
+  console.log('🔍 DolorSideModal render - dolor:', dolor);
+  console.log('🔍 DolorSideModal render - formData:', formData);
 
 
 
