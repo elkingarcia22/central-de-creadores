@@ -9,6 +9,7 @@ import Input from '../ui/Input';
 import Typography from '../ui/Typography';
 import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
+import { FilterDrawer } from '../ui/FilterDrawer';
 import DataTable from '../ui/DataTable';
 import { Subtitle } from '../ui/Subtitle';
 import Tabs from '../ui/Tabs';
@@ -38,6 +39,7 @@ import {
 interface PerfilamientosTabProps {
   participanteId: string;
   participanteNombre: string;
+  usuarios?: any[];
 }
 
 export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
@@ -67,10 +69,11 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   // Estados para filtros adicionales
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   const [filters, setFilters] = useState({
+    categoria: 'todos',
     confianza: 'todos',
-    fechaDesde: '',
-    fechaHasta: '',
-    usuarioPerfilador: ''
+    fecha_desde: '',
+    fecha_hasta: '',
+    usuario_perfilador: 'todos'
   });
 
   // Definir columnas para la tabla
@@ -224,10 +227,11 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   // Contar filtros activos
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
+    if (filters.categoria !== 'todos') count++;
     if (filters.confianza !== 'todos') count++;
-    if (filters.fechaDesde) count++;
-    if (filters.fechaHasta) count++;
-    if (filters.usuarioPerfilador) count++;
+    if (filters.fecha_desde) count++;
+    if (filters.fecha_hasta) count++;
+    if (filters.usuario_perfilador !== 'todos') count++;
     return count;
   }, [filters]);
 
@@ -281,23 +285,27 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     // Filtro por tab activo (categoría)
     const matchesTab = activeTab === 'todas' || perfilamiento.categoria_perfilamiento === activeTab;
     
+    // Filtro por categoría del drawer
+    const matchesCategoria = filters.categoria === 'todos' || 
+      perfilamiento.categoria_perfilamiento === filters.categoria;
+    
     // Filtro por confianza
     const matchesConfianza = filters.confianza === 'todos' || 
       perfilamiento.confianza_observacion.toString() === filters.confianza;
     
     // Filtro por fecha desde
-    const matchesFechaDesde = !filters.fechaDesde || 
-      new Date(perfilamiento.fecha_perfilamiento) >= new Date(filters.fechaDesde);
+    const matchesFechaDesde = !filters.fecha_desde || 
+      new Date(perfilamiento.fecha_perfilamiento) >= new Date(filters.fecha_desde);
     
     // Filtro por fecha hasta
-    const matchesFechaHasta = !filters.fechaHasta || 
-      new Date(perfilamiento.fecha_perfilamiento) <= new Date(filters.fechaHasta);
+    const matchesFechaHasta = !filters.fecha_hasta || 
+      new Date(perfilamiento.fecha_perfilamiento) <= new Date(filters.fecha_hasta);
     
     // Filtro por usuario perfilador
-    const matchesUsuario = !filters.usuarioPerfilador || 
-      perfilamiento.usuario_perfilador_nombre?.toLowerCase().includes(filters.usuarioPerfilador.toLowerCase());
+    const matchesUsuario = !filters.usuario_perfilador || filters.usuario_perfilador === 'todos' ||
+      perfilamiento.usuario_perfilador_id === filters.usuario_perfilador;
     
-    return matchesSearch && matchesTab && matchesConfianza && matchesFechaDesde && matchesFechaHasta && matchesUsuario;
+    return matchesSearch && matchesTab && matchesCategoria && matchesConfianza && matchesFechaDesde && matchesFechaHasta && matchesUsuario;
   });
 
   // Manejar selección de categoría
@@ -567,106 +575,17 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         size="md"
       />
 
-      {/* Drawer de filtros */}
-      {showFilterDrawer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowFilterDrawer(false)} />
-          <div className="relative bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <Typography variant="h5" weight="semibold">Filtros Avanzados</Typography>
-              <Button variant="ghost" size="sm" onClick={() => setShowFilterDrawer(false)}>
-                ✕
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              {/* Filtro por confianza */}
-              <div>
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Nivel de Confianza
-                </Typography>
-                <select
-                  value={filters.confianza}
-                  onChange={(e) => setFilters(prev => ({ ...prev, confianza: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                >
-                  <option value="todos">Todos los niveles</option>
-                  <option value="1">Muy baja</option>
-                  <option value="2">Baja</option>
-                  <option value="3">Media</option>
-                  <option value="4">Alta</option>
-                  <option value="5">Muy alta</option>
-                </select>
-              </div>
-
-              {/* Filtro por fecha desde */}
-              <div>
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Fecha Desde
-                </Typography>
-                <input
-                  type="date"
-                  value={filters.fechaDesde}
-                  onChange={(e) => setFilters(prev => ({ ...prev, fechaDesde: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              {/* Filtro por fecha hasta */}
-              <div>
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Fecha Hasta
-                </Typography>
-                <input
-                  type="date"
-                  value={filters.fechaHasta}
-                  onChange={(e) => setFilters(prev => ({ ...prev, fechaHasta: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              {/* Filtro por usuario perfilador */}
-              <div>
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Usuario Perfilador
-                </Typography>
-                <input
-                  type="text"
-                  placeholder="Buscar por usuario..."
-                  value={filters.usuarioPerfilador}
-                  onChange={(e) => setFilters(prev => ({ ...prev, usuarioPerfilador: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-            </div>
-
-            {/* Botones de acción */}
-            <div className="flex gap-3 mt-6 pt-4 border-t">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setFilters({
-                    confianza: 'todos',
-                    fechaDesde: '',
-                    fechaHasta: '',
-                    usuarioPerfilador: ''
-                  });
-                }}
-                className="flex-1"
-              >
-                Limpiar Filtros
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => setShowFilterDrawer(false)}
-                className="flex-1"
-              >
-                Aplicar Filtros
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Drawer de filtros avanzados */}
+      <FilterDrawer
+        isOpen={showFilterDrawer}
+        onClose={() => setShowFilterDrawer(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        type="perfilamiento"
+        options={{
+          usuarios: usuarios || []
+        }}
+      />
     </Card>
   );
 };

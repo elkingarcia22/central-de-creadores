@@ -110,6 +110,9 @@ export default function DetalleParticipante() {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
   
+  // Estado para usuarios (para filtros de perfilamiento)
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  
   // Estados para búsqueda y filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
@@ -129,6 +132,7 @@ export default function DetalleParticipante() {
       cargarInvestigaciones();
       cargarDolores();
       cargarComentarios();
+      cargarUsuarios();
     }
   }, [id]);
 
@@ -158,6 +162,20 @@ export default function DetalleParticipante() {
       router.push('/participantes');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cargarUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        const usuariosData = data?.usuarios || [];
+        setUsuarios(usuariosData);
+        console.log('✅ Usuarios cargados para filtros de perfilamiento:', usuariosData.length);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
     }
   };
 
@@ -1145,6 +1163,7 @@ export default function DetalleParticipante() {
                   <PerfilamientosTab
                     participanteId={id as string}
                     participanteNombre={participante?.nombre || ''}
+                    usuarios={usuarios}
                   />
                 )
               }

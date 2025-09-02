@@ -155,14 +155,24 @@ export interface FilterValuesDolores {
   fecha_creacion_hasta?: string;
 }
 
+// Interface específica para filtros de perfilamientos
+export interface FilterValuesPerfilamiento {
+  busqueda?: string;
+  categoria?: string | 'todos';
+  confianza?: string | 'todos';
+  fecha_desde?: string;
+  fecha_hasta?: string;
+  usuario_perfilador?: string | 'todos';
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento';
   participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
@@ -243,6 +253,15 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         fecha_creacion_desde: '',
         fecha_creacion_hasta: ''
       } as FilterValuesDolores);
+    } else if (type === 'perfilamiento') {
+      onFiltersChange({
+        busqueda: '',
+        categoria: 'todos',
+        confianza: 'todos',
+        fecha_desde: '',
+        fecha_hasta: '',
+        usuario_perfilador: 'todos'
+      } as FilterValuesPerfilamiento);
     } else {
       onFiltersChange({
         estados: [],
@@ -323,6 +342,13 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (dolFilters.categoria && dolFilters.categoria !== 'todos') count++;
       if (dolFilters.fecha_creacion_desde) count++;
       if (dolFilters.fecha_creacion_hasta) count++;
+    } else if (type === 'perfilamiento') {
+      const perfFilters = filters as FilterValuesPerfilamiento;
+      if (perfFilters.categoria && perfFilters.categoria !== 'todos') count++;
+      if (perfFilters.confianza && perfFilters.confianza !== 'todos') count++;
+      if (perfFilters.fecha_desde) count++;
+      if (perfFilters.fecha_hasta) count++;
+      if (perfFilters.usuario_perfilador && perfFilters.usuario_perfilador !== 'todos') count++;
     } else {
       const recFilters = filters as FilterValuesReclutamiento;
       if (recFilters.estados.length > 0) count++;
@@ -1007,6 +1033,80 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                       onChange={(e) => handleFilterChange('fecha_creacion_hasta', e.target.value)}
                     />
                   </div>
+                </div>
+              </>
+            ) : type === 'perfilamiento' ? (
+              // Filtros específicos para perfilamientos
+              <>
+                {/* Categoría */}
+                <div>
+                  <FilterLabel>Categoría</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar categoría..."
+                    options={[
+                      { value: 'todos', label: 'Todas las categorías' },
+                      { value: 'comunicacion', label: 'Estilo de Comunicación' },
+                      { value: 'decisiones', label: 'Toma de Decisiones' },
+                      { value: 'proveedores', label: 'Relación con Proveedores' },
+                      { value: 'cultura', label: 'Cultura Organizacional' },
+                      { value: 'comportamiento', label: 'Comportamiento en la Relación' },
+                      { value: 'motivaciones', label: 'Motivaciones y Drivers' }
+                    ]}
+                    value={(filters as FilterValuesPerfilamiento).categoria || 'todos'}
+                    onChange={(value) => handleFilterChange('categoria', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Confianza */}
+                <div>
+                  <FilterLabel>Nivel de Confianza</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar confianza..."
+                    options={[
+                      { value: 'todos', label: 'Todos los niveles' },
+                      { value: '1', label: 'Muy baja' },
+                      { value: '2', label: 'Baja' },
+                      { value: '3', label: 'Media' },
+                      { value: '4', label: 'Alta' },
+                      { value: '5', label: 'Muy alta' }
+                    ]}
+                    value={(filters as FilterValuesPerfilamiento).confianza || 'todos'}
+                    onChange={(value) => handleFilterChange('confianza', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Fecha Desde */}
+                <div>
+                  <FilterLabel>Fecha Desde</FilterLabel>
+                  <DatePicker
+                    placeholder="Seleccionar fecha..."
+                    value={(filters as FilterValuesPerfilamiento).fecha_desde || ''}
+                    onChange={(e) => handleFilterChange('fecha_desde', e.target.value)}
+                  />
+                </div>
+
+                {/* Fecha Hasta */}
+                <div>
+                  <FilterLabel>Fecha Hasta</FilterLabel>
+                  <DatePicker
+                    placeholder="Seleccionar fecha..."
+                    value={(filters as FilterValuesPerfilamiento).fecha_hasta || ''}
+                    onChange={(e) => handleFilterChange('fecha_hasta', e.target.value)}
+                  />
+                </div>
+
+                {/* Usuario Perfilador */}
+                <div>
+                  <FilterLabel>Usuario Perfilador</FilterLabel>
+                  <UserSelect
+                    value={(filters as FilterValuesPerfilamiento).usuario_perfilador || 'todos'}
+                    onChange={(value) => handleFilterChange('usuario_perfilador', value)}
+                    users={options.usuarios || []}
+                    placeholder="Seleccionar usuario..."
+                    fullWidth
+                  />
                 </div>
               </>
             ) : (
