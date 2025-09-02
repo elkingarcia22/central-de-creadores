@@ -600,6 +600,31 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
         }}
         size="lg"
         showCloseButton={false}
+        footer={
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowModalVerDetalle(false);
+                setPerfilamientoParaVer(null);
+              }}
+              className="flex-1"
+            >
+              Cerrar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setShowModalVerDetalle(false);
+                setPerfilamientoParaVer(null);
+                handleEditarPerfilamiento(perfilamientoParaVer);
+              }}
+              className="flex-1"
+            >
+              Editar Perfilamiento
+            </Button>
+          </div>
+        }
       >
         {perfilamientoParaVer && (
           <div className="space-y-6">
@@ -621,8 +646,8 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
               <div className="space-y-4">
                 <div>
                   <FilterLabel>Observaciones</FilterLabel>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-                    <Typography variant="body2">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
+                    <Typography variant="body2" className="whitespace-pre-wrap break-words">
                       {perfilamientoParaVer.observaciones || 'Sin observaciones'}
                     </Typography>
                   </div>
@@ -630,8 +655,8 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
 
                 <div>
                   <FilterLabel>Contexto de Interacción</FilterLabel>
-                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-                    <Typography variant="body2">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg min-h-[60px]">
+                    <Typography variant="body2" className="whitespace-pre-wrap break-words">
                       {perfilamientoParaVer.contexto_interaccion || 'Sin contexto especificado'}
                     </Typography>
                   </div>
@@ -691,31 +716,6 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
                   </Typography>
                 </div>
               </div>
-            </div>
-
-            {/* Footer con acciones */}
-            <div className="border-t pt-4 flex gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setShowModalVerDetalle(false);
-                  setPerfilamientoParaVer(null);
-                }}
-                className="flex-1"
-              >
-                Cerrar
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowModalVerDetalle(false);
-                  setPerfilamientoParaVer(null);
-                  handleEditarPerfilamiento(perfilamientoParaVer);
-                }}
-                className="flex-1"
-              >
-                Editar Perfilamiento
-              </Button>
             </div>
           </div>
         )}
