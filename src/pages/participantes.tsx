@@ -1054,16 +1054,16 @@ export default function ParticipantesPage() {
               }}
             />
             
-            {/* Dropdown para tipos de participantes */}
+            {/* Lista de tipos de participantes */}
             {showDropdown && (
-              <div className="absolute right-0 top-0 mt-20 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg z-50 shadow-lg">
-                <div className="py-1">
+              <Card className="absolute right-0 top-0 mt-20 w-80 z-50">
+                <div className="p-2 space-y-1">
                   <button
                     onClick={() => {
                       handleCrearParticipanteExterno();
                       setShowDropdown(false);
                     }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
                   >
                     <BuildingIcon className="w-5 h-5 text-primary" />
                     <div>
@@ -1077,7 +1077,7 @@ export default function ParticipantesPage() {
                       handleCrearParticipanteInterno();
                       setShowDropdown(false);
                     }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
                   >
                     <UsersIcon className="w-5 h-5 text-primary" />
                     <div>
@@ -1091,7 +1091,7 @@ export default function ParticipantesPage() {
                       handleCrearParticipanteFriendFamily();
                       setShowDropdown(false);
                     }}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
                   >
                     <UserIcon className="w-5 h-5 text-primary" />
                     <div>
@@ -1100,7 +1100,7 @@ export default function ParticipantesPage() {
                     </div>
                   </button>
                 </div>
-              </div>
+              </Card>
             )}
           </div>
 
