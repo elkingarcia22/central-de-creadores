@@ -1222,9 +1222,12 @@ export default function DetalleParticipante() {
         loading={false}
         readOnly={true} // Modo solo lectura
         onEdit={() => {
+          console.log('🔍 onEdit llamado desde modal de ver dolor');
+          console.log('🔍 dolorSeleccionado antes de cambiar:', dolorSeleccionado);
           // Cerrar modal de ver y abrir modal de editar
           setShowVerDolorModal(false);
           setShowEditarDolorModal(true);
+          console.log('🔍 showEditarDolorModal establecido a true');
         }}
       />
 
@@ -1242,6 +1245,7 @@ export default function DetalleParticipante() {
         onSave={handleActualizarDolor}
         loading={false}
         readOnly={false} // Explícitamente modo edición
+        key={`editar-${dolorSeleccionado?.id}-${showEditarDolorModal}`} // Forzar re-render cuando cambie el dolor
       />
 
       {/* Modal de confirmación para eliminar dolor */}
