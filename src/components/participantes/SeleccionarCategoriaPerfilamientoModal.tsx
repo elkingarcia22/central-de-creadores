@@ -113,10 +113,8 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
         </div>
 
         {/* Descripción */}
-        <div className="text-center space-y-2">
-          <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-            ¿Qué aspecto quieres perfilar?
-          </Typography>
+        <div className="text-center space-y-3">
+          <ContainerTitle title="¿Qué aspecto quieres perfilar?" />
           <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
             Selecciona la categoría que mejor describa el comportamiento o característica que observaste
           </Typography>
@@ -135,7 +133,7 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
                   {categoria.icono}
                 </div>
                 <div className="flex-1 space-y-1">
-                  <Typography variant="h6" weight="semibold" className="text-gray-900 dark:text-gray-100">
+                  <Typography variant="h6" weight="semibold" className="text-gray-700 dark:text-gray-200">
                     {categoria.nombre}
                   </Typography>
                   <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
