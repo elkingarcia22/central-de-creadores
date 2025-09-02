@@ -2,7 +2,7 @@
 // TAB DE PERFILAMIENTOS DE PARTICIPANTES
 // =====================================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Card from '../ui/Card';
 import { Button } from '../ui/Button';
 import Input from '../ui/Input';
@@ -10,6 +10,7 @@ import Typography from '../ui/Typography';
 import Chip from '../ui/Chip';
 import { EmptyState } from '../ui/EmptyState';
 import DataTable from '../ui/DataTable';
+import { Subtitle } from '../ui/Subtitle';
 import {
   MessageIcon,
   PlusIcon,
@@ -47,6 +48,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   const [showCategoriaModal, setShowCategoriaModal] = useState(false);
   const [showCrearModal, setShowCrearModal] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // Definir columnas para la tabla
   const columns = [
@@ -170,6 +172,36 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
     cargarPerfilamientos();
   }, [participanteId]);
 
+  // Efecto para cerrar la búsqueda con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchExpanded) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    if (isSearchExpanded) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isSearchExpanded]);
+
+  // Callbacks para manejar el estado del buscador
+  const handleExpandSearch = useCallback(() => {
+    setIsSearchExpanded(true);
+  }, []);
+
+  const handleCollapseSearch = useCallback(() => {
+    setIsSearchExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
   // Filtrar perfilamientos
   const perfilamientosFiltrados = perfilamientos.filter(perfilamiento => {
     const matchesSearch = searchTerm === '' || 
@@ -244,61 +276,98 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <Card variant="elevated" padding="lg" className="space-y-6">
+      {/* Header del contenedor con iconos integrados */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <InfoIcon className="w-5 h-5 text-gray-500" />
-            <Typography variant="h3" weight="semibold">
-              Perfilamiento del Participante
-            </Typography>
-          </div>
-          <Chip variant="outline" size="sm">
-            {perfilamientos.length} perfilamiento{perfilamientos.length !== 1 ? 's' : ''}
-          </Chip>
+        <div className="flex items-center gap-3">
+          <Subtitle>
+            Perfilamiento del Participante
+          </Subtitle>
+          <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+            {perfilamientosFiltrados.length} de {perfilamientos.length}
+          </span>
         </div>
         
-        <Button
-          variant="primary"
-          onClick={() => setShowCategoriaModal(true)}
-          icon={<PlusIcon className="w-4 h-4" />}
-        >
-          Crear Perfilamiento
-        </Button>
+        {/* Iconos de búsqueda y filtro en la misma línea */}
+        <div className="flex items-center gap-2">
+          {/* Icono de búsqueda que se expande */}
+          <div className="relative">
+            {isSearchExpanded ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Buscar en perfilamientos..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="!w-[700px] pl-10 pr-10 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCollapseSearch}
+                  className="text-gray-500 hover:text-gray-700 border-0"
+                >
+                  ✕
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={handleExpandSearch}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                iconOnly
+                icon={<SearchIcon className="w-5 h-4" />}
+              />
+            )}
+          </div>
+          
+          {/* Icono de filtro */}
+          <Button
+            variant={selectedCategoria ? "primary" : "ghost"}
+            onClick={() => setShowCategoriaModal(true)}
+            className="relative p-2 border-0"
+            iconOnly
+            icon={<FilterIcon />}
+          >
+            {selectedCategoria && (
+              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                1
+              </span>
+            )}
+          </Button>
+
+          {/* Botón de crear perfilamiento */}
+          <Button
+            variant="primary"
+            onClick={() => setShowCategoriaModal(true)}
+            icon={<PlusIcon className="w-4 h-4" />}
+          >
+            Crear Perfilamiento
+          </Button>
+        </div>
       </div>
 
-      {/* Filtros y búsqueda */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            placeholder="Buscar en perfilamientos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            icon={<SearchIcon className="w-4 h-4" />}
-            fullWidth
-          />
-        </div>
-        
-        <div className="flex gap-2">
+      {/* Filtros de categoría */}
+      <div className="flex gap-2">
+        <Button
+          variant={!selectedCategoria ? "primary" : "outline"}
+          onClick={() => setSelectedCategoria(null)}
+          size="sm"
+        >
+          Todas
+        </Button>
+        {(['comunicacion', 'decisiones', 'proveedores', 'cultura', 'comportamiento', 'motivaciones'] as CategoriaPerfilamiento[]).map((categoria) => (
           <Button
-            variant={selectedCategoria ? "primary" : "outline"}
-            onClick={() => setSelectedCategoria(null)}
+            key={categoria}
+            variant={selectedCategoria === categoria ? "primary" : "outline"}
+            onClick={() => setSelectedCategoria(categoria)}
             size="sm"
           >
-            Todas
+            {obtenerNombreCategoria(categoria).split(' ')[0]}
           </Button>
-          {(['comunicacion', 'decisiones', 'proveedores', 'cultura', 'comportamiento', 'motivaciones'] as CategoriaPerfilamiento[]).map((categoria) => (
-            <Button
-              key={categoria}
-              variant={selectedCategoria === categoria ? "primary" : "outline"}
-              onClick={() => setSelectedCategoria(categoria)}
-              size="sm"
-            >
-              {obtenerNombreCategoria(categoria).split(' ')[0]}
-            </Button>
-          ))}
-        </div>
+        ))}
       </div>
 
       {/* Lista de perfilamientos */}
