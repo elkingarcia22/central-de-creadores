@@ -1048,15 +1048,25 @@ export default function ParticipantesPage() {
               color="purple"
               primaryAction={{
                 label: "Nuevo Participante",
-                onClick: () => setShowDropdown(!showDropdown),
+                onClick: () => {
+                  console.log('🔍 Click en Nuevo Participante');
+                  console.log('🔍 showDropdown antes:', showDropdown);
+                  setShowDropdown(!showDropdown);
+                  console.log('🔍 showDropdown después:', !showDropdown);
+                },
                 variant: "primary",
                 icon: <PlusIcon className="w-4 h-4" />
               }}
             />
             
             {/* Lista de tipos de participantes */}
+            {/* Debug: Estado del dropdown */}
+            <div className="absolute right-0 top-0 mt-20 text-xs text-red-500 bg-yellow-100 p-2 rounded">
+              showDropdown: {showDropdown ? 'true' : 'false'}
+            </div>
+            
             {showDropdown && (
-              <Card className="absolute right-0 top-0 mt-20 w-80 z-50">
+              <Card className="absolute right-0 top-0 mt-32 w-80 z-50">
                 <div className="p-2 space-y-1">
                   <button
                     onClick={() => {
