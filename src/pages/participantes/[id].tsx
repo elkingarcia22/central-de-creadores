@@ -19,6 +19,7 @@ import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
+import { ComentariosTab } from '../../components/participantes/ComentariosTab';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -1139,38 +1140,12 @@ export default function DetalleParticipante() {
               },
               {
                 id: 'comentarios',
-                label: 'Comentarios',
+                label: 'Comentarios de Perfil',
                 content: (
-                  <Card className="p-6">
-                    
-                    {comentarios.length > 0 ? (
-                      <>
-                        <div className="mb-4">
-                          <Typography variant="body2" color="secondary">
-                            {comentarios.length} comentario{comentarios.length !== 1 ? 's' : ''} registrado{comentarios.length !== 1 ? 's' : ''}
-                          </Typography>
-                        </div>
-                        <DataTable
-                          data={comentarios}
-                          columns={columnsComentarios}
-                          loading={false}
-                          searchable={false}
-                          filterable={false}
-                          selectable={false}
-                          emptyMessage="No se encontraron comentarios"
-                          rowKey="id"
-                        />
-                      </>
-                    ) : (
-                      <EmptyState
-                        icon={<MessageIcon className="w-8 h-8" />}
-                        title="Sin comentarios"
-                        description="Este participante no tiene comentarios registrados."
-                        actionText="Crear Primer Comentario"
-                        onAction={() => setShowCrearComentarioModal(true)}
-                      />
-                    )}
-                  </Card>
+                  <ComentariosTab
+                    participanteId={id as string}
+                    participanteNombre={participante?.nombre || ''}
+                  />
                 )
               }
             ]}
