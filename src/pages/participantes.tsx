@@ -26,6 +26,7 @@ import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModa
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { DolorSideModal } from '../components/ui';
 import { SeleccionarCategoriaPerfilamientoModal } from '../components/participantes/SeleccionarCategoriaPerfilamientoModal';
+import { CrearPerfilamientoModal } from '../components/participantes/CrearPerfilamientoModal';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
@@ -88,11 +89,13 @@ export default function ParticipantesPage() {
   const [showModalErrorEliminar, setShowModalErrorEliminar] = useState(false);
   const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
   const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
+  const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<any>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<any>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
   const [participanteParaPerfilamiento, setParticipanteParaPerfilamiento] = useState<any>(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any>(null);
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   
@@ -1388,14 +1391,33 @@ export default function ParticipantesPage() {
             participanteId={participanteParaPerfilamiento?.id || ''}
             participanteNombre={participanteParaPerfilamiento?.nombre || ''}
             onCategoriaSeleccionada={(categoria) => {
-              // Aquí podrías abrir el modal de crear perfilamiento específico
-              // Por ahora solo cerramos el modal de categoría
+              // Guardar la categoría seleccionada y abrir modal de creación
+              setCategoriaSeleccionada(categoria);
               setShowModalPerfilamiento(false);
-              setParticipanteParaPerfilamiento(null);
-              // Opcional: mostrar mensaje de éxito
-              showSuccess('Perfilamiento iniciado correctamente');
+              setShowModalCrearPerfilamiento(true);
             }}
           />
+
+          {/* Modal de crear perfilamiento específico */}
+          {categoriaSeleccionada && (
+            <CrearPerfilamientoModal
+              isOpen={showModalCrearPerfilamiento}
+              onClose={() => {
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setParticipanteParaPerfilamiento(null);
+              }}
+              participanteId={participanteParaPerfilamiento?.id || ''}
+              participanteNombre={participanteParaPerfilamiento?.nombre || ''}
+              categoria={categoriaSeleccionada}
+              onSuccess={() => {
+                setShowModalCrearPerfilamiento(false);
+                setCategoriaSeleccionada(null);
+                setParticipanteParaPerfilamiento(null);
+                showSuccess('Perfilamiento creado exitosamente');
+              }}
+            />
+          )}
         </div>
       </div>
     </Layout>
