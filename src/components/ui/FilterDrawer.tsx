@@ -112,6 +112,10 @@ export interface FilterOptions {
   // Campos específicos para dolores
   severidades?: Array<{ value: string; label: string }>;
   categorias?: Array<{ value: string; label: string }>;
+  // Campos específicos para participaciones en investigaciones
+  estados_agendamiento?: Array<{ value: string; label: string }>;
+  tipos_investigacion?: Array<{ value: string; label: string }>;
+  responsables_participaciones?: Array<{ value: string; label: string }>;
 }
 
 // Interface específica para filtros de participantes
@@ -165,14 +169,26 @@ export interface FilterValuesPerfilamiento {
   usuario_perfilador?: string | 'todos';
 }
 
+// Interface específica para filtros de participaciones en investigaciones
+export interface FilterValuesParticipaciones {
+  busqueda?: string;
+  estado_agendamiento?: string | 'todos';
+  tipo_investigacion?: string | 'todos';
+  responsable?: string | 'todos';
+  fecha_participacion_desde?: string;
+  fecha_participacion_hasta?: string;
+  duracion_sesion_min?: string;
+  duracion_sesion_max?: string;
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento' | 'participaciones';
   participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
@@ -1107,6 +1123,90 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     placeholder="Seleccionar usuario..."
                     fullWidth
                   />
+                </div>
+              </>
+            ) : type === 'participaciones' ? (
+              // Filtros específicos para participaciones en investigaciones
+              <>
+                {/* Estado de Agendamiento */}
+                <div>
+                  <FilterLabel>Estado de Agendamiento</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar estado..."
+                    options={[
+                      { value: 'todos', label: 'Todos los estados' },
+                      ...(options.estados_agendamiento || [])
+                    ]}
+                    value={(filters as FilterValuesParticipaciones).estado_agendamiento || 'todos'}
+                    onChange={(value) => handleFilterChange('estado_agendamiento', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Tipo de Investigación */}
+                <div>
+                  <FilterLabel>Tipo de Investigación</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar tipo..."
+                    options={[
+                      { value: 'todos', label: 'Todos los tipos' },
+                      ...(options.tipos_investigacion || [])
+                    ]}
+                    value={(filters as FilterValuesParticipaciones).tipo_investigacion || 'todos'}
+                    onChange={(value) => handleFilterChange('tipo_investigacion', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Responsable */}
+                <div>
+                  <FilterLabel>Responsable</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar responsable..."
+                    options={[
+                      { value: 'todos', label: 'Todos los responsables' },
+                      ...(options.responsables_participaciones || [])
+                    ]}
+                    value={(filters as FilterValuesParticipaciones).responsable || 'todos'}
+                    onChange={(value) => handleFilterChange('responsable', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Fecha de Participación */}
+                <div>
+                  <FilterLabel>Fecha de Participación</FilterLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    <DatePicker
+                      placeholder="Desde..."
+                      value={(filters as FilterValuesParticipaciones).fecha_participacion_desde || ''}
+                      onChange={(e) => handleFilterChange('fecha_participacion_desde', e.target.value)}
+                    />
+                    <DatePicker
+                      placeholder="Hasta..."
+                      value={(filters as FilterValuesParticipaciones).fecha_participacion_hasta || ''}
+                      onChange={(e) => handleFilterChange('fecha_participacion_hasta', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Duración de Sesión */}
+                <div>
+                  <FilterLabel>Duración de Sesión (minutos)</FilterLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Mínimo"
+                      value={(filters as FilterValuesParticipaciones).duracion_sesion_min || ''}
+                      onChange={(e) => handleFilterChange('duracion_sesion_min', e.target.value)}
+                      type="number"
+                    />
+                    <Input
+                      placeholder="Máximo"
+                      value={(filters as FilterValuesParticipaciones).duracion_sesion_max || ''}
+                      onChange={(e) => handleFilterChange('duracion_sesion_max', e.target.value)}
+                      type="number"
+                    />
+                  </div>
                 </div>
               </>
             ) : (

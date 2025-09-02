@@ -20,7 +20,7 @@ import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
-import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
+import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../components/ui/FilterDrawer';
 
 interface Participante {
   id: string;
@@ -576,7 +576,7 @@ export default function DetalleParticipante() {
     
     // Calcular tiempo total de participación usando duracion_sesion
     const tiempoTotalHoras = Math.round(
-      investigaciones.reduce((total, inv) => total + (inv.duracion_sesion || 60), 0) / 60
+      investigaciones.reduce((total, inv) => total + (Number(inv.duracion_sesion) || 60), 0) / 60
     );
     
     return (
@@ -1240,7 +1240,7 @@ export default function DetalleParticipante() {
         onClose={() => {
           console.log('🔍 Cerrando modal de edición de dolor');
           setShowEditarDolorModal(false);
-          setDolorSeleccionado(null);
+          // NO limpiar dolorSeleccionado aquí para mantener los datos
         }}
         participanteId={id as string}
         participanteNombre={participante?.nombre || ''}
