@@ -25,6 +25,7 @@ import EditarParticipanteModal from '../components/ui/EditarParticipanteModal';
 import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModal';
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { DolorSideModal } from '../components/ui';
+import { SeleccionarCategoriaPerfilamientoModal } from '../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
@@ -86,10 +87,12 @@ export default function ParticipantesPage() {
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [showModalErrorEliminar, setShowModalErrorEliminar] = useState(false);
   const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
+  const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<any>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<any>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
+  const [participanteParaPerfilamiento, setParticipanteParaPerfilamiento] = useState<any>(null);
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   
@@ -602,8 +605,9 @@ export default function ParticipantesPage() {
   };
 
   const handleCrearPerfilamiento = (participante: Participante) => {
-    // Redirigir al detalle del participante con el tab de perfilamiento activo
-    router.push(`/participantes/${participante.id}?tab=perfilamientos`);
+    // Abrir modal de perfilamiento directamente
+    setParticipanteParaPerfilamiento(participante);
+    setShowModalPerfilamiento(true);
   };
 
   // Funciones para manejar filtros
@@ -1372,6 +1376,25 @@ export default function ParticipantesPage() {
             participanteId={participanteParaCrearDolor?.id || ''}
             participanteNombre={participanteParaCrearDolor?.nombre || ''}
             onSave={handleDolorGuardado}
+          />
+
+          {/* Modal de perfilamiento */}
+          <SeleccionarCategoriaPerfilamientoModal
+            isOpen={showModalPerfilamiento}
+            onClose={() => {
+              setShowModalPerfilamiento(false);
+              setParticipanteParaPerfilamiento(null);
+            }}
+            participanteId={participanteParaPerfilamiento?.id || ''}
+            participanteNombre={participanteParaPerfilamiento?.nombre || ''}
+            onCategoriaSeleccionada={(categoria) => {
+              // Aquí podrías abrir el modal de crear perfilamiento específico
+              // Por ahora solo cerramos el modal de categoría
+              setShowModalPerfilamiento(false);
+              setParticipanteParaPerfilamiento(null);
+              // Opcional: mostrar mensaje de éxito
+              showSuccess('Perfilamiento iniciado correctamente');
+            }}
           />
         </div>
       </div>
