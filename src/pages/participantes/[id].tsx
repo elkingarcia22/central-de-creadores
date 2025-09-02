@@ -304,6 +304,33 @@ export default function DetalleParticipante() {
     setShowDeleteConfirmModal(true);
   };
 
+  const handleActualizarDolor = async (dolorData: any) => {
+    if (!dolorSeleccionado) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dolorData),
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor actualizado exitosamente');
+        setShowEditarDolorModal(false);
+        setDolorSeleccionado(null);
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al actualizar el dolor');
+      }
+    } catch (error) {
+      console.error('Error al actualizar dolor:', error);
+      showError('Error al actualizar el dolor');
+    }
+  };
+
   const confirmarEliminarDolor = async () => {
     if (!dolorParaEliminar) return;
     
@@ -354,33 +381,6 @@ export default function DetalleParticipante() {
     } catch (error) {
       console.error('❌ Error al cambiar estado del dolor:', error);
       showError('Error de conexión al cambiar el estado del dolor');
-    }
-  };
-
-  const handleActualizarDolor = async (dolorData: any) => {
-    if (!dolorSeleccionado) return;
-    
-    try {
-      const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dolorData),
-      });
-
-      if (response.ok) {
-        showSuccess('Dolor actualizado exitosamente');
-        setShowEditarDolorModal(false);
-        setDolorSeleccionado(null);
-        await cargarDolores();
-      } else {
-        const errorData = await response.json();
-        showError(errorData.error || 'Error al actualizar el dolor');
-      }
-    } catch (error) {
-      console.error('Error al actualizar dolor:', error);
-      showError('Error al actualizar el dolor');
     }
   };
 
