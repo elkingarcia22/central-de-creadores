@@ -7,7 +7,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, ProgressCard, Chip, PageHeader, InfoContainer, InfoItem, ParticipantCard } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, ProgressCard, Chip, PageHeader, InfoContainer, InfoItem, ParticipantCard, Subtitle } from '../../../components/ui';
 import EditarReclutamientoModal from '../../../components/ui/EditarReclutamientoModal';
 import EditarResponsableAgendamientoModal from '../../../components/ui/EditarResponsableAgendamientoModal';
 import AgregarParticipanteModal from '../../../components/ui/AgregarParticipanteModal';
@@ -1877,12 +1877,11 @@ const VerReclutamiento: NextPage = () => {
       return (
         <div className="space-y-6">
           {/* Header del Libreto */}
-          <PageHeader
-            title=""
-            subtitle="Libreto de la Investigación"
-            variant="compact"
-            color="blue"
-          />
+          <div className="flex items-center justify-between mb-6">
+            <Subtitle>
+              Libreto de la Investigación
+            </Subtitle>
+          </div>
 
           {/* Contenido del Libreto */}
           <div className="space-y-8">
