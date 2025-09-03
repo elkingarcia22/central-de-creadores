@@ -2090,11 +2090,11 @@ const VerReclutamiento: NextPage = () => {
     return (
       <div className="space-y-6">
         {/* Header con estadísticas */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <Typography variant="h3" weight="medium" className="mb-2">
+            <Subtitle>
               Participantes Reclutados
-            </Typography>
+            </Subtitle>
             <Typography variant="body2" color="secondary">
               {participantes.length} participante{participantes.length !== 1 ? 's' : ''} reclutado{participantes.length !== 1 ? 's' : ''}
             </Typography>
