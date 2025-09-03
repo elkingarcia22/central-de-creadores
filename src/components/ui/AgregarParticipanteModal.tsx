@@ -500,7 +500,9 @@ export default function AgregarParticipanteModal({
 
   console.log('🔍 DEBUG AgregarParticipanteModal - Renderizando modal');
   console.log('🔍 DEBUG - isOpen:', isOpen);
-  console.log('🔍 DEBUG - className del PageHeader:', 'mb-0 -mx-6 -mt-6');
+  console.log('🔍 DEBUG - SideModal props:', { isOpen, width: 'lg', showCloseButton: false });
+  console.log('🔍 DEBUG - Header className:', 'mb-0 -mx-6 -mt-6');
+  console.log('🔍 DEBUG - Header estructura:', 'div con -mx-6 -mt-6');
   
   const footer = (
     <div className="flex gap-3">
@@ -533,7 +535,11 @@ export default function AgregarParticipanteModal({
     >
       <div className="space-y-6">
         {/* Header personalizado sin PageHeader */}
-        <div className="mb-0 -mx-6 -mt-6">
+        <div 
+          className="mb-0 -mx-6 -mt-6"
+          style={{ border: '2px solid red' }}
+          data-debug="header-container"
+        >
           <div className="flex items-center justify-between w-full py-4">
             <div className="flex items-center">
               <Typography

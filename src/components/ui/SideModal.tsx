@@ -137,7 +137,12 @@ const SideModal: React.FC<SideModalProps> = ({
           )}
           
           {/* Body */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div 
+            className="flex-1 overflow-y-auto p-6"
+            data-debug="side-modal-body"
+            style={{ border: '2px solid blue' }}
+          >
+
             {children}
           </div>
           
