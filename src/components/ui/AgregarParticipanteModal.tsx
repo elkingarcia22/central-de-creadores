@@ -548,146 +548,151 @@ export default function AgregarParticipanteModal({
           </div>
         )}
         
-        {/* Responsable */}
-        <div>
-          <FilterLabel>Responsable del Agendamiento *</FilterLabel>
-          <UserSelectorWithAvatar
-            value={responsableId}
-            onChange={setResponsableId}
-            users={responsablesArray.map(u => ({
-              id: u.id,
-              full_name: u.full_name || '',
-              email: u.email || '',
-              avatar_url: u.avatar_url || ''
-            }))}
-            placeholder="Seleccionar responsable"
-            disabled={loading}
-            required
-          />
+        {/* Información del agendamiento */}
+        <div className="space-y-4">
+          <div>
+            <FilterLabel>Responsable del Agendamiento *</FilterLabel>
+            <UserSelectorWithAvatar
+              value={responsableId}
+              onChange={setResponsableId}
+              users={responsablesArray.map(u => ({
+                id: u.id,
+                full_name: u.full_name || '',
+                email: u.email || '',
+                avatar_url: u.avatar_url || ''
+              }))}
+              placeholder="Seleccionar responsable"
+              disabled={loading}
+              required
+            />
+          </div>
         </div>
 
-        {/* Fecha de sesión */}
-        <div>
-          <FilterLabel>Fecha de la Sesión *</FilterLabel>
-          <DatePicker
-            value={fechaSesion}
-            onChange={e => setFechaSesion(e.target.value)}
-            placeholder="Seleccionar fecha"
-            min={getMinDate()}
-            disabled={loading}
-            required
-            fullWidth
-          />
+        {/* Información de la sesión */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <FilterLabel>Fecha de la Sesión *</FilterLabel>
+              <DatePicker
+                value={fechaSesion}
+                onChange={e => setFechaSesion(e.target.value)}
+                placeholder="Seleccionar fecha"
+                min={getMinDate()}
+                disabled={loading}
+                required
+                fullWidth
+              />
+            </div>
+
+            <div>
+              <FilterLabel>Hora de la Sesión *</FilterLabel>
+              <TimePicker
+                value={horaSesion}
+                onChange={setHoraSesion}
+                placeholder="--:-- --"
+                disabled={loading}
+                format="12h"
+              />
+            </div>
+          </div>
+
+          <div>
+            <FilterLabel>Duración de la Sesión (minutos) *</FilterLabel>
+            <Input
+              type="number"
+              value={duracionSesion}
+              onChange={(e) => setDuracionSesion(e.target.value)}
+              placeholder="60"
+              min="15"
+              max="480"
+              disabled={loading}
+              required
+              fullWidth
+            />
+            <Typography variant="caption" color="secondary" className="mt-1 block">
+              Duración en minutos (mínimo 15, máximo 8 horas)
+            </Typography>
+          </div>
         </div>
 
-        {/* Hora de sesión */}
-        <div>
-          <FilterLabel>Hora de la Sesión *</FilterLabel>
-          <TimePicker
-            value={horaSesion}
-            onChange={setHoraSesion}
-            placeholder="--:-- --"
-            disabled={loading}
-            format="12h"
-          />
-        </div>
-
-        {/* Duración de la sesión */}
-        <div>
-          <FilterLabel>Duración de la Sesión (minutos) *</FilterLabel>
-          <Input
-            type="number"
-            value={duracionSesion}
-            onChange={(e) => setDuracionSesion(e.target.value)}
-            placeholder="60"
-            min="15"
-            max="480"
-            disabled={loading}
-            required
-            fullWidth
-          />
-          <Typography variant="caption" color="secondary" className="mt-1 block">
-            Duración en minutos (mínimo 15, máximo 8 horas)
-          </Typography>
-        </div>
-
-        {/* Tipo de participante */}
-        <div>
-          <FilterLabel>Tipo de Participante *</FilterLabel>
-          <Select
-            value={tipoParticipante}
-            onChange={(value) => {
-              const newTipo = value as 'externo' | 'interno' | 'friend_family';
-              setTipoParticipante(newTipo);
-              // Solo resetear si el participante actual no es del tipo seleccionado
-              const participanteActual = newTipo === 'externo' 
-                ? participantesExternos.find(p => p.id === participanteId)
-                : newTipo === 'interno'
-                ? participantesInternos.find(p => p.id === participanteId)
-                : participantesFriendFamily.find(p => p.id === participanteId);
-              if (!participanteActual) {
-                setParticipanteId('');
-              }
-            }}
-            options={[
-              { value: 'externo', label: 'Cliente Externo' },
-              { value: 'interno', label: 'Cliente Interno' },
-              { value: 'friend_family', label: 'Friend and Family' }
-            ]}
-            placeholder="Seleccionar tipo de participante"
-            disabled={loading}
-            fullWidth
-          />
-        </div>
-
-        {/* Participante */}
-        <div>
-          <FilterLabel>Participante *</FilterLabel>
-          <div className="space-y-3">
+        {/* Información del participante */}
+        <div className="space-y-4">
+          <div>
+            <FilterLabel>Tipo de Participante *</FilterLabel>
             <Select
-              value={participanteId}
-              onChange={v => setParticipanteId(String(v))}
-              placeholder={`Seleccionar participante ${tipoParticipante}`}
-              options={participantesDisponibles.map(p => ({ value: p.id, label: p.nombre }))}
+              value={tipoParticipante}
+              onChange={(value) => {
+                const newTipo = value as 'externo' | 'interno' | 'friend_family';
+                setTipoParticipante(newTipo);
+                // Solo resetear si el participante actual no es del tipo seleccionado
+                const participanteActual = newTipo === 'externo' 
+                  ? participantesExternos.find(p => p.id === participanteId)
+                  : newTipo === 'interno'
+                  ? participantesInternos.find(p => p.id === participanteId)
+                  : participantesFriendFamily.find(p => p.id === participanteId);
+                if (!participanteActual) {
+                  setParticipanteId('');
+                }
+              }}
+              options={[
+                { value: 'externo', label: 'Cliente Externo' },
+                { value: 'interno', label: 'Cliente Interno' },
+                { value: 'friend_family', label: 'Friend and Family' }
+              ]}
+              placeholder="Seleccionar tipo de participante"
               disabled={loading}
               fullWidth
             />
-            
-            {tipoParticipante === 'interno' && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setMostrarModalInterno(true)}
-                disabled={loading}
-                className="w-full"
-              >
-                + Crear Nuevo Participante Interno
-              </Button>
-            )}
+          </div>
 
-            {tipoParticipante === 'externo' && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setMostrarModalExterno(true)}
+          <div>
+            <FilterLabel>Participante *</FilterLabel>
+            <div className="space-y-3">
+              <Select
+                value={participanteId}
+                onChange={v => setParticipanteId(String(v))}
+                placeholder={`Seleccionar participante ${tipoParticipante}`}
+                options={participantesDisponibles.map(p => ({ value: p.id, label: p.nombre }))}
                 disabled={loading}
-                className="w-full"
-              >
-                + Crear Nuevo Participante Externo
-              </Button>
-            )}
+                fullWidth
+              />
+              
+              {tipoParticipante === 'interno' && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setMostrarModalInterno(true)}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  + Crear Nuevo Participante Interno
+                </Button>
+              )}
 
-            {tipoParticipante === 'friend_family' && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setMostrarModalFriendFamily(true)}
-                disabled={loading}
-                className="w-full"
-              >
-                + Crear Nuevo Participante Friend and Family
-              </Button>
-            )}
+              {tipoParticipante === 'externo' && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setMostrarModalExterno(true)}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  + Crear Nuevo Participante Externo
+                </Button>
+              )}
+
+              {tipoParticipante === 'friend_family' && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setMostrarModalFriendFamily(true)}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  + Crear Nuevo Participante Friend and Family
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
