@@ -14,8 +14,8 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
@@ -127,11 +127,6 @@ export default function VistaParticipacion() {
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   const [usuarios, setUsuarios] = useState<any[]>([]);
-  
-  // Estados para estadísticas de empresa
-  const [empresaData, setEmpresaData] = useState<any>(null);
-  const [loadingEstadisticas, setLoadingEstadisticas] = useState(false);
-  const [errorEstadisticas, setErrorEstadisticas] = useState<string | null>(null);
 
   // Estados para modales
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
@@ -305,12 +300,7 @@ export default function VistaParticipacion() {
   // Debug: Monitorear cambios en el estado de empresa
   useEffect(() => {
     console.log('Estado de empresa cambiado:', empresa);
-    
-    // Cargar estadísticas de empresa si es un participante externo
-    if (empresa && participante?.tipo === 'externo' && empresa.id) {
-      cargarEstadisticasEmpresa(empresa.id);
-    }
-  }, [empresa, participante?.tipo]);
+  }, [empresa]);
 
   // Cargar investigaciones
   const cargarInvestigaciones = async () => {
@@ -353,32 +343,6 @@ export default function VistaParticipacion() {
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
-    }
-  };
-
-  // Cargar estadísticas de empresa
-  const cargarEstadisticasEmpresa = async (empresaId: string) => {
-    setLoadingEstadisticas(true);
-    setErrorEstadisticas(null);
-
-    try {
-      const response = await fetch(`/api/empresas/${empresaId}/estadisticas`);
-
-      if (!response.ok) {
-        throw new Error('Error al cargar estadísticas');
-      }
-
-      const data = await response.json();
-
-      setEmpresaData({
-        ...empresa,
-        estadisticas: data.estadisticas,
-        participantes: data.participantes
-      });
-    } catch (err) {
-      setErrorEstadisticas(err instanceof Error ? err.message : 'Error desconocido');
-    } finally {
-      setLoadingEstadisticas(false);
     }
   };
 
@@ -1027,6 +991,114 @@ export default function VistaParticipacion() {
       </div>
     );
   };
+                {empresa.descripcion}
+              </Typography>
+            </div>
+          )}
+
+          {empresa.direccion && (
+            <div className="mt-4">
+              <Typography variant="subtitle2" weight="medium" className="mb-2">
+                Dirección
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                {empresa.direccion}
+              </Typography>
+            </div>
+          )}
+        </Card>
+
+        {/* Estadísticas de la empresa */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <BarChartIcon className="w-5 h-5 text-blue-600" />
+            <Typography variant="h5" weight="semibold">
+              Estadísticas de Participación
+            </Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-blue-600">
+                {investigaciones.length}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Investigaciones
+              </Typography>
+            </div>
+            
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-green-600">
+                {participante.total_participaciones}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Participaciones
+              </Typography>
+            </div>
+            
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-purple-600">
+                {empresa.fecha_creacion ? 
+                  new Date(empresa.fecha_creacion).getFullYear() : 
+                  'N/A'
+                }
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Año de Registro
+              </Typography>
+            </div>
+          </div>
+        </Card>
+
+        {/* Información de contacto */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <UsersIcon className="w-5 h-5 text-indigo-600" />
+            <Typography variant="h5" weight="semibold">
+              Información de Contacto
+            </Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <InfoItem 
+                label="Email Corporativo"
+                value={empresa.email || 'No especificado'}
+              />
+              <InfoItem 
+                label="Teléfono"
+                value={empresa.telefono || 'No especificado'}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <InfoItem 
+                label="Website"
+                value={
+                  empresa.website ? (
+                    <a 
+                      href={empresa.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Visitar sitio web
+                    </a>
+                  ) : (
+                    'No especificado'
+                  )
+                }
+              />
+              <InfoItem 
+                label="Fecha de Registro"
+                value={empresa.fecha_creacion ? formatearFecha(empresa.fecha_creacion) : 'No especificada'}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
 
 
 
@@ -1132,7 +1204,7 @@ export default function VistaParticipacion() {
                 </Typography>
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <ClockIconSolid className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </div>
             </div>
           </Card>
@@ -1577,246 +1649,10 @@ export default function VistaParticipacion() {
                )
              },
              {
-               id: 'empresa-informacion',
+               id: 'empresa',
                label: 'Información Empresa',
-               content: (
-                 <div className="space-y-6">
-                   {empresa && participante?.tipo === 'externo' ? (
-                     <>
-                       {/* Descripción */}
-                       {(empresaData?.descripcion || empresa.descripcion) && (
-                         <InfoContainer 
-                           title="Descripción"
-                           icon={<FileTextIcon className="w-4 h-4" />}
-                         >
-                           <InfoItem 
-                             label="Descripción" 
-                             value={empresaData?.descripcion || empresa.descripcion}
-                           />
-                         </InfoContainer>
-                       )}
-
-                       {/* Estadísticas principales */}
-                       {empresaData && empresaData.estadisticas && (
-                         <>
-                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                             {/* Total Participaciones */}
-                             <Card variant="elevated" padding="md">
-                               <div className="flex items-center justify-between">
-                                 <div>
-                                   <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                                     <AnimatedCounter
-                                       value={empresaData.estadisticas.totalParticipaciones || 0}
-                                       duration={2000}
-                                       className="text-gray-700 dark:text-gray-200"
-                                     />
-                                   </Typography>
-                                   <Typography variant="body2" color="secondary">
-                                     Total Participaciones
-                                   </Typography>
-                                 </div>
-                                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                                   <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                 </div>
-                               </div>
-                             </Card>
-
-                             {/* Total Participantes */}
-                             <Card variant="elevated" padding="md">
-                               <div className="flex items-center justify-between">
-                                 <div>
-                                   <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                                     <AnimatedCounter
-                                       value={empresaData.estadisticas.totalParticipantes || 0}
-                                       duration={2000}
-                                       className="text-gray-700 dark:text-gray-200"
-                                     />
-                                   </Typography>
-                                   <Typography variant="body2" color="secondary">
-                                     Total Participantes
-                                   </Typography>
-                                 </div>
-                                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                                   <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                 </div>
-                               </div>
-                             </Card>
-
-                             {/* Investigaciones Participadas */}
-                             <Card variant="elevated" padding="md">
-                               <div className="flex items-center justify-between">
-                                 <div>
-                                   <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                                     <AnimatedCounter
-                                       value={empresaData.estadisticas.investigacionesParticipadas || 0}
-                                       duration={2000}
-                                       className="text-gray-700 dark:text-gray-200"
-                                     />
-                                   </Typography>
-                                   <Typography variant="body2" color="secondary">
-                                     Investigaciones
-                                   </Typography>
-                                 </div>
-                                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                                   <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                 </div>
-                               </div>
-                             </Card>
-
-                             {/* Tiempo Total */}
-                             <Card variant="elevated" padding="md">
-                               <div className="flex items-center justify-between">
-                                 <div>
-                                   <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                                     <AnimatedCounter 
-                                       value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
-                                       duration={2000}
-                                       className="text-gray-700 dark:text-gray-200"
-                                       suffix="h"
-                                     />
-                                   </Typography>
-                                   <Typography variant="body2" color="secondary">
-                                     Tiempo Total
-                                   </Typography>
-                                 </div>
-                                 <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                                   <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                 </div>
-                               </div>
-                             </Card>
-                           </div>
-
-                           {/* Última participación y resumen del mes */}
-                           <InfoContainer 
-                             title="Resumen de Participación"
-                             icon={<UserIcon className="w-4 h-4" />}
-                           >
-                             {empresaData.estadisticas.fechaUltimaParticipacion && (
-                               <InfoItem 
-                                 label="Última Participación" 
-                                 value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
-                               />
-                             )}
-                             
-                             <InfoItem 
-                               label="Participaciones del Mes" 
-                               value={
-                                 (() => {
-                                   const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                                   const participacionesMesActual = empresaData.estadisticas.participacionesPorMes?.[mesActual] || 0;
-                                   const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                                   return `${participacionesMesActual} en ${nombreMes}`;
-                                 })()
-                               }
-                             />
-                           </InfoContainer>
-                         </>
-                       )}
-
-                       {/* Información básica */}
-                       <InfoContainer 
-                         title="Información Básica"
-                         icon={<BuildingIcon className="w-4 h-4" />}
-                       >
-                         <InfoItem 
-                           label="Nombre" 
-                           value={empresa.nombre}
-                         />
-                         {(empresaData?.estado_nombre || empresa.estado_nombre) && (
-                           <InfoItem 
-                             label="Estado" 
-                             value={
-                               <Chip 
-                                 variant={getChipVariant(empresaData?.estado_nombre || empresa.estado_nombre || '') as any}
-                                 size="sm"
-                               >
-                                 {empresaData?.estado_nombre || empresa.estado_nombre}
-                               </Chip>
-                             }
-                           />
-                         )}
-                         {(empresaData?.pais_nombre || empresa.pais) && (
-                           <InfoItem label="País" value={empresaData?.pais_nombre || empresa.pais} />
-                         )}
-                         {(empresaData?.industria_nombre || empresa.industria) && (
-                           <InfoItem label="Industria" value={empresaData?.industria_nombre || empresa.industria} />
-                         )}
-                         {(empresaData?.modalidad_nombre) && (
-                           <InfoItem label="Modalidad" value={empresaData.modalidad_nombre} />
-                         )}
-                         {(empresaData?.tamano_nombre || empresa.tamano) && (
-                           <InfoItem label="Tamaño" value={empresaData?.tamano_nombre || empresa.tamano} />
-                         )}
-                         {(empresaData?.relacion_nombre) && (
-                           <InfoItem 
-                             label="Relación" 
-                             value={
-                               <Chip 
-                                 variant={getChipVariant(empresaData.relacion_nombre) as any}
-                                 size="sm"
-                               >
-                                 {empresaData.relacion_nombre}
-                               </Chip>
-                             }
-                           />
-                         )}
-                         {(empresaData?.productos_nombres) && (
-                           <InfoItem 
-                             label="Productos" 
-                             value={empresaData.productos_nombres.join(', ')}
-                           />
-                         )}
-                         {(empresaData?.kam_nombre) && (
-                           <InfoItem 
-                             label="KAM Asignado" 
-                             value={
-                               <div className="flex items-center gap-2">
-                                 <SimpleAvatar 
-                                   fallbackText={empresaData.kam_nombre}
-                                   size="sm"
-                                 />
-                                 <span>{empresaData.kam_nombre}</span>
-                               </div>
-                             }
-                           />
-                         )}
-                         {empresa.ciudad && <InfoItem label="Ciudad" value={empresa.ciudad} />}
-                         {empresa.direccion && <InfoItem label="Dirección" value={empresa.direccion} />}
-                         {empresa.telefono && <InfoItem label="Teléfono" value={empresa.telefono} />}
-                         {empresa.email && <InfoItem label="Email" value={empresa.email} />}
-                         {empresa.website && <InfoItem label="Website" value={empresa.website} />}
-                       </InfoContainer>
-
-                       {/* Fechas */}
-                       <InfoContainer 
-                         title="Fechas"
-                         icon={<ClockIcon className="w-4 h-4" />}
-                       >
-                         {(empresaData?.created_at || empresa.fecha_creacion) && (
-                           <InfoItem 
-                             label="Fecha de Creación" 
-                             value={formatearFecha(empresaData?.created_at || empresa.fecha_creacion)}
-                           />
-                         )}
-                         {(empresaData?.updated_at || empresa.fecha_actualizacion) && (
-                           <InfoItem 
-                             label="Última Actualización" 
-                             value={formatearFecha(empresaData?.updated_at || empresa.fecha_actualizacion)}
-                           />
-                         )}
-                       </InfoContainer>
-                     </>
-                   ) : (
-                     <EmptyState
-                       icon={<BuildingIcon className="w-8 h-8" />}
-                       title="Información de Empresa no disponible"
-                       description="Este participante no está asociado a una empresa externa."
-                     />
-                   )}
-                 </div>
-               )
-             },
-
+               content: <EmpresaContent empresa={empresa} participante={participante} />
+             }
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}
