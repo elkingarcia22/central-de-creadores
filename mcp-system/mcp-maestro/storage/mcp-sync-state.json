@@ -1,12 +1,12 @@
 {
-  "last_sync": "2025-08-27T19:39:00.483Z",
+  "last_sync": "2025-09-03T19:18:52.738Z",
   "results": {
     "design-system": {
       "success": true,
       "mcp": "design-system",
       "data": {
         "components": {
-          "total_components": 149,
+          "total_components": 168,
           "components": [
             "BottomNav.tsx",
             "DashboardLayout.tsx",
@@ -30,19 +30,29 @@
             "MicroInteractionsSection.tsx",
             "SpacingSection.tsx",
             "TypographySection.tsx",
+            "DoloresUnifiedContainer.tsx",
             "EmpresaSideModal.tsx",
             "EmpresaStatsPanel.tsx",
             "EmpresaViewModal.tsx",
             "EmpresasTable.tsx",
+            "EmpresasUnifiedContainer.tsx",
             "index.tsx",
             "ActividadesTab.tsx",
             "InvestigacionCard.tsx",
             "InvestigacionFormNew.tsx",
+            "InvestigacionesUnifiedContainer.tsx",
             "SeguimientosSection.tsx",
             "TrazabilidadSection.tsx",
             "login-icons.tsx",
+            "CrearPerfilamientoModal.tsx",
+            "ParticipacionesUnifiedContainer.tsx",
+            "ParticipantesUnifiedContainer.tsx",
+            "PerfilamientosTab.tsx",
+            "SeleccionarCategoriaPerfilamientoModal.tsx",
+            "ReclutamientoUnifiedContainer.tsx",
             "PermisosModal.tsx",
             "RolModal.tsx",
+            "RolesUnifiedContainer.tsx",
             "Accordion.tsx",
             "ActionsMenu-backup.tsx",
             "ActionsMenu.tsx",
@@ -59,6 +69,7 @@
             "Checkbox.tsx",
             "Chip-backup.tsx",
             "Chip.tsx",
+            "CompanyParticipantCard.tsx",
             "ConfirmModal.tsx",
             "ConfirmarEliminacionModal.tsx",
             "ContainerTitle.tsx",
@@ -73,6 +84,8 @@
             "DepartamentoSelect.tsx",
             "DepartamentoSelector.tsx",
             "Divider.tsx",
+            "DolorModal.tsx",
+            "DolorSideModal.tsx",
             "DonutChart.tsx",
             "DragDropZone.tsx",
             "EditableChip.tsx",
@@ -86,6 +99,7 @@
             "FilterLabel.tsx",
             "FormContainer.tsx",
             "FormItem.tsx",
+            "FullScreenSidePanel.tsx",
             "GroupedActions.tsx",
             "InfoContainer.tsx",
             "InfoItem.tsx",
@@ -100,6 +114,7 @@
             "LineChart.tsx",
             "LinkModal.tsx",
             "List.tsx",
+            "ListaDolores.tsx",
             "MetricCard.tsx",
             "MobileNavigation.tsx",
             "Modal.tsx",
@@ -109,6 +124,7 @@
             "PageHeader.tsx",
             "ParticipantCard.tsx",
             "ProgressBar.tsx",
+            "ProgressCard.tsx",
             "RadioButton.tsx",
             "RolSelector-backup.tsx",
             "RolSelector.tsx",
@@ -136,6 +152,7 @@
             "Subtitle.tsx",
             "Switch.tsx",
             "Tabs.tsx",
+            "TestParticipantCard.tsx",
             "Textarea.tsx",
             "TimePicker.tsx",
             "Timeline.tsx",
@@ -150,20 +167,25 @@
             "UserSelect.tsx",
             "UserSelector.tsx",
             "UserSelectorWithAvatar.tsx",
+            "VistaParticipacionModal.tsx",
             "toast-icons.tsx",
             "PerfilPersonalModal.tsx",
             "UsuarioCreateModal.tsx",
             "UsuarioDeleteModal.tsx",
             "UsuarioEditModal.tsx",
             "UsuarioForm.tsx",
-            "UsuariosTable.tsx"
+            "UsuariosTable.tsx",
+            "UsuariosUnifiedContainer.tsx"
           ],
           "directories": [
             "auth",
             "design-system",
+            "dolores",
             "empresas",
             "icons",
             "investigaciones",
+            "participantes",
+            "reclutamiento",
             "roles",
             "ui",
             "usuarios"
@@ -191,25 +213,25 @@
           ]
         }
       },
-      "timestamp": "2025-08-27T19:38:46.804Z"
+      "timestamp": "2025-09-03T19:18:42.819Z"
     },
     "code-structure": {
       "success": true,
       "mcp": "code-structure",
       "data": {
         "structure": {
-          "total_files": 438,
-          "total_directories": 50,
+          "total_files": 473,
+          "total_directories": 55,
           "file_types": {
-            ".ts": 150,
-            ".tsx": 223,
+            ".ts": 161,
+            ".tsx": 244,
             ".swp": 1,
-            ".backup": 6,
+            ".backup": 8,
             ".backup2": 1,
             ".backup3": 1,
             ".backup4": 1,
             ".backup5": 1,
-            ".md": 24,
+            ".md": 25,
             ".json": 5,
             ".mdx": 1,
             ".png": 10,
@@ -222,9 +244,12 @@
             "components",
             "auth",
             "design-system",
+            "dolores",
             "empresas",
             "icons",
             "investigaciones",
+            "participantes",
+            "reclutamiento",
             "roles",
             "ui",
             "usuarios",
@@ -246,6 +271,7 @@
             "[id]",
             "participantes",
             "[id]",
+            "dolores",
             "reclutamientos",
             "test-libreto",
             "test-libreto-simple",
@@ -259,6 +285,7 @@
             "editar",
             "libreto",
             "ver",
+            "participacion",
             "participantes",
             "reclutamiento",
             "ver",
@@ -271,16 +298,13 @@
           ]
         },
         "imports": {
-          "total_imports": 8,
+          "total_imports": 5,
           "unique_modules": [
             "react",
             "./supabase",
             "./supabase-seguimientos",
             "@supabase/supabase-js",
-            "./supabase-mock",
-            "next/router",
-            "../contexts/RolContext",
-            "../contexts/ThemeContext"
+            "./supabase-mock"
           ]
         },
         "dependencies": {
@@ -330,14 +354,14 @@
           "total_dependencies": 39
         }
       },
-      "timestamp": "2025-08-27T19:38:47.352Z"
+      "timestamp": "2025-09-03T19:18:42.960Z"
     },
     "testing-qa": {
       "success": true,
       "mcp": "testing-qa",
       "data": {
         "tests": {
-          "total_tests": 48,
+          "total_tests": 49,
           "test_files": [
             "index.spec.d.ts",
             "index.spec.js",
@@ -353,11 +377,12 @@
             "index.spec.js",
             "index.spec.js.map",
             "ajv.test.js",
-            "compatibility.test.js",
             "equal.test.js",
             "parse.test.js",
             "resolve.test.js",
+            "rfc-3986.test.js",
             "serialize.test.js",
+            "uri-js-compatibility.test.js",
             "uri-js.test.js",
             "util.test.js",
             "index.test.js",
@@ -390,7 +415,7 @@
           ],
           "test_types": {
             ".ts": 12,
-            ".js": 24,
+            ".js": 25,
             ".map": 12
           }
         },
@@ -403,7 +428,7 @@
           "linting_enabled": false
         }
       },
-      "timestamp": "2025-08-27T19:38:51.314Z"
+      "timestamp": "2025-09-03T19:18:45.446Z"
     },
     "supabase": {
       "success": true,
@@ -429,7 +454,7 @@
             "probar-internos-sin-created-at.sql",
             "refresh-schema.sql"
           ],
-          "total_files": 707
+          "total_files": 716
         },
         "tables": {
           "total_tables": 6,
@@ -512,7 +537,7 @@
           ]
         }
       },
-      "timestamp": "2025-08-27T19:39:00.483Z"
+      "timestamp": "2025-09-03T19:18:52.738Z"
     }
   },
   "summary": {

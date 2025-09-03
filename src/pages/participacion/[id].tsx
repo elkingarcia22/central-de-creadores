@@ -1030,6 +1030,371 @@ export default function VistaParticipacion() {
 
 
 
+  // Componente para el contenido del tab de Información de Participación
+  const ParticipacionContent: React.FC<{ 
+    participante: Participante; 
+    empresa?: Empresa; 
+    investigaciones: InvestigacionParticipante[];
+    participacionesPorMes: Record<string, number>;
+  }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
+    const totalInvestigaciones = investigaciones.length;
+    const investigacionesFinalizadas = investigaciones.filter(inv => 
+      inv.estado === 'finalizada' || inv.estado === 'completada'
+    ).length;
+    const investigacionesEnProgreso = investigaciones.filter(inv => 
+      inv.estado === 'en_progreso' || inv.estado === 'activa'
+    ).length;
+    const investigacionesPendientes = investigaciones.filter(inv => 
+      inv.estado === 'pendiente' || inv.estado === 'agendada'
+    ).length;
+    
+    const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
+      if (inv.duracion_sesion) {
+        const duracion = parseInt(inv.duracion_sesion);
+        return total + (isNaN(duracion) ? 0 : duracion);
+      }
+      return total;
+    }, 0) / 60; // Convertir minutos a horas
+
+    const participacionesPorMesArray = Object.entries(participacionesPorMes)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .slice(0, 6); // Últimos 6 meses
+
+    return (
+      <div className="space-y-6">
+        {/* Estadísticas principales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total de Investigaciones */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={totalInvestigaciones}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Total
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <FileTextIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones Finalizadas */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesFinalizadas}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Finalizadas
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <CheckCircleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones En Progreso */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesEnProgreso}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  En Progreso
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Investigaciones Pendientes */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesPendientes}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Pendientes
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <AlertTriangleIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Segunda fila de estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Tiempo Total Estimado */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter 
+                    value={tiempoTotalHoras} 
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                    suffix="h"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Tiempo Total
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Promedio por Investigación */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter 
+                    value={totalInvestigaciones > 0 ? (tiempoTotalHoras / totalInvestigaciones).toFixed(1) : 0} 
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                    suffix="h"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Promedio/Inv.
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+
+          {/* Última Participación */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  {(() => {
+                    if (investigaciones.length > 0) {
+                      const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                        new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                      );
+                      const ultimaFecha = new Date(investigacionesOrdenadas[0].fecha_participacion);
+                      const diasTranscurridos = Math.floor((Date.now() - ultimaFecha.getTime()) / (1000 * 60 * 60 * 24));
+                      return diasTranscurridos;
+                    }
+                    return '-';
+                  })()}
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Días desde última
+                </Typography>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <CalendarIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Resumen de Participación */}
+        <InfoContainer 
+          title="Resumen de Participación"
+          icon={<UserIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Última Participación" 
+            value={
+              (() => {
+                if (investigaciones.length > 0) {
+                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                  );
+                  return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
+                }
+                return participante.fecha_ultima_participacion ? 
+                  formatearFecha(participante.fecha_ultima_participacion) : 
+                  'Sin participaciones';
+              })()
+            }
+          />
+          <InfoItem 
+            label="Participaciones del Mes" 
+            value={
+              (() => {
+                const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                const participacionesMesActual = participacionesPorMes[mesActual] || 0;
+                const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                return `${participacionesMesActual} en ${nombreMes}`;
+              })()
+            }
+          />
+          <InfoItem 
+            label="Total de Participaciones" 
+            value={participante.total_participaciones || totalInvestigaciones}
+          />
+        </InfoContainer>
+
+        {/* Evolución de Participaciones por Mes */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <TrendingUpIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5" weight="semibold">
+              Evolución de Participaciones por Mes
+            </Typography>
+          </div>
+          
+          {participacionesPorMesArray.length > 0 ? (
+            <div className="space-y-3">
+              {participacionesPorMesArray.map(([mes, cantidad]) => {
+                const fecha = new Date(parseInt(mes.split('-')[0]), parseInt(mes.split('-')[1]) - 1);
+                const nombreMes = fecha.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                const esMesActual = mes === new Date().toISOString().slice(0, 7);
+                
+                return (
+                  <div key={mes} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${esMesActual ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                      <Typography variant="body1" weight="medium">
+                        {nombreMes}
+                      </Typography>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Typography variant="h6" weight="bold" className="text-primary">
+                        {cantidad}
+                      </Typography>
+                      <Typography variant="body2" color="secondary">
+                        participaciones
+                      </Typography>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <BarChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="body1" color="secondary">
+                No hay datos de participación por mes disponibles
+              </Typography>
+            </div>
+          )}
+        </Card>
+
+        {/* Tipos de Investigación */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <FileTextIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5" weight="semibold">
+              Tipos de Investigación
+            </Typography>
+          </div>
+          
+          {investigaciones.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(() => {
+                const tipos = investigaciones.reduce((acc, inv) => {
+                  acc[inv.tipo_investigacion] = (acc[inv.tipo_investigacion] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>);
+                
+                return Object.entries(tipos).map(([tipo, cantidad]) => (
+                  <div key={tipo} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <Typography variant="body1" weight="medium">
+                      {tipo}
+                    </Typography>
+                    <Badge variant="secondary" size="sm">
+                      {cantidad}
+                    </Badge>
+                  </div>
+                ));
+              })()}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <FileTextIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="body1" color="secondary">
+                No hay investigaciones registradas
+              </Typography>
+            </div>
+          )}
+        </Card>
+
+        {/* Estados de Investigación */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <BarChartIcon className="w-5 h-5 text-primary" />
+            <Typography variant="h5" weight="semibold">
+              Estados de Investigación
+            </Typography>
+          </div>
+          
+          {investigaciones.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(() => {
+                const estados = investigaciones.reduce((acc, inv) => {
+                  acc[inv.estado] = (acc[inv.estado] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>);
+                
+                return Object.entries(estados).map(([estado, cantidad]) => (
+                  <div key={estado} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Chip 
+                        variant={estado === 'finalizada' || estado === 'completada' ? 'success' : 
+                                estado === 'en_progreso' || estado === 'activa' ? 'primary' : 
+                                estado === 'pendiente' || estado === 'agendada' ? 'warning' : 'secondary'}
+                        size="sm"
+                      >
+                        {estado}
+                      </Chip>
+                    </div>
+                    <Badge variant="secondary" size="sm">
+                      {cantidad}
+                    </Badge>
+                  </div>
+                ));
+              })()}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <BarChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="body1" color="secondary">
+                No hay investigaciones registradas
+              </Typography>
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  };
+
   // Componente para el contenido del tab de Información
   const InformacionContent: React.FC<{ participante: Participante; empresa?: Empresa }> = ({ participante, empresa }) => {
     const totalInvestigaciones = investigaciones.length;
@@ -1467,11 +1832,16 @@ export default function VistaParticipacion() {
         {/* Tabs */}
         <Tabs
           tabs={[
-                         {
-               id: 'informacion',
-               label: 'Información de Participante',
-               content: <InformacionContent participante={participante} empresa={empresa} />
-             },
+            {
+              id: 'participacion',
+              label: 'Información de Participación',
+              content: <ParticipacionContent participante={participante} empresa={empresa} investigaciones={investigaciones} participacionesPorMes={participacionesPorMes} />
+            },
+            {
+              id: 'informacion',
+              label: 'Información de Participante',
+              content: <InformacionContent participante={participante} empresa={empresa} />
+            },
             
             {
               id: 'historial',
