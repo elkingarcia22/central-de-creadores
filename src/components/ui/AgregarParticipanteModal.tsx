@@ -534,34 +534,14 @@ export default function AgregarParticipanteModal({
       showCloseButton={false}
     >
       <div className="space-y-6">
-        {/* Header personalizado sin PageHeader */}
-        <div 
+        {/* Header usando PageHeader como en EmpresaSideModal */}
+        <PageHeader
+          title="Agregar Participante"
+          variant="title-only"
+          color="gray"
           className="mb-0 -mx-6 -mt-6"
-          style={{ border: '2px solid red' }}
-          data-debug="header-container"
-        >
-          <div className="flex items-center justify-between w-full py-4">
-            <div className="flex items-center">
-              <Typography
-                variant="h4"
-                color="default"
-                weight="semibold"
-                className="!text-gray-500 dark:!text-gray-400"
-              >
-                Agregar Participante
-              </Typography>
-            </div>
-            <button
-              onClick={onClose}
-              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div className="border-b border-border"></div>
-        </div>
+          onClose={onClose}
+        />
 
         <form onSubmit={handleSubmit} className="space-y-6">
         
