@@ -1037,25 +1037,6 @@ export default function VistaParticipacion() {
     investigaciones: InvestigacionParticipante[];
     participacionesPorMes: Record<string, number>;
   }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
-    const totalInvestigaciones = investigaciones.length;
-    const investigacionesFinalizadas = investigaciones.filter(inv => 
-      inv.estado === 'finalizada' || inv.estado === 'completada'
-    ).length;
-    const investigacionesEnProgreso = investigaciones.filter(inv => 
-      inv.estado === 'en_progreso' || inv.estado === 'activa'
-    ).length;
-    const investigacionesPendientes = investigaciones.filter(inv => 
-      inv.estado === 'pendiente' || inv.estado === 'agendada'
-    ).length;
-    
-    const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
-      if (inv.duracion_sesion) {
-        const duracion = parseInt(inv.duracion_sesion);
-        return total + (isNaN(duracion) ? 0 : duracion);
-      }
-      return total;
-    }, 0) / 60; // Convertir minutos a horas
-
     return (
       <div className="space-y-6">
         {/* Información de Participación */}
@@ -1064,74 +1045,38 @@ export default function VistaParticipacion() {
           icon={<UserIcon className="w-4 h-4" />}
         >
           <InfoItem 
-            label="Total de Investigaciones" 
-            value={totalInvestigaciones}
+            label="Investigación" 
+            value={investigaciones.length > 0 ? `${investigaciones.length} investigaciones` : 'Sin investigaciones'}
           />
           <InfoItem 
-            label="Investigaciones Finalizadas" 
-            value={investigacionesFinalizadas}
+            label="Responsable del Agendamiento" 
+            value={participante.responsable || 'No asignado'}
           />
           <InfoItem 
-            label="Investigaciones En Progreso" 
-            value={investigacionesEnProgreso}
-          />
-          <InfoItem 
-            label="Investigaciones Pendientes" 
-            value={investigacionesPendientes}
-          />
-          <InfoItem 
-            label="Tiempo Total Estimado" 
-            value={`${tiempoTotalHoras.toFixed(1)} horas`}
-          />
-          <InfoItem 
-            label="Promedio por Investigación" 
-            value={totalInvestigaciones > 0 ? `${(tiempoTotalHoras / totalInvestigaciones).toFixed(1)} horas` : '0 horas'}
-          />
-          <InfoItem 
-            label="Última Participación"
+            label="Fecha de la Sesión"
             value={
-              (() => {
-                if (investigaciones.length > 0) {
-                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
-                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
-                  );
-                  return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
-                }
-                return participante.fecha_ultima_participacion ? 
-                  formatearFecha(participante.fecha_ultima_participacion) : 
-                  'Sin participaciones';
-              })()
+              investigaciones.length > 0 ? 
+                formatearFecha(investigaciones[0].fecha_participacion) : 
+                'Sin sesiones programadas'
             }
           />
           <InfoItem 
-            label="Participaciones del Mes" 
+            label="Hora de la Sesión"
             value={
-              (() => {
-                const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                const participacionesMesActual = participacionesPorMes[mesActual] || 0;
-                const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                return `${participacionesMesActual} en ${nombreMes}`;
-              })()
+              investigaciones.length > 0 ? 
+                new Date(investigaciones[0].fecha_participacion).toLocaleTimeString('es-ES', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                }) : 
+                '--:--'
             }
           />
           <InfoItem 
-            label="Total de Participaciones"
-            value={Number(participante.total_participaciones) || totalInvestigaciones}
-          />
-          <InfoItem 
-            label="Días desde Última Participación"
+            label="Duración de la Sesión (minutos)"
             value={
-              (() => {
-                if (investigaciones.length > 0) {
-                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
-                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
-                  );
-                  const ultimaFecha = new Date(investigacionesOrdenadas[0].fecha_participacion);
-                  const diasTranscurridos = Math.floor((Date.now() - ultimaFecha.getTime()) / (1000 * 60 * 60 * 24));
-                  return `${diasTranscurridos} días`;
-                }
-                return 'Sin participaciones';
-              })()
+              investigaciones.length > 0 ? 
+                `${investigaciones[0].duracion_sesion || 60} minutos` : 
+                '60 minutos'
             }
           />
           <InfoItem 
@@ -1141,45 +1086,15 @@ export default function VistaParticipacion() {
                 variant={participante.tipo === 'externo' ? 'primary' : participante.tipo === 'interno' ? 'success' : 'warning'}
                 size="sm"
               >
-                {participante.tipo === 'externo' ? 'Externo' : 
+                {participante.tipo === 'externo' ? 'Cliente Externo' : 
                  participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
               </Chip>
             }
           />
           <InfoItem 
-            label="Estado del Participante"
-            value={
-              <Chip 
-                variant={getEstadoChipVariant(participante.estado_participante)}
-                size="sm"
-              >
-                {participante.estado_participante || 'Sin estado'}
-              </Chip>
-            }
+            label="Participante"
+            value={participante.nombre}
           />
-        </InfoContainer>
-
-        {/* Participaciones por Mes */}
-        <InfoContainer 
-          title="Participaciones por Mes"
-          icon={<TrendingUpIcon className="w-4 h-4" />}
-        >
-          {Object.entries(participacionesPorMes)
-            .sort(([a], [b]) => b.localeCompare(a))
-            .slice(0, 6)
-            .map(([mes, cantidad]) => {
-              const fecha = new Date(parseInt(mes.split('-')[0]), parseInt(mes.split('-')[1]) - 1);
-              const nombreMes = fecha.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-              const esMesActual = mes === new Date().toISOString().slice(0, 7);
-              
-              return (
-                <InfoItem 
-                  key={mes}
-                  label={nombreMes}
-                  value={`${cantidad} participaciones${esMesActual ? ' (Actual)' : ''}`}
-                />
-              );
-            })}
         </InfoContainer>
       </div>
     );
