@@ -1030,7 +1030,7 @@ export default function VistaParticipacion() {
 
 
 
-  // Componente para el contenido del tab de Información de Participación
+    // Componente para el contenido del tab de Información de Participación
   const ParticipacionContent: React.FC<{ 
     participante: Participante; 
     empresa?: Empresa; 
@@ -1058,9 +1058,9 @@ export default function VistaParticipacion() {
 
     return (
       <div className="space-y-6">
-        {/* Resumen de Participación */}
+        {/* Información de Participación */}
         <InfoContainer 
-          title="Resumen de Participación"
+          title="Información de Participación"
           icon={<UserIcon className="w-4 h-4" />}
         >
           <InfoItem 
@@ -1087,95 +1087,77 @@ export default function VistaParticipacion() {
             label="Promedio por Investigación" 
             value={totalInvestigaciones > 0 ? `${(tiempoTotalHoras / totalInvestigaciones).toFixed(1)} horas` : '0 horas'}
           />
+          <InfoItem 
+            label="Última Participación"
+            value={
+              (() => {
+                if (investigaciones.length > 0) {
+                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                  );
+                  return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
+                }
+                return participante.fecha_ultima_participacion ? 
+                  formatearFecha(participante.fecha_ultima_participacion) : 
+                  'Sin participaciones';
+              })()
+            }
+          />
+          <InfoItem 
+            label="Participaciones del Mes" 
+            value={
+              (() => {
+                const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                const participacionesMesActual = participacionesPorMes[mesActual] || 0;
+                const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                return `${participacionesMesActual} en ${nombreMes}`;
+              })()
+            }
+          />
+          <InfoItem 
+            label="Total de Participaciones"
+            value={Number(participante.total_participaciones) || totalInvestigaciones}
+          />
+          <InfoItem 
+            label="Días desde Última Participación"
+            value={
+              (() => {
+                if (investigaciones.length > 0) {
+                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                  );
+                  const ultimaFecha = new Date(investigacionesOrdenadas[0].fecha_participacion);
+                  const diasTranscurridos = Math.floor((Date.now() - ultimaFecha.getTime()) / (1000 * 60 * 60 * 24));
+                  return `${diasTranscurridos} días`;
+                }
+                return 'Sin participaciones';
+              })()
+            }
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={participante.tipo === 'externo' ? 'primary' : participante.tipo === 'interno' ? 'success' : 'warning'}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Estado del Participante"
+            value={
+              <Chip 
+                variant={getEstadoChipVariant(participante.estado_participante)}
+                size="sm"
+              >
+                {participante.estado_participante || 'Sin estado'}
+              </Chip>
+            }
+          />
         </InfoContainer>
-
-        {/* Información de Participación */}
-        <Card variant="elevated" padding="lg">
-          <div className="flex items-center gap-3 mb-4">
-            <FileTextIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5" weight="semibold">
-              Información de Participación
-            </Typography>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <InfoItem 
-                label="Última Participación"
-                value={
-                  (() => {
-                    if (investigaciones.length > 0) {
-                      const investigacionesOrdenadas = investigaciones.sort((a, b) => 
-                        new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
-                      );
-                      return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
-                    }
-                    return participante.fecha_ultima_participacion ? 
-                      formatearFecha(participante.fecha_ultima_participacion) : 
-                      'Sin participaciones';
-                  })()
-                }
-              />
-              <InfoItem 
-                label="Participaciones del Mes" 
-                value={
-                  (() => {
-                    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                    const participacionesMesActual = participacionesPorMes[mesActual] || 0;
-                    const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                    return `${participacionesMesActual} en ${nombreMes}`;
-                  })()
-                }
-              />
-              <InfoItem 
-                label="Total de Participaciones"
-                value={Number(participante.total_participaciones) || totalInvestigaciones}
-              />
-            </div>
-            
-            <div className="space-y-4">
-              <InfoItem 
-                label="Días desde Última Participación"
-                value={
-                  (() => {
-                    if (investigaciones.length > 0) {
-                      const investigacionesOrdenadas = investigaciones.sort((a, b) => 
-                        new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
-                      );
-                      const ultimaFecha = new Date(investigacionesOrdenadas[0].fecha_participacion);
-                      const diasTranscurridos = Math.floor((Date.now() - ultimaFecha.getTime()) / (1000 * 60 * 60 * 24));
-                      return `${diasTranscurridos} días`;
-                    }
-                    return 'Sin participaciones';
-                  })()
-                }
-              />
-              <InfoItem 
-                label="Tipo de Participante"
-                value={
-                  <Chip 
-                    variant={participante.tipo === 'externo' ? 'primary' : participante.tipo === 'interno' ? 'success' : 'warning'}
-                    size="sm"
-                  >
-                    {participante.tipo === 'externo' ? 'Externo' : 
-                     participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
-                  </Chip>
-                }
-              />
-              <InfoItem 
-                label="Estado del Participante"
-                value={
-                  <Chip 
-                    variant={getEstadoChipVariant(participante.estado_participante)}
-                    size="sm"
-                  >
-                    {participante.estado_participante || 'Sin estado'}
-                  </Chip>
-                }
-              />
-            </div>
-          </div>
-        </Card>
 
         {/* Participaciones por Mes */}
         <InfoContainer 
@@ -1191,11 +1173,11 @@ export default function VistaParticipacion() {
               const esMesActual = mes === new Date().toISOString().slice(0, 7);
               
               return (
-                                 <InfoItem 
-                   key={mes}
-                   label={nombreMes}
-                   value={`${cantidad} participaciones${esMesActual ? ' (Actual)' : ''}`}
-                 />
+                <InfoItem 
+                  key={mes}
+                  label={nombreMes}
+                  value={`${cantidad} participaciones${esMesActual ? ' (Actual)' : ''}`}
+                />
               );
             })}
         </InfoContainer>
