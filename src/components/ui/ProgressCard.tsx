@@ -95,7 +95,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
             variant="h4"
             weight="semibold"
             color="default"
-            className="text-gray-700 dark:text-gray-200"
+            className="text-gray-600 dark:text-gray-200"
           >
             {title}
           </Typography>
@@ -108,14 +108,14 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                 variant="body1"
                 weight="semibold"
                 color="default"
-                className="text-gray-700 dark:text-gray-200"
+                className="text-gray-600 dark:text-gray-200"
               >
                 {currentValue}/{maxValue}
               </Typography>
               <Typography
                 variant="body2"
                 color="secondary"
-                className="text-xs text-gray-500 dark:text-gray-400"
+                className="text-xs text-gray-400 dark:text-gray-400"
               >
                 {unit}
               </Typography>
@@ -127,14 +127,14 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                 variant="body1"
                 weight="semibold"
                 color="default"
-                className="text-gray-700 dark:text-gray-200"
+                className="text-gray-600 dark:text-gray-200"
               >
                 {calculatedPercentage}%
               </Typography>
               <Typography
                 variant="body2"
                 color="secondary"
-                className="text-xs text-gray-500 dark:text-gray-400"
+                className="text-xs text-gray-400 dark:text-gray-400"
               >
                 completado
               </Typography>
@@ -158,7 +158,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
               <Typography
                 variant="body2"
                 color="secondary"
-                className="text-gray-500 dark:text-gray-400"
+                className="text-gray-400 dark:text-gray-400"
               >
                 {objectiveText}
               </Typography>
@@ -168,7 +168,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
               <Typography
                 variant="body2"
                 color="secondary"
-                className="text-gray-500 dark:text-gray-400"
+                className="text-gray-400 dark:text-gray-400"
               >
                 {progressText}
               </Typography>
