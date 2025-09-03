@@ -262,17 +262,25 @@ export default function VistaParticipacion() {
   const buscarEmpresaPorNombre = async (empresaNombre: string) => {
     try {
       console.log('Buscando empresa por nombre:', empresaNombre);
-      const response = await fetch(`/api/empresas/buscar?nombre=${encodeURIComponent(empresaNombre)}`);
+      const response = await fetch('/api/empresas');
       if (response.ok) {
-        const data = await response.json();
-        if (data.empresa) {
-          console.log('Empresa encontrada por nombre:', data.empresa);
-          setEmpresa(data.empresa);
+        const empresas = await response.json();
+        console.log('Todas las empresas cargadas:', empresas);
+        
+        // Buscar empresa por nombre (ignorando mayúsculas/minúsculas)
+        const empresaEncontrada = empresas.find((empresa: any) => 
+          empresa.nombre && empresa.nombre.toLowerCase() === empresaNombre.toLowerCase()
+        );
+        
+        if (empresaEncontrada) {
+          console.log('Empresa encontrada por nombre:', empresaEncontrada);
+          setEmpresa(empresaEncontrada);
         } else {
           console.log('No se encontró empresa con el nombre:', empresaNombre);
+          console.log('Empresas disponibles:', empresas.map((e: any) => e.nombre));
         }
       } else {
-        console.error('Error buscando empresa por nombre:', response.status);
+        console.error('Error cargando empresas:', response.status);
       }
     } catch (error) {
       console.error('Error buscando empresa por nombre:', error);
