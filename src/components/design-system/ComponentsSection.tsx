@@ -20,6 +20,7 @@ import {
   Tooltip,
   DataTable,
   MetricCard,
+  ProgressCard,
   EmptyState,
   DonutChart,
   Modal,
@@ -221,6 +222,7 @@ const ComponentsSection: React.FC = () => {
         { id: "card", name: "Card" },
         { id: "data-table", name: "Data Table" },
         { id: "metric-card", name: "Metric Card" },
+        { id: "progress-card", name: "Progress Card" },
         { id: "empty-state", name: "Empty State" },
         { id: "list", name: "List" },
         { id: "counter", name: "Counter" },
@@ -3648,6 +3650,178 @@ const ComponentsSection: React.FC = () => {
                   change="-12%"
                 />
               </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderProgressCardComponent = () => {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Progress Card Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente Progress Card combina métricas numéricas con una barra de progreso visual para mostrar el avance de tareas, proyectos o procesos de manera clara y consistente.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Props disponibles:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">title</code>
+                <span>: título principal de la tarjeta</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">currentValue</code>
+                <span>: valor actual del progreso</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">maxValue</code>
+                <span>: valor máximo del progreso</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">unit</code>
+                <span>: unidad de medida (ej: "participantes")</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">percentage</code>
+                <span>: porcentaje opcional (se calcula automáticamente)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">variant</code>
+                <span>: primary, success, warning, error (automático si es primary)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">objectiveText</code>
+                <span>: texto del objetivo (ej: "Objetivo: 10 participantes")</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">progressText</code>
+                <span>: texto del progreso (ej: "Reclutados: 8 participantes")</span>
+              </Typography>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Ejemplos de Uso
+          </Typography>
+          <div className="space-y-6">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">Progreso de Reclutamiento</Typography>
+              <ProgressCard
+                title="Progreso del Reclutamiento"
+                currentValue={8}
+                maxValue={10}
+                unit="participantes"
+                objectiveText="Objetivo: 10 participantes"
+                progressText="Reclutados: 8 participantes"
+              />
+            </div>
+            
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">Progreso de Proyecto</Typography>
+              <ProgressCard
+                title="Progreso del Proyecto"
+                currentValue={15}
+                maxValue={20}
+                unit="tareas"
+                objectiveText="Objetivo: 20 tareas"
+                progressText="Completadas: 15 tareas"
+              />
+            </div>
+            
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">Progreso de Sesiones</Typography>
+              <ProgressCard
+                title="Sesiones de Investigación"
+                currentValue={3}
+                maxValue={5}
+                unit="sesiones"
+                objectiveText="Objetivo: 5 sesiones"
+                progressText="Realizadas: 3 sesiones"
+              />
+            </div>
+            
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">Progreso con Variantes Automáticas</Typography>
+              <div className="space-y-4">
+                <ProgressCard
+                  title="Progreso Bajo (25%)"
+                  currentValue={25}
+                  maxValue={100}
+                  unit="porcentaje"
+                />
+                <ProgressCard
+                  title="Progreso Intermedio (75%)"
+                  currentValue={75}
+                  maxValue={100}
+                  unit="porcentaje"
+                />
+                <ProgressCard
+                  title="Progreso Completo (100%)"
+                  currentValue={100}
+                  maxValue={100}
+                  unit="porcentaje"
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            Casos de Uso Específicos
+          </Typography>
+          <div className="space-y-4">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Reclutamiento de Investigación</Typography>
+              <ProgressCard
+                title="Progreso del Reclutamiento"
+                currentValue={12}
+                maxValue={15}
+                unit="participantes"
+                objectiveText="Objetivo: 15 participantes"
+                progressText="Reclutados: 12 participantes"
+              />
+            </div>
+            
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Desarrollo de Proyecto</Typography>
+              <ProgressCard
+                title="Progreso del Desarrollo"
+                currentValue={8}
+                maxValue={12}
+                unit="sprints"
+                objectiveText="Objetivo: 12 sprints"
+                progressText="Completados: 8 sprints"
+              />
+            </div>
+            
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-2">Validación de Usuarios</Typography>
+              <ProgressCard
+                title="Progreso de Validación"
+                currentValue={85}
+                maxValue={100}
+                unit="porcentaje"
+                objectiveText="Objetivo: 100% validación"
+                progressText="Validado: 85%"
+              />
             </div>
           </div>
         </Card>
@@ -8810,6 +8984,10 @@ const ComponentsSection: React.FC = () => {
     
     if (activeComponent === 'metric-card') {
       return renderMetricCardComponent();
+    }
+    
+    if (activeComponent === 'progress-card') {
+      return renderProgressCardComponent();
     }
     
     if (activeComponent === 'empty-state') {
