@@ -705,7 +705,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               </>
             ) : type === 'reclutamiento' ? (
               // Filtros específicos para reclutamiento
-              <>
+              <div className="space-y-4">
                 {/* Estados de Reclutamiento */}
                 <div>
                   <FilterLabel>Estados de Reclutamiento</FilterLabel>
@@ -781,7 +781,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     showValues={true}
                   />
                 </div>
-              </>
+              </div>
             ) : type === 'participante' ? (
               // Filtros específicos para participantes
               <>
