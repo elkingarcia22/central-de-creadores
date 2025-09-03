@@ -1878,8 +1878,8 @@ const VerReclutamiento: NextPage = () => {
         <div className="space-y-6">
           {/* Header del Libreto */}
           <PageHeader
-            title="Libreto de la Investigación"
-            subtitle="Guión y configuración completa para las sesiones"
+            title=""
+            subtitle="Libreto de la Investigación"
             variant="compact"
             color="blue"
           />
