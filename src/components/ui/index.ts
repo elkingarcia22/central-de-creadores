@@ -94,6 +94,9 @@ export { default as AsignarAgendamientoModal } from "./AsignarAgendamientoModal"
 // Componente de gráfico
 export { default as DonutChart } from './DonutChart';
 
+// Componente de lista
+export { default as List } from './List';
+
 // Componentes especializados avanzados
 export { default as DragDropZone } from './DragDropZone';
 export { default as Calendar } from './Calendar';
@@ -116,7 +119,6 @@ export { default as ParticipantCard } from './ParticipantCard';
 export { default as CompanyParticipantCard, type CompanyParticipant, type CompanyParticipantCardProps } from './CompanyParticipantCard';
 
 // Componentes de data display
-export { default as List } from './List';
 
 // Componentes de inputs básicos
 export { default as Checkbox, CheckboxGroup } from './Checkbox';

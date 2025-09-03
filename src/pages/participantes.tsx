@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useFastUser } from '../contexts/FastUserContext';
 import { supabase } from '../api/supabase';
 
-import { Layout, PageHeader } from '../components/ui';
+import { Layout, PageHeader, List } from '../components/ui';
 import Typography from '../components/ui/Typography';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -152,6 +152,27 @@ export default function ParticipantesPage() {
   const handleSelectionChange = useCallback((selectedIds: string[]) => {
     setSelectedParticipantes(selectedIds);
   }, []);
+
+  // Debug: monitorear cambios en showDropdown
+  useEffect(() => {
+    console.log('🔍 showDropdown cambió a:', showDropdown);
+  }, [showDropdown]);
+
+  // Cerrar dropdown solo cuando se haga clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showDropdown && !target.closest('.dropdown-container')) {
+        console.log('🔍 Clic fuera del dropdown, cerrando...');
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showDropdown]);
 
   // Acciones masivas
   const bulkActions = [
@@ -463,15 +484,24 @@ export default function ParticipantesPage() {
   };
 
   const handleCrearParticipanteExterno = () => {
+    console.log('🔍 handleCrearParticipanteExterno llamado');
+    console.log('🔍 showModalExterno antes:', showModalExterno);
     setShowModalExterno(true);
+    console.log('🔍 showModalExterno después:', true);
   };
 
   const handleCrearParticipanteInterno = () => {
+    console.log('🔍 handleCrearParticipanteInterno llamado');
+    console.log('🔍 showModalInterno antes:', showModalInterno);
     setShowModalInterno(true);
+    console.log('🔍 showModalInterno después:', true);
   };
 
   const handleCrearParticipanteFriendFamily = () => {
+    console.log('🔍 handleCrearParticipanteFriendFamily llamado');
+    console.log('🔍 showModalFriendFamily antes:', showModalFriendFamily);
     setShowModalFriendFamily(true);
+    console.log('🔍 showModalFriendFamily después:', true);
   };
 
   const handleParticipanteCreado = () => {
@@ -1041,10 +1071,11 @@ export default function ParticipantesPage() {
     <Layout rol={rolSeleccionado}>
       <div className="py-10 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header con dropdown */}
+          {/* Header con PageHeader estándar y dropdown integrado */}
           <div className="relative">
             <PageHeader
               title="Participantes"
+              subtitle="Gestiona todos los participantes de tu portafolio"
               color="purple"
               primaryAction={{
                 label: "Nuevo Participante",
@@ -1054,54 +1085,51 @@ export default function ParticipantesPage() {
               }}
             />
             
-            {/* Lista de tipos de participantes */}
-            {/* Lista de tipos de participantes usando el sistema de diseño */}
+            {/* Dropdown integrado en el header - posicionamiento preciso */}
             {showDropdown && (
-              <Card className="absolute right-0 top-0 mt-20 w-80 z-50">
-                <div className="p-3 space-y-2">
-                  <button
-                    onClick={() => {
-                      handleCrearParticipanteExterno();
-                      setShowDropdown(false);
-                    }}
-                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
-                  >
-                    <BuildingIcon className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Externo</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de empresas externas</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      handleCrearParticipanteInterno();
-                      setShowDropdown(false);
-                    }}
-                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
-                  >
-                    <UsersIcon className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">Cliente Interno</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes de la empresa</div>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      handleCrearParticipanteFriendFamily();
-                      setShowDropdown(false);
-                    }}
-                    className="w-full p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md flex items-center gap-3 transition-colors"
-                  >
-                    <UserIcon className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">Friend and Family</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Participantes del programa FF</div>
-                    </div>
-                  </button>
-                </div>
-              </Card>
+              <div 
+                className="dropdown-container absolute right-0 top-12 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('🔍 Dropdown clickeado, previniendo cierre');
+                }}
+              >
+                <button
+                  onClick={() => {
+                    console.log('🔍 Botón Cliente Externo clickeado');
+                    handleCrearParticipanteExterno();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  <BuildingIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <span>Cliente Externo</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    console.log('🔍 Botón Cliente Interno clickeado');
+                    handleCrearParticipanteInterno();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  <UsersIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <span>Cliente Interno</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    console.log('🔍 Botón Friend and Family clickeado');
+                    handleCrearParticipanteFriendFamily();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  <span>Friend and Family</span>
+                </button>
+              </div>
             )}
           </div>
 
@@ -1320,18 +1348,21 @@ export default function ParticipantesPage() {
 
 
           {/* Modales para crear participantes */}
+          {console.log('🔍 Renderizando modal externo, isOpen:', showModalExterno)}
           <CrearParticipanteExternoModal
             isOpen={showModalExterno}
             onClose={() => setShowModalExterno(false)}
             onSuccess={handleParticipanteCreado}
           />
 
+          {console.log('🔍 Renderizando modal interno, isOpen:', showModalInterno)}
           <CrearParticipanteInternoModal
             isOpen={showModalInterno}
             onClose={() => setShowModalInterno(false)}
             onSuccess={handleParticipanteCreado}
           />
 
+          {console.log('🔍 Renderizando modal friend family, isOpen:', showModalFriendFamily)}
           <CrearParticipanteFriendFamilyModal
             isOpen={showModalFriendFamily}
             onClose={() => setShowModalFriendFamily(false)}
