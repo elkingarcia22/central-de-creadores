@@ -193,19 +193,22 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </div>
           )}
           <div>
-            <Typography
-              variant={variant === 'small' ? 'h4' : 'h2'}
-              color="default"
-              weight="semibold"
-              className="!text-gray-600 dark:!text-gray-300"
-            >
-              {title}
-            </Typography>
+            {title && (
+              <Typography
+                variant={variant === 'small' ? 'h4' : 'h2'}
+                color="default"
+                weight="semibold"
+                className="!text-gray-600 dark:!text-gray-300"
+              >
+                {title}
+              </Typography>
+            )}
             {subtitle && (
               <Typography
-                variant="body2"
-                color="secondary"
-                className="!mt-0"
+                variant={title ? 'body2' : (variant === 'small' ? 'h4' : 'h2')}
+                color={title ? 'secondary' : 'default'}
+                weight={title ? 'normal' : 'semibold'}
+                className={title ? '!mt-0' : '!text-gray-600 dark:!text-gray-300'}
               >
                 {subtitle}
               </Typography>
