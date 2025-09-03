@@ -211,11 +211,17 @@ export default function VistaParticipacion() {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Participante cargado:', data);
+        console.log('Tipo de participante:', data.tipo);
+        console.log('Empresa ID:', data.empresa_id);
         setParticipante(data);
         
         // Cargar datos de la empresa solo para participantes externos
         if (data.tipo === 'externo' && data.empresa_id) {
+          console.log('Cargando empresa para participante externo...');
           await cargarEmpresa(data.empresa_id);
+        } else {
+          console.log('No se cargará empresa - Tipo:', data.tipo, 'Empresa ID:', data.empresa_id);
         }
       } else {
         showError('Error al cargar el participante');
@@ -254,6 +260,11 @@ export default function VistaParticipacion() {
       cargarUsuarios();
     }
   }, [id, cargarParticipante]);
+
+  // Debug: Monitorear cambios en el estado de empresa
+  useEffect(() => {
+    console.log('Estado de empresa cambiado:', empresa);
+  }, [empresa]);
 
   // Cargar investigaciones
   const cargarInvestigaciones = async () => {
@@ -1504,6 +1515,9 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
   };
 
   console.log('EmpresaContent render - empresa:', empresa, 'participante:', participante);
+  console.log('EmpresaContent - participante.tipo:', participante?.tipo);
+  console.log('EmpresaContent - empresa.id:', empresa?.id);
+  console.log('EmpresaContent - empresa.nombre:', empresa?.nombre);
 
   // Solo mostrar para participantes externos
   if (participante?.tipo !== 'externo') {
