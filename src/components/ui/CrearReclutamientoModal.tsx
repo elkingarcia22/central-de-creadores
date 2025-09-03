@@ -523,7 +523,7 @@ export default function CrearReclutamientoModal({
         footer={footer}
         showCloseButton={false}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full -m-6">
           {/* Header con PageHeader */}
           <PageHeader
             title="Agregar Participante"
