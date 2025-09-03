@@ -1115,57 +1115,7 @@ export default function VistaParticipacion() {
           />
         </InfoContainer>
 
-        {/* Acciones del Participante */}
-        <Card variant="elevated" padding="lg">
-          <div className="flex items-center gap-3 mb-4">
-            <MoreVerticalIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5" weight="semibold">
-              Acciones del Participante
-            </Typography>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowModalEditar(true)}
-              className="flex items-center gap-2"
-            >
-              <EditIcon className="w-4 h-4" />
-              Editar Participante
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowModalCrearDolor(true)}
-              className="flex items-center gap-2"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Crear Dolor
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowModalPerfilamiento(true)}
-              className="flex items-center gap-2"
-            >
-              <UserIcon className="w-4 h-4" />
-              Crear Perfilamiento
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowModalEliminar(true)}
-              className="flex items-center gap-2 text-red-600 hover:text-red-700"
-            >
-              <TrashIcon className="w-4 h-4" />
-              Eliminar Participante
-            </Button>
-          </div>
-        </Card>
+        
       </div>
     );
   };
