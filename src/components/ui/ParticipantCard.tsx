@@ -25,7 +25,12 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
   const tipoParticipante = getTipoParticipante(participante);
   const tipoBadge = getTipoParticipanteBadge(participante);
   const estadoAgendamiento = participante.estado_agendamiento?.nombre || participante.estado_agendamiento || 'Sin estado';
-  const esPendienteDeAgendamiento = estadoAgendamiento === 'Pendiente de agendamiento';
+  
+  // Solo mostrar card de agendamiento pendiente si realmente es un agendamiento pendiente
+  // y no un participante normal con estado pendiente
+  const esPendienteDeAgendamiento = participante.es_agendamiento_pendiente === true || 
+                                   (participante.tipo === 'agendamiento_pendiente') ||
+                                   (estadoAgendamiento === 'Pendiente de agendamiento' && participante.es_agendamiento_pendiente !== false);
   
   // Obtener el nombre final del participante
   const getNombreFinal = () => {
