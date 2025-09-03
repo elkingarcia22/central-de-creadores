@@ -531,7 +531,7 @@ export default function AgregarParticipanteModal({
           title="Agregar Participante"
           variant="title-only"
           color="gray"
-          className="mb-0"
+          className="mb-0 -mx-6 -mt-6"
           onClose={onClose}
           icon={<UsersIcon className="w-5 h-5" />}
         />
