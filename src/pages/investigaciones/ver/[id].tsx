@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState, Subtitle } from '../../../components/ui';
 import { SeguimientosSection } from '../../../components/investigaciones/SeguimientosSection';
 import { TrazabilidadSection } from '../../../components/investigaciones/TrazabilidadSection';
 import ActividadesTab from '../../../components/investigaciones/ActividadesTab';
@@ -738,18 +738,19 @@ const VerInvestigacion: NextPage = () => {
       return (
         <div className="space-y-6">
           {/* Header del Libreto */}
-          <PageHeader
-            title=""
-            subtitle="Libreto de la Investigación"
-            variant="compact"
-            color="blue"
-            primaryAction={{
-              label: "Editar",
-              onClick: () => router.push(`/investigaciones/libreto/${id}`),
-              variant: "outline",
-              icon: <EditIcon className="w-4 h-4" />
-            }}
-          />
+          <div className="flex items-center justify-between mb-6">
+            <Subtitle>
+              Libreto de la Investigación
+            </Subtitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/investigaciones/libreto/${id}`)}
+            >
+              <EditIcon className="w-4 h-4 mr-2" />
+              Editar
+            </Button>
+          </div>
 
           {/* Contenido del Libreto */}
           <div className="space-y-8">
