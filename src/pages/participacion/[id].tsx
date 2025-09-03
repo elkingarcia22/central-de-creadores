@@ -1578,6 +1578,19 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
 
   return (
     <div className="space-y-6">
+      {/* Descripción */}
+      {empresa.descripcion && (
+        <InfoContainer 
+          title="Descripción"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Descripción" 
+            value={empresa.descripcion}
+          />
+        </InfoContainer>
+      )}
+
       {/* Información básica */}
       <InfoContainer 
         title="Información Básica"
@@ -1650,23 +1663,10 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
         )}
       </InfoContainer>
 
-      {/* Descripción */}
-      {empresa.descripcion && (
-        <InfoContainer 
-          title="Descripción"
-          icon={<FileTextIcon className="w-4 h-4" />}
-        >
-          <InfoItem 
-            label="Descripción" 
-            value={empresa.descripcion}
-          />
-        </InfoContainer>
-      )}
-
       {/* Fechas */}
       <InfoContainer 
         title="Fechas"
-        icon={<CalendarIcon className="w-4 h-4" />}
+        icon={<ClockIcon className="w-4 h-4" />}
       >
         {empresa.fecha_creacion && (
           <InfoItem 
@@ -1684,11 +1684,6 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
 
       {/* Estadísticas */}
       <div className="space-y-6">
-        <Typography variant="h5" weight="semibold" className="flex items-center gap-2">
-          <BarChartIcon className="w-5 h-5 text-blue-600" />
-          Estadísticas de la Empresa
-        </Typography>
-
         {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-8">
@@ -1800,7 +1795,7 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
                     </Typography>
                   </div>
                   <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                    <ClockIconSolid className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   </div>
                 </div>
               </Card>
