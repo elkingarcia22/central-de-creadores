@@ -477,6 +477,17 @@ export default function VistaParticipacion() {
     setShowModalEliminar(true);
   };
 
+  // Funciones para manejar participación
+  const handleEditarParticipacion = () => {
+    // TODO: Implementar modal de edición de participación
+    showError('Función de editar participación no implementada aún');
+  };
+
+  const handleEliminarParticipacion = () => {
+    // TODO: Implementar modal de confirmación para eliminar participación
+    showError('Función de eliminar participación no implementada aún');
+  };
+
   const confirmarEliminacion = async () => {
     if (!participanteParaEliminar) return;
     
@@ -1528,25 +1539,14 @@ export default function VistaParticipacion() {
             <ActionsMenu
               actions={[
                 {
-                  label: 'Editar',
+                  label: 'Editar Participación',
                   icon: <EditIcon className="w-4 h-4" />,
-                  onClick: () => handleEditarParticipante(participante)
+                  onClick: () => handleEditarParticipacion()
                 },
                 {
-                  label: 'Crear Dolor',
-                  icon: <AlertTriangleIcon className="w-4 h-4" />,
-                  onClick: () => handleCrearDolor(participante)
-                },
-                {
-                  label: 'Crear Perfilamiento',
-                  icon: <MessageIcon className="w-4 h-4" />,
-                  onClick: () => handleCrearPerfilamiento(participante),
-                  className: 'text-popover-foreground hover:text-popover-foreground/80'
-                },
-                {
-                  label: 'Eliminar',
+                  label: 'Eliminar Participación',
                   icon: <TrashIcon className="w-4 h-4" />,
-                  onClick: () => handleEliminarParticipante(participante),
+                  onClick: () => handleEliminarParticipacion(),
                   className: 'text-red-600 hover:text-red-700'
                 }
               ]}
