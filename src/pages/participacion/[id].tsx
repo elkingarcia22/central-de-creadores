@@ -213,8 +213,8 @@ export default function VistaParticipacion() {
         const data = await response.json();
         setParticipante(data);
         
-        // Si es participante externo, cargar datos de la empresa
-        if (data.tipo === 'externo' && data.empresa_id) {
+        // Cargar datos de la empresa si existe
+        if (data.empresa_id) {
           await cargarEmpresa(data.empresa_id);
         }
       } else {
@@ -231,10 +231,14 @@ export default function VistaParticipacion() {
   // Cargar datos de la empresa
   const cargarEmpresa = async (empresaId: string) => {
     try {
+      console.log('Cargando empresa con ID:', empresaId);
       const response = await fetch(`/api/empresas/${empresaId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Empresa cargada:', data);
         setEmpresa(data);
+      } else {
+        console.error('Error en respuesta de empresa:', response.status);
       }
     } catch (error) {
       console.error('Error cargando empresa:', error);
@@ -756,17 +760,16 @@ export default function VistaParticipacion() {
     );
   };
 
-  // Componente para el contenido del tab de Estadísticas
-  const EstadisticasContent: React.FC = () => {
+
+
+  // Componente para el contenido del tab de Información
+  const InformacionContent: React.FC<{ participante: Participante; empresa?: Empresa }> = ({ participante, empresa }) => {
     const totalInvestigaciones = investigaciones.length;
     const investigacionesFinalizadas = investigaciones.filter(inv => 
       inv.estado === 'finalizada' || inv.estado === 'completada'
     ).length;
     const investigacionesEnProgreso = investigaciones.filter(inv => 
       inv.estado === 'en_progreso' || inv.estado === 'activa'
-    ).length;
-    const investigacionesPendientes = investigaciones.filter(inv => 
-      inv.estado === 'pendiente' || inv.estado === 'por_iniciar'
     ).length;
     
     const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
@@ -901,46 +904,6 @@ export default function VistaParticipacion() {
           />
         </InfoContainer>
 
-
-
-        {/* Estado vacío si no hay estadísticas */}
-        {totalInvestigaciones === 0 && (
-          <Card className="border-gray-200 bg-gray-50 dark:bg-gray-900/20">
-            <div className="text-center py-12">
-              <BarChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <Typography variant="h5" color="secondary" className="mb-2">
-                Sin estadísticas disponibles
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Este participante aún no ha participado en investigaciones.
-              </Typography>
-            </div>
-          </Card>
-        )}
-      </div>
-    );
-  };
-
-  // Componente para el contenido del tab de Información
-  const InformacionContent: React.FC<{ participante: Participante; empresa?: Empresa }> = ({ participante, empresa }) => {
-    const totalInvestigaciones = investigaciones.length;
-    const investigacionesFinalizadas = investigaciones.filter(inv => 
-      inv.estado === 'finalizada' || inv.estado === 'completada'
-    ).length;
-    const investigacionesEnProgreso = investigaciones.filter(inv => 
-      inv.estado === 'en_progreso' || inv.estado === 'activa'
-    ).length;
-    
-    const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
-      if (inv.duracion_sesion) {
-        const duracion = parseInt(inv.duracion_sesion);
-        return total + (isNaN(duracion) ? 0 : duracion);
-      }
-      return total;
-    }, 0) / 60; // Convertir minutos a horas
-
-    return (
-      <div className="space-y-6">
         {/* Información del Participante */}
         <Card variant="elevated" padding="lg">
           <div className="flex items-center gap-3 mb-4">
@@ -1031,91 +994,6 @@ export default function VistaParticipacion() {
               </Typography>
             </div>
           )}
-        </Card>
-
-        {/* Estadísticas básicas */}
-        <Card variant="elevated" padding="lg">
-          <div className="flex items-center gap-3 mb-4">
-            <BarChartIcon className="w-5 h-5 text-blue-600" />
-            <Typography variant="h5" weight="semibold">
-              Estadísticas Básicas
-            </Typography>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Total de Investigaciones */}
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <Typography variant="h4" weight="bold" className="text-blue-600">
-                {totalInvestigaciones}
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Total
-              </Typography>
-            </div>
-
-            {/* Investigaciones Finalizadas */}
-            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <Typography variant="h4" weight="bold" className="text-green-600">
-                {investigacionesFinalizadas}
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Finalizadas
-              </Typography>
-            </div>
-
-            {/* Investigaciones En Progreso */}
-            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-              <Typography variant="h4" weight="bold" className="text-yellow-600">
-                {investigacionesEnProgreso}
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                En Progreso
-              </Typography>
-            </div>
-
-            {/* Tiempo Total Estimado */}
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <Typography variant="h4" weight="bold" className="text-purple-600">
-                {tiempoTotalHoras.toFixed(1)}h
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Tiempo Total
-              </Typography>
-            </div>
-          </div>
-
-          {/* Información adicional de estadísticas */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InfoItem 
-                label="Última Participación" 
-                value={
-                  (() => {
-                    if (investigaciones.length > 0) {
-                      const investigacionesOrdenadas = investigaciones.sort((a, b) => 
-                        new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
-                      );
-                      return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
-                    }
-                    return participante.fecha_ultima_participacion ? 
-                      formatearFecha(participante.fecha_ultima_participacion) : 
-                      'Sin participaciones';
-                  })()
-                }
-              />
-              <InfoItem 
-                label="Participaciones del Mes" 
-                value={
-                  (() => {
-                    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                    const participacionesMesActual = participacionesPorMes[mesActual] || 0;
-                    const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                    return `${participacionesMesActual} en ${nombreMes}`;
-                  })()
-                }
-              />
-            </div>
-          </div>
         </Card>
 
         {/* Información de la Empresa (solo para participantes externos) */}
@@ -1326,11 +1204,7 @@ export default function VistaParticipacion() {
                label: 'Información de Participante',
                content: <InformacionContent participante={participante} empresa={empresa} />
              },
-                         {
-               id: 'estadisticas',
-               label: 'Estadísticas',
-               content: <EstadisticasContent />
-             },
+            
             {
               id: 'historial',
               label: 'Historial de Investigaciones',
@@ -1350,83 +1224,78 @@ export default function VistaParticipacion() {
                 />
               )
             },
-            {
-              id: 'dolores',
-              label: 'Dolores',
-              content: (
-                <>
-                  {dolores.length > 0 ? (
-                    <DoloresUnifiedContainer
-                      dolores={dolores}
-                      loading={false}
-                      searchTerm={searchTerm}
-                      setSearchTerm={setSearchTerm}
-                      filters={filters}
-                      setFilters={setFilters}
-                      showFilterDrawer={showFilterDrawer}
-                      setShowFilterDrawer={setShowFilterDrawer}
-                      getActiveFiltersCount={getActiveFiltersCount}
-                      columns={columnsDolores}
-                      actions={[
-                        {
-                          label: 'Ver detalles',
-                          icon: <EyeIcon className="w-4 h-4" />,
-                          onClick: handleVerDolor,
-                          title: 'Ver detalles del dolor'
-                        },
-                        {
-                          label: 'Editar',
-                          icon: <EditIcon className="w-4 h-4" />,
-                          onClick: handleEditarDolor,
-                          title: 'Editar dolor'
-                        },
-                        {
-                          label: 'Marcar como Resuelto',
-                          icon: <CheckIcon className="w-4 h-4" />,
-                          onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
-                          title: 'Marcar dolor como resuelto',
-                          show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
-                        },
-                        {
-                          label: 'Archivar',
-                          icon: <CheckCircleIcon className="w-4 h-4" />,
-                          onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
-                          title: 'Archivar dolor',
-                          show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
-                        },
-                        {
-                          label: 'Reactivar',
-                          icon: <RefreshIcon className="w-4 h-4" />,
-                          onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
-                          title: 'Reactivar dolor',
-                          show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
-                        },
-                        {
-                          label: 'Eliminar',
-                          icon: <TrashIcon className="w-4 h-4" />,
-                          onClick: handleEliminarDolor,
-                          className: 'text-red-600 hover:text-red-700',
-                          title: 'Eliminar dolor'
-                        }
-                      ]}
-                      filterOptions={filterOptions}
-                    />
-                  ) : (
-                    <EmptyState
-                      icon={<AlertTriangleIcon className="w-8 h-8" />}
-                      title="Sin dolores registrados"
-                      description="Este participante no tiene dolores o necesidades registradas."
-                      actionText="Registrar Primer Dolor"
-                      onAction={() => setShowCrearDolorModal(true)}
-                    />
-                  )}
-                </>
-              )
-            },
                          {
-               id: 'empresa',
-               label: 'Empresa',
-               content: <EmpresaContent empresa={empresa} participante={participante} />
+               id: 'dolores',
+               label: 'Dolores',
+               content: (
+                 <>
+                   {dolores.length > 0 ? (
+                     <DoloresUnifiedContainer
+                       dolores={dolores}
+                       loading={false}
+                       searchTerm={searchTerm}
+                       setSearchTerm={setSearchTerm}
+                       filters={filters}
+                       setFilters={setFilters}
+                       showFilterDrawer={showFilterDrawer}
+                       setShowFilterDrawer={setShowFilterDrawer}
+                       getActiveFiltersCount={getActiveFiltersCount}
+                       columns={columnsDolores}
+                       actions={[
+                         {
+                           label: 'Ver detalles',
+                           icon: <EyeIcon className="w-4 h-4" />,
+                           onClick: handleVerDolor,
+                           title: 'Ver detalles del dolor'
+                         },
+                         {
+                           label: 'Editar',
+                           icon: <EditIcon className="w-4 h-4" />,
+                           onClick: handleEditarDolor,
+                           title: 'Editar dolor'
+                         },
+                         {
+                           label: 'Marcar como Resuelto',
+                           icon: <CheckIcon className="w-4 h-4" />,
+                           onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
+                           title: 'Marcar dolor como resuelto',
+                           show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
+                         },
+                         {
+                           label: 'Archivar',
+                           icon: <CheckCircleIcon className="w-4 h-4" />,
+                           onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
+                           title: 'Archivar dolor',
+                           show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
+                         },
+                         {
+                           label: 'Reactivar',
+                           icon: <RefreshIcon className="w-4 h-4" />,
+                           onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
+                           title: 'Reactivar dolor',
+                           show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
+                         },
+                         {
+                           label: 'Eliminar',
+                           icon: <TrashIcon className="w-4 h-4" />,
+                           onClick: handleEliminarDolor,
+                           className: 'text-red-600 hover:text-red-700',
+                           title: 'Eliminar dolor'
+                         }
+                       ]}
+                       filterOptions={filterOptions}
+                     />
+                   ) : (
+                     <EmptyState
+                       icon={<AlertTriangleIcon className="w-8 h-8" />}
+                       title="Sin dolores registrados"
+                       description="Este participante no tiene dolores o necesidades registradas."
+                       actionText="Registrar Primer Dolor"
+                       onAction={() => setShowCrearDolorModal(true)}
+                     />
+                   )}
+                 </>
+               )
              },
              {
                id: 'perfilamientos',
@@ -1438,6 +1307,11 @@ export default function VistaParticipacion() {
                    usuarios={usuarios}
                  />
                )
+             },
+             {
+               id: 'empresa',
+               label: 'Información Empresa',
+               content: <EmpresaContent empresa={empresa} participante={participante} />
              }
           ]}
           activeTab={activeTab}
@@ -1586,6 +1460,390 @@ export default function VistaParticipacion() {
           }}
         />
       )}
+
+
     </Layout>
   );
 }
+
+// Componente EmpresaContent con información básica y estadísticas
+const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, participante: Participante | null }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [empresaData, setEmpresaData] = useState<any>(null);
+
+  useEffect(() => {
+    if (empresa?.id) {
+      cargarEstadisticasEmpresa(empresa.id);
+    }
+  }, [empresa?.id]);
+
+  const cargarEstadisticasEmpresa = async (empresaId: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/empresas/${empresaId}/estadisticas`);
+
+      if (!response.ok) {
+        throw new Error('Error al cargar estadísticas');
+      }
+
+      const data = await response.json();
+
+      setEmpresaData({
+        ...empresa,
+        estadisticas: data.estadisticas,
+        participantes: data.participantes
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  console.log('EmpresaContent render - empresa:', empresa, 'participante:', participante);
+
+  if (!empresa) {
+    return (
+      <EmptyState
+        icon={<BuildingIcon className="w-8 h-8" />}
+        title="Sin información de empresa"
+        description="Este participante no tiene empresa asociada o la información aún no se ha cargado."
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Información básica */}
+      <InfoContainer 
+        title="Información Básica"
+        icon={<BuildingIcon className="w-4 h-4" />}
+      >
+        <InfoItem 
+          label="Nombre" 
+          value={empresa.nombre}
+        />
+        {empresa.estado_nombre && (
+          <InfoItem 
+            label="Estado" 
+            value={
+              <Chip 
+                variant={getChipVariant(empresa.estado_nombre) as any}
+                size="sm"
+              >
+                {empresa.estado_nombre}
+              </Chip>
+            }
+          />
+        )}
+        {empresa.pais && (
+          <InfoItem 
+            label="País" 
+            value={empresa.pais}
+          />
+        )}
+        {empresa.ciudad && (
+          <InfoItem 
+            label="Ciudad" 
+            value={empresa.ciudad}
+          />
+        )}
+        {empresa.industria && (
+          <InfoItem 
+            label="Industria" 
+            value={empresa.industria}
+          />
+        )}
+        {empresa.tamano && (
+          <InfoItem 
+            label="Tamaño" 
+            value={empresa.tamano}
+          />
+        )}
+        {empresa.direccion && (
+          <InfoItem 
+            label="Dirección" 
+            value={empresa.direccion}
+          />
+        )}
+        {empresa.telefono && (
+          <InfoItem 
+            label="Teléfono" 
+            value={empresa.telefono}
+          />
+        )}
+        {empresa.email && (
+          <InfoItem 
+            label="Email" 
+            value={empresa.email}
+          />
+        )}
+        {empresa.website && (
+          <InfoItem 
+            label="Website" 
+            value={empresa.website}
+          />
+        )}
+      </InfoContainer>
+
+      {/* Descripción */}
+      {empresa.descripcion && (
+        <InfoContainer 
+          title="Descripción"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Descripción" 
+            value={empresa.descripcion}
+          />
+        </InfoContainer>
+      )}
+
+      {/* Fechas */}
+      <InfoContainer 
+        title="Fechas"
+        icon={<CalendarIcon className="w-4 h-4" />}
+      >
+        {empresa.fecha_creacion && (
+          <InfoItem 
+            label="Fecha de Creación" 
+            value={formatearFecha(empresa.fecha_creacion)}
+          />
+        )}
+        {empresa.fecha_actualizacion && (
+          <InfoItem 
+            label="Última Actualización" 
+            value={formatearFecha(empresa.fecha_actualizacion)}
+          />
+        )}
+      </InfoContainer>
+
+      {/* Estadísticas */}
+      <div className="space-y-6">
+        <Typography variant="h5" weight="semibold" className="flex items-center gap-2">
+          <BarChartIcon className="w-5 h-5 text-blue-600" />
+          Estadísticas de la Empresa
+        </Typography>
+
+        {/* Loading state */}
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <Typography variant="body1" className="ml-3">
+              Cargando estadísticas...
+            </Typography>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <Card className="border-red-200 bg-red-50 dark:bg-red-900/20">
+            <Typography variant="body1" color="danger">
+              Error: {error}
+            </Typography>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-2"
+              onClick={() => empresa.id && cargarEstadisticasEmpresa(empresa.id)}
+            >
+              Reintentar
+            </Button>
+          </Card>
+        )}
+
+        {/* Estadísticas principales */}
+        {empresaData?.estadisticas && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Total Participaciones */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.totalParticipaciones || 0}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Total Participaciones
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Total Participantes */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.totalParticipantes || 0}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Total Participantes
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Investigaciones Participadas */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter
+                        value={empresaData.estadisticas.investigacionesParticipadas || 0}
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Investigaciones
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+              {/* Tiempo Total */}
+              <Card variant="elevated" padding="md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                      <AnimatedCounter 
+                        value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
+                        duration={2000}
+                        className="text-gray-700 dark:text-gray-200"
+                        suffix="h"
+                      />
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Tiempo Total
+                    </Typography>
+                  </div>
+                  <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                    <ClockIconSolid className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Última participación y resumen del mes */}
+            <InfoContainer 
+              title="Resumen de Participación"
+              icon={<UserIcon className="w-4 h-4" />}
+            >
+              {empresaData.estadisticas.fechaUltimaParticipacion && (
+                <InfoItem 
+                  label="Última Participación" 
+                  value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
+                />
+              )}
+              
+              <InfoItem 
+                label="Participaciones del Mes" 
+                value={
+                  (() => {
+                    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                    const participacionesMesActual = empresaData.estadisticas.participacionesPorMes?.[mesActual] || 0;
+                    const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    return `${participacionesMesActual} en ${nombreMes}`;
+                  })()
+                }
+              />
+            </InfoContainer>
+
+            {/* Participaciones por mes */}
+            {empresaData.estadisticas.participacionesPorMes && Object.keys(empresaData.estadisticas.participacionesPorMes).length > 0 && (
+              <InfoContainer 
+                title="Participaciones por Mes (Finalizadas)"
+                icon={<TrendingUpIcon className="w-4 h-4" />}
+              >
+                <div className="space-y-3">
+                  {Object.entries(empresaData.estadisticas.participacionesPorMes)
+                    .sort(([a], [b]) => b.localeCompare(a))
+                    .slice(0, 6)
+                    .map(([mes, cantidad]) => {
+                      const [year, month] = mes.split('-');
+                      const fecha = new Date(parseInt(year), parseInt(month) - 1, 1);
+                      const esMesActual = fecha.getMonth() === new Date().getMonth() && fecha.getFullYear() === new Date().getFullYear();
+                      const maxCantidad = Math.max(...Object.values(empresaData.estadisticas.participacionesPorMes));
+                      
+                      return (
+                        <div key={mes} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                          esMesActual 
+                            ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
+                            : 'bg-gray-50 dark:bg-gray-800/50'
+                        }`}>
+                          <div className="flex items-center space-x-2">
+                            <Typography variant="body2" color="secondary">
+                              {fecha.toLocaleDateString('es-ES', { 
+                                year: 'numeric', 
+                                month: 'long' 
+                              })}
+                            </Typography>
+                            {esMesActual && (
+                              <Chip variant="primary" size="sm">
+                                Actual
+                              </Chip>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-6">
+                            <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  esMesActual ? 'bg-blue-500' : 'bg-primary'
+                                }`}
+                                style={{ 
+                                  width: `${Math.min((cantidad / maxCantidad) * 100, 100)}%` 
+                                }}
+                              />
+                            </div>
+                            <Typography variant="body2" weight="medium" className="w-12 text-right">
+                              {cantidad}
+                            </Typography>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </InfoContainer>
+            )}
+          </>
+        )}
+
+        {/* Sin estadísticas */}
+        {!loading && !error && !empresaData?.estadisticas && (
+          <Card className="border-gray-200 bg-gray-50 dark:bg-gray-900/20">
+            <div className="text-center py-12">
+              <BarChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <Typography variant="h5" color="secondary" className="mb-2">
+                Sin estadísticas disponibles
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Esta empresa aún no tiene estadísticas de participación.
+              </Typography>
+            </div>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+};
