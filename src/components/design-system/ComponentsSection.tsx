@@ -7879,10 +7879,14 @@ const ComponentsSection: React.FC = () => {
 
     const participanteFriendFamily = {
       id: '3',
-      nombre: 'Roberto Silva',
-      email: 'roberto.silva@email.com',
+      nombre: 'padre p',
+      email: 'padre@gmail.com',
       tipo: 'friend_family',
-      estado_agendamiento: 'Pendiente de agendamiento',
+      rol_empresa: 'Coach Ejecutivo',
+      estado_agendamiento: 'Finalizado',
+      fecha_sesion: '2025-08-05T00:00:00Z',
+      hora_sesion: '11:13:00',
+      duracion_sesion: 60,
       es_agendamiento_pendiente: false, // Flag explícito para mostrar que NO es un agendamiento pendiente
       responsable_agendamiento: {
         nombre: 'Laura Martínez',
@@ -8000,8 +8004,8 @@ const ComponentsSection: React.FC = () => {
                 Participante Friend & Family
               </Typography>
               <Typography variant="body2" color="secondary" className="mb-3">
-                Participante de tipo friend & family con información básica. Aunque tenga estado "Pendiente de agendamiento", 
-                se muestra como participante normal gracias al flag <code className="bg-background px-1 rounded">es_agendamiento_pendiente: false</code>.
+                Participante de tipo friend & family con información completa. Incluye rol, estado de sesión, fecha y hora. 
+                Se muestra como participante normal con todas las funcionalidades disponibles.
               </Typography>
               <div className="max-w-2xl">
                 <ParticipantCard
