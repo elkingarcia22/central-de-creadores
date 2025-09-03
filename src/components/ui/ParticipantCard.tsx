@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { Card, Typography, Button, Chip } from './index';
 import { UserIcon, BuildingIcon, UsersIcon, CalendarIcon, ClockIcon, EditIcon, TrashIcon } from '../icons';
 import { getTipoParticipante, getTipoParticipanteBadge } from '../../utils/tipoParticipanteUtils';
@@ -22,6 +23,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
   onViewMore,
   className = ''
 }) => {
+  const router = useRouter();
   const tipoParticipante = getTipoParticipante(participante);
   const tipoBadge = getTipoParticipanteBadge(participante);
   const estadoAgendamiento = participante.estado_agendamiento?.nombre || participante.estado_agendamiento || 'Sin estado';
@@ -165,7 +167,14 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onViewMore ? onViewMore(participante) : console.log('Ver más participante:', participante)}
+            onClick={() => {
+              if (onViewMore) {
+                onViewMore(participante);
+              } else {
+                // Redirigir a la vista de participación
+                router.push(`/participacion/${participante.id}`);
+              }
+            }}
             className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
             Ver más
