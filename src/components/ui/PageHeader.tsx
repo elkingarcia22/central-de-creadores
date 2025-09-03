@@ -128,7 +128,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   if (variant === 'title-only') {
     return (
       <div className={cn(className)}>
-        <div className="flex items-center justify-between w-full py-4 px-6">
+        <div className="flex items-center justify-between w-full">
           {/* Título e icono a la izquierda */}
           <div className="flex items-center">
             {icon && (
