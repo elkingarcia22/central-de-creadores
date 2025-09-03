@@ -523,14 +523,14 @@ export default function CrearReclutamientoModal({
         footer={footer}
         showCloseButton={false}
       >
-        <div className="flex flex-col h-full -m-6">
+        <div className="flex flex-col h-full">
           {/* Header con PageHeader */}
           <PageHeader
             title="Agregar Participante"
             variant="title-only"
             onClose={handleClose}
             icon={<UsersIcon className="w-5 h-5" />}
-            className="-mt-6 -mx-6"
+            className="mb-0"
           />
 
           {/* Contenido del formulario */}
