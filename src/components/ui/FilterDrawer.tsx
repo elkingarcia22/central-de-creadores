@@ -708,9 +708,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               <>
                 {/* Estados de Reclutamiento */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Estados de Reclutamiento
-                  </Typography>
+                  <FilterLabel>Estados de Reclutamiento</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar estados..."
                     options={options.estados || []}
@@ -722,9 +720,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Nivel de Riesgo */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Nivel de Riesgo
-                  </Typography>
+                  <FilterLabel>Nivel de Riesgo</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar niveles..."
                     options={options.nivelRiesgo || []}
@@ -736,9 +732,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Responsables */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Responsables
-                  </Typography>
+                  <FilterLabel>Responsables</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar responsables..."
                     options={options.responsables || []}
@@ -750,9 +744,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Implementadores */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Implementadores
-                  </Typography>
+                  <FilterLabel>Implementadores</FilterLabel>
                   <MultiSelect
                     placeholder="Seleccionar implementadores..."
                     options={options.implementadores || []}
@@ -764,9 +756,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Porcentaje de Avance (para reclutamiento) */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Porcentaje de Avance
-                  </Typography>
+                  <FilterLabel>Porcentaje de Avance</FilterLabel>
                   <Slider
                     min={0}
                     max={100}
@@ -780,9 +770,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
                 {/* Número de Participantes (para reclutamiento) */}
                 <div>
-                  <Typography variant="subtitle2" weight="medium" className="mb-2">
-                    Número de Participantes
-                  </Typography>
+                  <FilterLabel>Número de Participantes</FilterLabel>
                   <Slider
                     min={1}
                     max={50}
