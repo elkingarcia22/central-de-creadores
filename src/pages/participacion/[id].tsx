@@ -1045,12 +1045,29 @@ export default function VistaParticipacion() {
           icon={<UserIcon className="w-4 h-4" />}
         >
           <InfoItem 
-            label="Investigación" 
-            value={investigaciones.length > 0 ? `${investigaciones.length} investigaciones` : 'Sin investigaciones'}
-          />
-          <InfoItem 
             label="Responsable del Agendamiento" 
-            value={participante.responsable || 'No asignado'}
+            value={
+              (() => {
+                if (investigaciones.length > 0 && investigaciones[0].responsable) {
+                  // Buscar el usuario responsable
+                  const responsable = usuarios.find(u => u.full_name === investigaciones[0].responsable);
+                  if (responsable) {
+                    return (
+                      <div className="flex items-center gap-2">
+                        <SimpleAvatar 
+                          src={responsable.avatar_url} 
+                          alt={responsable.full_name || 'Usuario'}
+                          size="sm"
+                        />
+                        <span>{responsable.full_name}</span>
+                      </div>
+                    );
+                  }
+                  return investigaciones[0].responsable;
+                }
+                return 'No asignado';
+              })()
+            }
           />
           <InfoItem 
             label="Fecha de la Sesión"
