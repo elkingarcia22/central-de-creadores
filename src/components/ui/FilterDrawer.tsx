@@ -476,27 +476,25 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-2">
-              <FilterIcon className="w-5 h-5 text-gray-600" />
-              <Typography variant="h5" weight="semibold">
-                {type === 'empresa' ? 'Filtros de Empresas' : 
-                 type === 'historial_empresa' ? 'Filtros de Historial' : 
-                 'Filtros Avanzados'}
-              </Typography>
-              {getActiveFiltersCount() > 0 && (
-                <span className="px-2 py-1 text-xs bg-primary text-white rounded-full">
-                  {getActiveFiltersCount()}
-                </span>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              icon={<CloseIcon className="w-4 h-4" />}
-            />
-          </div>
+          <PageHeader
+            title={
+              type === 'empresa' ? 'Filtros de Empresas' : 
+              type === 'historial_empresa' ? 'Filtros de Historial' : 
+              type === 'reclutamiento' ? 'Filtros de Reclutamiento' :
+              'Filtros Avanzados'
+            }
+            variant="title-only"
+            onClose={onClose}
+            icon={<FilterIcon className="w-5 h-5" />}
+            className="mb-0"
+            chip={
+              getActiveFiltersCount() > 0 ? {
+                label: getActiveFiltersCount().toString(),
+                variant: 'primary',
+                size: 'sm'
+              } : undefined
+            }
+          />
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
