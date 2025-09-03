@@ -7899,7 +7899,8 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="body1" color="secondary" className="mb-4">
             Componente especializado para mostrar información de participantes en reclutamientos. 
             Maneja diferentes tipos de participantes (externo, interno, friend & family) y estados 
-            especiales como "Pendiente de agendamiento".
+            especiales como "Pendiente de agendamiento". La lógica de detección ha sido optimizada 
+            para distinguir correctamente entre participantes normales y agendamientos pendientes reales.
           </Typography>
           <div className="bg-muted p-4 rounded-lg">
             <Typography variant="h5" weight="semibold" className="mb-2">
@@ -7912,7 +7913,11 @@ const ComponentsSection: React.FC = () => {
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>•</span>
-                <span>Estado especial para "Pendiente de agendamiento"</span>
+                <span>Estado especial para "Pendiente de agendamiento" con lógica inteligente</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Detección automática entre participantes normales y agendamientos pendientes</span>
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>•</span>
@@ -7920,7 +7925,7 @@ const ComponentsSection: React.FC = () => {
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>•</span>
-                <span>Botones de acción consistentes (editar, eliminar)</span>
+                <span>Botones de acción consistentes (editar, eliminar, convertir agendamiento)</span>
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>•</span>
@@ -7990,6 +7995,54 @@ const ComponentsSection: React.FC = () => {
                   onConvertAgendamiento={() => console.log('Convertir agendamiento')}
                 />
               </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Lógica de Detección */}
+        <Card className="p-6">
+          <Typography variant="h4" weight="semibold" className="mb-4">
+            Lógica de Detección Inteligente
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            El componente utiliza una lógica avanzada para distinguir entre participantes normales y agendamientos pendientes reales.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Criterios de Detección:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span><code className="bg-background px-1 rounded">es_agendamiento_pendiente: true</code> - Flag explícito</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span><code className="bg-background px-1 rounded">tipo: 'agendamiento_pendiente'</code> - Tipo específico</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <span>Estado "Pendiente de agendamiento" + flag no explícitamente falso</span>
+              </Typography>
+            </div>
+          </div>
+          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <Typography variant="h5" weight="semibold" className="mb-2 text-blue-700 dark:text-blue-300">
+              Beneficios de la Lógica Corregida:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>✅</span>
+                <span>Participantes "Friend & Family" normales muestran su información completa</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>✅</span>
+                <span>Agendamientos pendientes reales muestran la card especial</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>✅</span>
+                <span>No más confusión entre tipos de participantes</span>
+              </Typography>
             </div>
           </div>
         </Card>
