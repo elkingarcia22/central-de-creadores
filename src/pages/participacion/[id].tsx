@@ -1108,17 +1108,7 @@ export default function VistaParticipacion() {
               </Chip>
             }
           />
-          <InfoItem 
-            label="Estado de la Participación"
-            value={
-              <Chip 
-                variant={getEstadoParticipanteVariant(participante.estado_participante)}
-                size="sm"
-              >
-                {participante.estado_participante || 'Sin estado'}
-              </Chip>
-            }
-          />
+
           <InfoItem 
             label="Participante"
             value={participante.nombre}
@@ -1576,8 +1566,8 @@ export default function VistaParticipacion() {
               color="purple"
               className="mb-0"
               chip={{
-                label: participante.estado_participante || 'Sin estado',
-                variant: getEstadoChipVariant(participante.estado_participante || 'default') as any,
+                label: investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'Sin estado' : 'Sin participaciones',
+                variant: getEstadoChipVariant(investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'default' : 'default') as any,
                 size: 'sm'
               }}
             />
