@@ -1517,7 +1517,7 @@ export default function VistaParticipacion() {
               className="mb-0"
               chip={{
                 label: investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'Sin estado' : 'Sin participaciones',
-                variant: getEstadoChipVariant(investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'default' : 'default') as any,
+                variant: getChipVariant(investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'default' : 'default') as any,
                 size: 'sm'
               }}
             />
