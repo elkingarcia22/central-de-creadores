@@ -7883,9 +7883,24 @@ const ComponentsSection: React.FC = () => {
       email: 'roberto.silva@email.com',
       tipo: 'friend_family',
       estado_agendamiento: 'Pendiente de agendamiento',
+      es_agendamiento_pendiente: false, // Flag explícito para mostrar que NO es un agendamiento pendiente
       responsable_agendamiento: {
         nombre: 'Laura Martínez',
         full_name: 'Laura Martínez'
+      }
+    };
+
+    // Agendamiento pendiente real para mostrar la diferencia
+    const agendamientoPendiente = {
+      id: '4',
+      nombre: 'Agendamiento Pendiente',
+      email: 'agendamiento@pendiente.com',
+      tipo: 'agendamiento_pendiente',
+      estado_agendamiento: 'Pendiente de agendamiento',
+      es_agendamiento_pendiente: true, // Flag explícito para mostrar que SÍ es un agendamiento pendiente
+      responsable_agendamiento: {
+        nombre: 'María González',
+        full_name: 'María González'
       }
     };
 
@@ -7985,13 +8000,34 @@ const ComponentsSection: React.FC = () => {
                 Participante Friend & Family
               </Typography>
               <Typography variant="body2" color="secondary" className="mb-3">
-                Participante de tipo friend & family con información básica.
+                Participante de tipo friend & family con información básica. Aunque tenga estado "Pendiente de agendamiento", 
+                se muestra como participante normal gracias al flag <code className="bg-background px-1 rounded">es_agendamiento_pendiente: false</code>.
               </Typography>
               <div className="max-w-2xl">
                 <ParticipantCard
                   participante={participanteFriendFamily}
                   onEdit={() => console.log('Editar participante friend & family')}
                   onDelete={() => console.log('Eliminar participante friend & family')}
+                  onConvertAgendamiento={() => console.log('Convertir agendamiento')}
+                />
+              </div>
+            </div>
+
+            {/* Agendamiento Pendiente Real */}
+            <div>
+              <Typography variant="h5" weight="semibold" className="mb-3">
+                Agendamiento Pendiente Real
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Card especial para agendamientos pendientes reales. Se muestra cuando 
+                <code className="bg-background px-1 rounded">es_agendamiento_pendiente: true</code> o 
+                <code className="bg-background px-1 rounded">tipo: 'agendamiento_pendiente'</code>.
+              </Typography>
+              <div className="max-w-2xl">
+                <ParticipantCard
+                  participante={agendamientoPendiente}
+                  onEdit={() => console.log('Editar agendamiento pendiente')}
+                  onDelete={() => console.log('Eliminar agendamiento pendiente')}
                   onConvertAgendamiento={() => console.log('Convertir agendamiento')}
                 />
               </div>
