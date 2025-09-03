@@ -9,6 +9,7 @@ export { default as Select } from "./Select";
 export { default as SideModal } from "./SideModal";
 export { default as ConfirmModal } from "./ConfirmModal";
 export { default as ProgressBar } from "./ProgressBar";
+export { default as ProgressCard } from "./ProgressCard";
 export { default as LinkModal } from "./LinkModal";
 export { default as ActionsMenu } from "./ActionsMenu";
 export { default as UserSelectorWithAvatar } from "./UserSelectorWithAvatar";

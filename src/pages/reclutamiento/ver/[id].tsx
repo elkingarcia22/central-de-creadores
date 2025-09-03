@@ -7,7 +7,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useUser } from '../../../contexts/UserContext';
-import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, Chip, PageHeader, InfoContainer, InfoItem, ParticipantCard } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Badge, ActionsMenu, LinkModal, SideModal, ConfirmModal, ProgressBar, ProgressCard, Chip, PageHeader, InfoContainer, InfoItem, ParticipantCard } from '../../../components/ui';
 import EditarReclutamientoModal from '../../../components/ui/EditarReclutamientoModal';
 import EditarResponsableAgendamientoModal from '../../../components/ui/EditarResponsableAgendamientoModal';
 import AgregarParticipanteModal from '../../../components/ui/AgregarParticipanteModal';
@@ -2438,46 +2438,16 @@ const VerReclutamiento: NextPage = () => {
 
         {/* Barra de Progreso del Reclutamiento */}
         {reclutamiento && (
-          <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-3">
-              <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
-                Progreso del Reclutamiento
-              </Typography>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <Typography variant="body1" weight="semibold" className="text-gray-900 dark:text-gray-100">
-                    {reclutamiento.progreso_reclutamiento || '0/0'}
-                  </Typography>
-                  <Typography variant="body2" color="secondary" className="text-xs">
-                    participantes
-                  </Typography>
-                </div>
-                <div className="text-right">
-                  <Typography variant="body1" weight="semibold" className="text-gray-900 dark:text-gray-100">
-                    {reclutamiento.porcentaje_completitud || 0}%
-                  </Typography>
-                  <Typography variant="body2" color="secondary" className="text-xs">
-                    completado
-                  </Typography>
-                </div>
-              </div>
-            </div>
-            <ProgressBar 
-              value={reclutamiento.porcentaje_completitud || 0} 
-              max={100}
-              size="lg"
-              variant={reclutamiento.porcentaje_completitud >= 100 ? 'success' : 'primary'}
-              className="mb-2"
-            />
-            <div className="flex items-center justify-between text-sm">
-              <Typography variant="body2" color="secondary">
-                Objetivo: {reclutamiento.libreto_numero_participantes || 0} participantes
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Reclutados: {reclutamiento.participantes_reclutados || 0} participantes
-              </Typography>
-            </div>
-          </div>
+          <ProgressCard
+            title="Progreso del Reclutamiento"
+            currentValue={reclutamiento.participantes_reclutados || 0}
+            maxValue={reclutamiento.libreto_numero_participantes || 0}
+            unit="participantes"
+            percentage={reclutamiento.porcentaje_completitud || 0}
+            objectiveText={`Objetivo: ${reclutamiento.libreto_numero_participantes || 0} participantes`}
+            progressText={`Reclutados: ${reclutamiento.participantes_reclutados || 0} participantes`}
+            className="mb-6"
+          />
         )}
 
         {/* Tabs */}
