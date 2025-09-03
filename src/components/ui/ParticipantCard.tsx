@@ -74,15 +74,6 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
 
           {/* Acciones */}
           <div className="flex gap-2 ml-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onViewMore ? onViewMore(participante) : console.log('Ver más participante:', participante)}
-              className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              Ver más
-            </Button>
-            
             {onConvertAgendamiento && (
               <Button
                 variant="outline"
