@@ -2393,7 +2393,8 @@ const VerReclutamiento: NextPage = () => {
               <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>
             <PageHeader
-              title="Ver Reclutamiento"
+              title=""
+              subtitle="Ver Reclutamiento"
               variant="compact"
               color="teal"
               className="mb-0"
