@@ -8022,6 +8022,7 @@ const ComponentsSection: React.FC = () => {
                 Card especial para agendamientos pendientes reales. Se muestra cuando 
                 <code className="bg-background px-1 rounded">es_agendamiento_pendiente: true</code> o 
                 <code className="bg-background px-1 rounded">tipo: 'agendamiento_pendiente'</code>.
+                <strong> Nota:</strong> Esta card NO incluye el botón "Ver más" por diseño.
               </Typography>
               <div className="max-w-2xl">
                 <ParticipantCard
@@ -8029,6 +8030,7 @@ const ComponentsSection: React.FC = () => {
                   onEdit={() => console.log('Editar agendamiento pendiente')}
                   onDelete={() => console.log('Eliminar agendamiento pendiente')}
                   onConvertAgendamiento={() => console.log('Convertir agendamiento')}
+                  // No se incluye onViewMore para agendamientos pendientes
                 />
               </div>
             </div>
@@ -8073,11 +8075,15 @@ const ComponentsSection: React.FC = () => {
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>✅</span>
-                <span>Agendamientos pendientes reales muestran la card especial</span>
+                <span>Agendamientos pendientes reales muestran la card especial (sin botón "Ver más")</span>
               </Typography>
               <Typography variant="body2" color="muted" className="flex items-center gap-2">
                 <span>✅</span>
                 <span>No más confusión entre tipos de participantes</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>✅</span>
+                <span>Diferencia clara en funcionalidad: participantes normales tienen "Ver más", agendamientos pendientes no</span>
               </Typography>
             </div>
           </div>
@@ -8117,7 +8123,7 @@ const ComponentsSection: React.FC = () => {
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
                   <code className="bg-background px-1 rounded">onViewMore</code>
-                  <span>: Función para ver más detalles del participante (opcional)</span>
+                  <span>: Función para ver más detalles del participante (opcional, NO disponible para agendamientos pendientes)</span>
                 </Typography>
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
