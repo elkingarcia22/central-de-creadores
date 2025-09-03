@@ -217,9 +217,16 @@ export default function VistaParticipacion() {
         setParticipante(data);
         
         // Cargar datos de la empresa solo para participantes externos
-        if (data.tipo === 'externo' && data.empresa_id) {
-          console.log('Cargando empresa para participante externo...');
-          await cargarEmpresa(data.empresa_id);
+        if (data.tipo === 'externo') {
+          if (data.empresa_id) {
+            console.log('Cargando empresa por ID para participante externo...');
+            await cargarEmpresa(data.empresa_id);
+          } else if (data.empresa_nombre) {
+            console.log('Buscando empresa por nombre para participante externo...');
+            await buscarEmpresaPorNombre(data.empresa_nombre);
+          } else {
+            console.log('Participante externo sin empresa_id ni empresa_nombre');
+          }
         } else {
           console.log('No se cargará empresa - Tipo:', data.tipo, 'Empresa ID:', data.empresa_id);
         }
@@ -234,20 +241,41 @@ export default function VistaParticipacion() {
     }
   }, [id, showError]);
 
-  // Cargar datos de la empresa
+  // Cargar datos de la empresa por ID
   const cargarEmpresa = async (empresaId: string) => {
     try {
       console.log('Cargando empresa con ID:', empresaId);
       const response = await fetch(`/api/empresas/${empresaId}`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Empresa cargada:', data);
+        console.log('Empresa cargada por ID:', data);
         setEmpresa(data);
       } else {
         console.error('Error en respuesta de empresa:', response.status);
       }
     } catch (error) {
       console.error('Error cargando empresa:', error);
+    }
+  };
+
+  // Buscar empresa por nombre
+  const buscarEmpresaPorNombre = async (empresaNombre: string) => {
+    try {
+      console.log('Buscando empresa por nombre:', empresaNombre);
+      const response = await fetch(`/api/empresas/buscar?nombre=${encodeURIComponent(empresaNombre)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.empresa) {
+          console.log('Empresa encontrada por nombre:', data.empresa);
+          setEmpresa(data.empresa);
+        } else {
+          console.log('No se encontró empresa con el nombre:', empresaNombre);
+        }
+      } else {
+        console.error('Error buscando empresa por nombre:', response.status);
+      }
+    } catch (error) {
+      console.error('Error buscando empresa por nombre:', error);
     }
   };
 
