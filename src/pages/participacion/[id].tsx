@@ -213,8 +213,8 @@ export default function VistaParticipacion() {
         const data = await response.json();
         setParticipante(data);
         
-        // Cargar datos de la empresa si existe
-        if (data.empresa_id) {
+        // Cargar datos de la empresa solo para participantes externos
+        if (data.tipo === 'externo' && data.empresa_id) {
           await cargarEmpresa(data.empresa_id);
         }
       } else {
@@ -1505,12 +1505,23 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
 
   console.log('EmpresaContent render - empresa:', empresa, 'participante:', participante);
 
+  // Solo mostrar para participantes externos
+  if (participante?.tipo !== 'externo') {
+    return (
+      <EmptyState
+        icon={<BuildingIcon className="w-8 h-8" />}
+        title="Información de Empresa no disponible"
+        description="Este participante no está asociado a una empresa externa."
+      />
+    );
+  }
+
   if (!empresa) {
     return (
       <EmptyState
         icon={<BuildingIcon className="w-8 h-8" />}
         title="Sin información de empresa"
-        description="Este participante no tiene empresa asociada o la información aún no se ha cargado."
+        description="No se encontró información de la empresa asociada a este participante externo."
       />
     );
   }
