@@ -901,62 +901,7 @@ export default function VistaParticipacion() {
           />
         </InfoContainer>
 
-        {/* Participaciones por mes */}
-        {Object.keys(participacionesPorMes).length > 0 && (
-          <InfoContainer 
-            title="Participaciones por Mes (Finalizadas)"
-            icon={<TrendingUpIcon className="w-4 h-4" />}
-          >
-            <div className="space-y-3">
-              {Object.entries(participacionesPorMes)
-                .sort(([a], [b]) => b.localeCompare(a))
-                .slice(0, 6)
-                .map(([mes, cantidad]) => {
-                  const [year, month] = mes.split('-');
-                  const fecha = new Date(parseInt(year), parseInt(month) - 1, 1);
-                  const esMesActual = fecha.getMonth() === new Date().getMonth() && fecha.getFullYear() === new Date().getFullYear();
-                  const maxCantidad = Math.max(...Object.values(participacionesPorMes));
-                  
-                  return (
-                    <div key={mes} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
-                      esMesActual 
-                        ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
-                        : 'bg-gray-50 dark:bg-gray-800/50'
-                    }`}>
-                      <div className="flex items-center space-x-2">
-                        <Typography variant="body2" color="secondary">
-                          {fecha.toLocaleDateString('es-ES', { 
-                            year: 'numeric', 
-                            month: 'long' 
-                          })}
-                        </Typography>
-                        {esMesActual && (
-                          <Chip variant="primary" size="sm">
-                            Actual
-                          </Chip>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-6">
-                        <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              esMesActual ? 'bg-blue-500' : 'bg-primary'
-                            }`}
-                            style={{ 
-                              width: `${Math.min((cantidad / maxCantidad) * 100, 100)}%` 
-                            }}
-                          />
-                        </div>
-                        <Typography variant="body2" weight="medium" className="w-12 text-right">
-                          {cantidad}
-                        </Typography>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </InfoContainer>
-        )}
+
 
         {/* Estado vacío si no hay estadísticas */}
         {totalInvestigaciones === 0 && (
@@ -978,6 +923,22 @@ export default function VistaParticipacion() {
 
   // Componente para el contenido del tab de Información
   const InformacionContent: React.FC<{ participante: Participante; empresa?: Empresa }> = ({ participante, empresa }) => {
+    const totalInvestigaciones = investigaciones.length;
+    const investigacionesFinalizadas = investigaciones.filter(inv => 
+      inv.estado === 'finalizada' || inv.estado === 'completada'
+    ).length;
+    const investigacionesEnProgreso = investigaciones.filter(inv => 
+      inv.estado === 'en_progreso' || inv.estado === 'activa'
+    ).length;
+    
+    const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
+      if (inv.duracion_sesion) {
+        const duracion = parseInt(inv.duracion_sesion);
+        return total + (isNaN(duracion) ? 0 : duracion);
+      }
+      return total;
+    }, 0) / 60; // Convertir minutos a horas
+
     return (
       <div className="space-y-6">
         {/* Información del Participante */}
@@ -1070,6 +1031,91 @@ export default function VistaParticipacion() {
               </Typography>
             </div>
           )}
+        </Card>
+
+        {/* Estadísticas básicas */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center gap-3 mb-4">
+            <BarChartIcon className="w-5 h-5 text-blue-600" />
+            <Typography variant="h5" weight="semibold">
+              Estadísticas Básicas
+            </Typography>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Total de Investigaciones */}
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-blue-600">
+                {totalInvestigaciones}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Total
+              </Typography>
+            </div>
+
+            {/* Investigaciones Finalizadas */}
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-green-600">
+                {investigacionesFinalizadas}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Finalizadas
+              </Typography>
+            </div>
+
+            {/* Investigaciones En Progreso */}
+            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-yellow-600">
+                {investigacionesEnProgreso}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                En Progreso
+              </Typography>
+            </div>
+
+            {/* Tiempo Total Estimado */}
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <Typography variant="h4" weight="bold" className="text-purple-600">
+                {tiempoTotalHoras.toFixed(1)}h
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Tiempo Total
+              </Typography>
+            </div>
+          </div>
+
+          {/* Información adicional de estadísticas */}
+          <div className="mt-6 pt-6 border-t border-border">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InfoItem 
+                label="Última Participación" 
+                value={
+                  (() => {
+                    if (investigaciones.length > 0) {
+                      const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                        new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                      );
+                      return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
+                    }
+                    return participante.fecha_ultima_participacion ? 
+                      formatearFecha(participante.fecha_ultima_participacion) : 
+                      'Sin participaciones';
+                  })()
+                }
+              />
+              <InfoItem 
+                label="Participaciones del Mes" 
+                value={
+                  (() => {
+                    const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                    const participacionesMesActual = participacionesPorMes[mesActual] || 0;
+                    const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    return `${participacionesMesActual} en ${nombreMes}`;
+                  })()
+                }
+              />
+            </div>
+          </div>
         </Card>
 
         {/* Información de la Empresa (solo para participantes externos) */}
@@ -1277,7 +1323,7 @@ export default function VistaParticipacion() {
           tabs={[
                          {
                id: 'informacion',
-               label: 'Información',
+               label: 'Información de Participante',
                content: <InformacionContent participante={participante} empresa={empresa} />
              },
                          {
