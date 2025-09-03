@@ -525,19 +525,18 @@ export default function AgregarParticipanteModal({
         </div>
       }
     >
-      <div className="flex flex-col h-full -m-6">
-        {/* Header con PageHeader */}
+      <div className="space-y-6">
+        {/* Header */}
         <PageHeader
           title="Agregar Participante"
           variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
           onClose={onClose}
           icon={<UsersIcon className="w-5 h-5" />}
-          className="-mt-6 -mx-6"
         />
 
-        {/* Contenido del formulario */}
-        <div className="flex-1 overflow-y-auto px-6">
-          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Mostrar error si existe */}
         {error && (
@@ -791,7 +790,6 @@ export default function AgregarParticipanteModal({
         })()}
 
           </form>
-        </div>
       </div>
 
       {/* Modales para crear participantes */}
