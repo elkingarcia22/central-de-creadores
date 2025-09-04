@@ -171,8 +171,11 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
               if (onViewMore) {
                 onViewMore(participante);
               } else {
-                // Redirigir a la vista de participación
-                router.push(`/participacion/${participante.id}`);
+                // Redirigir a la vista de participación con reclutamiento_id si está disponible
+                const url = participante.reclutamiento_id 
+                  ? `/participacion/${participante.id}?reclutamiento_id=${participante.reclutamiento_id}`
+                  : `/participacion/${participante.id}`;
+                router.push(url);
               }
             }}
             className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
