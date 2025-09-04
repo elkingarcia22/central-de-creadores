@@ -408,26 +408,43 @@ const VerReclutamiento: NextPage = () => {
         }
         
         // Cargar participantes del reclutamiento
-        await cargarParticipantes();
+        console.log('🔄 Llamando a cargarParticipantes...');
+        try {
+          await cargarParticipantes();
+          console.log('✅ cargarParticipantes completado exitosamente');
+        } catch (error) {
+          console.error('❌ Error en cargarParticipantes:', error);
+        }
         
       } else {
         throw new Error('Error al obtener datos del reclutamiento');
       }
     } catch (error) {
       console.error('Error cargando reclutamiento:', error);
-      showError('No se pudo encontrar el reclutamiento', 'El reclutamiento solicitado no existe');
+      // showError no está disponible, usar console.error por ahora
+      console.error('No se pudo encontrar el reclutamiento: El reclutamiento solicitado no existe');
     } finally {
+      console.log('🔄 Finalizando actualizarYcargarReclutamiento...');
       setLoading(false);
+      console.log('✅ setLoading(false) ejecutado');
       setIsInitializing(false); // Finalizar inicialización
+      console.log('✅ setIsInitializing(false) ejecutado');
     }
-  }, [id, isInitializing, showError]);
+  }, [id, isInitializing]);
 
   // Cargar los datos del reclutamiento
   useEffect(() => {
-    if (!isEditing && id) {
+    console.log('🔄 useEffect ejecutándose con id:', id);
+    if (id) {
+      console.log('🚀 Llamando a actualizarYcargarReclutamiento con id:', id);
       actualizarYcargarReclutamiento();
     }
-  }, [id, isEditing, actualizarYcargarReclutamiento]);
+  }, [id, actualizarYcargarReclutamiento]);
+
+  // Log para monitorear el estado de loading
+  useEffect(() => {
+    console.log('🔄 Estado de loading cambiado:', loading);
+  }, [loading]);
 
   // Cargar estadísticas del participante cuando se cambie al tab de participante
   useEffect(() => {
