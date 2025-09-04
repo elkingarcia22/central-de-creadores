@@ -23,10 +23,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Buscar directamente en la tabla reclutamientos usando participantes_id
     console.log('🔍 Buscando reclutamiento para participante ID:', id);
     
-    // Primero, hacer una consulta simple para ver qué hay
+    // Consulta con joins para obtener datos completos
     const { data: reclutamientos, error: reclutamientoError } = await supabase
       .from('reclutamientos')
-      .select('*')
+      .select(`
+        *,
+        investigaciones!inner(
+          id,
+          nombre,
+          descripcion,
+          fecha_inicio,
+          fecha_fin,
+          estado,
+          responsable_id,
+          implementador_id
+        )
+      `)
       .eq('participantes_id', id)
       .order('fecha_asignado', { ascending: false })
       .limit(1);
@@ -44,18 +56,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const reclutamiento = reclutamientos[0];
     console.log('✅ Reclutamiento encontrado:', reclutamiento);
     
-    // Formatear la respuesta usando solo los campos básicos por ahora
+    // Obtener datos del responsable e implementador
+    let responsableNombre = 'Sin responsable';
+    let implementadorNombre = 'Sin implementador';
+    
+    if (reclutamiento.investigaciones?.responsable_id) {
+      const { data: responsableData } = await supabase
+        .from('usuarios')
+        .select('nombre, apellido')
+        .eq('id', reclutamiento.investigaciones.responsable_id)
+        .single();
+      
+      if (responsableData) {
+        responsableNombre = `${responsableData.nombre} ${responsableData.apellido || ''}`.trim();
+      }
+    }
+    
+    if (reclutamiento.investigaciones?.implementador_id) {
+      const { data: implementadorData } = await supabase
+        .from('usuarios')
+        .select('nombre, apellido')
+        .eq('id', reclutamiento.investigaciones.implementador_id)
+        .single();
+      
+      if (implementadorData) {
+        implementadorNombre = `${implementadorData.nombre} ${implementadorData.apellido || ''}`.trim();
+      }
+    }
+    
+    // Formatear la respuesta usando los datos reales
     const reclutamientoFormateado = {
       id: reclutamiento.id,
-      nombre: 'Reclutamiento encontrado', // Placeholder por ahora
-      descripcion: 'Descripción del reclutamiento',
-      fecha_inicio: reclutamiento.fecha_sesion || new Date().toISOString(),
+      nombre: reclutamiento.investigaciones?.nombre || 'Sin nombre',
+      descripcion: reclutamiento.investigaciones?.descripcion || 'Sin descripción',
+      fecha_inicio: reclutamiento.investigaciones?.fecha_inicio || reclutamiento.fecha_sesion,
       fecha_sesion: reclutamiento.fecha_sesion,
       duracion_sesion: reclutamiento.duracion_sesion || 60,
-      estado: 'Pendiente', // Placeholder por ahora
-      responsable: 'Sin responsable', // Placeholder por ahora
-      implementador: 'Sin implementador', // Placeholder por ahora
-      tipo_investigacion: 'Sin tipo',
+      estado: reclutamiento.investigaciones?.estado || 'Sin estado',
+      responsable: responsableNombre,
+      implementador: implementadorNombre,
+      tipo_investigacion: 'Sin tipo', // Por ahora
       fecha_asignado: reclutamiento.fecha_asignado,
       estado_agendamiento: reclutamiento.estado_agendamiento,
       reclutador_id: reclutamiento.reclutador_id,
