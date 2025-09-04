@@ -349,9 +349,31 @@ const VerReclutamiento: NextPage = () => {
       }
       
       // Usar la API correcta para obtener el reclutamiento por ID
-      const response = await fetch(`/api/reclutamientos/${id}`);
+      let response = await fetch(`/api/reclutamientos/${id}`);
+      let reclutamientoData;
+      
       if (response.ok) {
-        const reclutamientoData = await response.json();
+        reclutamientoData = await response.json();
+        console.log('✅ Reclutamiento cargado directamente:', reclutamientoData);
+      } else {
+        // Si no se encuentra, el ID puede ser un investigacion_id
+        console.log('🔍 ID no es un reclutamiento_id, buscando por investigacion_id:', id);
+        const reclutamientosResponse = await fetch(`/api/reclutamientos/por-investigacion?investigacion_id=${id}`);
+        
+        if (reclutamientosResponse.ok) {
+          const reclutamientos = await reclutamientosResponse.json();
+          if (reclutamientos.length > 0) {
+            reclutamientoData = reclutamientos[0]; // Usar el primer reclutamiento encontrado
+            console.log('✅ Reclutamiento encontrado por investigacion_id:', reclutamientoData);
+          } else {
+            throw new Error('No se encontraron reclutamientos para esta investigación');
+          }
+        } else {
+          throw new Error('Error al buscar reclutamientos por investigacion_id');
+        }
+      }
+      
+      if (reclutamientoData) {
         console.log('✅ Reclutamiento cargado:', reclutamientoData);
         
         // Convertir los datos del reclutamiento al formato esperado por ReclutamientoDetalle
