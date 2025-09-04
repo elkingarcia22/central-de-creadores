@@ -149,7 +149,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_sesion: r.duracion_sesion,
         // Agregar propiedades faltantes para la tabla
         tipo_investigacion: 'Sesión de investigación',
-        responsable: r.reclutador_id || 'No asignado',
+        responsable: 'Cargando...', // Se actualizará con el nombre real
         // Campos adicionales para reclutamiento
         reclutamiento_id: r.id,
         reclutador_id: r.reclutador_id,
@@ -207,8 +207,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           console.log('🔍 Intentando obtener nombres de responsables para IDs:', responsableIds);
           
           const { data: responsables, error: errorResponsables } = await supabaseServer
-            .from('usuarios')
-            .select('id, nombre, correo')
+            .from('usuarios_con_roles')
+            .select('id, full_name, email')
             .in('id', responsableIds);
 
           if (responsables && responsables.length > 0) {
@@ -222,7 +222,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (responsable) {
                   return {
                     ...inv,
-                    responsable: responsable.nombre || 'Sin nombre'
+                    responsable: responsable.full_name || 'Sin nombre'
                   };
                 }
               }
