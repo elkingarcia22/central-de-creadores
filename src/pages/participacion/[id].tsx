@@ -262,6 +262,8 @@ export default function VistaParticipacion() {
     }
   }, [id, showError]);
 
+
+
   // Cargar datos de la empresa por ID
   const cargarEmpresa = async (empresaId: string) => {
     try {
@@ -361,21 +363,7 @@ export default function VistaParticipacion() {
     }
   };
 
-  // Cargar investigaciones
-  const cargarInvestigaciones = async () => {
-    if (!id) return;
-    
-    try {
-      const response = await fetch(`/api/participantes/${id}/investigaciones`);
-      if (response.ok) {
-        const data = await response.json();
-        setInvestigaciones(data.investigaciones || []);
-        setParticipacionesPorMes(data.participacionesPorMes || {});
-      }
-    } catch (error) {
-      console.error('Error cargando investigaciones:', error);
-    }
-  };
+
 
   // Cargar dolores
   const cargarDolores = async () => {
@@ -404,6 +392,36 @@ export default function VistaParticipacion() {
       console.error('Error cargando usuarios:', error);
     }
   };
+
+  // Cargar investigaciones del participante
+  const cargarInvestigaciones = useCallback(async () => {
+    if (!id) return;
+    
+    try {
+      console.log('🔍 Iniciando carga de investigaciones para participante:', id);
+      const response = await fetch(`/api/participantes/${id}/investigaciones`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Respuesta completa de la API:', JSON.stringify(data, null, 2));
+        setInvestigaciones(data.investigaciones || []);
+        setParticipacionesPorMes(data.participacionesPorMes || {});
+        console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
+        console.log('🔍 Participaciones por mes:', data.participacionesPorMes);
+        
+        // Debug detallado de las investigaciones
+        if (data.investigaciones && data.investigaciones.length > 0) {
+          console.log('🔍 Primera investigación:', JSON.stringify(data.investigaciones[0], null, 2));
+        } else {
+          console.log('⚠️ No se recibieron investigaciones de la API');
+        }
+      } else {
+        console.error('Error cargando investigaciones:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error cargando investigaciones:', error);
+    }
+  }, [id]);
 
   // Cargar estadísticas de empresa
   const cargarEstadisticasEmpresa = async (empresaId: string) => {
@@ -1322,7 +1340,16 @@ export default function VistaParticipacion() {
   };
 
   // Componente para el contenido del tab de Información
-  const InformacionContent: React.FC<{ participante: Participante; empresa?: Empresa }> = ({ participante, empresa }) => {
+  const InformacionContent: React.FC<{ 
+    participante: Participante; 
+    empresa?: Empresa;
+    investigaciones: InvestigacionParticipante[];
+    participacionesPorMes: { [key: string]: number };
+  }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
+    // Debug: Log de datos recibidos
+    console.log('🔍 InformacionContent - investigaciones:', investigaciones);
+    console.log('🔍 InformacionContent - participacionesPorMes:', participacionesPorMes);
+    
     const totalInvestigaciones = investigaciones.length;
     const investigacionesFinalizadas = investigaciones.filter(inv => 
       inv.estado === 'finalizada' || inv.estado === 'completada'
@@ -1338,6 +1365,13 @@ export default function VistaParticipacion() {
       }
       return total;
     }, 0) / 60; // Convertir minutos a horas
+    
+    console.log('🔍 InformacionContent - Métricas calculadas:', {
+      totalInvestigaciones,
+      investigacionesFinalizadas,
+      investigacionesEnProgreso,
+      tiempoTotalHoras
+    });
 
     return (
       <div className="space-y-6">
@@ -1464,222 +1498,364 @@ export default function VistaParticipacion() {
         </InfoContainer>
 
         {/* Información del Participante */}
-        <Card variant="elevated" padding="lg">
-          <div className="flex items-center gap-3 mb-4">
-            <UserIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h5" weight="semibold">
-              Información del Participante
-            </Typography>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <InfoItem 
-                label="Nombre Completo"
-                value={participante.nombre}
-              />
-              <InfoItem 
-                label="Email"
-                value={participante.email}
-              />
-              <InfoItem 
-                label="Tipo de Participante"
-                value={
-                  <Chip 
-                    variant={participante.tipo === 'externo' ? 'primary' : participante.tipo === 'interno' ? 'success' : 'warning'}
-                    size="sm"
-                  >
-                    {participante.tipo === 'externo' ? 'Externo' : 
-                     participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
-                  </Chip>
-                }
-              />
-              <InfoItem 
-                label="Estado"
-                value={
-                  <Chip 
-                    variant={getEstadoChipVariant(participante.estado_participante)}
-                    size="sm"
-                  >
-                    {participante.estado_participante || 'Sin estado'}
-                  </Chip>
-                }
-              />
-            </div>
-            
-            <div className="space-y-4">
-              <InfoItem 
-                label="Total de Participaciones"
-                value={participante.total_participaciones.toString()}
-              />
-              <InfoItem 
-                label="Última Participación"
-                value={
-                  participante.fecha_ultima_participacion ? 
-                  formatearFecha(participante.fecha_ultima_participacion) : 
-                  'Sin participaciones'
-                }
-              />
-              <InfoItem 
-                label="Fecha de Registro"
-                value={formatearFecha(participante.created_at)}
-              />
-              <InfoItem 
-                label="Última Actualización"
-                value={formatearFecha(participante.updated_at)}
-              />
-            </div>
-          </div>
+        <InfoContainer 
+          title="Información del Participante"
+          icon={<UserIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Nombre Completo"
+            value={participante.nombre}
+          />
+          <InfoItem 
+            label="Email"
+            value={participante.email}
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo as any)}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Estado"
+            value={
+              <Chip 
+                variant={getEstadoChipVariant(participante.estado_participante)}
+                size="sm"
+              >
+                {participante.estado_participante || 'Sin estado'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Total de Participaciones"
+            value={participante.total_participaciones.toString()}
+          />
+          <InfoItem 
+            label="Última Participación"
+            value={
+              participante.fecha_ultima_participacion ? 
+              formatearFecha(participante.fecha_ultima_participacion) : 
+              'Sin participaciones'
+            }
+          />
+          <InfoItem 
+            label="Fecha de Registro"
+            value={formatearFecha(participante.created_at)}
+          />
+          <InfoItem 
+            label="Última Actualización"
+            value={formatearFecha(participante.updated_at)}
+          />
+        </InfoContainer>
 
-          {/* Información adicional */}
-          {participante.comentarios && (
-            <div className="mt-6 pt-6 border-t border-border">
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Comentarios
-              </Typography>
+        {/* Información adicional */}
+        {participante.comentarios && (
+          <InfoContainer 
+            title="Comentarios"
+            icon={<MessageIcon className="w-4 h-4" />}
+            variant="bordered"
+            padding="md"
+          >
+            <div className="col-span-full">
               <Typography variant="body2" color="secondary">
                 {participante.comentarios}
               </Typography>
             </div>
-          )}
+          </InfoContainer>
+        )}
 
-          {participante.doleres_necesidades && (
-            <div className="mt-4">
-              <Typography variant="subtitle2" weight="medium" className="mb-2">
-                Dolores y Necesidades
-              </Typography>
+        {participante.doleres_necesidades && (
+          <InfoContainer 
+            title="Dolores y Necesidades"
+            icon={<AlertTriangleIcon className="w-4 h-4" />}
+            variant="bordered"
+            padding="md"
+          >
+            <div className="col-span-full">
               <Typography variant="body2" color="secondary">
                 {participante.doleres_necesidades}
               </Typography>
             </div>
-          )}
-        </Card>
+          </InfoContainer>
+        )}
 
         {/* Información de la Empresa (solo para participantes externos) */}
         {participante.tipo === 'externo' && empresa && (
-          <Card variant="elevated" padding="lg">
-            <div className="flex items-center gap-3 mb-4">
-              <BuildingIcon className="w-5 h-5 text-green-600" />
-              <Typography variant="h5" weight="semibold">
-                Información de la Empresa
-              </Typography>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <InfoItem 
-                  label="Nombre de la Empresa"
-                  value={empresa.nombre}
-                />
-                <InfoItem 
-                  label="Estado"
-                  value={
-                    <Chip 
-                      variant={getEstadoChipVariant(empresa.estado_nombre || '')}
-                      size="sm"
-                    >
-                      {empresa.estado_nombre || 'Sin estado'}
-                    </Chip>
-                  }
-                />
-                <InfoItem 
-                  label="Industria"
-                  value={empresa.industria || 'No especificada'}
-                />
-                <InfoItem 
-                  label="Tamaño"
-                  value={empresa.tamano || 'No especificado'}
-                />
-              </div>
-              
-              <div className="space-y-4">
-                <InfoItem 
-                  label="País"
-                  value={empresa.pais || 'No especificado'}
-                />
-                <InfoItem 
-                  label="Ciudad"
-                  value={empresa.ciudad || 'No especificada'}
-                />
-                <InfoItem 
-                  label="Email"
-                  value={empresa.email || 'No especificado'}
-                />
-                <InfoItem 
-                  label="Website"
-                  value={
-                    empresa.website ? (
-                      <a 
-                        href={empresa.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {empresa.website}
-                      </a>
-                    ) : (
-                      'No especificado'
-                    )
-                  }
-                />
-              </div>
-            </div>
+          <InfoContainer 
+            title="Información de la Empresa"
+            icon={<BuildingIcon className="w-4 h-4" />}
+          >
+            <InfoItem 
+              label="Nombre de la Empresa"
+              value={empresa.nombre}
+            />
+            <InfoItem 
+              label="Estado"
+              value={
+                <Chip 
+                  variant={getEstadoChipVariant(empresa.estado_nombre || '')}
+                  size="sm"
+                >
+                  {empresa.estado_nombre || 'Sin estado'}
+                </Chip>
+              }
+            />
+            <InfoItem 
+              label="Industria"
+              value={empresa.industria || 'No especificada'}
+            />
+            <InfoItem 
+              label="Tamaño"
+              value={empresa.tamano || 'No especificado'}
+            />
+            <InfoItem 
+              label="País"
+              value={empresa.pais || 'No especificado'}
+            />
+            <InfoItem 
+              label="Ciudad"
+              value={empresa.ciudad || 'No especificada'}
+            />
+            <InfoItem 
+              label="Email"
+              value={empresa.email || 'No especificado'}
+            />
+            <InfoItem 
+              label="Website"
+              value={
+                empresa.website ? (
+                  <a 
+                    href={empresa.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    {empresa.website}
+                  </a>
+                ) : (
+                  'No especificado'
+                )
+              }
+            />
+          </InfoContainer>
+        )}
 
+        {/* Información adicional de empresa */}
+        {participante.tipo === 'externo' && empresa && (empresa.descripcion || empresa.direccion) && (
+          <>
             {empresa.descripcion && (
-              <div className="mt-6 pt-6 border-t border-border">
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Descripción
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  {empresa.descripcion}
-                </Typography>
-              </div>
+              <InfoContainer 
+                title="Descripción"
+                icon={<FileTextIcon className="w-4 h-4" />}
+                variant="bordered"
+                padding="md"
+              >
+                <div className="col-span-full">
+                  <Typography variant="body2" color="secondary">
+                    {empresa.descripcion}
+                  </Typography>
+                </div>
+              </InfoContainer>
             )}
 
             {empresa.direccion && (
-              <div className="mt-4">
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Dirección
-                </Typography>
-                <Typography variant="body2" color="secondary">
-                  {empresa.direccion}
-                </Typography>
-              </div>
+              <InfoContainer 
+                title="Dirección"
+                icon={<BuildingIcon className="w-4 h-4" />}
+                variant="bordered"
+                padding="md"
+              >
+                <div className="col-span-full">
+                  <Typography variant="body2" color="secondary">
+                    {empresa.direccion}
+                  </Typography>
+                </div>
+              </InfoContainer>
             )}
-          </Card>
+          </>
         )}
 
         {/* Información de Rol en Empresa (para participantes internos) */}
         {participante.tipo === 'interno' && (participante.rol_empresa || participante.departamento_nombre) && (
-          <Card variant="elevated" padding="lg">
-            <div className="flex items-center gap-3 mb-4">
-              <UsersIcon className="w-5 h-5 text-blue-600" />
-              <Typography variant="h5" weight="semibold">
-                Información Laboral
-              </Typography>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {participante.rol_empresa && (
-                <InfoItem 
-                  label="Rol en la Empresa"
-                  value={participante.rol_empresa}
-                />
-              )}
-              {participante.departamento_nombre && (
-                <InfoItem 
-                  label="Departamento"
-                  value={participante.departamento_nombre}
-                />
-              )}
-            </div>
-          </Card>
+          <InfoContainer 
+            title="Información Laboral"
+            icon={<UsersIcon className="w-4 h-4" />}
+          >
+            {participante.rol_empresa && (
+              <InfoItem 
+                label="Rol en la Empresa"
+                value={participante.rol_empresa}
+              />
+            )}
+            {participante.departamento_nombre && (
+              <InfoItem 
+                label="Departamento"
+                value={participante.departamento_nombre}
+              />
+            )}
+          </InfoContainer>
         )}
       </div>
     );
   };
 
+  // Componente para el contenido del tab de Información de Reclutamiento
+  const ReclutamientoContent: React.FC<{ reclutamiento: any; participante: Participante }> = ({ reclutamiento, participante }) => {
+    // Función para obtener el nombre del usuario por ID
+    const getNombreUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Usuario no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.nombre || usuario.full_name || 'Sin nombre' : 'Usuario no encontrado';
+    };
 
+    // Función para obtener el email del usuario por ID
+    const getEmailUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Email no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.correo || usuario.email || 'Sin email' : 'Email no encontrado';
+    };
+
+    // Función para formatear la duración
+    const formatearDuracion = (duracion: number) => {
+      if (!duracion) return '0 min';
+      if (duracion >= 60) {
+        const horas = Math.floor(duracion / 60);
+        const minutos = duracion % 60;
+        return minutos > 0 ? `${horas}h ${minutos}min` : `${horas}h`;
+      }
+      return `${duracion} min`;
+    };
+
+    if (!reclutamiento) {
+      return (
+        <EmptyState
+          icon={<AlertTriangleIcon className="w-8 h-8" />}
+          title="Sin información de reclutamiento"
+          description="No hay información de reclutamiento disponible para este participante."
+        />
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Información del Reclutamiento */}
+        <InfoContainer 
+          title="Detalles del Reclutamiento"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="ID del Reclutamiento"
+            value={reclutamiento.id}
+          />
+          <InfoItem 
+            label="Reclutador"
+            value={
+              <div className="flex items-center gap-2">
+                <span>{getNombreUsuario(reclutamiento.reclutador_id)}</span>
+                <Chip variant="secondary" size="sm">
+                  {getEmailUsuario(reclutamiento.reclutador_id)}
+                </Chip>
+              </div>
+            }
+          />
+          <InfoItem 
+            label="Participante"
+            value={participante.nombre}
+          />
+          <InfoItem 
+            label="Email del Participante"
+            value={participante.email || 'Sin email'}
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo as any)}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Fecha de Sesión"
+            value={reclutamiento.fecha_sesion ? 
+              formatearFecha(reclutamiento.fecha_sesion) : 
+              'No programada'
+            }
+          />
+          <InfoItem 
+            label="Hora de Sesión"
+            value={reclutamiento.hora_sesion ? 
+              (() => {
+                try {
+                  let hora = reclutamiento.hora_sesion;
+                  if (hora.match(/^\d{2}:\d{2}:\d{2}$/)) {
+                    hora = `2000-01-01T${hora}`;
+                  }
+                  if (hora.match(/^\d{2}:\d{2}$/)) {
+                    hora = `2000-01-01T${hora}:00`;
+                  }
+                  const fechaHora = new Date(hora);
+                  if (isNaN(fechaHora.getTime())) {
+                    return reclutamiento.hora_sesion;
+                  }
+                  return fechaHora.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  });
+                } catch (error) {
+                  return reclutamiento.hora_sesion;
+                }
+              })() : 
+              'No definida'
+            }
+          />
+          <InfoItem 
+            label="Duración de Sesión"
+            value={formatearDuracion(reclutamiento.duracion_sesion)}
+          />
+          <InfoItem 
+            label="Estado de Agendamiento"
+            value={
+              <Chip 
+                variant={getChipVariant(reclutamiento.estado_reclutamiento_nombre || '') as any}
+                size="sm"
+              >
+                {reclutamiento.estado_reclutamiento_nombre || 'Sin estado'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Última Actualización"
+            value={reclutamiento.updated_at ? 
+              formatearFecha(reclutamiento.updated_at) : 
+              'No disponible'
+            }
+          />
+        </InfoContainer>
+      </div>
+    );
+  };
+
+  // useEffect para cargar datos cuando se monta el componente
+  useEffect(() => {
+    if (id) {
+      console.log('🔍 useEffect ejecutándose con id:', id);
+      cargarParticipante();
+      cargarInvestigaciones();
+      cargarDolores();
+      cargarUsuarios();
+    }
+  }, [id]);
 
   // Estados de loading
   if (loading) {
@@ -1727,8 +1903,8 @@ export default function VistaParticipacion() {
               color="purple"
               className="mb-0"
               chip={{
-                label: reclutamientoActual?.estado || investigaciones[0]?.estado_agendamiento || 'Sin estado',
-                variant: getChipVariant(reclutamientoActual?.estado || investigaciones[0]?.estado_agendamiento || 'default') as any,
+                label: reclutamientoActual?.estado_reclutamiento_nombre || 'Sin estado',
+                variant: getChipVariant(reclutamientoActual?.estado_reclutamiento_nombre || 'default') as any,
                 size: 'sm'
               }}
             />
@@ -1757,17 +1933,22 @@ export default function VistaParticipacion() {
         {/* Tabs */}
         <Tabs
           tabs={[
-            {
-              id: 'participacion',
-              label: 'Información de Participación',
-              content: <ParticipacionContent participante={participante} empresa={empresa} investigaciones={investigaciones} participacionesPorMes={participacionesPorMes} />
-            },
+
             {
               id: 'informacion',
               label: 'Información de Participante',
-              content: <InformacionContent participante={participante} empresa={empresa} />
+              content: <InformacionContent 
+                participante={participante} 
+                empresa={empresa} 
+                investigaciones={investigaciones}
+                participacionesPorMes={participacionesPorMes}
+              />
             },
-            
+            {
+              id: 'reclutamiento',
+              label: 'Información de Reclutamiento',
+              content: <ReclutamientoContent reclutamiento={reclutamientoActual} participante={participante} />
+            },
             {
               id: 'historial',
               label: 'Historial de Investigaciones',

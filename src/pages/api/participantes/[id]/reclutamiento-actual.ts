@@ -129,6 +129,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_sesion: null,
         duracion_sesion: 0,
         estado: 'Sin estado',
+        estado_reclutamiento_nombre: 'Sin estado',
         responsable: 'Sin responsable',
         implementador: 'Sin implementador',
         tipo_investigacion: 'Sin tipo',
@@ -145,9 +146,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // PASO 3: Tomar el más reciente
-    const reclutamiento = reclutamientos[0];
-    console.log('✅ Reclutamiento seleccionado:', reclutamiento);
+            // PASO 3: Tomar el más reciente, priorizando por fecha y tipo
+            let reclutamiento = reclutamientos[0];
+            
+            // Si hay múltiples reclutamientos, ordenar por fecha y priorizar tipo_participante
+            if (reclutamientos.length > 1) {
+              console.log('🔍 Múltiples reclutamientos encontrados, ordenando por prioridad...');
+              
+              // LÓGICA DIFERENCIADA POR TIPO DE PARTICIPANTE
+              if (tipoParticipante === 'friend_family') {
+                // Para FRIEND & FAMILY: NO ordenar por fecha, tomar el PRIMERO
+                console.log('🔍 Participante Friend & Family: tomando el primer reclutamiento sin ordenar por fecha');
+                reclutamiento = reclutamientos[0];
+              } else {
+                // Para EXTERNOS e INTERNOS: mantener lógica de ordenamiento por fecha
+                console.log('🔍 Participante Externo/Interno: ordenando por fecha y tipo...');
+                
+                // Ordenar: primero por tipo_participante (externo > null), luego por fecha (más reciente)
+                const reclutamientosOrdenados = reclutamientos.sort((a, b) => {
+                  // Prioridad 1: tipo_participante (externo primero)
+                  const tipoA = a.tipo_participante === 'externo' ? 1 : 0;
+                  const tipoB = b.tipo_participante === 'externo' ? 1 : 0;
+                  
+                  if (tipoA !== tipoB) {
+                    return tipoB - tipoA; // externo primero
+                  }
+                  
+                  // Prioridad 2: fecha (más reciente primero)
+                  const fechaA = new Date(a.fecha_asignado || a.updated_at || 0);
+                  const fechaB = new Date(b.fecha_asignado || b.updated_at || 0);
+                  return fechaB.getTime() - fechaA.getTime();
+                });
+                
+                reclutamiento = reclutamientosOrdenados[0];
+                console.log('🔍 Reclutamientos ordenados por prioridad:', reclutamientosOrdenados.map(r => ({
+                  id: r.id,
+                  tipo: r.tipo_participante,
+                  fecha: r.fecha_asignado,
+                  reclutador_id: r.reclutador_id
+                })));
+              }
+            }
+                
+                console.log('✅ Reclutamiento seleccionado:', reclutamiento);
 
     // PASO 4: Buscar investigación asociada
     let investigacion = null;
@@ -170,23 +211,87 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // PASO 5: Buscar usuarios responsables
     let responsableNombre = 'Sin responsable';
     let implementadorNombre = 'Sin implementador';
-
-    if (investigacion?.responsable_id) {
-      console.log('🔍 PASO 5: Buscando responsable...');
-      console.log('🔍 ID del responsable:', investigacion.responsable_id);
+    
+    // LÓGICA DIFERENCIADA POR TIPO DE PARTICIPANTE
+    if (tipoParticipante === 'externo') {
+      // Para EXTERNOS: Usar el responsable de la investigación
+      if (investigacion?.responsable_id) {
+        console.log('🔍 PASO 5: Buscando responsable de la investigación (participante externo)...');
+        console.log('🔍 ID del responsable de investigación:', investigacion.responsable_id);
+        
+        const { data: responsableData, error: responsableError } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', investigacion.responsable_id)
+          .single();
+    
+        if (responsableError) {
+          console.error('❌ Error consultando responsable de investigación:', responsableError);
+        } else if (responsableData) {
+          console.log('🔍 Datos del responsable de investigación:', responsableData);
+          responsableNombre = responsableData.nombre || 'Sin nombre';
+          console.log('✅ Responsable de investigación encontrado:', responsableNombre);
+        }
+      }
+    } else if (tipoParticipante === 'friend_family') {
+      // Para FRIEND & FAMILY: Usar el reclutador del reclutamiento
+      if (reclutamiento.reclutador_id) {
+        console.log('🔍 PASO 5: Buscando reclutador del reclutamiento (participante friend&family)...');
+        console.log('🔍 ID del reclutador:', reclutamiento.reclutador_id);
+        
+        const { data: reclutadorData, error: reclutadorError } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', reclutamiento.reclutador_id)
+          .single();
+    
+        if (reclutadorError) {
+          console.error('❌ Error consultando reclutador:', reclutadorError);
+        } else if (reclutadorData) {
+          console.log('🔍 Datos del reclutador:', reclutadorData);
+          responsableNombre = reclutadorData.nombre || 'Sin nombre';
+          console.log('✅ Reclutador encontrado:', responsableNombre);
+        }
+      }
+    } else {
+      // Para INTERNOS: Usar el reclutador del reclutamiento
+      if (reclutamiento.reclutador_id) {
+        console.log('🔍 PASO 5: Buscando reclutador del reclutamiento (participante interno)...');
+        console.log('🔍 ID del reclutador:', reclutamiento.reclutador_id);
+        
+        const { data: reclutadorData, error: reclutadorError } = await supabase
+          .from('usuarios')
+          .select('*')
+          .eq('id', reclutamiento.reclutador_id)
+          .single();
+    
+        if (reclutadorError) {
+          console.error('❌ Error consultando reclutador:', reclutadorError);
+        } else if (reclutadorData) {
+          console.log('🔍 Datos del reclutador:', reclutadorData);
+          responsableNombre = reclutadorData.nombre || 'Sin nombre';
+          console.log('✅ Reclutador encontrado:', responsableNombre);
+        }
+      }
+    }
+    
+    // Fallback: Si no se encontró responsable por la lógica anterior, usar el responsable de la investigación (si aplica)
+    if (responsableNombre === 'Sin responsable' && investigacion?.responsable_id) {
+      console.log('🔍 PASO 5.2: Fallback a responsable de la investigación...');
+      console.log('🔍 ID del responsable de investigación:', investigacion.responsable_id);
       
       const { data: responsableData, error: responsableError } = await supabase
         .from('usuarios')
         .select('*')
         .eq('id', investigacion.responsable_id)
         .single();
-
+    
       if (responsableError) {
-        console.error('❌ Error consultando responsable:', responsableError);
+        console.error('❌ Error consultando responsable de investigación:', responsableError);
       } else if (responsableData) {
-        console.log('🔍 Datos del responsable:', responsableData);
+        console.log('🔍 Datos del responsable de investigación:', responsableData);
         responsableNombre = responsableData.nombre || 'Sin nombre';
-        console.log('✅ Responsable encontrado:', responsableNombre);
+        console.log('✅ Responsable de investigación encontrado:', responsableNombre);
       }
     }
 
@@ -209,7 +314,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // PASO 7: Formatear respuesta
+    // PASO 7: Obtener nombre del estado de agendamiento
+    let estadoAgendamientoNombre = 'Sin estado';
+    if (reclutamiento.estado_agendamiento) {
+      console.log('🔍 PASO 7: Buscando nombre del estado de agendamiento...');
+      console.log('🔍 ID del estado de agendamiento:', reclutamiento.estado_agendamiento);
+      
+      const { data: estadoData, error: estadoError } = await supabase
+        .from('estado_agendamiento_cat')
+        .select('nombre')
+        .eq('id', reclutamiento.estado_agendamiento)
+        .single();
+      
+      if (estadoError) {
+        console.error('❌ Error consultando estado de agendamiento:', estadoError);
+      } else if (estadoData) {
+        console.log('🔍 Datos del estado de agendamiento:', estadoData);
+        estadoAgendamientoNombre = estadoData.nombre || 'Sin nombre';
+        console.log('✅ Estado de agendamiento encontrado:', estadoAgendamientoNombre);
+      }
+    }
+
+    // PASO 8: Formatear respuesta
     const reclutamientoFormateado = {
       id: reclutamiento.id,
       nombre: investigacion?.nombre || 'Sin nombre',
@@ -218,14 +344,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fecha_sesion: reclutamiento.fecha_sesion,
       duracion_sesion: reclutamiento.duracion_sesion || 60,
       estado: investigacion?.estado || 'Sin estado',
+      estado_reclutamiento_nombre: estadoAgendamientoNombre, // Agregamos el nombre del estado
       responsable: responsableNombre,
       implementador: implementadorNombre,
       tipo_investigacion: 'Sin tipo',
       fecha_asignado: reclutamiento.fecha_asignado,
       estado_agendamiento: reclutamiento.estado_agendamiento,
       reclutador_id: reclutamiento.reclutador_id,
-      creado_por: reclutamiento.creado_por
+      creado_por: reclutamiento.creado_por,
+      hora_sesion: reclutamiento.hora_sesion, // Asegurarse de que se incluya
     };
+    
+    // Debug: Log para verificar qué campos están llegando
+    console.log('🔍 API: reclutamiento.hora_sesion:', reclutamiento.hora_sesion);
+    console.log('🔍 API: reclutamientoFormateado.hora_sesion:', reclutamientoFormateado.hora_sesion);
+    console.log('🔍 API: Campos del reclutamiento original:', Object.keys(reclutamiento));
 
     console.log('✅ Respuesta final formateada:', reclutamientoFormateado);
 

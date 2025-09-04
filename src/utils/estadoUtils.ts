@@ -194,7 +194,7 @@ export const getEstadoReclutamientoVariant = (estado: string): 'default' | 'warn
   
   switch (estadoLower) {
     case 'pendiente': 
-    case 'pendiente de agendamiento': return 'warning';        // Amarillo
+    case 'pendiente de agendamiento': return 'info';           // Azul
     case 'en progreso': 
     case 'en_progreso': 
     case 'en progreso': return 'primary'; // Azul primario (más seguro)
@@ -286,9 +286,9 @@ export const getEstadoAgendamientoBadgeVariant = (estado: string): 'default' | '
   
   switch (estadoLower) {
     case 'pendiente': 
-    case 'pendiente de agendamiento': return 'warning';        // Amarillo
+    case 'pendiente de agendamiento': return 'info';           // Azul
     case 'agendada': 
-    case 'programada': return 'info';                          // Azul
+    case 'programada': return 'warning';                       // Amarillo
     case 'confirmada': 
     case 'confirmado': return 'success';                       // Verde
     case 'cancelada': 
