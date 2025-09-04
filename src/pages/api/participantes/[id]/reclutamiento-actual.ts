@@ -20,63 +20,67 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log('🔍 API reclutamiento-actual - ID participante:', id);
 
   try {
-    // Primero, buscar en la tabla de participantes para obtener el reclutamiento_id
-    console.log('🔍 Buscando participante con ID:', id);
-    const { data: participanteData, error: participanteError } = await supabase
-      .from('participantes')
-      .select('reclutamiento_id, nombre')
-      .eq('id', id)
-      .single();
-
-    if (participanteError) {
-      console.error('❌ Error consultando participante:', participanteError);
-      return res.status(404).json({ error: 'Participante no encontrado' });
-    }
-
-    console.log('✅ Participante encontrado:', participanteData);
-
-    if (!participanteData?.reclutamiento_id) {
-      console.log('❌ Participante no tiene reclutamiento_id:', participanteData);
-      return res.status(404).json({ error: 'Participante no tiene reclutamiento asignado' });
-    }
-
-    console.log('🔍 Buscando reclutamiento con ID:', participanteData.reclutamiento_id);
-
-    // Ahora buscar el reclutamiento usando el ID obtenido
-    const { data: reclutamiento, error: reclutamientoError } = await supabase
+    // Buscar directamente en la tabla reclutamientos usando participantes_id
+    console.log('🔍 Buscando reclutamiento para participante ID:', id);
+    const { data: reclutamientos, error: reclutamientoError } = await supabase
       .from('reclutamientos')
-      .select('*')
-      .eq('id', participanteData.reclutamiento_id)
-      .single();
+      .select(`
+        *,
+        investigaciones!inner(
+          id,
+          nombre,
+          descripcion,
+          fecha_inicio,
+          fecha_fin,
+          estado,
+          responsable_id,
+          implementador_id,
+          tipo_investigacion_id
+        ),
+        usuarios!inner(
+          id,
+          nombre,
+          apellido,
+          email
+        )
+      `)
+      .eq('participantes_id', id)
+      .order('fecha_asignado', { ascending: false })
+      .limit(1);
 
     if (reclutamientoError) {
-      console.error('❌ Error consultando reclutamiento:', reclutamientoError);
-      return res.status(404).json({ error: 'Reclutamiento no encontrado' });
+      console.error('❌ Error consultando reclutamientos:', reclutamientoError);
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
 
-    if (!reclutamiento) {
-      console.log('❌ No se encontró reclutamiento con ID:', participanteData.reclutamiento_id);
-      return res.status(404).json({ error: 'Reclutamiento no encontrado' });
+    if (!reclutamientos || reclutamientos.length === 0) {
+      console.log('❌ No se encontraron reclutamientos para participante ID:', id);
+      return res.status(404).json({ error: 'No se encontraron reclutamientos para este participante' });
     }
 
+    const reclutamiento = reclutamientos[0];
     console.log('✅ Reclutamiento encontrado:', reclutamiento);
     
-    // Formatear la respuesta
+    // Formatear la respuesta usando la estructura real de la base de datos
     const reclutamientoFormateado = {
       id: reclutamiento.id,
-      nombre: reclutamiento.nombre,
-      descripcion: reclutamiento.descripcion,
-      fecha_inicio: reclutamiento.fecha_inicio,
-      hora_inicio: reclutamiento.hora_inicio,
-      duracion_sesion: reclutamiento.duracion_sesion,
-      estado: reclutamiento.estado,
-      responsable: reclutamiento.responsable,
-      implementador: reclutamiento.implementador,
-      tipo_investigacion: reclutamiento.tipo_investigacion,
-      objetivo: reclutamiento.objetivo,
-      criterios: reclutamiento.criterios,
-      fecha_creacion: reclutamiento.created_at,
-      fecha_actualizacion: reclutamiento.updated_at
+      nombre: reclutamiento.investigaciones?.nombre || 'Sin nombre',
+      descripcion: reclutamiento.investigaciones?.descripcion || 'Sin descripción',
+      fecha_inicio: reclutamiento.investigaciones?.fecha_inicio || reclutamiento.fecha_sesion,
+      fecha_sesion: reclutamiento.fecha_sesion,
+      duracion_sesion: reclutamiento.duracion_sesion || 60,
+      estado: reclutamiento.investigaciones?.estado || 'Sin estado',
+      responsable: reclutamiento.usuarios?.nombre ? 
+        `${reclutamiento.usuarios.nombre} ${reclutamiento.usuarios.apellido || ''}`.trim() : 
+        'Sin responsable',
+      implementador: reclutamiento.usuarios?.nombre ? 
+        `${reclutamiento.usuarios.nombre} ${reclutamiento.usuarios.apellido || ''}`.trim() : 
+        'Sin implementador',
+      tipo_investigacion: reclutamiento.investigaciones?.tipo_investigacion_id || 'Sin tipo',
+      fecha_asignado: reclutamiento.fecha_asignado,
+      estado_agendamiento: reclutamiento.estado_agendamiento,
+      reclutador_id: reclutamiento.reclutador_id,
+      creado_por: reclutamiento.creado_por
     };
 
     return res.status(200).json({
