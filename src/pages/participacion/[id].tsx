@@ -332,20 +332,30 @@ export default function VistaParticipacion() {
   const cargarReclutamientoActual = async () => {
     if (!id) return;
     
+    console.log('🔍 Frontend: Iniciando carga de reclutamiento actual para participante:', id);
+    
     try {
       // Buscar el reclutamiento más reciente para este participante
+      console.log('🔍 Frontend: Llamando API /api/participantes/${id}/reclutamiento-actual');
       const response = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
+      
+      console.log('🔍 Frontend: Response status:', response.status);
+      console.log('🔍 Frontend: Response ok:', response.ok);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Frontend: Reclutamiento actual cargado exitosamente:', data);
         setReclutamientoActual(data.reclutamiento);
-        console.log('Reclutamiento actual cargado:', data.reclutamiento);
       } else {
-        console.log('No se encontró reclutamiento actual, buscando en investigaciones...');
+        const errorData = await response.json();
+        console.log('❌ Frontend: Error en API reclutamiento-actual:', errorData);
+        console.log('🔍 Frontend: Fallback a investigaciones...');
         // Fallback: buscar en investigaciones
         await cargarInvestigaciones();
       }
     } catch (error) {
-      console.error('Error cargando reclutamiento actual:', error);
+      console.error('❌ Frontend: Error cargando reclutamiento actual:', error);
+      console.log('🔍 Frontend: Fallback a investigaciones por error...');
       // Fallback: buscar en investigaciones
       await cargarInvestigaciones();
     }
