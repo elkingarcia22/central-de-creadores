@@ -149,7 +149,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_sesion: r.duracion_sesion,
         // Agregar propiedades faltantes para la tabla
         tipo_investigacion: 'Sesión de investigación',
-        responsable: r.reclutador_id || 'No asignado'
+        responsable: r.reclutador_id || 'No asignado',
+        // Campos adicionales para reclutamiento
+        reclutamiento_id: r.id,
+        reclutador_id: r.reclutador_id,
+        participantes_id: r.participantes_id,
+        participantes_internos_id: r.participantes_internos_id,
+        participantes_friend_family_id: r.participantes_friend_family_id
       }));
 
       // Intentar obtener nombres reales de las investigaciones
@@ -247,7 +253,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_sesion: est.duracion_sesion,
         // Agregar propiedades faltantes para la tabla
         tipo_investigacion: est.tipo_investigacion || est.tipo_sesion || 'Sesión de investigación',
-        responsable: est.responsable || est.creado_por || 'No asignado'
+        responsable: est.responsable || est.creado_por || 'No asignado',
+        // Campos adicionales para reclutamiento (si están disponibles)
+        reclutamiento_id: est.reclutamiento_id,
+        reclutador_id: est.reclutador_id,
+        participantes_id: est.participantes_id,
+        participantes_internos_id: est.participantes_internos_id,
+        participantes_friend_family_id: est.participantes_friend_family_id
       }));
     }
 
