@@ -77,6 +77,12 @@ interface InvestigacionParticipante {
   duracion_sesion?: string;
   tipo_investigacion: string;
   responsable: string;
+  // Campos adicionales para reclutamiento
+  reclutamiento_id?: string;
+  reclutador_id?: string;
+  participantes_id?: string;
+  participantes_internos_id?: string;
+  participantes_friend_family_id?: string;
 }
 
 interface DolorParticipante {
@@ -488,7 +494,26 @@ export default function VistaParticipacion() {
   const handleEditarParticipacion = () => {
     // Buscar la participación actual (primera investigación)
     if (investigaciones.length > 0) {
-      setParticipacionParaEditar(investigaciones[0]);
+      const investigacion = investigaciones[0];
+      
+      // Crear un objeto con la estructura que espera el modal EditarReclutamientoModal
+      const participacionData = {
+        id: investigacion.reclutamiento_id || investigacion.id, // Usar reclutamiento_id si está disponible
+        participantes_id: id,
+        reclutador_id: investigacion.reclutador_id || '',
+        fecha_sesion: investigacion.fecha_participacion || '',
+        hora_sesion: '', // La hora no está en investigaciones, se puede agregar después
+        duracion_sesion: investigacion.duracion_sesion || 60,
+        investigacion_id: investigacion.id,
+        tipo_participante: participante?.tipo || 'externo',
+        // Agregar información adicional
+        nombre: participante?.nombre || '',
+        email: participante?.email || '',
+        empresa_nombre: participante?.empresa_nombre || ''
+      };
+      
+      console.log('🔍 Datos de participación para editar:', participacionData);
+      setParticipacionParaEditar(participacionData);
       setShowEditarParticipacionModal(true);
     } else {
       showError('No hay participación para editar');
@@ -2116,6 +2141,7 @@ export default function VistaParticipacion() {
             // Recargar datos
             await cargarInvestigaciones();
             showSuccess('Participación actualizada exitosamente');
+
           }}
           onSave={async (reclutamientoData: any) => {
             try {
