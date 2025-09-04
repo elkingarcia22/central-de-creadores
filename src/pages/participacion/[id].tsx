@@ -119,7 +119,7 @@ interface ComentarioParticipante {
 
 export default function VistaParticipacion() {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, reclutamiento_id } = router.query;
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showError, showSuccess } = useToast();
@@ -318,7 +318,7 @@ export default function VistaParticipacion() {
       cargarDolores();
       cargarUsuarios();
     }
-  }, [id, cargarParticipante]);
+  }, [id, reclutamiento_id, cargarParticipante]);
 
   // Debug: Monitorear cambios en el estado de empresa
   useEffect(() => {
@@ -335,11 +335,16 @@ export default function VistaParticipacion() {
     if (!id) return;
     
     console.log('🔍 Frontend: Iniciando carga de reclutamiento actual para participante:', id);
+    console.log('🔍 Frontend: reclutamiento_id específico:', reclutamiento_id);
     
     try {
-      // Buscar el reclutamiento más reciente para este participante
-      console.log('🔍 Frontend: Llamando API /api/participantes/${id}/reclutamiento-actual');
-      const response = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
+      // Si hay un reclutamiento_id específico, usar ese; sino, usar el más reciente
+      const url = reclutamiento_id 
+        ? `/api/participantes/${id}/reclutamiento-actual?reclutamiento_id=${reclutamiento_id}`
+        : `/api/participantes/${id}/reclutamiento-actual`;
+      
+      console.log('🔍 Frontend: Llamando API:', url);
+      const response = await fetch(url);
       
       console.log('🔍 Frontend: Response status:', response.status);
       console.log('🔍 Frontend: Response ok:', response.ok);

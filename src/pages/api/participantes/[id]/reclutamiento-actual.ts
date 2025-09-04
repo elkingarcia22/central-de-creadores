@@ -11,13 +11,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { id } = req.query;
+  const { id, reclutamiento_id } = req.query;
 
   if (!id || typeof id !== 'string') {
     return res.status(400).json({ error: 'ID de participante requerido' });
   }
 
   console.log('🔍 API reclutamiento-actual - ID participante:', id);
+  console.log('🔍 API reclutamiento-actual - ID reclutamiento específico:', reclutamiento_id);
   console.log('🔍 Variables de entorno:');
   console.log('  - NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Existe' : '❌ No existe');
   console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Existe' : '❌ No existe');
@@ -146,8 +147,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-            // PASO 3: Tomar el más reciente, priorizando por fecha y tipo
-            let reclutamiento = reclutamientos[0];
+            // PASO 3: Si se especifica un reclutamiento_id, buscarlo directamente
+            let reclutamiento;
+            
+            if (reclutamiento_id && typeof reclutamiento_id === 'string') {
+              console.log('🔍 PASO 3A: Buscando reclutamiento específico:', reclutamiento_id);
+              reclutamiento = reclutamientos.find(r => r.id === reclutamiento_id);
+              
+              if (!reclutamiento) {
+                console.error('❌ Reclutamiento específico no encontrado:', reclutamiento_id);
+                return res.status(404).json({ 
+                  error: 'Reclutamiento específico no encontrado',
+                  reclutamiento_id: reclutamiento_id 
+                });
+              }
+              
+              console.log('✅ Reclutamiento específico encontrado:', reclutamiento);
+            } else {
+              // PASO 3B: Tomar el más reciente, priorizando por fecha y tipo
+              console.log('🔍 PASO 3B: Seleccionando reclutamiento más reciente...');
+              reclutamiento = reclutamientos[0];
             
             // Si hay múltiples reclutamientos, ordenar por fecha y priorizar tipo_participante
             if (reclutamientos.length > 1) {
@@ -187,8 +206,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 })));
               }
             }
+            }
                 
-                console.log('✅ Reclutamiento seleccionado:', reclutamiento);
+            console.log('✅ Reclutamiento seleccionado:', reclutamiento);
 
     // PASO 4: Buscar investigación asociada
     let investigacion = null;
