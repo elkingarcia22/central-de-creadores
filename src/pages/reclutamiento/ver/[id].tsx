@@ -177,16 +177,17 @@ const VerReclutamiento: NextPage = () => {
   const cargarParticipantes = async () => {
     try {
       console.log('🔄 Cargando participantes...');
-      console.log('🔍 ID usado para cargar:', id);
       
-      // Verificar que el ID esté disponible
-      if (!id) {
-        console.log('⚠️ ID no disponible aún, esperando...');
+      // Verificar que tengamos el reclutamiento cargado
+      if (!reclutamiento?.reclutamiento_id) {
+        console.log('⚠️ Reclutamiento no disponible aún, esperando...');
         return;
       }
       
+      console.log('🔍 Usando reclutamiento_id:', reclutamiento.reclutamiento_id);
+      
       // Usar la API correcta para obtener participantes del reclutamiento
-      const response = await fetch(`/api/reclutamientos/${id}/participantes`, {
+      const response = await fetch(`/api/reclutamientos/${reclutamiento.reclutamiento_id}/participantes`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -265,13 +266,13 @@ const VerReclutamiento: NextPage = () => {
     }
   };
 
-  // Cargar participantes cuando el ID esté disponible
+  // Cargar participantes cuando el reclutamiento esté disponible
   useEffect(() => {
-    if (id) {
-      console.log('🔄 ID disponible, cargando participantes:', id);
+    if (reclutamiento?.reclutamiento_id) {
+      console.log('🔄 Reclutamiento disponible, cargando participantes:', reclutamiento.reclutamiento_id);
       cargarParticipantes();
     }
-  }, [id]);
+  }, [reclutamiento?.reclutamiento_id]);
 
   // Monitorear cambios en el estado de participantes
   useEffect(() => {
