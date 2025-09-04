@@ -19,46 +19,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let tipoParticipante = '';
     let participanteData = null;
 
-    // Verificar en participantes (externos)
-    let { data: participanteExterno, error: errorExterno } = await supabaseServer
-      .from('participantes')
-      .select('id, tipo')
-      .eq('id', id)
-      .single();
+    // Buscar en todas las tablas de participantes en paralelo
+    console.log('🔍 Buscando participante en todas las tablas:', id);
+    
+    const [participanteExterno, participanteInterno, participanteFriendFamily] = await Promise.all([
+      supabaseServer.from('participantes').select('id, tipo').eq('id', id).single(),
+      supabaseServer.from('participantes_internos').select('id, tipo').eq('id', id).single(),
+      supabaseServer.from('participantes_friend_family').select('id, tipo').eq('id', id).single()
+    ]);
 
-    console.log('🔍 Búsqueda en participantes:', { data: participanteExterno, error: errorExterno });
+    console.log('🔍 Resultados de búsqueda:', {
+      externo: { data: participanteExterno.data, error: participanteExterno.error },
+      interno: { data: participanteInterno.data, error: participanteInterno.error },
+      friend_family: { data: participanteFriendFamily.data, error: participanteFriendFamily.error }
+    });
 
-    if (participanteExterno) {
+    // Determinar el tipo de participante
+    if (participanteExterno.data) {
       tipoParticipante = 'externo';
-      participanteData = participanteExterno;
-    } else {
-      // Verificar en participantes_internos
-      let { data: participanteInterno, error: errorInterno } = await supabaseServer
-        .from('participantes_internos')
-        .select('id, tipo')
-        .eq('id', id)
-        .single();
-
-      console.log('🔍 Búsqueda en participantes_internos:', { data: participanteInterno, error: errorInterno });
-
-      if (participanteInterno) {
-        tipoParticipante = 'interno';
-        participanteData = participanteInterno;
-      } else {
-        // Verificar en participantes_friend_family
-        let { data: participanteFriendFamily, error: errorFriendFamily } = await supabaseServer
-          .from('participantes_friend_family')
-          .select('id, tipo')
-          .eq('id', id)
-          .single();
-
-        console.log('🔍 Búsqueda en participantes_friend_family:', { data: participanteFriendFamily, error: errorFriendFamily });
-
-        if (participanteFriendFamily) {
-          tipoParticipante = 'friend_family';
-          participanteData = participanteFriendFamily;
-        }
-      }
+      participanteData = participanteExterno.data;
+    } else if (participanteInterno.data) {
+      tipoParticipante = 'interno';
+      participanteData = participanteInterno.data;
+    } else if (participanteFriendFamily.data) {
+      tipoParticipante = 'friend_family';
+      participanteData = participanteFriendFamily.data;
     }
 
     if (!participanteData) {
