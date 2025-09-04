@@ -185,8 +185,8 @@ const VerReclutamiento: NextPage = () => {
         return;
       }
       
-      // Primero obtener todos los reclutamientos de la investigación
-      const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${id}`, {
+      // Usar la API correcta para obtener participantes del reclutamiento
+      const response = await fetch(`/api/reclutamientos/${id}/participantes`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -347,25 +347,74 @@ const VerReclutamiento: NextPage = () => {
         // Durante la inicialización, usar setLoading para el skeleton
         setLoading(true);
       }
-      const response = await fetch('/api/metricas-reclutamientos');
+      
+      // Usar la API correcta para obtener el reclutamiento por ID
+      const response = await fetch(`/api/reclutamientos/${id}`);
       if (response.ok) {
-        const data = await response.json();
-        // Buscar por reclutamiento_id o investigacion_id
-        const reclutamientoEncontrado = data.investigaciones?.find(
-          (r: ReclutamientoDetalle) => 
-            r.reclutamiento_id === id || r.investigacion_id === id
-        );
-        if (reclutamientoEncontrado) {
-          setReclutamiento(reclutamientoEncontrado);
-        } else {
-          showError('No se pudo encontrar el reclutamiento', 'El reclutamiento solicitado no existe');
+        const reclutamientoData = await response.json();
+        console.log('✅ Reclutamiento cargado:', reclutamientoData);
+        
+        // Convertir los datos del reclutamiento al formato esperado por ReclutamientoDetalle
+        const reclutamientoFormateado: ReclutamientoDetalle = {
+          reclutamiento_id: reclutamientoData.id,
+          investigacion_id: reclutamientoData.investigacion_id || '',
+          investigacion_nombre: 'Cargando...', // Se cargará después
+          estado_investigacion: 'Cargando...',
+          investigacion_fecha_inicio: '',
+          investigacion_fecha_fin: '',
+          investigacion_riesgo: '',
+          libreto_titulo: '',
+          libreto_descripcion: '',
+          libreto_numero_participantes: 0,
+          responsable_nombre: 'Cargando...',
+          responsable_correo: '',
+          implementador_nombre: 'Cargando...',
+          implementador_correo: '',
+          estado_reclutamiento_id: reclutamientoData.estado_agendamiento || '',
+          estado_reclutamiento_nombre: 'Cargando...',
+          estado_reclutamiento_color: '',
+          participantes_reclutados: 0,
+          progreso_reclutamiento: '',
+          porcentaje_completitud: 0,
+          riesgo_reclutamiento: '',
+          riesgo_reclutamiento_color: '',
+          dias_restantes_inicio: 0
+        };
+        
+        setReclutamiento(reclutamientoFormateado);
+        
+        // Cargar la investigación asociada si existe
+        if (reclutamientoData.investigacion_id) {
+          try {
+            const invResponse = await fetch(`/api/investigaciones/${reclutamientoData.investigacion_id}`);
+            if (invResponse.ok) {
+              const invData = await invResponse.json();
+              setInvestigacion(invData);
+              
+              // Actualizar el reclutamiento con la información de la investigación
+              setReclutamiento(prev => prev ? {
+                ...prev,
+                investigacion_nombre: invData.nombre || 'Sin nombre',
+                estado_investigacion: invData.estado || 'Sin estado',
+                investigacion_fecha_inicio: invData.fecha_inicio || '',
+                investigacion_fecha_fin: invData.fecha_fin || '',
+                investigacion_riesgo: invData.riesgo_automatico || 'Sin riesgo'
+              } : null);
+            }
+          } catch (invError) {
+            console.error('Error cargando investigación:', invError);
+          }
         }
+        
+        // Cargar participantes del reclutamiento
+        await cargarParticipantes();
+        
       } else {
         throw new Error('Error al obtener datos del reclutamiento');
       }
     } catch (error) {
       console.error('Error cargando reclutamiento:', error);
-      showError('Error inesperado al cargar el reclutamiento');
+      showError('No se pudo encontrar el reclutamiento', 'El reclutamiento solicitado no existe');
     } finally {
       setLoading(false);
       setIsInitializing(false); // Finalizar inicialización
