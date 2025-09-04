@@ -329,7 +329,7 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     // Obtener datos de períodos
     const { data: periodos } = await supabase
       .from('periodo')
-      .select('id, nombre, etiqueta');
+      .select('id,nombre,etiqueta');
       
     // Obtener datos de usuarios
     const { data: usuarios } = await supabase
@@ -508,7 +508,7 @@ export const obtenerInvestigacionPorId = async (id: string): Promise<RespuestaAP
     // Obtener datos de períodos
     const { data: periodos } = await supabase
       .from('periodo')
-      .select('id, nombre, etiqueta');
+      .select('id,nombre,etiqueta');
       
     // Obtener datos de usuarios
     const { data: usuarios } = await supabase
