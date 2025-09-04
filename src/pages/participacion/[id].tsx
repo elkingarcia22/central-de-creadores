@@ -1223,13 +1223,34 @@ export default function VistaParticipacion() {
           <InfoItem 
             label="Tipo de Participante"
             value={
-              <Chip 
-                variant={participante.tipo === 'externo' ? 'primary' : participante.tipo === 'interno' ? 'success' : 'warning'}
-                size="sm"
-              >
-                {participante.tipo === 'externo' ? 'Cliente Externo' : 
-                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
-              </Chip>
+              (() => {
+                // Función para obtener el badge del tipo de participante (igual que en reclutamiento)
+                const getTipoParticipanteBadge = (tipo: string) => {
+                  switch (tipo) {
+                    case 'interno':
+                      return (
+                        <Chip variant="info" size="sm">
+                          Participante Interno
+                        </Chip>
+                      );
+                    case 'friend_family':
+                      return (
+                        <Chip variant="secondary" size="sm">
+                          Friend and Family
+                        </Chip>
+                      );
+                    case 'externo':
+                    default:
+                      return (
+                        <Chip variant="primary" size="sm">
+                          Participante Externo
+                        </Chip>
+                      );
+                  }
+                };
+                
+                return getTipoParticipanteBadge(participante.tipo);
+              })()
             }
           />
 
