@@ -1631,7 +1631,15 @@ export default function VistaParticipacion() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.push('/reclutamiento')}
+              onClick={() => {
+                // Obtener el ID del reclutamiento desde las investigaciones para volver a la vista correcta
+                if (investigaciones.length > 0 && investigaciones[0].reclutamiento_id) {
+                  router.push(`/reclutamiento/ver/${investigaciones[0].reclutamiento_id}`);
+                } else {
+                  // Fallback: ir al home de reclutamientos si no hay reclutamiento_id
+                  router.push('/reclutamiento');
+                }
+              }}
               className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
