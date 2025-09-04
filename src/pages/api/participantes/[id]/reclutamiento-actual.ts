@@ -91,7 +91,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .single();
 
       if (responsableData) {
-        responsableNombre = `${responsableData.nombre} ${responsableData.apellido || ''}`.trim();
+        responsableNombre = responsableData.nombre || 'Sin nombre';
         console.log('✅ Responsable encontrado:', responsableNombre);
       }
     }
@@ -105,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .single();
 
       if (implementadorData) {
-        implementadorNombre = `${implementadorData.nombre} ${implementadorData.apellido || ''}`.trim();
+        implementadorNombre = implementadorData.nombre || 'Sin nombre';
         console.log('✅ Implementador encontrado:', implementadorNombre);
       }
     }
