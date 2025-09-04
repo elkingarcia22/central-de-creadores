@@ -115,8 +115,17 @@ export default function EditarReclutamientoModal({
   // Sincroniza responsableId cuando responsables y reclutamiento estén listos
   useEffect(() => {
     if (isOpen && responsables.length > 0 && reclutamiento?.reclutador_id) {
+      console.log('🔍 Sincronizando responsableId:', {
+        reclutamiento_reclutador_id: reclutamiento.reclutador_id,
+        responsables_disponibles: responsables.map(u => ({ id: u.id, nombre: u.full_name })),
+        responsable_encontrado: responsables.find(u => u.id === reclutamiento.reclutador_id)
+      });
+      
       if (responsables.some(u => u.id === reclutamiento.reclutador_id)) {
         setResponsableId(reclutamiento.reclutador_id);
+        console.log('✅ ResponsableId establecido:', reclutamiento.reclutador_id);
+      } else {
+        console.log('❌ Responsable no encontrado en la lista de responsables');
       }
     }
   }, [isOpen, responsables, reclutamiento]);
@@ -182,6 +191,8 @@ export default function EditarReclutamientoModal({
       const resp = await fetch('/api/usuarios');
       if (resp.ok) {
         const data = await resp.json();
+        console.log('🔍 Usuarios responsables cargados:', data.usuarios?.length || 0);
+        console.log('🔍 Muestra de usuarios:', data.usuarios?.slice(0, 3));
         setResponsables(data.usuarios || []);
       }
       // Participantes externos

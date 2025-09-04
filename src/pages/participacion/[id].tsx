@@ -513,6 +513,8 @@ export default function VistaParticipacion() {
       };
       
       console.log('🔍 Datos de participación para editar:', participacionData);
+      console.log('🔍 reclutador_id:', participacionData.reclutador_id);
+      console.log('🔍 participante:', participante);
       setParticipacionParaEditar(participacionData);
       setShowEditarParticipacionModal(true);
     } else {
