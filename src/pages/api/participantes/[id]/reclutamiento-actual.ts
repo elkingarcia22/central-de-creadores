@@ -358,6 +358,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // PASO 8: Formatear respuesta
     const reclutamientoFormateado = {
       id: reclutamiento.id,
+      investigacion_id: reclutamiento.investigacion_id, // Agregar investigacion_id para navegación
       nombre: investigacion?.nombre || 'Sin nombre',
       descripcion: investigacion?.descripcion || 'Sin descripción',
       fecha_inicio: investigacion?.fecha_inicio || reclutamiento.fecha_sesion,

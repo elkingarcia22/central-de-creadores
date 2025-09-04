@@ -1856,9 +1856,19 @@ export default function VistaParticipacion() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                // NAVEGACIÓN SIMPLE: Siempre ir al home de reclutamientos
-                console.log('🔙 NAVEGACIÓN ATRÁS - Navegando al home de reclutamientos');
-                router.push('/reclutamiento');
+                console.log('🔙 NAVEGACIÓN ATRÁS - Iniciando navegación...');
+                console.log('🔍 reclutamientoActual:', reclutamientoActual);
+                
+                // Si tenemos investigacion_id, navegar a la vista específica del reclutamiento
+                if (reclutamientoActual?.investigacion_id) {
+                  const targetUrl = `/reclutamiento/ver/${reclutamientoActual.investigacion_id}`;
+                  console.log('🔙 Navegando a vista específica del reclutamiento:', targetUrl);
+                  router.push(targetUrl);
+                } else {
+                  // Fallback al home de reclutamientos si no hay investigacion_id
+                  console.log('🔙 Fallback - Navegando al home de reclutamientos (sin investigacion_id)');
+                  router.push('/reclutamiento');
+                }
               }}
               className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
