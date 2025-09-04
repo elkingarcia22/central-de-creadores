@@ -135,6 +135,7 @@ export default function VistaParticipacion() {
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [reclutamientoActual, setReclutamientoActual] = useState<any>(null);
   
   // Estados para estadísticas de empresa
   const [empresaData, setEmpresaData] = useState<any>(null);
@@ -311,7 +312,7 @@ export default function VistaParticipacion() {
   useEffect(() => {
     if (id) {
       cargarParticipante();
-      cargarInvestigaciones();
+      cargarReclutamientoActual();
       cargarDolores();
       cargarUsuarios();
     }
@@ -326,6 +327,29 @@ export default function VistaParticipacion() {
       cargarEstadisticasEmpresa(empresa.id);
     }
   }, [empresa, participante?.tipo]);
+
+  // Cargar reclutamiento actual
+  const cargarReclutamientoActual = async () => {
+    if (!id) return;
+    
+    try {
+      // Buscar el reclutamiento más reciente para este participante
+      const response = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
+      if (response.ok) {
+        const data = await response.json();
+        setReclutamientoActual(data.reclutamiento);
+        console.log('Reclutamiento actual cargado:', data.reclutamiento);
+      } else {
+        console.log('No se encontró reclutamiento actual, buscando en investigaciones...');
+        // Fallback: buscar en investigaciones
+        await cargarInvestigaciones();
+      }
+    } catch (error) {
+      console.error('Error cargando reclutamiento actual:', error);
+      // Fallback: buscar en investigaciones
+      await cargarInvestigaciones();
+    }
+  };
 
   // Cargar investigaciones
   const cargarInvestigaciones = async () => {
@@ -534,8 +558,12 @@ export default function VistaParticipacion() {
   };
 
   const handleEliminarParticipacion = () => {
-    // Buscar la participación actual (primera investigación)
-    if (investigaciones.length > 0) {
+    // Usar el reclutamiento actual si está disponible
+    if (reclutamientoActual) {
+      setParticipacionParaEliminar(reclutamientoActual);
+      setShowEliminarParticipacionModal(true);
+    } else if (investigaciones.length > 0) {
+      // Fallback: usar la primera investigación
       setParticipacionParaEliminar(investigaciones[0]);
       setShowEliminarParticipacionModal(true);
     } else {
@@ -1140,17 +1168,13 @@ export default function VistaParticipacion() {
             value={
               (() => {
                 console.log('🔍 === DEBUG RESPONSABLE ===');
+                console.log('🔍 Reclutamiento actual:', reclutamientoActual);
                 console.log('🔍 Investigaciones disponibles:', investigaciones.length);
-                console.log('🔍 Primera investigación:', investigaciones[0]);
-                console.log('🔍 Campo responsable:', investigaciones[0]?.responsable);
                 console.log('🔍 Usuarios disponibles:', usuarios.length);
-                console.log('🔍 Primeros usuarios:', usuarios.slice(0, 3));
                 
-                if (investigaciones.length > 0 && investigaciones[0].responsable) {
-                  // Buscar el usuario responsable
-                  const responsable = usuarios.find(u => u.full_name === investigaciones[0].responsable);
-                  console.log('🔍 Usuario encontrado:', responsable);
-                  
+                // Priorizar reclutamiento actual
+                if (reclutamientoActual?.responsable) {
+                  const responsable = usuarios.find(u => u.full_name === reclutamientoActual.responsable);
                   if (responsable) {
                     return (
                       <div className="flex items-center gap-2">
@@ -1163,10 +1187,27 @@ export default function VistaParticipacion() {
                       </div>
                     );
                   }
-                  console.log('🔍 No se encontró usuario, devolviendo responsable directo');
+                  return reclutamientoActual.responsable;
+                }
+                
+                // Fallback a investigaciones
+                if (investigaciones.length > 0 && investigaciones[0].responsable) {
+                  const responsable = usuarios.find(u => u.full_name === investigaciones[0].responsable);
+                  if (responsable) {
+                    return (
+                      <div className="flex items-center gap-2">
+                        <SimpleAvatar 
+                          src={responsable.avatar_url} 
+                          fallbackText={responsable.full_name || 'Usuario'}
+                          size="sm"
+                        />
+                        <span>{responsable.full_name}</span>
+                      </div>
+                    );
+                  }
                   return investigaciones[0].responsable;
                 }
-                console.log('🔍 No hay investigaciones o responsable');
+                
                 return 'No asignado';
               })()
             }
@@ -1176,12 +1217,20 @@ export default function VistaParticipacion() {
             value={
               (() => {
                 console.log('🔍 === DEBUG FECHA ===');
-                console.log('🔍 Fecha participación:', investigaciones[0]?.fecha_participacion);
-                console.log('🔍 Fecha formateada:', investigaciones.length > 0 ? formatearFecha(investigaciones[0].fecha_participacion) : 'N/A');
+                console.log('🔍 Reclutamiento actual fecha:', reclutamientoActual?.fecha_inicio);
+                console.log('🔍 Investigación fecha:', investigaciones[0]?.fecha_participacion);
                 
-                return investigaciones.length > 0 ? 
-                  formatearFecha(investigaciones[0].fecha_participacion) : 
-                  'Sin sesiones programadas';
+                // Priorizar reclutamiento actual
+                if (reclutamientoActual?.fecha_inicio) {
+                  return formatearFecha(reclutamientoActual.fecha_inicio);
+                }
+                
+                // Fallback a investigaciones
+                if (investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
+                  return formatearFecha(investigaciones[0].fecha_participacion);
+                }
+                
+                return 'Sin sesiones programadas';
               })()
             }
           />
@@ -1190,20 +1239,24 @@ export default function VistaParticipacion() {
             value={
               (() => {
                 console.log('🔍 === DEBUG HORA ===');
-                console.log('🔍 Fecha participación para hora:', investigaciones[0]?.fecha_participacion);
-                if (investigaciones.length > 0) {
-                  const fecha = new Date(investigaciones[0].fecha_participacion);
-                  console.log('🔍 Fecha parseada:', fecha);
-                  console.log('🔍 Hora local:', fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
-                  console.log('🔍 Hora UTC:', fecha.toTimeString());
+                console.log('🔍 Reclutamiento actual hora:', reclutamientoActual?.hora_inicio);
+                console.log('🔍 Investigación fecha para hora:', investigaciones[0]?.fecha_participacion);
+                
+                // Priorizar reclutamiento actual
+                if (reclutamientoActual?.hora_inicio) {
+                  return reclutamientoActual.hora_inicio;
                 }
                 
-                return investigaciones.length > 0 ? 
-                  new Date(investigaciones[0].fecha_participacion).toLocaleTimeString('es-ES', { 
+                // Fallback a investigaciones
+                if (investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
+                  const fecha = new Date(investigaciones[0].fecha_participacion);
+                  return fecha.toLocaleTimeString('es-ES', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
-                  }) : 
-                  '--:--';
+                  });
+                }
+                
+                return '--:--';
               })()
             }
           />
@@ -1212,13 +1265,20 @@ export default function VistaParticipacion() {
             value={
               (() => {
                 console.log('🔍 === DEBUG DURACIÓN ===');
-                console.log('🔍 Duración sesión:', investigaciones[0]?.duracion_sesion);
-                console.log('🔍 Tipo de duración:', typeof investigaciones[0]?.duracion_sesion);
-                console.log('🔍 Duración final:', investigaciones.length > 0 ? `${investigaciones[0].duracion_sesion || 60} minutos` : '60 minutos');
+                console.log('🔍 Reclutamiento actual duración:', reclutamientoActual?.duracion_sesion);
+                console.log('🔍 Investigación duración:', investigaciones[0]?.duracion_sesion);
                 
-                return investigaciones.length > 0 ? 
-                  `${investigaciones[0].duracion_sesion || 60} minutos` : 
-                  '60 minutos';
+                // Priorizar reclutamiento actual
+                if (reclutamientoActual?.duracion_sesion) {
+                  return `${reclutamientoActual.duracion_sesion} minutos`;
+                }
+                
+                // Fallback a investigaciones
+                if (investigaciones.length > 0 && investigaciones[0].duracion_sesion) {
+                  return `${investigaciones[0].duracion_sesion} minutos`;
+                }
+                
+                return '60 minutos';
               })()
             }
           />
@@ -1653,8 +1713,8 @@ export default function VistaParticipacion() {
               color="purple"
               className="mb-0"
               chip={{
-                label: investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'Sin estado' : 'Sin participaciones',
-                variant: getChipVariant(investigaciones.length > 0 ? investigaciones[0].estado_agendamiento || 'default' : 'default') as any,
+                label: reclutamientoActual?.estado || investigaciones[0]?.estado_agendamiento || 'Sin estado',
+                variant: getChipVariant(reclutamientoActual?.estado || investigaciones[0]?.estado_agendamiento || 'default') as any,
                 size: 'sm'
               }}
             />
