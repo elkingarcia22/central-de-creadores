@@ -158,6 +158,7 @@ export default function VistaParticipacion() {
   const [showEliminarParticipacionModal, setShowEliminarParticipacionModal] = useState(false);
   const [participacionParaEditar, setParticipacionParaEditar] = useState<any>(null);
   const [participacionParaEliminar, setParticipacionParaEliminar] = useState<any>(null);
+  const [deletingParticipacion, setDeletingParticipacion] = useState(false);
 
   // Estados para datos seleccionados
   const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
@@ -1604,47 +1605,7 @@ export default function VistaParticipacion() {
     );
   };
 
-  // Estados para eliminación
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingParticipacion, setDeletingParticipacion] = useState(false);
 
-  // Función para manejar la eliminación de participación
-  const handleEliminarParticipacion = () => {
-    setShowDeleteModal(true);
-  };
-
-  // Función para confirmar la eliminación
-  const confirmarEliminacionParticipacion = async () => {
-    try {
-      setDeletingParticipacion(true);
-      
-      // Obtener el ID del reclutamiento desde las investigaciones
-      if (investigaciones.length > 0 && investigaciones[0].reclutamiento_id) {
-        const reclutamientoId = investigaciones[0].reclutamiento_id;
-        
-        const response = await fetch(`/api/reclutamientos/${reclutamientoId}`, {
-          method: 'DELETE',
-        });
-
-        if (response.ok) {
-          showSuccess('Participación eliminada correctamente');
-          setShowDeleteModal(false);
-          // Redirigir al reclutamiento
-          router.push(`/reclutamiento/ver/${reclutamientoId}`);
-        } else {
-          const errorData = await response.json();
-          showError(errorData.error || 'Error al eliminar la participación');
-        }
-      } else {
-        showError('No se pudo identificar la participación a eliminar');
-      }
-    } catch (error) {
-      console.error('Error eliminando participación:', error);
-      showError('Error al eliminar la participación');
-    } finally {
-      setDeletingParticipacion(false);
-    }
-  };
 
   // Estados de loading
   if (loading) {
@@ -2688,7 +2649,6 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
           message={`¿Estás seguro de que quieres eliminar la participación de "${participante?.nombre}"? Esta acción no se puede deshacer.`}
           confirmText="Eliminar"
           cancelText="Cancelar"
-          variant="danger"
           loading={deletingParticipacion}
         />
       </div>
