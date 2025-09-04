@@ -185,17 +185,8 @@ const VerReclutamiento: NextPage = () => {
         return;
       }
       
-      // Usar el reclutamiento_id real del reclutamiento cargado
-      const reclutamientoId = reclutamiento?.reclutamiento_id;
-      if (!reclutamientoId) {
-        console.log('❌ No hay reclutamiento_id disponible');
-        return;
-      }
-      
-      console.log('🔍 Usando reclutamiento_id real:', reclutamientoId);
-      
       // Usar la API correcta para obtener participantes del reclutamiento
-      const response = await fetch(`/api/reclutamientos/${reclutamientoId}/participantes`, {
+      const response = await fetch(`/api/reclutamientos/${id}/participantes`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
@@ -275,13 +266,12 @@ const VerReclutamiento: NextPage = () => {
   };
 
   // Cargar participantes cuando el ID esté disponible
-  // NOTA: Esto se maneja ahora en actualizarYcargarReclutamiento
-  // useEffect(() => {
-  //   if (id) {
-  //     console.log('🔄 ID disponible, cargando participantes:', id);
-  //     cargarParticipantes();
-  //   }
-  // }, [id]);
+  useEffect(() => {
+    if (id) {
+      console.log('🔄 ID disponible, cargando participantes:', id);
+      cargarParticipantes();
+    }
+  }, [id]);
 
   // Monitorear cambios en el estado de participantes
   useEffect(() => {
@@ -358,138 +348,85 @@ const VerReclutamiento: NextPage = () => {
         setLoading(true);
       }
       
-      // El ID puede ser un investigacion_id o un reclutamiento_id
-      // Primero intentar obtener el reclutamiento directamente
-      let response = await fetch(`/api/reclutamientos/${id}`);
-      let reclutamientoData;
-      
+      // Usar la API correcta para obtener el reclutamiento por ID
+      const response = await fetch(`/api/reclutamientos/${id}`);
       if (response.ok) {
-        reclutamientoData = await response.json();
-        console.log('✅ Reclutamiento encontrado directamente:', reclutamientoData);
-      } else {
-        // Si no se encuentra, el ID puede ser un investigacion_id
-        // Buscar reclutamientos que tengan esta investigacion_id
-        console.log('🔍 ID no es un reclutamiento_id, buscando por investigacion_id:', id);
-        const reclutamientosResponse = await fetch(`/api/reclutamientos/por-investigacion?investigacion_id=${id}`);
+        const reclutamientoData = await response.json();
+        console.log('✅ Reclutamiento cargado:', reclutamientoData);
         
-        if (reclutamientosResponse.ok) {
-          const reclutamientos = await reclutamientosResponse.json();
-          if (reclutamientos.length > 0) {
-            reclutamientoData = reclutamientos[0]; // Usar el primer reclutamiento encontrado
-            console.log('✅ Reclutamiento encontrado por investigacion_id:', reclutamientoData);
-          } else {
-            throw new Error('No se encontraron reclutamientos para esta investigación');
-          }
-        } else {
-          throw new Error('Error al buscar reclutamientos por investigacion_id');
-        }
-      }
-      
-      console.log('✅ Reclutamiento cargado:', reclutamientoData);
-      
-      // Convertir los datos del reclutamiento al formato esperado por ReclutamientoDetalle
-      const reclutamientoFormateado: ReclutamientoDetalle = {
-        reclutamiento_id: reclutamientoData.id,
-        investigacion_id: reclutamientoData.investigacion_id || '',
-        investigacion_nombre: 'Cargando...', // Se cargará después
-        estado_investigacion: 'Cargando...',
-        investigacion_fecha_inicio: '',
-        investigacion_fecha_fin: '',
-        investigacion_riesgo: '',
-        libreto_titulo: '',
-        libreto_descripcion: '',
-        libreto_numero_participantes: 0,
-        responsable_nombre: 'Cargando...',
-        responsable_correo: '',
-        implementador_nombre: 'Cargando...',
-        implementador_correo: '',
-        estado_reclutamiento_id: reclutamientoData.estado_agendamiento || '',
-        estado_reclutamiento_nombre: 'Cargando...',
-        estado_reclutamiento_color: '',
-        participantes_reclutados: 0,
-        progreso_reclutamiento: '',
-        porcentaje_completitud: 0,
-        riesgo_reclutamiento: '',
-        riesgo_reclutamiento_color: '',
-        dias_restantes_inicio: 0
-      };
-      
-      setReclutamiento(reclutamientoFormateado);
-      
-      // Cargar la investigación asociada si existe
-      if (reclutamientoData.investigacion_id) {
-        try {
-          const invResponse = await fetch(`/api/investigaciones/${reclutamientoData.investigacion_id}`);
-          if (invResponse.ok) {
-            const invData = await invResponse.json();
-            setInvestigacion(invData);
-            
-            // Actualizar el reclutamiento con la información de la investigación
-            setReclutamiento(prev => prev ? {
-              ...prev,
-              investigacion_nombre: invData.nombre || 'Sin nombre',
-              estado_investigacion: invData.estado || 'Sin estado',
-              investigacion_fecha_inicio: invData.fecha_inicio || '',
-              investigacion_fecha_fin: invData.fecha_fin || '',
-              investigacion_riesgo: invData.riesgo_automatico || 'Sin riesgo'
-            } : null);
-          }
-        } catch (invError) {
-          console.error('Error cargando investigación:', invError);
-        }
-      }
-      
-      // Cargar participantes del reclutamiento DESPUÉS de establecer el reclutamiento
-      console.log('🔄 Llamando a cargarParticipantes después de establecer reclutamiento...');
-      try {
-        // Usar setTimeout para asegurar que el estado se haya actualizado
-        setTimeout(async () => {
+        // Convertir los datos del reclutamiento al formato esperado por ReclutamientoDetalle
+        const reclutamientoFormateado: ReclutamientoDetalle = {
+          reclutamiento_id: reclutamientoData.id,
+          investigacion_id: reclutamientoData.investigacion_id || '',
+          investigacion_nombre: 'Cargando...', // Se cargará después
+          estado_investigacion: 'Cargando...',
+          investigacion_fecha_inicio: '',
+          investigacion_fecha_fin: '',
+          investigacion_riesgo: '',
+          libreto_titulo: '',
+          libreto_descripcion: '',
+          libreto_numero_participantes: 0,
+          responsable_nombre: 'Cargando...',
+          responsable_correo: '',
+          implementador_nombre: 'Cargando...',
+          implementador_correo: '',
+          estado_reclutamiento_id: reclutamientoData.estado_agendamiento || '',
+          estado_reclutamiento_nombre: 'Cargando...',
+          estado_reclutamiento_color: '',
+          participantes_reclutados: 0,
+          progreso_reclutamiento: '',
+          porcentaje_completitud: 0,
+          riesgo_reclutamiento: '',
+          riesgo_reclutamiento_color: '',
+          dias_restantes_inicio: 0
+        };
+        
+        setReclutamiento(reclutamientoFormateado);
+        
+        // Cargar la investigación asociada si existe
+        if (reclutamientoData.investigacion_id) {
           try {
-            await cargarParticipantes();
-            console.log('✅ cargarParticipantes completado exitosamente');
-          } catch (error) {
-            console.error('❌ Error en cargarParticipantes:', error);
+            const invResponse = await fetch(`/api/investigaciones/${reclutamientoData.investigacion_id}`);
+            if (invResponse.ok) {
+              const invData = await invResponse.json();
+              setInvestigacion(invData);
+              
+              // Actualizar el reclutamiento con la información de la investigación
+              setReclutamiento(prev => prev ? {
+                ...prev,
+                investigacion_nombre: invData.nombre || 'Sin nombre',
+                estado_investigacion: invData.estado || 'Sin estado',
+                investigacion_fecha_inicio: invData.fecha_inicio || '',
+                investigacion_fecha_fin: invData.fecha_fin || '',
+                investigacion_riesgo: invData.riesgo_automatico || 'Sin riesgo'
+              } : null);
+            }
+          } catch (invError) {
+            console.error('Error cargando investigación:', invError);
           }
-        }, 100);
-      } catch (error) {
-        console.error('❌ Error programando cargarParticipantes:', error);
+        }
+        
+        // Cargar participantes del reclutamiento
+        await cargarParticipantes();
+        
+      } else {
+        throw new Error('Error al obtener datos del reclutamiento');
       }
     } catch (error) {
       console.error('Error cargando reclutamiento:', error);
-      // showError no está disponible, usar console.error por ahora
-      console.error('No se pudo encontrar el reclutamiento: El reclutamiento solicitado no existe');
+      showError('No se pudo encontrar el reclutamiento', 'El reclutamiento solicitado no existe');
     } finally {
-      console.log('🔄 Finalizando actualizarYcargarReclutamiento...');
       setLoading(false);
-      console.log('✅ setLoading(false) ejecutado');
       setIsInitializing(false); // Finalizar inicialización
-      console.log('✅ setIsInitializing(false) ejecutado');
     }
-  }, [id, isInitializing]);
+  }, [id, isInitializing, showError]);
 
   // Cargar los datos del reclutamiento
   useEffect(() => {
-    console.log('🔄 useEffect ejecutándose con id:', id);
-    if (id) {
-      console.log('🚀 Llamando a actualizarYcargarReclutamiento con id:', id);
-      try {
-        actualizarYcargarReclutamiento();
-        console.log('✅ actualizarYcargarReclutamiento llamado exitosamente');
-      } catch (error) {
-        console.error('❌ Error llamando a actualizarYcargarReclutamiento:', error);
-      }
+    if (!isEditing && id) {
+      actualizarYcargarReclutamiento();
     }
-  }, [id]); // Remover actualizarYcargarReclutamiento de las dependencias
-
-  // Log para monitorear el estado de loading
-  useEffect(() => {
-    console.log('🔄 Estado de loading cambiado:', loading);
-  }, [loading]);
-
-  // Log para monitorear el estado de isInitializing
-  useEffect(() => {
-    console.log('🔄 Estado de isInitializing cambiado:', isInitializing);
-  }, [isInitializing]);
+  }, [id, isEditing, actualizarYcargarReclutamiento]);
 
   // Cargar estadísticas del participante cuando se cambie al tab de participante
   useEffect(() => {
