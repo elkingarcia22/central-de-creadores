@@ -1200,8 +1200,8 @@ export default function VistaParticipacion() {
                   return reclutamientoActual.responsable;
                 }
                 
-                // Fallback a investigaciones
-                if (investigaciones.length > 0 && investigaciones[0].responsable) {
+                // Fallback a investigaciones solo si no hay reclutamiento actual
+                if (!reclutamientoActual && investigaciones.length > 0 && investigaciones[0].responsable) {
                   const responsable = usuarios.find(u => u.full_name === investigaciones[0].responsable);
                   if (responsable) {
                     return (
@@ -1235,8 +1235,8 @@ export default function VistaParticipacion() {
                   return formatearFecha(reclutamientoActual.fecha_inicio);
                 }
                 
-                // Fallback a investigaciones
-                if (investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
+                // Fallback a investigaciones solo si no hay reclutamiento actual
+                if (!reclutamientoActual && investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
                   return formatearFecha(investigaciones[0].fecha_participacion);
                 }
                 
@@ -1261,8 +1261,8 @@ export default function VistaParticipacion() {
                   });
                 }
                 
-                // Fallback a investigaciones
-                if (investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
+                // Fallback a investigaciones solo si no hay reclutamiento actual
+                if (!reclutamientoActual && investigaciones.length > 0 && investigaciones[0].fecha_participacion) {
                   const fecha = new Date(investigaciones[0].fecha_participacion);
                   return fecha.toLocaleTimeString('es-ES', { 
                     hour: '2-digit', 
@@ -1287,8 +1287,8 @@ export default function VistaParticipacion() {
                   return `${reclutamientoActual.duracion_sesion} minutos`;
                 }
                 
-                // Fallback a investigaciones
-                if (investigaciones.length > 0 && investigaciones[0].duracion_sesion) {
+                // Fallback a investigaciones solo si no hay reclutamiento actual
+                if (!reclutamientoActual && investigaciones.length > 0 && investigaciones[0].duracion_sesion) {
                   return `${investigaciones[0].duracion_sesion} minutos`;
                 }
                 
