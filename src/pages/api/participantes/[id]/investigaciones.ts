@@ -67,35 +67,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('🔍 Tipo de participante:', tipoParticipante);
 
-    // Obtener datos usando la vista sugerida por el servidor
-    console.log('🔍 Consultando vista_estadisticas_participantes para participantes_id:', id);
+    // Obtener reclutamientos según el tipo de participante
+    console.log('🔍 Consultando reclutamientos para participante:', id, 'tipo:', tipoParticipante);
     
-    const { data: estadisticas, error: errorEstadisticas } = await supabaseServer
-      .from('vista_estadisticas_participantes')
-      .select('*')
-      .eq('participante_id', id);
-
-    console.log('🔍 Resultado consulta vista_estadisticas_participantes:', { 
-      data: estadisticas?.length || 0, 
-      error: errorEstadisticas,
-      sample: estadisticas?.[0]
-    });
-    
-    // Debug detallado de la vista de estadísticas
-    if (estadisticas && estadisticas.length > 0) {
-      console.log('🔍 Debug - Estructura completa de la primera estadística:', JSON.stringify(estadisticas[0], null, 2));
-      console.log('🔍 Debug - Propiedades disponibles en estadísticas:', Object.keys(estadisticas[0]));
-    }
-
-    if (errorEstadisticas) {
-      console.error('❌ Error obteniendo estadísticas:', errorEstadisticas);
-      return res.status(500).json({ error: 'Error obteniendo estadísticas' });
-    }
-
-    // También intentar obtener reclutamientos directamente
-    console.log('🔍 Consultando reclutamientos directamente para participantes_id:', id);
-    
-    const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
+    let query = supabaseServer
       .from('reclutamientos')
       .select(`
         id,
@@ -111,8 +86,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           id,
           nombre
         )
-      `)
-      .or(`participantes_id.eq.${id},participantes_internos_id.eq.${id},participantes_friend_family_id.eq.${id}`);
+      `);
+
+    // Construir la consulta según el tipo de participante
+    if (tipoParticipante === 'externo') {
+      query = query.eq('participantes_id', id);
+    } else if (tipoParticipante === 'interno') {
+      query = query.eq('participantes_internos_id', id);
+    } else if (tipoParticipante === 'friend_family') {
+      query = query.eq('participantes_friend_family_id', id);
+    }
+
+    const { data: reclutamientos, error: errorReclutamientos } = await query;
 
     console.log('🔍 Resultado consulta reclutamientos:', { 
       data: reclutamientos?.length || 0, 
@@ -126,7 +111,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('🔍 Reclutamientos encontrados:', reclutamientos?.length || 0);
-    console.log('🔍 Estadísticas encontradas:', estadisticas?.length || 0);
 
     // Procesar las investigaciones usando reclutamientos como fuente principal
     let investigaciones = [];
