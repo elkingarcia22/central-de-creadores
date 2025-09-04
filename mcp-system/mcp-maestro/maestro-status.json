@@ -1,59 +1,8 @@
 {
-  "status": "active",
-  "mode": "automatic",
-  "pid": 35891,
-  "timestamp": "2025-01-27T17:19:00.000Z",
-  "uptime": 0,
-  "memory_usage": {
-    "rss": 27592,
-    "heapTotal": 0,
-    "heapUsed": 0,
-    "external": 0
-  },
-  "configuration": {
-    "autoMode": true,
-    "skipConfirmations": true,
-    "autoExecute": true,
-    "autoCommit": true,
-    "autoBackup": true,
-    "silentMode": true,
-    "autoRecoverContext": true,
-    "autoSync": true,
-    "autoActivateGitHub": true,
-    "forceAuto": true,
-    "noPrompts": true,
-    "skipAllConfirmations": true
-  },
-  "tools": {
-    "orchestrate_task": "active",
-    "recover_context": "active",
-    "delegate_to_mcp": "active",
-    "sync_project_state": "active",
-    "get_system_status": "active",
-    "save_important_decision": "active",
-    "query_knowledge_base": "active",
-    "verify_project_info": "active",
-    "activate_github": "active",
-    "auto_activate_session": "active",
-    "sync_mcps": "active",
-    "get_mcp_status": "active",
-    "get_supabase_info": "active"
-  },
-  "integrations": {
-    "github": "ready",
-    "supabase": "ready",
-    "design_system": "ready",
-    "code_structure": "ready",
-    "testing_qa": "ready",
-    "deploy_devops": "ready",
-    "documentation": "ready"
-  },
-  "session": {
-    "current_session_id": null,
-    "active_sessions": 0,
-    "context_recovered": false
-  },
-  "last_activity": "2025-01-27T17:19:00.000Z",
-  "version": "1.0.0",
-  "name": "mcp-maestro"
+  "timestamp": "2025-09-04T00:34:39.323Z",
+  "status": "ERROR",
+  "files_verified": true,
+  "server_code": null,
+  "auto_mode": true,
+  "message": "Error en el servidor"
 }
