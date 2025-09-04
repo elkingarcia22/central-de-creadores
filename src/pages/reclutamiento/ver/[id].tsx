@@ -361,7 +361,7 @@ const VerReclutamiento: NextPage = () => {
         // Si no se encuentra, el ID puede ser un investigacion_id
         // Buscar reclutamientos que tengan esta investigacion_id
         console.log('🔍 ID no es un reclutamiento_id, buscando por investigacion_id:', id);
-        const reclutamientosResponse = await fetch(`/api/reclutamientos?investigacion_id=${id}`);
+        const reclutamientosResponse = await fetch(`/api/reclutamientos/por-investigacion?investigacion_id=${id}`);
         
         if (reclutamientosResponse.ok) {
           const reclutamientos = await reclutamientosResponse.json();
