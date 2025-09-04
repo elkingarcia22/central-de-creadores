@@ -22,28 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Buscar directamente en la tabla reclutamientos usando participantes_id
     console.log('🔍 Buscando reclutamiento para participante ID:', id);
+    
+    // Primero, hacer una consulta simple para ver qué hay
     const { data: reclutamientos, error: reclutamientoError } = await supabase
       .from('reclutamientos')
-      .select(`
-        *,
-        investigaciones!inner(
-          id,
-          nombre,
-          descripcion,
-          fecha_inicio,
-          fecha_fin,
-          estado,
-          responsable_id,
-          implementador_id,
-          tipo_investigacion_id
-        ),
-        usuarios!inner(
-          id,
-          nombre,
-          apellido,
-          email
-        )
-      `)
+      .select('*')
       .eq('participantes_id', id)
       .order('fecha_asignado', { ascending: false })
       .limit(1);
@@ -61,22 +44,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const reclutamiento = reclutamientos[0];
     console.log('✅ Reclutamiento encontrado:', reclutamiento);
     
-    // Formatear la respuesta usando la estructura real de la base de datos
+    // Formatear la respuesta usando solo los campos básicos por ahora
     const reclutamientoFormateado = {
       id: reclutamiento.id,
-      nombre: reclutamiento.investigaciones?.nombre || 'Sin nombre',
-      descripcion: reclutamiento.investigaciones?.descripcion || 'Sin descripción',
-      fecha_inicio: reclutamiento.investigaciones?.fecha_inicio || reclutamiento.fecha_sesion,
+      nombre: 'Reclutamiento encontrado', // Placeholder por ahora
+      descripcion: 'Descripción del reclutamiento',
+      fecha_inicio: reclutamiento.fecha_sesion || new Date().toISOString(),
       fecha_sesion: reclutamiento.fecha_sesion,
       duracion_sesion: reclutamiento.duracion_sesion || 60,
-      estado: reclutamiento.investigaciones?.estado || 'Sin estado',
-      responsable: reclutamiento.usuarios?.nombre ? 
-        `${reclutamiento.usuarios.nombre} ${reclutamiento.usuarios.apellido || ''}`.trim() : 
-        'Sin responsable',
-      implementador: reclutamiento.usuarios?.nombre ? 
-        `${reclutamiento.usuarios.nombre} ${reclutamiento.usuarios.apellido || ''}`.trim() : 
-        'Sin implementador',
-      tipo_investigacion: reclutamiento.investigaciones?.tipo_investigacion_id || 'Sin tipo',
+      estado: 'Pendiente', // Placeholder por ahora
+      responsable: 'Sin responsable', // Placeholder por ahora
+      implementador: 'Sin implementador', // Placeholder por ahora
+      tipo_investigacion: 'Sin tipo',
       fecha_asignado: reclutamiento.fecha_asignado,
       estado_agendamiento: reclutamiento.estado_agendamiento,
       reclutador_id: reclutamiento.reclutador_id,
