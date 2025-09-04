@@ -277,14 +277,27 @@ export default function EditarReclutamientoModal({
       // Usar la función correcta para crear fecha UTC
       const fechaHoraCompleta = createUTCDateFromLocal(fechaSesion, horaSesion);
       
+      // Determinar qué campo de participante usar según el tipo
+      let campoParticipante = {};
+      if (tipoParticipante === 'interno') {
+        campoParticipante = { participantes_internos_id: participanteId };
+      } else if (tipoParticipante === 'friend_family') {
+        campoParticipante = { participantes_friend_family_id: participanteId };
+      } else {
+        // externo
+        campoParticipante = { participantes_id: participanteId };
+      }
+
       console.log('🔍 === DEBUG ENVÍO ===');
       console.log('📅 Fecha seleccionada:', fechaSesion);
       console.log('🕐 Hora seleccionada:', horaSesion);
       console.log('📤 Fecha UTC enviada:', fechaHoraCompleta);
-      
+      console.log('🔍 Tipo participante:', tipoParticipante);
+      console.log('🔍 Campo participante a enviar:', campoParticipante);
+
       const reclutamientoData = {
         id: reclutamiento.id,
-        participantes_id: participanteId,  // Usar el participante seleccionado en el modal
+        ...campoParticipante,  // Usar el campo correcto según el tipo
         reclutador_id: responsableId,
         fecha_sesion: fechaHoraCompleta,
         hora_sesion: horaSesion,
@@ -313,7 +326,7 @@ export default function EditarReclutamientoModal({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            participantes_id: participanteId,
+            ...campoParticipante,  // Usar el campo correcto según el tipo
             reclutador_id: responsableId,
             fecha_sesion: fechaHoraCompleta,
             hora_sesion: horaSesion,
