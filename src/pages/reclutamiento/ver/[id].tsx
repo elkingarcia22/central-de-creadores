@@ -435,9 +435,15 @@ const VerReclutamiento: NextPage = () => {
   // Cargar los datos del reclutamiento
   useEffect(() => {
     console.log('🔄 useEffect ejecutándose con id:', id);
+    console.log('🔄 actualizarYcargarReclutamiento disponible:', !!actualizarYcargarReclutamiento);
     if (id) {
       console.log('🚀 Llamando a actualizarYcargarReclutamiento con id:', id);
-      actualizarYcargarReclutamiento();
+      try {
+        actualizarYcargarReclutamiento();
+        console.log('✅ actualizarYcargarReclutamiento llamado exitosamente');
+      } catch (error) {
+        console.error('❌ Error llamando a actualizarYcargarReclutamiento:', error);
+      }
     }
   }, [id, actualizarYcargarReclutamiento]);
 
@@ -445,6 +451,11 @@ const VerReclutamiento: NextPage = () => {
   useEffect(() => {
     console.log('🔄 Estado de loading cambiado:', loading);
   }, [loading]);
+
+  // Log para monitorear el estado de isInitializing
+  useEffect(() => {
+    console.log('🔄 Estado de isInitializing cambiado:', isInitializing);
+  }, [isInitializing]);
 
   // Cargar estadísticas del participante cuando se cambie al tab de participante
   useEffect(() => {
