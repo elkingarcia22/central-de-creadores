@@ -185,8 +185,17 @@ const VerReclutamiento: NextPage = () => {
         return;
       }
       
+      // Usar el reclutamiento_id real del reclutamiento cargado
+      const reclutamientoId = reclutamiento?.reclutamiento_id;
+      if (!reclutamientoId) {
+        console.log('❌ No hay reclutamiento_id disponible');
+        return;
+      }
+      
+      console.log('🔍 Usando reclutamiento_id real:', reclutamientoId);
+      
       // Usar la API correcta para obtener participantes del reclutamiento
-      const response = await fetch(`/api/reclutamientos/${id}/participantes`, {
+      const response = await fetch(`/api/reclutamientos/${reclutamientoId}/participantes`, {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
