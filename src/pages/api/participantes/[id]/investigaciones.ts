@@ -135,6 +135,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (reclutamientos && reclutamientos.length > 0) {
       console.log('🔍 Procesando investigaciones desde reclutamientos:', reclutamientos.length);
       
+      console.log('🔍 === DEBUG RECLUTAMIENTOS ===');
+      console.log('🔍 Reclutamientos encontrados:', reclutamientos.map(r => ({
+        id: r.id,
+        investigacion_id: r.investigacion_id,
+        fecha_sesion: r.fecha_sesion,
+        duracion_sesion: r.duracion_sesion,
+        reclutador_id: r.reclutador_id,
+        participantes_id: r.participantes_id
+      })));
+      
       investigaciones = reclutamientos.map(r => ({
         id: r.investigacion_id,
         nombre: `Investigación ${r.investigacion_id}`,
@@ -267,8 +277,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Debug detallado de las investigaciones procesadas
     if (investigaciones.length > 0) {
-      console.log('🔍 Debug - Primera investigación procesada:', JSON.stringify(investigaciones[0], null, 2));
-      console.log('🔍 Debug - Todas las investigaciones:', JSON.stringify(investigaciones, null, 2));
+      console.log('🔍 === DATOS FINALES DEVUELTOS ===');
+      console.log('🔍 Primera investigación procesada:', {
+        id: investigaciones[0].id,
+        nombre: investigaciones[0].nombre,
+        fecha_participacion: investigaciones[0].fecha_participacion,
+        duracion_sesion: investigaciones[0].duracion_sesion,
+        responsable: investigaciones[0].responsable,
+        reclutador_id: investigaciones[0].reclutador_id,
+        reclutamiento_id: investigaciones[0].reclutamiento_id
+      });
+      console.log('🔍 Todas las investigaciones:', investigaciones.map(inv => ({
+        id: inv.id,
+        fecha_participacion: inv.fecha_participacion,
+        duracion_sesion: inv.duracion_sesion,
+        responsable: inv.responsable,
+        reclutador_id: inv.reclutador_id
+      })));
     } else {
       console.log('⚠️ WARNING - No se procesaron investigaciones');
     }
