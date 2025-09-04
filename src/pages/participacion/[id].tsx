@@ -349,15 +349,15 @@ export default function VistaParticipacion() {
       } else {
         const errorData = await response.json();
         console.log('❌ Frontend: Error en API reclutamiento-actual:', errorData);
-        console.log('🔍 Frontend: Fallback a investigaciones...');
-        // Fallback: buscar en investigaciones
-        await cargarInvestigaciones();
+        console.log('🔍 Frontend: NO usando fallback a investigaciones para evitar datos incorrectos');
+        // NO usar fallback a investigaciones para evitar datos históricos incorrectos
+        setReclutamientoActual(null);
       }
     } catch (error) {
       console.error('❌ Frontend: Error cargando reclutamiento actual:', error);
-      console.log('🔍 Frontend: Fallback a investigaciones por error...');
-      // Fallback: buscar en investigaciones
-      await cargarInvestigaciones();
+      console.log('🔍 Frontend: NO usando fallback a investigaciones para evitar datos incorrectos');
+      // NO usar fallback a investigaciones para evitar datos históricos incorrectos
+      setReclutamientoActual(null);
     }
   };
 
