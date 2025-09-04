@@ -487,13 +487,18 @@ const VerReclutamiento: NextPage = () => {
       return;
     }
     
-    // Verificar si es "Agendamiento Pendiente" - Lógica mejorada
-    const esPendienteDeAgendamiento = !participante.fecha_sesion || 
-                                     participante.estado_agendamiento === 'Pendiente de agendamiento' || 
-                                     participante.estado_agendamiento === 'Pendiente' ||
-                                     (participante.tipo === 'agendamiento_pendiente') ||
-                                     (participante.reclutador_id && !participante.participante_id) ||
-                                     (participante.estado_agendamiento?.nombre === 'Pendiente de agendamiento');
+    // Verificar si es "Agendamiento Pendiente" - Lógica corregida
+    // Solo debe ser "Pendiente de Agendamiento" si NO tiene participante asignado
+    const esPendienteDeAgendamiento = participante.tipo === 'agendamiento_pendiente' || 
+                                     participante.estado_agendamiento === 'Pendiente de agendamiento' ||
+                                     (!participante.participante_id && !participante.participantes_id);
+    
+    console.log('🔍 === DEBUG LÓGICA PENDIENTE ===');
+    console.log('🔍 Tipo participante:', participante.tipo);
+    console.log('🔍 Estado agendamiento:', participante.estado_agendamiento);
+    console.log('🔍 Participante ID:', participante.participante_id);
+    console.log('🔍 Participantes ID:', participante.participantes_id);
+    console.log('🔍 Es pendiente de agendamiento:', esPendienteDeAgendamiento);
     
     console.log('🔍 esPendienteDeAgendamiento:', esPendienteDeAgendamiento);
     console.log('🔍 Estado agendamiento:', participante.estado_agendamiento);
