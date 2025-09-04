@@ -275,16 +275,16 @@ const VerReclutamiento: NextPage = () => {
   }, [reclutamiento?.reclutamiento_id]);
 
   // Monitorear cambios en el estado de participantes
-  useEffect(() => {
-    console.log('🔄 Estado de participantes cambiado:', participantes.length, 'participantes');
-    participantes.forEach((participante, index) => {
-      console.log(`🔍 Participante ${index + 1}:`, {
-        id: participante.id,
-        nombre: participante.nombre,
-        hora_sesion: participante.hora_sesion
-      });
-    });
-  }, [participantes]);
+  // useEffect(() => {
+  //   console.log('🔄 Estado de participantes cambiado:', participantes.length, 'participantes');
+  //   participantes.forEach((participante, index) => {
+  //     console.log(`🔍 Participante ${index + 1}:`, {
+  //       id: participante.id,
+  //       nombre: participante.nombre,
+  //       hora_sesion: participante.hora_sesion
+  //     });
+  //   });
+  // }, [participantes]);
 
   const recargarDatosCompletos = async () => {
     try {
