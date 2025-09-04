@@ -1137,9 +1137,18 @@ export default function VistaParticipacion() {
             label="Responsable del Agendamiento" 
             value={
               (() => {
+                console.log('🔍 === DEBUG RESPONSABLE ===');
+                console.log('🔍 Investigaciones disponibles:', investigaciones.length);
+                console.log('🔍 Primera investigación:', investigaciones[0]);
+                console.log('🔍 Campo responsable:', investigaciones[0]?.responsable);
+                console.log('🔍 Usuarios disponibles:', usuarios.length);
+                console.log('🔍 Primeros usuarios:', usuarios.slice(0, 3));
+                
                 if (investigaciones.length > 0 && investigaciones[0].responsable) {
                   // Buscar el usuario responsable
                   const responsable = usuarios.find(u => u.full_name === investigaciones[0].responsable);
+                  console.log('🔍 Usuario encontrado:', responsable);
+                  
                   if (responsable) {
                     return (
                       <div className="flex items-center gap-2">
@@ -1152,8 +1161,10 @@ export default function VistaParticipacion() {
                       </div>
                     );
                   }
+                  console.log('🔍 No se encontró usuario, devolviendo responsable directo');
                   return investigaciones[0].responsable;
                 }
+                console.log('🔍 No hay investigaciones o responsable');
                 return 'No asignado';
               })()
             }
@@ -1161,28 +1172,52 @@ export default function VistaParticipacion() {
           <InfoItem 
             label="Fecha de la Sesión"
             value={
-              investigaciones.length > 0 ? 
-                formatearFecha(investigaciones[0].fecha_participacion) : 
-                'Sin sesiones programadas'
+              (() => {
+                console.log('🔍 === DEBUG FECHA ===');
+                console.log('🔍 Fecha participación:', investigaciones[0]?.fecha_participacion);
+                console.log('🔍 Fecha formateada:', investigaciones.length > 0 ? formatearFecha(investigaciones[0].fecha_participacion) : 'N/A');
+                
+                return investigaciones.length > 0 ? 
+                  formatearFecha(investigaciones[0].fecha_participacion) : 
+                  'Sin sesiones programadas';
+              })()
             }
           />
           <InfoItem 
             label="Hora de la Sesión"
             value={
-              investigaciones.length > 0 ? 
-                new Date(investigaciones[0].fecha_participacion).toLocaleTimeString('es-ES', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                }) : 
-                '--:--'
+              (() => {
+                console.log('🔍 === DEBUG HORA ===');
+                console.log('🔍 Fecha participación para hora:', investigaciones[0]?.fecha_participacion);
+                if (investigaciones.length > 0) {
+                  const fecha = new Date(investigaciones[0].fecha_participacion);
+                  console.log('🔍 Fecha parseada:', fecha);
+                  console.log('🔍 Hora local:', fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }));
+                  console.log('🔍 Hora UTC:', fecha.toTimeString());
+                }
+                
+                return investigaciones.length > 0 ? 
+                  new Date(investigaciones[0].fecha_participacion).toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  }) : 
+                  '--:--';
+              })()
             }
           />
           <InfoItem 
             label="Duración de la Sesión (minutos)"
             value={
-              investigaciones.length > 0 ? 
-                `${investigaciones[0].duracion_sesion || 60} minutos` : 
-                '60 minutos'
+              (() => {
+                console.log('🔍 === DEBUG DURACIÓN ===');
+                console.log('🔍 Duración sesión:', investigaciones[0]?.duracion_sesion);
+                console.log('🔍 Tipo de duración:', typeof investigaciones[0]?.duracion_sesion);
+                console.log('🔍 Duración final:', investigaciones.length > 0 ? `${investigaciones[0].duracion_sesion || 60} minutos` : '60 minutos');
+                
+                return investigaciones.length > 0 ? 
+                  `${investigaciones[0].duracion_sesion || 60} minutos` : 
+                  '60 minutos';
+              })()
             }
           />
           <InfoItem 
