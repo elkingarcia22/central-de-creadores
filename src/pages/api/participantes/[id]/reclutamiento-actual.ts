@@ -18,108 +18,127 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   console.log('🔍 API reclutamiento-actual - ID participante:', id);
+  console.log('🔍 Variables de entorno:');
+  console.log('  - NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Existe' : '❌ No existe');
+  console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Existe' : '❌ No existe');
 
   try {
-    // Buscar directamente en la tabla reclutamientos usando participantes_id
-    console.log('🔍 Buscando reclutamiento para participante ID:', id);
-    
-    // Consulta con LEFT JOIN para obtener datos completos (más permisiva)
-    const { data: reclutamientos, error: reclutamientoError } = await supabase
-      .from('reclutamientos')
-      .select(`
-        *,
-        investigaciones(
-          id,
-          nombre,
-          descripcion,
-          fecha_inicio,
-          fecha_fin,
-          estado,
-          responsable_id,
-          implementador_id
-        )
-      `)
-      .eq('participantes_id', id)
-      .order('fecha_asignado', { ascending: false })
-      .limit(1);
+    // PASO 1: Verificar que el participante existe
+    console.log('🔍 PASO 1: Verificando participante...');
+    const { data: participante, error: participanteError } = await supabase
+      .from('participantes')
+      .select('id, nombre')
+      .eq('id', id)
+      .single();
 
-    if (reclutamientoError) {
-      console.error('❌ Error consultando reclutamientos:', reclutamientoError);
-      return res.status(500).json({ error: 'Error interno del servidor' });
+    if (participanteError) {
+      console.error('❌ Error consultando participante:', participanteError);
+      return res.status(404).json({ error: 'Participante no encontrado' });
     }
 
+    console.log('✅ Participante encontrado:', participante);
+
+    // PASO 2: Buscar reclutamientos
+    console.log('🔍 PASO 2: Buscando reclutamientos...');
+    const { data: reclutamientos, error: reclutamientosError } = await supabase
+      .from('reclutamientos')
+      .select('*')
+      .eq('participantes_id', id);
+
+    if (reclutamientosError) {
+      console.error('❌ Error consultando reclutamientos:', reclutamientosError);
+      return res.status(500).json({ error: 'Error consultando reclutamientos' });
+    }
+
+    console.log('✅ Reclutamientos encontrados:', reclutamientos);
+
     if (!reclutamientos || reclutamientos.length === 0) {
-      console.log('❌ No se encontraron reclutamientos para participante ID:', id);
       return res.status(404).json({ error: 'No se encontraron reclutamientos para este participante' });
     }
 
+    // PASO 3: Tomar el más reciente
     const reclutamiento = reclutamientos[0];
-    console.log('✅ Reclutamiento encontrado:', reclutamiento);
-    
-    // Obtener datos del responsable e implementador
+    console.log('✅ Reclutamiento seleccionado:', reclutamiento);
+
+    // PASO 4: Buscar investigación asociada
+    let investigacion = null;
+    if (reclutamiento.investigacion_id) {
+      console.log('🔍 PASO 4: Buscando investigación...');
+      const { data: inv, error: invError } = await supabase
+        .from('investigaciones')
+        .select('*')
+        .eq('id', reclutamiento.investigacion_id)
+        .single();
+
+      if (invError) {
+        console.error('❌ Error consultando investigación:', invError);
+      } else {
+        investigacion = inv;
+        console.log('✅ Investigación encontrada:', investigacion);
+      }
+    }
+
+    // PASO 5: Buscar usuarios responsables
     let responsableNombre = 'Sin responsable';
     let implementadorNombre = 'Sin implementador';
-    
-    // Verificar si hay investigaciones antes de consultar usuarios
-    if (reclutamiento.investigaciones && Array.isArray(reclutamiento.investigaciones) && reclutamiento.investigaciones.length > 0) {
-      const investigacion = reclutamiento.investigaciones[0];
-      console.log('🔍 Investigación encontrada:', investigacion);
-      
-      if (investigacion.responsable_id) {
-        const { data: responsableData } = await supabase
-          .from('usuarios')
-          .select('nombre, apellido')
-          .eq('id', investigacion.responsable_id)
-          .single();
-        
-        if (responsableData) {
-          responsableNombre = `${responsableData.nombre} ${responsableData.apellido || ''}`.trim();
-          console.log('✅ Responsable encontrado:', responsableNombre);
-        }
+
+    if (investigacion?.responsable_id) {
+      console.log('🔍 PASO 5: Buscando responsable...');
+      const { data: responsableData } = await supabase
+        .from('usuarios')
+        .select('nombre, apellido')
+        .eq('id', investigacion.responsable_id)
+        .single();
+
+      if (responsableData) {
+        responsableNombre = `${responsableData.nombre} ${responsableData.apellido || ''}`.trim();
+        console.log('✅ Responsable encontrado:', responsableNombre);
       }
-      
-      if (investigacion.implementador_id) {
-        const { data: implementadorData } = await supabase
-          .from('usuarios')
-          .select('nombre, apellido')
-          .eq('id', investigacion.implementador_id)
-          .single();
-        
-        if (implementadorData) {
-          implementadorNombre = `${implementadorData.nombre} ${implementadorData.apellido || ''}`.trim();
-          console.log('✅ Implementador encontrado:', implementadorNombre);
-        }
-      }
-    } else {
-      console.log('⚠️ No hay investigaciones asociadas al reclutamiento');
     }
-    
-    // Formatear la respuesta usando los datos reales
+
+    if (investigacion?.implementador_id) {
+      console.log('🔍 PASO 6: Buscando implementador...');
+      const { data: implementadorData } = await supabase
+        .from('usuarios')
+        .select('nombre, apellido')
+        .eq('id', investigacion.implementador_id)
+        .single();
+
+      if (implementadorData) {
+        implementadorNombre = `${implementadorData.nombre} ${implementadorData.apellido || ''}`.trim();
+        console.log('✅ Implementador encontrado:', implementadorNombre);
+      }
+    }
+
+    // PASO 7: Formatear respuesta
     const reclutamientoFormateado = {
       id: reclutamiento.id,
-      nombre: reclutamiento.investigaciones?.[0]?.nombre || 'Sin nombre',
-      descripcion: reclutamiento.investigaciones?.[0]?.descripcion || 'Sin descripción',
-      fecha_inicio: reclutamiento.investigaciones?.[0]?.fecha_inicio || reclutamiento.fecha_sesion,
+      nombre: investigacion?.nombre || 'Sin nombre',
+      descripcion: investigacion?.descripcion || 'Sin descripción',
+      fecha_inicio: investigacion?.fecha_inicio || reclutamiento.fecha_sesion,
       fecha_sesion: reclutamiento.fecha_sesion,
       duracion_sesion: reclutamiento.duracion_sesion || 60,
-      estado: reclutamiento.investigaciones?.[0]?.estado || 'Sin estado',
+      estado: investigacion?.estado || 'Sin estado',
       responsable: responsableNombre,
       implementador: implementadorNombre,
-      tipo_investigacion: 'Sin tipo', // Por ahora
+      tipo_investigacion: 'Sin tipo',
       fecha_asignado: reclutamiento.fecha_asignado,
       estado_agendamiento: reclutamiento.estado_agendamiento,
       reclutador_id: reclutamiento.reclutador_id,
       creado_por: reclutamiento.creado_por
     };
 
-    console.log('✅ Respuesta formateada:', reclutamientoFormateado);
+    console.log('✅ Respuesta final formateada:', reclutamientoFormateado);
 
     return res.status(200).json({
       reclutamiento: reclutamientoFormateado
     });
 
   } catch (error) {
-    console.error('💥 Error en API reclutamiento-actual:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('💥 Error general en API:', error);
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 }
