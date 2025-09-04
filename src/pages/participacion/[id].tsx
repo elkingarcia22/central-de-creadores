@@ -1253,8 +1253,12 @@ export default function VistaParticipacion() {
                 console.log('🔍 Investigación fecha para hora:', investigaciones[0]?.fecha_participacion);
                 
                 // Priorizar reclutamiento actual
-                if (reclutamientoActual?.hora_inicio) {
-                  return reclutamientoActual.hora_inicio;
+                if (reclutamientoActual?.fecha_sesion) {
+                  const fecha = new Date(reclutamientoActual.fecha_sesion);
+                  return fecha.toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  });
                 }
                 
                 // Fallback a investigaciones
@@ -2710,17 +2714,7 @@ const EmpresaContent = ({ empresa, participante }: { empresa: Empresa | null, pa
           </Card>
         )}
 
-        {/* Modal de confirmación para eliminar participación */}
-        <ConfirmModal
-          isOpen={showEliminarParticipacionModal}
-          onClose={() => setShowEliminarParticipacionModal(false)}
-          onConfirm={confirmarEliminacionParticipacion}
-          title="Eliminar Participación"
-          message={`¿Estás seguro de que quieres eliminar la participación de "${participante?.nombre}"? Esta acción no se puede deshacer.`}
-          confirmText="Eliminar"
-          cancelText="Cancelar"
-          loading={deletingParticipacion}
-        />
+
       </div>
     </div>
   );
