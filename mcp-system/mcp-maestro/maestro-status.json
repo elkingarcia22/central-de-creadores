@@ -1,9 +1,8 @@
 {
-  "timestamp": "2025-09-04T00:42:17.042Z",
-  "status": "ACTIVE",
+  "timestamp": "2025-09-04T18:53:24.443Z",
+  "status": "ERROR",
   "files_verified": true,
-  "server_code": "RUNNING",
+  "server_code": null,
   "auto_mode": true,
-  "message": "MCP Maestro activo y funcionando en modo automático",
-  "pid": 2160
+  "message": "Error en el servidor"
 }
