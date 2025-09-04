@@ -125,14 +125,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     }
   };
 
-  const handleSubmitClick = () => {
-    // Crear un evento sintético para el formulario
-    const form = document.querySelector('form');
-    if (form) {
-      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-      form.dispatchEvent(submitEvent);
-    }
-  };
+  const isEditing = !!seguimiento;
 
   const footer = (
     <div className="flex gap-3">
@@ -145,13 +138,19 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       </Button>
       <Button
         variant="primary"
-        onClick={handleSubmitClick}
+        onClick={() => {
+          const form = document.querySelector('form');
+          if (form) {
+            const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+            form.dispatchEvent(submitEvent);
+          }
+        }}
         loading={saving}
         disabled={saving}
         className="flex items-center gap-2"
       >
         <SaveIcon className="w-4 h-4" />
-        {seguimiento ? 'Actualizar' : 'Crear'} Seguimiento
+        {isEditing ? 'Actualizar' : 'Crear'} Seguimiento
       </Button>
     </div>
   );
@@ -164,20 +163,20 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       footer={footer}
       showCloseButton={false}
     >
-      <div className="flex flex-col h-full -m-6">
-        {/* Header con PageHeader */}
+      <div className="space-y-6">
+        {/* Header */}
         <PageHeader
-          title={seguimiento ? 'Editar Seguimiento' : 'Nuevo Seguimiento'}
+          title={isEditing ? 'Editar Seguimiento' : 'Nuevo Seguimiento'}
           variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
           onClose={handleClose}
           icon={<ClipboardListIcon className="w-5 h-5" />}
-          className="-mt-6 -mx-6"
         />
 
-        {/* Contenido del formulario */}
-        <div className="flex-1 overflow-y-auto px-6">
-          <form onSubmit={handleSubmit} className="space-y-6 pt-4">
-            {/* Fecha de Seguimiento */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Información básica del seguimiento */}
+          <div className="space-y-4">
             <div>
               <FilterLabel>Fecha de Seguimiento *</FilterLabel>
               <DatePicker
@@ -189,7 +188,6 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
               />
             </div>
 
-            {/* Responsable */}
             <div>
               <FilterLabel>Responsable *</FilterLabel>
               <UserSelectorWithAvatar
@@ -201,9 +199,11 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
                 required
               />
             </div>
+          </div>
 
-            {/* Estado */}
-            {/*
+          {/* Estado del seguimiento (comentado por ahora) */}
+          {/*
+          <div className="space-y-4">
             <div>
               <FilterLabel>Estado *</FilterLabel>
               <Select
@@ -218,9 +218,11 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
                 fullWidth
               />
             </div>
-            */}
+          </div>
+          */}
 
-            {/* Notas */}
+          {/* Notas y descripción */}
+          <div className="space-y-4">
             <div>
               <FilterLabel>Notas *</FilterLabel>
               <Textarea
@@ -232,12 +234,12 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
                 disabled={saving}
                 fullWidth
               />
-              <Typography variant="caption" color="secondary" className="mt-1">
+              <Typography variant="caption" color="secondary" className="mt-2">
                 Describe el estado actual, avances realizados, bloqueos encontrados y próximos pasos.
               </Typography>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </SideModal>
   );
