@@ -128,7 +128,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 Reclutamientos encontrados:', reclutamientos?.length || 0);
     console.log('🔍 Estadísticas encontradas:', estadisticas?.length || 0);
 
-    // Procesar las investigaciones usando la vista de estadísticas
+    // Procesar las investigaciones usando reclutamientos como fuente principal
     let investigaciones = [];
     
     // Siempre usar reclutamientos como fuente principal para obtener datos detallados
@@ -142,10 +142,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_sesion: r.fecha_sesion,
         duracion_sesion: r.duracion_sesion,
         reclutador_id: r.reclutador_id,
-        participantes_id: r.participantes_id
+        participantes_id: r.participantes_id,
+        estado_agendamiento: r.estado_agendamiento_cat?.nombre
       })));
       
-      investigaciones = reclutamientos.map(r => ({
+      // Ordenar reclutamientos por fecha más reciente para mostrar la participación actual
+      const reclutamientosOrdenados = reclutamientos.sort((a, b) => 
+        new Date(b.fecha_sesion).getTime() - new Date(a.fecha_sesion).getTime()
+      );
+      
+      console.log('🔍 === RECLUTAMIENTOS ORDENADOS ===');
+      console.log('🔍 Ordenados por fecha:', reclutamientosOrdenados.map(r => ({
+        id: r.id,
+        fecha_sesion: r.fecha_sesion,
+        estado: r.estado_agendamiento_cat?.nombre
+      })));
+      
+      investigaciones = reclutamientosOrdenados.map(r => ({
         id: r.investigacion_id,
         nombre: `Investigación ${r.investigacion_id}`,
         descripcion: 'Descripción no disponible',
