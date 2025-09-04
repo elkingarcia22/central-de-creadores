@@ -52,8 +52,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Limpiar datos antes de enviar a Supabase
       const datosLimpios: any = {
-        participantes_id: req.body.participantes_id,
-        reclutador_id: req.body.reclutador_id,
         fecha_sesion: req.body.fecha_sesion,
         updated_at: new Date().toISOString()
       };
@@ -62,7 +60,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (req.body.hora_sesion !== undefined) datosLimpios.hora_sesion = req.body.hora_sesion;
       if (req.body.duracion_sesion !== undefined) datosLimpios.duracion_sesion = req.body.duracion_sesion;
 
-      console.log('🧹 Datos limpios para Supabase:', datosLimpios);
+      // PRUEBA: Solo actualizar fecha y duración para identificar el problema
+      console.log('🧪 PRUEBA: Solo actualizando fecha y duración');
+      console.log('🧪 Datos de prueba:', datosLimpios);
 
       const { data, error } = await supabase
         .from('reclutamientos')
