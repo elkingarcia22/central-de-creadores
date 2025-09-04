@@ -1647,40 +1647,6 @@ export default function VistaParticipacion() {
           </InfoContainer>
         )}
 
-        {/* Información adicional de empresa */}
-        {participante.tipo === 'externo' && empresa && (empresa.descripcion || empresa.direccion) && (
-          <>
-            {empresa.descripcion && (
-              <InfoContainer 
-                title="Descripción"
-                icon={<FileTextIcon className="w-4 h-4" />}
-                variant="bordered"
-                padding="md"
-              >
-                <div className="col-span-full">
-                  <Typography variant="body2" color="secondary">
-                    {empresa.descripcion}
-                  </Typography>
-                </div>
-              </InfoContainer>
-            )}
-
-            {empresa.direccion && (
-              <InfoContainer 
-                title="Dirección"
-                icon={<BuildingIcon className="w-4 h-4" />}
-                variant="bordered"
-                padding="md"
-              >
-                <div className="col-span-full">
-                  <Typography variant="body2" color="secondary">
-                    {empresa.direccion}
-                  </Typography>
-                </div>
-              </InfoContainer>
-            )}
-          </>
-        )}
 
         {/* Información de Rol en Empresa (para participantes internos) */}
         {participante.tipo === 'interno' && (participante.rol_empresa || participante.departamento_nombre) && (
