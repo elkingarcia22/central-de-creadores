@@ -19,6 +19,7 @@ import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
+import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import ParticipacionesUnifiedContainer from '../../components/participantes/ParticipacionesUnifiedContainer';
@@ -1223,34 +1224,14 @@ export default function VistaParticipacion() {
           <InfoItem 
             label="Tipo de Participante"
             value={
-              (() => {
-                // Función para obtener el badge del tipo de participante (igual que en reclutamiento)
-                const getTipoParticipanteBadge = (tipo: string) => {
-                  switch (tipo) {
-                    case 'interno':
-                      return (
-                        <Chip variant="info" size="sm">
-                          Participante Interno
-                        </Chip>
-                      );
-                    case 'friend_family':
-                      return (
-                        <Chip variant="secondary" size="sm">
-                          Friend and Family
-                        </Chip>
-                      );
-                    case 'externo':
-                    default:
-                      return (
-                        <Chip variant="primary" size="sm">
-                          Participante Externo
-                        </Chip>
-                      );
-                  }
-                };
-                
-                return getTipoParticipanteBadge(participante.tipo);
-              })()
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo)} 
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 
+                 'Friend & Family'}
+              </Chip>
             }
           />
 
