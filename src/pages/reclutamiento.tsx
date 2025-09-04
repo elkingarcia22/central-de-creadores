@@ -526,7 +526,10 @@ export default function ReclutamientoPage() {
         <div className="space-y-2">
           <div 
             className="font-semibold text-gray-900 dark:text-gray-100 text-sm cursor-pointer hover:text-primary transition-colors"
-            onClick={() => router.push(`/reclutamiento/ver/${row.investigacion_id}`)}
+            onClick={() => {
+              const reclutamientoId = row.reclutamiento_id || row.investigacion_id;
+              router.push(`/reclutamiento/ver/${reclutamientoId}`);
+            }}
           >
             {row.investigacion_nombre || 'Sin nombre'}
           </div>
@@ -747,7 +750,8 @@ export default function ReclutamientoPage() {
             label: row.tipo === 'asignacion_agendamiento' ? 'Ver Reclutamiento' : 'Ver',
             icon: <EyeIcon className="w-4 h-4" />,
             onClick: () => {
-              router.push(`/reclutamiento/ver/${row.investigacion_id}`);
+              const reclutamientoId = row.reclutamiento_id || row.investigacion_id;
+              router.push(`/reclutamiento/ver/${reclutamientoId}`);
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
