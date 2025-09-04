@@ -491,13 +491,13 @@ const VerReclutamiento: NextPage = () => {
     // Solo debe ser "Pendiente de Agendamiento" si NO tiene participante asignado
     const esPendienteDeAgendamiento = participante.tipo === 'agendamiento_pendiente' || 
                                      participante.estado_agendamiento === 'Pendiente de agendamiento' ||
-                                     (!participante.participante_id && !participante.participantes_id);
+                                     (!participante.nombre && !participante.email); // Si no tiene nombre ni email, es pendiente real
     
     console.log('🔍 === DEBUG LÓGICA PENDIENTE ===');
     console.log('🔍 Tipo participante:', participante.tipo);
     console.log('🔍 Estado agendamiento:', participante.estado_agendamiento);
-    console.log('🔍 Participante ID:', participante.participante_id);
-    console.log('🔍 Participantes ID:', participante.participantes_id);
+    console.log('🔍 Nombre participante:', participante.nombre);
+    console.log('🔍 Email participante:', participante.email);
     console.log('🔍 Es pendiente de agendamiento:', esPendienteDeAgendamiento);
     
     console.log('🔍 esPendienteDeAgendamiento:', esPendienteDeAgendamiento);
