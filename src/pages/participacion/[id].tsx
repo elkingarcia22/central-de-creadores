@@ -509,12 +509,21 @@ export default function VistaParticipacion() {
     if (!participacionParaEliminar) return;
     
     try {
-      // TODO: Implementar lógica de eliminación de participación
-      showSuccess('Participación eliminada exitosamente');
-      setShowEliminarParticipacionModal(false);
-      setParticipacionParaEliminar(null);
-      // Recargar datos
-      await cargarInvestigaciones();
+      // Implementar eliminación real de la participación
+      const response = await fetch(`/api/reclutamientos/${participacionParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        showSuccess('Participación eliminada exitosamente');
+        setShowEliminarParticipacionModal(false);
+        setParticipacionParaEliminar(null);
+        // Recargar datos
+        await cargarInvestigaciones();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al eliminar la participación');
+      }
     } catch (error) {
       console.error('Error eliminando participación:', error);
       showError('Error al eliminar la participación');
@@ -2107,6 +2116,30 @@ export default function VistaParticipacion() {
             // Recargar datos
             await cargarInvestigaciones();
             showSuccess('Participación actualizada exitosamente');
+          }}
+          onSave={async (reclutamientoData: any) => {
+            try {
+              const response = await fetch(`/api/reclutamientos/${participacionParaEditar.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reclutamientoData),
+              });
+
+              if (response.ok) {
+                showSuccess('Participación actualizada exitosamente');
+                // Recargar datos
+                await cargarInvestigaciones();
+                return Promise.resolve();
+              } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al actualizar la participación');
+              }
+            } catch (error) {
+              console.error('Error actualizando participación:', error);
+              throw error;
+            }
           }}
           reclutamiento={participacionParaEditar}
         />
