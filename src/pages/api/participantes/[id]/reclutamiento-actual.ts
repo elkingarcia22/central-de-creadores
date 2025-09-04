@@ -18,27 +18,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Buscar el reclutamiento más reciente para este participante
+    // Primero, buscar en la tabla de participantes para obtener el reclutamiento_id
+    const { data: participanteData, error: participanteError } = await supabase
+      .from('participantes')
+      .select('reclutamiento_id')
+      .eq('id', id)
+      .single();
+
+    if (participanteError) {
+      console.error('Error consultando participante:', participanteError);
+      return res.status(404).json({ error: 'Participante no encontrado' });
+    }
+
+    if (!participanteData?.reclutamiento_id) {
+      return res.status(404).json({ error: 'Participante no tiene reclutamiento asignado' });
+    }
+
+    // Ahora buscar el reclutamiento usando el ID obtenido
     const { data: reclutamientos, error } = await supabase
       .from('reclutamientos')
-      .select(`
-        *,
-        participantes!inner(*)
-      `)
-      .eq('participantes.participante_id', id)
-      .order('fecha_inicio', { ascending: false })
-      .limit(1);
+      .select('*')
+      .eq('id', participanteData.reclutamiento_id)
+      .single();
 
     if (error) {
       console.error('Error consultando reclutamientos:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
 
-    if (!reclutamientos || reclutamientos.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron reclutamientos para este participante' });
+    if (error) {
+      console.error('Error consultando reclutamiento:', error);
+      return res.status(404).json({ error: 'Reclutamiento no encontrado' });
     }
 
-    const reclutamiento = reclutamientos[0];
+    if (!reclutamientos) {
+      return res.status(404).json({ error: 'Reclutamiento no encontrado' });
+    }
+
+    const reclutamiento = reclutamientos;
     
     // Formatear la respuesta
     const reclutamientoFormateado = {
