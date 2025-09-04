@@ -117,8 +117,9 @@ export default function EditarReclutamientoModal({
     if (isOpen && responsables.length > 0 && reclutamiento?.reclutador_id) {
       console.log('🔍 Sincronizando responsableId:', {
         reclutamiento_reclutador_id: reclutamiento.reclutador_id,
-        responsables_disponibles: responsables.map(u => ({ id: u.id, nombre: u.full_name })),
-        responsable_encontrado: responsables.find(u => u.id === reclutamiento.reclutador_id)
+        responsables_disponibles: responsables.map(u => ({ id: u.id, nombre: u.full_name, email: u.email })),
+        responsable_encontrado: responsables.find(u => u.id === reclutamiento.reclutador_id),
+        total_responsables: responsables.length
       });
       
       if (responsables.some(u => u.id === reclutamiento.reclutador_id)) {
@@ -126,7 +127,16 @@ export default function EditarReclutamientoModal({
         console.log('✅ ResponsableId establecido:', reclutamiento.reclutador_id);
       } else {
         console.log('❌ Responsable no encontrado en la lista de responsables');
+        console.log('🔍 IDs disponibles:', responsables.map(u => u.id));
+        console.log('🔍 ID buscado:', reclutamiento.reclutador_id);
+        console.log('🔍 Tipo de ID buscado:', typeof reclutamiento.reclutador_id);
       }
+    } else {
+      console.log('🔍 No se puede sincronizar responsableId:', {
+        isOpen,
+        responsables_length: responsables.length,
+        reclutamiento_reclutador_id: reclutamiento?.reclutador_id
+      });
     }
   }, [isOpen, responsables, reclutamiento]);
 
@@ -193,7 +203,11 @@ export default function EditarReclutamientoModal({
         const data = await resp.json();
         console.log('🔍 Usuarios responsables cargados:', data.usuarios?.length || 0);
         console.log('🔍 Muestra de usuarios:', data.usuarios?.slice(0, 3));
+        console.log('🔍 Estructura completa del primer usuario:', data.usuarios?.[0]);
+        console.log('🔍 Campos disponibles:', data.usuarios?.[0] ? Object.keys(data.usuarios[0]) : 'No hay usuarios');
         setResponsables(data.usuarios || []);
+      } else {
+        console.log('❌ Error cargando usuarios:', resp.status, resp.statusText);
       }
       // Participantes externos
       const ext = await fetch('/api/participantes?tipo=externo');
