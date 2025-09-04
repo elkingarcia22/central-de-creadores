@@ -2499,36 +2499,20 @@ const VerReclutamiento: NextPage = () => {
 
       {/* Modal de edición de reclutamiento */}
       {showEditModal && participanteToEdit && (
-        participanteToEdit.es_agendamiento_pendiente ? (
-          <EditarResponsableAgendamientoModal
-            isOpen={showEditModal}
-            onClose={() => {
-              setShowEditModal(false);
-              setParticipanteToEdit(null);
-            }}
-            onSuccess={async () => {
-              // Solo cerrar el modal, la recarga ya se hace en handleSaveEditParticipante
-              setShowEditModal(false);
-              setParticipanteToEdit(null);
-            }}
-            reclutamiento={participanteToEdit}
-          />
-        ) : (
-          <EditarReclutamientoModal
-            isOpen={showEditModal}
-            onClose={() => {
-              setShowEditModal(false);
-              setParticipanteToEdit(null);
-            }}
-            onSuccess={async () => {
-              // Solo cerrar el modal, la recarga ya se hace en handleSaveEditParticipante
-              setShowEditModal(false);
-              setParticipanteToEdit(null);
-            }}
-            onSave={handleSaveEditParticipante}
-            reclutamiento={participanteToEdit}
-          />
-        )
+        <EditarReclutamientoModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setParticipanteToEdit(null);
+          }}
+          onSuccess={async () => {
+            // Solo cerrar el modal, la recarga ya se hace en handleSaveEditParticipante
+            setShowEditModal(false);
+            setParticipanteToEdit(null);
+          }}
+          onSave={handleSaveEditParticipante}
+          reclutamiento={participanteToEdit}
+        />
       )}
 
       {/* Modal de agregar participante */}
