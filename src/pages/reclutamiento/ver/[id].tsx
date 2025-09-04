@@ -470,7 +470,6 @@ const VerReclutamiento: NextPage = () => {
   // Cargar los datos del reclutamiento
   useEffect(() => {
     console.log('🔄 useEffect ejecutándose con id:', id);
-    console.log('🔄 actualizarYcargarReclutamiento disponible:', !!actualizarYcargarReclutamiento);
     if (id) {
       console.log('🚀 Llamando a actualizarYcargarReclutamiento con id:', id);
       try {
@@ -480,7 +479,7 @@ const VerReclutamiento: NextPage = () => {
         console.error('❌ Error llamando a actualizarYcargarReclutamiento:', error);
       }
     }
-  }, [id, actualizarYcargarReclutamiento]);
+  }, [id]); // Remover actualizarYcargarReclutamiento de las dependencias
 
   // Log para monitorear el estado de loading
   useEffect(() => {
