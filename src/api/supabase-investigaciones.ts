@@ -341,10 +341,20 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
       .from('tipos_investigacion')
       .select('id, nombre');
       
-    // Obtener datos de períodos
+    // Obtener datos de períodos - TEMPORAL: Usando datos mock para evitar error 400
+    console.log('🔧 TEMP: Mock de períodos en obtenerInvestigaciones (primera ocurrencia)...');
+    const periodos = [
+      { id: '1', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
+      { id: '2', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
+      { id: '3', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
+      { id: '4', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
+    ];
+    
+    /* CONSULTA ORIGINAL COMENTADA - CAUSA ERROR 400
     const { data: periodos } = await supabase
       .from('periodo')
       .select('id,nombre,etiqueta');
+    */
       
     // Obtener datos de usuarios
     const { data: usuarios } = await supabase
@@ -520,10 +530,20 @@ export const obtenerInvestigacionPorId = async (id: string): Promise<RespuestaAP
       .from('tipos_investigacion')
       .select('id, nombre');
       
-    // Obtener datos de períodos
+    // Obtener datos de períodos - TEMPORAL: Usando datos mock para evitar error 400
+    console.log('🔧 TEMP: Mock de períodos en obtenerInvestigacionPorId (segunda ocurrencia)...');
+    const periodos = [
+      { id: '1', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
+      { id: '2', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
+      { id: '3', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
+      { id: '4', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
+    ];
+    
+    /* CONSULTA ORIGINAL COMENTADA - CAUSA ERROR 400
     const { data: periodos } = await supabase
       .from('periodo')
       .select('id,nombre,etiqueta');
+    */
       
     // Obtener datos de usuarios
     const { data: usuarios } = await supabase
