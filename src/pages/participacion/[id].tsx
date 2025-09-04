@@ -1885,11 +1885,14 @@ export default function VistaParticipacion() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                // Obtener el ID del reclutamiento desde las investigaciones para volver a la vista correcta
-                if (investigaciones.length > 0 && investigaciones[0].reclutamiento_id) {
+                // Usar el reclutamiento actual para volver a la vista correcta
+                if (reclutamientoActual?.id) {
+                  router.push(`/reclutamiento/ver/${reclutamientoActual.id}`);
+                } else if (investigaciones.length > 0 && investigaciones[0].reclutamiento_id) {
+                  // Fallback: usar el reclutamiento_id de las investigaciones
                   router.push(`/reclutamiento/ver/${investigaciones[0].reclutamiento_id}`);
                 } else {
-                  // Fallback: ir al home de reclutamientos si no hay reclutamiento_id
+                  // Fallback final: ir al home de reclutamientos
                   router.push('/reclutamiento');
                 }
               }}
@@ -1943,7 +1946,756 @@ export default function VistaParticipacion() {
                 investigaciones={investigaciones}
                 participacionesPorMes={participacionesPorMes}
               />
-            },
+              main.js?ts=1756964141757:1155 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+              supabase.ts:23 ✅ Usando Supabase real
+              websocket.js:46 [HMR] connected
+              hot-dev-client.js:197 [Fast Refresh] rebuilding
+              hot-dev-client.js:166 [Fast Refresh] done in 83ms
+              hot-dev-client.js:166 [Fast Refresh] done in 252ms
+              supabase-seguimientos.ts:11 Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+              GoTrueClient @ GoTrueClient.js:85
+              SupabaseAuthClient @ SupabaseAuthClient.js:9
+              _initSupabaseAuthClient @ SupabaseClient.js:199
+              SupabaseClient @ SupabaseClient.js:76
+              createClient @ index.js:34
+              eval @ supabase-seguimientos.ts:11
+              ./src/api/supabase-seguimientos.ts @ %5Bid%5D.js?ts=1756964141757:94
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ supabase-investigaciones.ts:24
+              ./src/api/supabase-investigaciones.ts @ %5Bid%5D.js?ts=1756964141757:72
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ CrearParticipanteExternoModal.tsx:11
+              ./src/components/ui/CrearParticipanteExternoModal.tsx @ %5Bid%5D.js?ts=1756964141757:314
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ AgregarParticipanteModal.tsx:24
+              ./src/components/ui/AgregarParticipanteModal.tsx @ %5Bid%5D.js?ts=1756964141757:149
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ index.ts:163
+              ./src/components/ui/index.ts @ %5Bid%5D.js?ts=1756964141757:1062
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ [id].tsx:12
+              ./src/pages/reclutamiento/ver/[id].tsx @ %5Bid%5D.js?ts=1756964141757:1095
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              fn @ webpack.js?ts=1756964141757:310
+              eval @ next-client-pages-loader.js?absolutePagePath=%2FUsers%2Felkinmac%2FDocuments%2Fcentral-de-creadores%2Fsrc%2Fpages%2Freclutamiento%2Fver%2F%5Bid%5D.tsx&page=%2Freclutamiento%2Fver%2F%5Bid%5D!:5
+              eval @ route-loader.js:211
+              Promise.then
+              onEntrypoint @ route-loader.js:211
+              register @ index.js:159
+              eval @ next-client-pages-loader.js?absolutePagePath=%2FUsers%2Felkinmac%2FDocuments%2Fcentral-de-creadores%2Fsrc%2Fpages%2Freclutamiento%2Fver%2F%5Bid%5D.tsx&page=%2Freclutamiento%2Fver%2F%5Bid%5D!:2
+              ./node_modules/next/dist/build/webpack/loaders/next-client-pages-loader.js?absolutePagePath=%2FUsers%2Felkinmac%2FDocuments%2Fcentral-de-creadores%2Fsrc%2Fpages%2Freclutamiento%2Fver%2F%5Bid%5D.tsx&page=%2Freclutamiento%2Fver%2F%5Bid%5D! @ %5Bid%5D.js?ts=1756964141757:17
+              options.factory @ webpack.js?ts=1756964141757:655
+              __webpack_require__ @ webpack.js?ts=1756964141757:37
+              __webpack_exec__ @ %5Bid%5D.js?ts=1756964141757:7534
+              (anonymous) @ %5Bid%5D.js?ts=1756964141757:7535
+              __webpack_require__.O @ webpack.js?ts=1756964141757:86
+              (anonymous) @ %5Bid%5D.js?ts=1756964141757:7536
+              webpackJsonpCallback @ webpack.js?ts=1756964141757:1203
+              (anonymous) @ %5Bid%5D.js?ts=1756964141757:9Understand this warning
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              Layout.tsx:43 🔍 Layout - useEffect inicialización
+              Layout.tsx:48 Sidebar initial state: false
+              Layout.tsx:60 🔍 Layout - useEffect rol: {rol: '', rolSeleccionado: ''}
+              Layout.tsx:69 🔍 Layout - Ruta cambiada: /reclutamiento/ver/[id]
+              Layout.tsx:75 🔍 Layout - useEffect sidebarCollapsed: {sidebarCollapsed: false}
+              [id].tsx:278 🔄 Estado de participantes cambiado: 0 participantes
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              Layout.tsx:60 🔍 Layout - useEffect rol: {rol: 'administrador', rolSeleccionado: 'administrador'}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              Layout.tsx:69 🔍 Layout - Ruta cambiada: /reclutamiento/ver/df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:271 🔄 ID disponible, cargando participantes: df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:179 🔄 Cargando participantes...
+              [id].tsx:180 🔍 ID usado para cargar: df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              SimpleAvatar.tsx:68 🔍 SimpleAvatar para Elkin: {src: 'https://eloncaptettdvrvwypji.supabase.co/storage/v…s/e1d4eb8b-83ae-4acc-9d31-6cedc776b64d/avatar.png', trimmedSrc: 'https://eloncaptettdvrvwypji.supabase.co/storage/v…s/e1d4eb8b-83ae-4acc-9d31-6cedc776b64d/avatar.png', fallbackText: 'Elkin Garcia '}
+              SimpleAvatar.tsx:92 🔄 Precargando imagen para Elkin: https://eloncaptettdvrvwypji.supabase.co/storage/v1/object/public/avatars/usuarios/e1d4eb8b-83ae-4acc-9d31-6cedc776b64d/avatar.png
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              SimpleAvatar.tsx:107 ✅ Imagen cargada exitosamente para Elkin
+              [id].tsx:198 📊 Participantes cargados: {participantes: Array(5), total: 5}
+              [id].tsx:199 🔍 Número de participantes: 5
+              [id].tsx:204 🔍 Participante 1 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00', reclutamiento_id: '846021f4-b76d-4b29-b41d-d210095bdd2a'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '18:14:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 2 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00', reclutamiento_id: 'de8f32a2-eb05-4ca9-92b9-64bebadbbb81'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '14:17:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 3 - prueba 0000: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00', reclutamiento_id: '89abf2ad-dae3-43e8-9c66-3e8660bb0b77'}
+              [id].tsx:204 🔍 Participante 4 - prueba email: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00', reclutamiento_id: '753b106f-10bd-4c17-a7d9-dda92752ee5f'}
+              [id].tsx:204 🔍 Participante 5 - padre p: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200'}
+              [id].tsx:226 🔄 Estado actualizado con participantes: 5
+              [id].tsx:338 DEBUG actualización de estados: {success: true, message: 'Estados actualizados exitosamente', actualizados: 3, sinCambios: 13, total: 16, …}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:278 🔄 Estado de participantes cambiado: 5 participantes
+              [id].tsx:280 🔍 Participante 1: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00'}
+              [id].tsx:280 🔍 Participante 2: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00'}
+              [id].tsx:280 🔍 Participante 3: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00'}
+              [id].tsx:280 🔍 Participante 4: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00'}
+              [id].tsx:280 🔍 Participante 5: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00'}
+              [id].tsx:230 🔍 Estado actual después de setParticipantes: []
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:45.761Z'}
+              AgregarParticipanteModal.tsx:162 🔍 useEffect enfriamiento ejecutándose: {tipoParticipante: 'externo', participanteId: ''}
+              AgregarParticipanteModal.tsx:201 🔍 No se ejecuta enfriamiento: {tipoParticipante: 'externo', participanteId: ''}
+              AsignarAgendamientoModal.tsx:81 🔍 useEffect responsableActual: {isOpen: false, isEditMode: false, responsableActual: null, responsablesLength: 0, responsables: Array(0)}
+              AsignarAgendamientoModal.tsx:131 🔍 No se precarga responsable - razón: {isOpen: false, isEditMode: false, responsableActual: null, responsablesLength: 0, razon: 'modal cerrado'}
+              supabase-investigaciones.ts:472 🔍 Obteniendo investigación por ID: df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:179 🔄 Cargando participantes...
+              [id].tsx:180 🔍 ID usado para cargar: df0a0338-fc66-4d15-bf63-1c6e82827386
+              supabase-investigaciones.ts:493 ✅ Investigación base obtenida: prueba ivestigacion nueva
+              supabase-investigaciones.ts:496 🔄 Enriqueciendo datos con consultas separadas...
+              fetch.js:30  GET https://eloncaptettdvrvwypji.supabase.co/rest/v1/periodo?select=id%2Cnombre%2Cetiqueta 400 (Bad Request)
+              eval @ fetch.js:30
+              eval @ fetch.js:51
+              fulfilled @ fetch.js:11
+              Promise.then
+              step @ fetch.js:13
+              eval @ fetch.js:14
+              __awaiter @ fetch.js:10
+              eval @ fetch.js:41
+              then @ PostgrestBuilder.js:66Understand this error
+              supabase-investigaciones.ts:602 ✅ Investigación formateada exitosamente
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.481Z'}
+              supabase-libretos.ts:333 🔍 Buscando libreto para investigación: df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: true
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.496Z'}
+              [id].tsx:338 DEBUG actualización de estados: {success: true, message: 'Estados actualizados exitosamente', actualizados: 3, sinCambios: 13, total: 16, …}
+              [id].tsx:198 📊 Participantes cargados: {participantes: Array(5), total: 5}
+              [id].tsx:199 🔍 Número de participantes: 5
+              [id].tsx:204 🔍 Participante 1 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00', reclutamiento_id: '846021f4-b76d-4b29-b41d-d210095bdd2a'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '18:14:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 2 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00', reclutamiento_id: 'de8f32a2-eb05-4ca9-92b9-64bebadbbb81'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '14:17:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 3 - prueba 0000: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00', reclutamiento_id: '89abf2ad-dae3-43e8-9c66-3e8660bb0b77'}
+              [id].tsx:204 🔍 Participante 4 - prueba email: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00', reclutamiento_id: '753b106f-10bd-4c17-a7d9-dda92752ee5f'}
+              [id].tsx:204 🔍 Participante 5 - padre p: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200'}
+              [id].tsx:226 🔄 Estado actualizado con participantes: 5
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: true
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.526Z'}
+              [id].tsx:278 🔄 Estado de participantes cambiado: 5 participantes
+              [id].tsx:280 🔍 Participante 1: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00'}
+              [id].tsx:280 🔍 Participante 2: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00'}
+              [id].tsx:280 🔍 Participante 3: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00'}
+              [id].tsx:280 🔍 Participante 4: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00'}
+              [id].tsx:280 🔍 Participante 5: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00'}
+              [id].tsx:230 🔍 Estado actual después de setParticipantes: (5) [{…}, {…}, {…}, {…}, {…}]
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: false loadingLibreto: true
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.675Z'}
+              supabase-libretos.ts:88 🔍 Iniciando consulta a roles_empresa...
+              supabase-libretos.ts:216 🔍 Iniciando consulta a modalidades...
+              supabase-libretos.ts:261 🔍 Iniciando consulta a tamano_empresa...
+              supabase-libretos.ts:43 🔍 Iniciando consulta a tipos_prueba_cat...
+              supabase-libretos.ts:171 �� Iniciando consulta a paises...
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: true
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 0, rolesEmpresa: 0, industrias: 0, modalidades: 0, tamanosEmpresa: 0}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.723Z'}
+              supabase-libretos.ts:95 📊 Resultado de la consulta roles_empresa: {data: Array(100), error: null, dataLength: 100, dataType: 'object', isArray: true, …}
+              supabase-libretos.ts:131 ✅ Roles de empresa cargados exitosamente: 100 roles
+              supabase-libretos.ts:132 ✅ Primeros 3 roles: (3) [{…}, {…}, {…}]
+              supabase-libretos.ts:50 📊 Resultado de la consulta tipos_prueba_cat: {data: Array(2), error: null, dataLength: 2, dataType: 'object', isArray: true}
+              supabase-libretos.ts:71 ✅ Tipos de prueba cargados exitosamente: 2 tipos
+              supabase-libretos.ts:72 ✅ Datos de tipos de prueba: (2) [{…}, {…}]
+              supabase-libretos.ts:223 📊 Resultado de la consulta modalidades: {data: Array(3), error: null, dataLength: 3, dataType: 'object', isArray: true}
+              supabase-libretos.ts:244 ✅ Modalidades cargadas exitosamente: 3 modalidades
+              supabase-libretos.ts:245 ✅ Datos de modalidades: (3) [{…}, {…}, {…}]
+              supabase-libretos.ts:178 📊 Resultado de la consulta paises: {data: Array(17), error: null, dataLength: 17, dataType: 'object', isArray: true}
+              supabase-libretos.ts:199 ✅ Países cargados exitosamente: 17 países
+              supabase-libretos.ts:200 ✅ Primeros 5 países: (5) [{…}, {…}, {…}, {…}, {…}]
+              supabase-libretos.ts:268 📊 Resultado de la consulta tamano_empresa: {data: Array(3), error: null, dataLength: 3, dataType: 'object', isArray: true, …}
+              supabase-libretos.ts:304 ✅ Tamaños de empresa cargados exitosamente: 3 tamaños
+              supabase-libretos.ts:305 ✅ Datos de tamaños de empresa: (3) [{…}, {…}, {…}]
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:46.948Z'}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:47.184Z'}
+              [id].tsx:477 🔍 INICIANDO handleEditParticipante con participante: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', nombre: 'padre p', email: 'padre@gmail.com', tipo: 'friend_family', …}
+              [id].tsx:478 🔍 Nombre del participante: padre p
+              [id].tsx:479 🔍 Estado agendamiento: En progreso
+              [id].tsx:482 🔍 reclutamientoId obtenido: fa1dc511-f7b8-4248-bcda-c5382d4ae200
+              [id].tsx:496 🔍 === DEBUG LÓGICA PENDIENTE ===
+              [id].tsx:497 🔍 Tipo participante: friend_family
+              [id].tsx:498 🔍 Estado agendamiento: En progreso
+              [id].tsx:499 🔍 Nombre participante: padre p
+              [id].tsx:500 🔍 Email participante: padre@gmail.com
+              [id].tsx:501 🔍 Es pendiente de agendamiento: false
+              [id].tsx:503 🔍 esPendienteDeAgendamiento: false
+              [id].tsx:504 🔍 Estado agendamiento: En progreso
+              [id].tsx:505 🔍 Fecha sesión: 2025-08-16T06:02:00+00:00
+              [id].tsx:506 🔍 Tipo participante: friend_family
+              [id].tsx:563 🔍 Debug handleEditParticipante - participante: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', nombre: 'padre p', email: 'padre@gmail.com', tipo: 'friend_family', …}
+              [id].tsx:564 🔍 Debug handleEditParticipante - reclutamientoId: fa1dc511-f7b8-4248-bcda-c5382d4ae200
+              [id].tsx:567 🔍 Response status: 200
+              [id].tsx:571 🔍 Debug handleEditParticipante - debugData: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', participantes_id: null, fecha_asignado: '2025-08-16T06:02:10.228306+00:00', fecha_sesion: '2025-08-16T06:02:00+00:00', …}
+              [id].tsx:589 🔍 Debug handleEditParticipante - reclutamientoData: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-08-16T06:02:00+00:00', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', …}
+              [id].tsx:590 🔍 Configurando modal de edición...
+              [id].tsx:593 🔍 Modal configurado, showEditModal debería ser true
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: []
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: []
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:35:49.178Z'}
+              timezone.ts:220 🌍 === INFORMACIÓN DE ZONA HORARIA ===
+              timezone.ts:221 📍 Zona horaria: America/Bogota
+              timezone.ts:222 🌍 País: Colombia
+              timezone.ts:223 🏙️ Ciudad: Bogotá
+              timezone.ts:224 ⏰ Offset (minutos): 300
+              timezone.ts:225 📅 Fecha actual: 2025-09-04
+              timezone.ts:226 🕐 Hora actual: 00:35
+              timezone.ts:227 📊 Fecha completa: 4/9/2025, 0:35:49
+              timezone.ts:228 =====================================
+              EditarReclutamientoModal.tsx:83 🔍 Debug EditarReclutamientoModal - reclutamiento: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-08-16T06:02:00+00:00', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', …}
+              EditarReclutamientoModal.tsx:95 🔍 === DEBUG FECHA Y HORA ===
+              EditarReclutamientoModal.tsx:96 🔍 Fecha sesión recibida: 2025-08-16T06:02:00+00:00
+              EditarReclutamientoModal.tsx:97 🔍 Fecha parseada: Sat Aug 16 2025 01:02:00 GMT-0500 (Colombia Standard Time)
+              EditarReclutamientoModal.tsx:98 🔍 Hora UTC original: 01:02:00 GMT-0500 (Colombia Standard Time)
+              EditarReclutamientoModal.tsx:99 🔍 Hora local: 1:02:00 AM
+              EditarReclutamientoModal.tsx:105 🔍 Hora establecida en modal: 01:02
+              EditarReclutamientoModal.tsx:113 🔍 === DEBUG DURACIÓN ===
+              EditarReclutamientoModal.tsx:114 🔍 Duración recibida: 60
+              EditarReclutamientoModal.tsx:115 🔍 Tipo de duración: number
+              EditarReclutamientoModal.tsx:118 🔍 Duración establecida en modal: 60
+              EditarReclutamientoModal.tsx:121 🔍 Debug - participanteId establecido: a0c3872b-ecd2-4479-9320-41d73b1c98ca
+              EditarReclutamientoModal.tsx:150 🔍 No se puede sincronizar responsableId: {isOpen: true, responsables_length: 0, reclutamiento_reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc'}
+              EditarReclutamientoModal.tsx:161 🔍 useEffect enfriamiento ejecutándose: {tipoParticipante: 'externo', participanteId: ''}
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: []
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: []
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:161 🔍 useEffect enfriamiento ejecutándose: {tipoParticipante: 'friend_family', participanteId: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca'}
+              EditarReclutamientoModal.tsx:219 🔍 Usuarios responsables cargados: 17
+              EditarReclutamientoModal.tsx:220 🔍 Muestra de usuarios: (3) [{…}, {…}, {…}]
+              EditarReclutamientoModal.tsx:221 🔍 Estructura completa del primer usuario: {id: '9b1ef1eb-fdb4-410f-ab22-bfedc68294d6', full_name: 'a', email: 'a@gmail.com', avatar_url: 'https://eloncaptettdvrvwypji.supabase.co/storage/v…s/9b1ef1eb-fdb4-410f-ab22-bfedc68294d6/avatar.png', roles: Array(2)}
+              EditarReclutamientoModal.tsx:222 🔍 Campos disponibles: (5) ['id', 'full_name', 'email', 'avatar_url', 'roles']
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:133 🔍 Sincronizando responsableId: {reclutamiento_reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', responsables_disponibles: Array(17), responsable_encontrado: {…}, total_responsables: 17}
+              EditarReclutamientoModal.tsx:142 ✅ ResponsableId establecido: 5ff1169b-f725-4a8c-bc5d-0bead2c87afc
+              2EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:257 🔍 Debug - participanteId: a0c3872b-ecd2-4479-9320-41d73b1c98ca
+              EditarReclutamientoModal.tsx:258 🔍 Debug - participantesDisponibles: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+              EditarReclutamientoModal.tsx:259 🔍 Debug - participanteEncontrado: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', email: 'padre@gmail.com', departamento_id: '1c9dd717-5047-4f37-ba0d-b28487b3e737', departamento: 'Dirección General', …}
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:280 🔍 === DEBUG ENVÍO ===
+              EditarReclutamientoModal.tsx:281 📅 Fecha seleccionada: 2025-09-05
+              EditarReclutamientoModal.tsx:282 🕐 Hora seleccionada: 01:00
+              EditarReclutamientoModal.tsx:283 📤 Fecha UTC enviada: 2025-09-05T06:00:00.000Z
+              EditarReclutamientoModal.tsx:297 🔍 Modal: Usando función onSave de la página principal
+              EditarReclutamientoModal.tsx:298 🔍 Modal: Datos a enviar: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-09-05T06:00:00.000Z', hora_sesion: '01:00', …}
+              [id].tsx:646 🔍 INICIANDO handleSaveEditParticipante con datos: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-09-05T06:00:00.000Z', hora_sesion: '01:00', …}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:00.772Z'}
+              [id].tsx:648  PUT http://localhost:3000/api/reclutamientos/fa1dc511-f7b8-4248-bcda-c5382d4ae200 500 (Internal Server Error)
+              handleSaveEditParticipante @ [id].tsx:648
+              handleSubmit @ EditarReclutamientoModal.tsx:300
+              callCallback @ react-dom.development.js:4164
+              invokeGuardedCallbackDev @ react-dom.development.js:4213
+              invokeGuardedCallback @ react-dom.development.js:4277
+              invokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:4291
+              executeDispatch @ react-dom.development.js:9041
+              processDispatchQueueItemsInOrder @ react-dom.development.js:9073
+              processDispatchQueue @ react-dom.development.js:9086
+              dispatchEventsForPlugins @ react-dom.development.js:9097
+              eval @ react-dom.development.js:9288
+              batchedUpdates$1 @ react-dom.development.js:26174
+              batchedUpdates @ react-dom.development.js:3991
+              dispatchEventForPluginEventSystem @ react-dom.development.js:9287
+              dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ react-dom.development.js:6465
+              dispatchEvent @ react-dom.development.js:6457
+              dispatchDiscreteEvent @ react-dom.development.js:6430Understand this error
+              [id].tsx:656 🔍 Response status: 500
+              [id].tsx:669 ❌ Error actualizando reclutamiento: Internal Server Error
+              console.error @ client.js:2
+              window.console.error @ setup-hydration-warning.js:18
+              handleSaveEditParticipante @ [id].tsx:669
+              await in handleSaveEditParticipante
+              handleSubmit @ EditarReclutamientoModal.tsx:300
+              callCallback @ react-dom.development.js:4164
+              invokeGuardedCallbackDev @ react-dom.development.js:4213
+              invokeGuardedCallback @ react-dom.development.js:4277
+              invokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:4291
+              executeDispatch @ react-dom.development.js:9041
+              processDispatchQueueItemsInOrder @ react-dom.development.js:9073
+              processDispatchQueue @ react-dom.development.js:9086
+              dispatchEventsForPlugins @ react-dom.development.js:9097
+              eval @ react-dom.development.js:9288
+              batchedUpdates$1 @ react-dom.development.js:26174
+              batchedUpdates @ react-dom.development.js:3991
+              dispatchEventForPluginEventSystem @ react-dom.development.js:9287
+              dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ react-dom.development.js:6465
+              dispatchEvent @ react-dom.development.js:6457
+              dispatchDiscreteEvent @ react-dom.development.js:6430Understand this error
+              EditarReclutamientoModal.tsx:301 🔍 Modal: onSave completado exitosamente
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:00.975Z'}
+              [id].tsx:179 🔄 Cargando participantes...
+              [id].tsx:180 🔍 ID usado para cargar: df0a0338-fc66-4d15-bf63-1c6e82827386
+              [id].tsx:338 DEBUG actualización de estados: {success: true, message: 'Estados actualizados exitosamente', actualizados: 3, sinCambios: 13, total: 16, …}
+              [id].tsx:198 📊 Participantes cargados: {participantes: Array(5), total: 5}
+              [id].tsx:199 🔍 Número de participantes: 5
+              [id].tsx:204 🔍 Participante 1 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00', reclutamiento_id: '846021f4-b76d-4b29-b41d-d210095bdd2a'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '18:14:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 2 - prueba 12344: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00', reclutamiento_id: 'de8f32a2-eb05-4ca9-92b9-64bebadbbb81'}
+              [id].tsx:213 🎯 PARTICIPANTE ESPECÍFICO - prueba 12344: {hora_sesion: '14:17:00', hora_sesion_tipo: 'string', hora_sesion_es_null: false, hora_sesion_es_undefined: false}
+              [id].tsx:204 🔍 Participante 3 - prueba 0000: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00', reclutamiento_id: '89abf2ad-dae3-43e8-9c66-3e8660bb0b77'}
+              [id].tsx:204 🔍 Participante 4 - prueba email: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00', reclutamiento_id: '753b106f-10bd-4c17-a7d9-dda92752ee5f'}
+              [id].tsx:204 🔍 Participante 5 - padre p: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200'}
+              [id].tsx:226 🔄 Estado actualizado con participantes: 5
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:01.949Z'}
+              [id].tsx:278 🔄 Estado de participantes cambiado: 5 participantes
+              [id].tsx:280 🔍 Participante 1: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '18:14:00'}
+              [id].tsx:280 🔍 Participante 2: {id: '9155b800-f786-46d7-9294-bb385434d042', nombre: 'prueba 12344', hora_sesion: '14:17:00'}
+              [id].tsx:280 🔍 Participante 3: {id: '30803140-e7ee-46ab-a511-4dba02c61566', nombre: 'prueba 0000', hora_sesion: '23:48:00'}
+              [id].tsx:280 🔍 Participante 4: {id: '9839dcad-f74a-440c-a68f-b0592eced0a0', nombre: 'prueba email', hora_sesion: '00:40:00'}
+              [id].tsx:280 🔍 Participante 5: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', hora_sesion: '01:02:00'}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:02.045Z'}
+              [id].tsx:230 🔍 Estado actual después de setParticipantes: (5) [{…}, {…}, {…}, {…}, {…}]
+              [id].tsx:477 🔍 INICIANDO handleEditParticipante con participante: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', nombre: 'padre p', email: 'padre@gmail.com', tipo: 'friend_family', …}
+              [id].tsx:478 🔍 Nombre del participante: padre p
+              [id].tsx:479 🔍 Estado agendamiento: En progreso
+              [id].tsx:482 🔍 reclutamientoId obtenido: fa1dc511-f7b8-4248-bcda-c5382d4ae200
+              [id].tsx:496 🔍 === DEBUG LÓGICA PENDIENTE ===
+              [id].tsx:497 🔍 Tipo participante: friend_family
+              [id].tsx:498 🔍 Estado agendamiento: En progreso
+              [id].tsx:499 🔍 Nombre participante: padre p
+              [id].tsx:500 🔍 Email participante: padre@gmail.com
+              [id].tsx:501 🔍 Es pendiente de agendamiento: false
+              [id].tsx:503 🔍 esPendienteDeAgendamiento: false
+              [id].tsx:504 🔍 Estado agendamiento: En progreso
+              [id].tsx:505 🔍 Fecha sesión: 2025-08-16T06:02:00+00:00
+              [id].tsx:506 🔍 Tipo participante: friend_family
+              [id].tsx:563 🔍 Debug handleEditParticipante - participante: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutamiento_id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', nombre: 'padre p', email: 'padre@gmail.com', tipo: 'friend_family', …}
+              [id].tsx:564 🔍 Debug handleEditParticipante - reclutamientoId: fa1dc511-f7b8-4248-bcda-c5382d4ae200
+              [id].tsx:567 🔍 Response status: 200
+              [id].tsx:571 🔍 Debug handleEditParticipante - debugData: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', participantes_id: null, fecha_asignado: '2025-08-16T06:02:10.228306+00:00', fecha_sesion: '2025-08-16T06:02:00+00:00', …}
+              [id].tsx:589 🔍 Debug handleEditParticipante - reclutamientoData: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-08-16T06:02:00+00:00', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', …}
+              [id].tsx:590 🔍 Configurando modal de edición...
+              [id].tsx:593 🔍 Modal configurado, showEditModal debería ser true
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: []
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: []
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:04.098Z'}
+              timezone.ts:220 🌍 === INFORMACIÓN DE ZONA HORARIA ===
+              timezone.ts:221 📍 Zona horaria: America/Bogota
+              timezone.ts:222 🌍 País: Colombia
+              timezone.ts:223 🏙️ Ciudad: Bogotá
+              timezone.ts:224 ⏰ Offset (minutos): 300
+              timezone.ts:225 📅 Fecha actual: 2025-09-04
+              timezone.ts:226 🕐 Hora actual: 00:36
+              timezone.ts:227 📊 Fecha completa: 4/9/2025, 0:36:04
+              timezone.ts:228 =====================================
+              EditarReclutamientoModal.tsx:83 🔍 Debug EditarReclutamientoModal - reclutamiento: {id: 'fa1dc511-f7b8-4248-bcda-c5382d4ae200', participantes_id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', fecha_sesion: '2025-08-16T06:02:00+00:00', investigacion_id: 'df0a0338-fc66-4d15-bf63-1c6e82827386', …}
+              EditarReclutamientoModal.tsx:95 🔍 === DEBUG FECHA Y HORA ===
+              EditarReclutamientoModal.tsx:96 🔍 Fecha sesión recibida: 2025-08-16T06:02:00+00:00
+              EditarReclutamientoModal.tsx:97 🔍 Fecha parseada: Sat Aug 16 2025 01:02:00 GMT-0500 (Colombia Standard Time)
+              EditarReclutamientoModal.tsx:98 🔍 Hora UTC original: 01:02:00 GMT-0500 (Colombia Standard Time)
+              EditarReclutamientoModal.tsx:99 🔍 Hora local: 1:02:00 AM
+              EditarReclutamientoModal.tsx:105 🔍 Hora establecida en modal: 01:02
+              EditarReclutamientoModal.tsx:113 🔍 === DEBUG DURACIÓN ===
+              EditarReclutamientoModal.tsx:114 🔍 Duración recibida: 60
+              EditarReclutamientoModal.tsx:115 🔍 Tipo de duración: number
+              EditarReclutamientoModal.tsx:118 🔍 Duración establecida en modal: 60
+              EditarReclutamientoModal.tsx:121 🔍 Debug - participanteId establecido: a0c3872b-ecd2-4479-9320-41d73b1c98ca
+              EditarReclutamientoModal.tsx:150 🔍 No se puede sincronizar responsableId: {isOpen: true, responsables_length: 0, reclutamiento_reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc'}
+              EditarReclutamientoModal.tsx:161 🔍 useEffect enfriamiento ejecutándose: {tipoParticipante: 'externo', participanteId: ''}
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: []
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: []
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:161 🔍 useEffect enfriamiento ejecutándose: {tipoParticipante: 'friend_family', participanteId: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca'}
+              EditarReclutamientoModal.tsx:219 🔍 Usuarios responsables cargados: 17
+              EditarReclutamientoModal.tsx:220 🔍 Muestra de usuarios: (3) [{…}, {…}, {…}]
+              EditarReclutamientoModal.tsx:221 🔍 Estructura completa del primer usuario: {id: '9b1ef1eb-fdb4-410f-ab22-bfedc68294d6', full_name: 'a', email: 'a@gmail.com', avatar_url: 'https://eloncaptettdvrvwypji.supabase.co/storage/v…s/9b1ef1eb-fdb4-410f-ab22-bfedc68294d6/avatar.png', roles: Array(2)}
+              EditarReclutamientoModal.tsx:222 🔍 Campos disponibles: (5) ['id', 'full_name', 'email', 'avatar_url', 'roles']
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:133 🔍 Sincronizando responsableId: {reclutamiento_reclutador_id: '5ff1169b-f725-4a8c-bc5d-0bead2c87afc', responsables_disponibles: Array(17), responsable_encontrado: {…}, total_responsables: 17}
+              EditarReclutamientoModal.tsx:142 ✅ ResponsableId establecido: 5ff1169b-f725-4a8c-bc5d-0bead2c87afc
+              2EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 0 filtered: 0 isOpen: false
+              EditarReclutamientoModal.tsx:58 🔍 Modal: onSave recibido: true
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: title-only
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: undefined
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: 
+              UserSelectorWithAvatar.tsx:48 🔍 UserSelectorWithAvatar - users recibidos: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              UserSelectorWithAvatar.tsx:51 🔍 UserSelectorWithAvatar - usuarios filtrados: (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+              Select.tsx:68 🔍 Select options: 3 filtered: 3 isOpen: false
+              Select.tsx:68 🔍 Select options: 6 filtered: 6 isOpen: false
+              EditarReclutamientoModal.tsx:257 🔍 Debug - participanteId: a0c3872b-ecd2-4479-9320-41d73b1c98ca
+              EditarReclutamientoModal.tsx:258 🔍 Debug - participantesDisponibles: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+              EditarReclutamientoModal.tsx:259 🔍 Debug - participanteEncontrado: {id: 'a0c3872b-ecd2-4479-9320-41d73b1c98ca', nombre: 'padre p', email: 'padre@gmail.com', departamento_id: '1c9dd717-5047-4f37-ba0d-b28487b3e737', departamento: 'Dirección General', …}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:06.306Z'}
+              [id].tsx:1856 🔍 LIBRETOCONTENT RECLUTAMIENTO - libreto: true loadingLibreto: false
+              [id].tsx:1857 🔍 Catálogos cargados en reclutamiento: {plataformas: 6, rolesEmpresa: 100, industrias: 17, modalidades: 3, tamanosEmpresa: 3}
+              [id].tsx:2561 🔍 Modal AsignarAgendamientoModal - participanteToEditAgendamiento: null
+              [id].tsx:2562 🔍 Modal AsignarAgendamientoModal - responsableActual: null
+              [id].tsx:2563 🔍 Modal AsignarAgendamientoModal - reclutador objeto: undefined
+              [id].tsx:2564 🔍 Modal AsignarAgendamientoModal - reclutador_id: undefined
+              PageHeader.tsx:124 🔍 DEBUG PageHeader - variant: compact
+              PageHeader.tsx:125 🔍 DEBUG PageHeader - className recibido: mb-0
+              PageHeader.tsx:126 🔍 DEBUG PageHeader - className final: mb-0
+              AgregarParticipanteModal.tsx:501 🔍 DEBUG AgregarParticipanteModal - Renderizando modal
+              AgregarParticipanteModal.tsx:502 🔍 DEBUG - isOpen: false
+              AgregarParticipanteModal.tsx:503 🔍 DEBUG - SideModal props: {isOpen: false, width: 'lg', showCloseButton: false}
+              AgregarParticipanteModal.tsx:504 🔍 DEBUG - Header className: mb-0 -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:505 🔍 DEBUG - Header estructura: div con -mx-6 -mt-6
+              AgregarParticipanteModal.tsx:708 🔍 Debug participante seleccionado: {participanteId: '', tipoParticipante: 'externo', participante: undefined, estado_calculado: undefined, tiene_mensaje: undefined}
+              AsignarAgendamientoModal.tsx:57 🔍 AsignarAgendamientoModal RENDERIZADO - props: {isOpen: false, isEditMode: false, reclutamientoId: null, responsableActual: null, timestamp: '2025-09-04T05:36:06.345Z'}            },
             {
               id: 'reclutamiento',
               label: 'Información de Reclutamiento',
