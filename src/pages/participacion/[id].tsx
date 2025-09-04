@@ -496,6 +496,13 @@ export default function VistaParticipacion() {
     if (investigaciones.length > 0) {
       const investigacion = investigaciones[0];
       
+      console.log('🔍 === DEBUG INVESTIGACIÓN ===');
+      console.log('🔍 Investigación completa:', investigacion);
+      console.log('🔍 Campos disponibles:', Object.keys(investigacion));
+      console.log('🔍 reclutador_id:', investigacion.reclutador_id);
+      console.log('🔍 reclutamiento_id:', investigacion.reclutamiento_id);
+      console.log('🔍 responsable:', investigacion.responsable);
+      
       // Crear un objeto con la estructura que espera el modal EditarReclutamientoModal
       const participacionData = {
         id: investigacion.reclutamiento_id || investigacion.id, // Usar reclutamiento_id si está disponible
@@ -512,9 +519,11 @@ export default function VistaParticipacion() {
         empresa_nombre: participante?.empresa_nombre || ''
       };
       
+      console.log('🔍 === DATOS FINALES ===');
       console.log('🔍 Datos de participación para editar:', participacionData);
-      console.log('🔍 reclutador_id:', participacionData.reclutador_id);
+      console.log('🔍 reclutador_id final:', participacionData.reclutador_id);
       console.log('🔍 participante:', participante);
+      
       setParticipacionParaEditar(participacionData);
       setShowEditarParticipacionModal(true);
     } else {
