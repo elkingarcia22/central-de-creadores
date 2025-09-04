@@ -23,27 +23,92 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log('  - SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Existe' : '❌ No existe');
 
   try {
-    // PASO 1: Verificar que el participante existe
-    console.log('🔍 PASO 1: Verificando participante...');
-    const { data: participante, error: participanteError } = await supabase
+    // PASO 1: Verificar que el participante existe en todas las tablas posibles
+    console.log('🔍 PASO 1: Verificando participante en todas las tablas...');
+    
+    let participante = null;
+    let tipoParticipante = 'no_encontrado';
+    
+    // Buscar en participantes (externos)
+    const { data: participanteExterno, error: errorExterno } = await supabase
       .from('participantes')
-      .select('id, nombre')
+      .select('id, nombre, tipo')
       .eq('id', id)
       .single();
-
-    if (participanteError) {
-      console.error('❌ Error consultando participante:', participanteError);
+    
+    if (!errorExterno && participanteExterno) {
+      participante = participanteExterno;
+      tipoParticipante = 'externo';
+      console.log('✅ Participante externo encontrado:', participante);
+    } else {
+      // Buscar en participantes_internos
+      const { data: participanteInterno, error: errorInterno } = await supabase
+        .from('participantes_internos')
+        .select('id, nombre')
+        .eq('id', id)
+        .single();
+      
+      if (!errorInterno && participanteInterno) {
+        participante = participanteInterno;
+        tipoParticipante = 'interno';
+        console.log('✅ Participante interno encontrado:', participante);
+      } else {
+        // Buscar en participantes_friend_family
+        const { data: participanteFriendFamily, error: errorFriendFamily } = await supabase
+          .from('participantes_friend_family')
+          .select('id, nombre')
+          .eq('id', id)
+          .single();
+        
+        if (!errorFriendFamily && participanteFriendFamily) {
+          participante = participanteFriendFamily;
+          tipoParticipante = 'friend_family';
+          console.log('✅ Participante friend & family encontrado:', participante);
+        }
+      }
+    }
+    
+    if (!participante) {
+      console.error('❌ Participante no encontrado en ninguna tabla');
       return res.status(404).json({ error: 'Participante no encontrado' });
     }
+    
+    console.log('✅ Participante encontrado:', participante, 'Tipo:', tipoParticipante);
 
-    console.log('✅ Participante encontrado:', participante);
-
-    // PASO 2: Buscar reclutamientos
-    console.log('🔍 PASO 2: Buscando reclutamientos...');
-    const { data: reclutamientos, error: reclutamientosError } = await supabase
-      .from('reclutamientos')
-      .select('*')
-      .eq('participantes_id', id);
+    // PASO 2: Buscar reclutamientos en todas las columnas posibles según el tipo
+    console.log('🔍 PASO 2: Buscando reclutamientos según tipo:', tipoParticipante);
+    
+    let reclutamientos = [];
+    let reclutamientosError = null;
+    
+    if (tipoParticipante === 'externo') {
+      // Para externos, buscar en participantes_id
+      const { data: data, error: error } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .eq('participantes_id', id);
+      
+      reclutamientos = data || [];
+      reclutamientosError = error;
+    } else if (tipoParticipante === 'interno') {
+      // Para internos, buscar en participantes_internos_id
+      const { data: data, error: error } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .eq('participantes_internos_id', id);
+      
+      reclutamientos = data || [];
+      reclutamientosError = error;
+    } else if (tipoParticipante === 'friend_family') {
+      // Para friend & family, buscar en participantes_friend_family_id
+      const { data: data, error: error } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .eq('participantes_friend_family_id', id);
+      
+      reclutamientos = data || [];
+      reclutamientosError = error;
+    }
 
     if (reclutamientosError) {
       console.error('❌ Error consultando reclutamientos:', reclutamientosError);
@@ -53,7 +118,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('✅ Reclutamientos encontrados:', reclutamientos);
 
     if (!reclutamientos || reclutamientos.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron reclutamientos para este participante' });
+      console.log('⚠️ No hay reclutamientos para este participante. Devolviendo datos básicos...');
+      
+      // Para participantes sin reclutamientos, devolver datos básicos
+      const participanteBasico = {
+        id: participante.id,
+        nombre: participante.nombre,
+        descripcion: 'Sin descripción',
+        fecha_inicio: null,
+        fecha_sesion: null,
+        duracion_sesion: 0,
+        estado: 'Sin estado',
+        responsable: 'Sin responsable',
+        implementador: 'Sin implementador',
+        tipo_investigacion: 'Sin tipo',
+        fecha_asignado: null,
+        estado_agendamiento: null,
+        reclutador_id: null,
+        creado_por: null,
+        tipo_participante: tipoParticipante,
+        sin_reclutamientos: true
+      };
+      
+      return res.status(200).json({
+        reclutamiento: participanteBasico
+      });
     }
 
     // PASO 3: Tomar el más reciente
