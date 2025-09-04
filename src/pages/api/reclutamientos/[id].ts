@@ -40,14 +40,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('  - hora_sesion:', req.body.hora_sesion, 'tipo:', typeof req.body.hora_sesion);
       console.log('  - duracion_sesion:', req.body.duracion_sesion, 'tipo:', typeof req.body.duracion_sesion);
 
-      // Validar que los campos requeridos estén presentes
-      if (!req.body.participantes_id || !req.body.reclutador_id || !req.body.fecha_sesion) {
+      // Validar que los campos requeridos estén presentes - considerar diferentes tipos de participantes
+      const tieneParticipante = !!(
+        req.body.participantes_id || 
+        req.body.participantes_internos_id || 
+        req.body.participantes_friend_family_id
+      );
+
+      if (!tieneParticipante || !req.body.reclutador_id || !req.body.fecha_sesion) {
         console.error('❌ Campos requeridos faltantes:', {
-          participantes_id: !!req.body.participantes_id,
+          participante: tieneParticipante,
           reclutador_id: !!req.body.reclutador_id,
           fecha_sesion: !!req.body.fecha_sesion
         });
-        return res.status(400).json({ error: 'Campos requeridos faltantes' });
+        return res.status(400).json({ 
+          error: 'Campos requeridos faltantes',
+          detalles: 'Se requiere al menos un campo de participante (participantes_id, participantes_internos_id, o participantes_friend_family_id), reclutador_id, y fecha_sesion'
+        });
       }
 
       // Limpiar datos antes de enviar a Supabase
@@ -60,9 +69,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (req.body.hora_sesion !== undefined) datosLimpios.hora_sesion = req.body.hora_sesion;
       if (req.body.duracion_sesion !== undefined) datosLimpios.duracion_sesion = req.body.duracion_sesion;
 
-      // PRUEBA: Solo actualizar fecha y duración para identificar el problema
-      console.log('🧪 PRUEBA: Solo actualizando fecha y duración');
-      console.log('🧪 Datos de prueba:', datosLimpios);
+      // Agregar campos de participante según el tipo
+      if (req.body.participantes_id) datosLimpios.participantes_id = req.body.participantes_id;
+      if (req.body.participantes_internos_id) datosLimpios.participantes_internos_id = req.body.participantes_internos_id;
+      if (req.body.participantes_friend_family_id) datosLimpios.participantes_friend_family_id = req.body.participantes_friend_family_id;
+
+      // Agregar reclutador si está presente
+      if (req.body.reclutador_id) datosLimpios.reclutador_id = req.body.reclutador_id;
+
+      console.log('🔧 Datos limpios para Supabase:', datosLimpios);
 
       const { data, error } = await supabase
         .from('reclutamientos')
