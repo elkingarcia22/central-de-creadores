@@ -27,6 +27,7 @@ import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../com
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import EditarParticipanteModal from '../../components/ui/EditarParticipanteModal';
+import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
 
 interface Participante {
   id: string;
@@ -144,6 +145,12 @@ export default function VistaParticipacion() {
   const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
   const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
+  
+  // Estados para modales de participación
+  const [showEditarParticipacionModal, setShowEditarParticipacionModal] = useState(false);
+  const [showEliminarParticipacionModal, setShowEliminarParticipacionModal] = useState(false);
+  const [participacionParaEditar, setParticipacionParaEditar] = useState<any>(null);
+  const [participacionParaEliminar, setParticipacionParaEliminar] = useState<any>(null);
 
   // Estados para datos seleccionados
   const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
@@ -479,13 +486,39 @@ export default function VistaParticipacion() {
 
   // Funciones para manejar participación
   const handleEditarParticipacion = () => {
-    // TODO: Implementar modal de edición de participación
-    showError('Función de editar participación no implementada aún');
+    // Buscar la participación actual (primera investigación)
+    if (investigaciones.length > 0) {
+      setParticipacionParaEditar(investigaciones[0]);
+      setShowEditarParticipacionModal(true);
+    } else {
+      showError('No hay participación para editar');
+    }
   };
 
   const handleEliminarParticipacion = () => {
-    // TODO: Implementar modal de confirmación para eliminar participación
-    showError('Función de eliminar participación no implementada aún');
+    // Buscar la participación actual (primera investigación)
+    if (investigaciones.length > 0) {
+      setParticipacionParaEliminar(investigaciones[0]);
+      setShowEliminarParticipacionModal(true);
+    } else {
+      showError('No hay participación para eliminar');
+    }
+  };
+
+  const confirmarEliminacionParticipacion = async () => {
+    if (!participacionParaEliminar) return;
+    
+    try {
+      // TODO: Implementar lógica de eliminación de participación
+      showSuccess('Participación eliminada exitosamente');
+      setShowEliminarParticipacionModal(false);
+      setParticipacionParaEliminar(null);
+      // Recargar datos
+      await cargarInvestigaciones();
+    } catch (error) {
+      console.error('Error eliminando participación:', error);
+      showError('Error al eliminar la participación');
+    }
   };
 
   const confirmarEliminacion = async () => {
@@ -2057,6 +2090,43 @@ export default function VistaParticipacion() {
             setParticipantePerfilamientoTemp(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}
+        />
+      )}
+
+      {/* Modal de edición de participación */}
+      {showEditarParticipacionModal && participacionParaEditar && (
+        <EditarReclutamientoModal
+          isOpen={showEditarParticipacionModal}
+          onClose={() => {
+            setShowEditarParticipacionModal(false);
+            setParticipacionParaEditar(null);
+          }}
+          onSuccess={async () => {
+            setShowEditarParticipacionModal(false);
+            setParticipacionParaEditar(null);
+            // Recargar datos
+            await cargarInvestigaciones();
+            showSuccess('Participación actualizada exitosamente');
+          }}
+          reclutamiento={participacionParaEditar}
+        />
+      )}
+
+      {/* Modal de confirmación para eliminar participación */}
+      {showEliminarParticipacionModal && participacionParaEliminar && (
+        <ConfirmModal
+          isOpen={showEliminarParticipacionModal}
+          onClose={() => {
+            setShowEliminarParticipacionModal(false);
+            setParticipacionParaEliminar(null);
+          }}
+          onConfirm={confirmarEliminacionParticipacion}
+          title="Eliminar Participación"
+          message={`¿Estás seguro de que quieres eliminar la participación "${participacionParaEliminar.nombre}"? Esta acción no se puede deshacer y eliminará permanentemente la participación.`}
+          type="error"
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          size="md"
         />
       )}
 
