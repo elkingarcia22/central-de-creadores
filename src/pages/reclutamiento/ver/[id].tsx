@@ -266,12 +266,13 @@ const VerReclutamiento: NextPage = () => {
   };
 
   // Cargar participantes cuando el ID esté disponible
-  useEffect(() => {
-    if (id) {
-      console.log('🔄 ID disponible, cargando participantes:', id);
-      cargarParticipantes();
-    }
-  }, [id]);
+  // NOTA: Esto se maneja ahora en actualizarYcargarReclutamiento
+  // useEffect(() => {
+  //   if (id) {
+  //     console.log('🔄 ID disponible, cargando participantes:', id);
+  //     cargarParticipantes();
+  //   }
+  // }, [id]);
 
   // Monitorear cambios en el estado de participantes
   useEffect(() => {
