@@ -412,18 +412,8 @@ export default function VistaParticipacion() {
         // Debug detallado de las investigaciones
         if (data.investigaciones && data.investigaciones.length > 0) {
           console.log('🔍 Primera investigación:', JSON.stringify(data.investigaciones[0], null, 2));
-          console.log('🔍 NAVEGACIÓN - Verificando reclutamiento_id en investigaciones:');
-          data.investigaciones.forEach((inv, index) => {
-            console.log(`🔍 NAVEGACIÓN - Investigación ${index + 1}:`, {
-              id: inv.id,
-              nombre: inv.nombre,
-              reclutamiento_id: inv.reclutamiento_id,
-              tiene_reclutamiento_id: !!inv.reclutamiento_id
-            });
-          });
         } else {
           console.log('⚠️ No se recibieron investigaciones de la API');
-          console.log('⚠️ NAVEGACIÓN - Sin investigaciones, navegación atrás usará fallback');
         }
       } else {
         console.error('Error cargando investigaciones:', response.status, response.statusText);
@@ -1895,26 +1885,10 @@ export default function VistaParticipacion() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                console.log('🔙 NAVEGACIÓN ATRÁS - Iniciando navegación');
-                console.log('🔍 Estado investigaciones:', {
-                  length: investigaciones.length,
-                  investigaciones: investigaciones.map(inv => ({
-                    id: inv.id,
-                    nombre: inv.nombre,
-                    reclutamiento_id: inv.reclutamiento_id,
-                    reclutador_id: inv.reclutador_id
-                  }))
-                });
-
                 // Obtener el ID del reclutamiento desde las investigaciones para volver a la vista correcta
                 if (investigaciones.length > 0 && investigaciones[0].reclutamiento_id) {
-                  const reclutamientoId = investigaciones[0].reclutamiento_id;
-                  console.log('✅ NAVEGACIÓN ATRÁS - Reclutamiento ID encontrado:', reclutamientoId);
-                  console.log('🚀 NAVEGACIÓN ATRÁS - Navegando a:', `/reclutamiento/ver/${reclutamientoId}`);
-                  router.push(`/reclutamiento/ver/${reclutamientoId}`);
+                  router.push(`/reclutamiento/ver/${investigaciones[0].reclutamiento_id}`);
                 } else {
-                  console.log('⚠️ NAVEGACIÓN ATRÁS - No hay reclutamiento_id, usando fallback');
-                  console.log('🚀 NAVEGACIÓN ATRÁS - Navegando a home de reclutamientos');
                   // Fallback: ir al home de reclutamientos si no hay reclutamiento_id
                   router.push('/reclutamiento');
                 }
