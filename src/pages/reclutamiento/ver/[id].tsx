@@ -439,13 +439,20 @@ const VerReclutamiento: NextPage = () => {
         }
       }
       
-      // Cargar participantes del reclutamiento
-      console.log('🔄 Llamando a cargarParticipantes...');
+      // Cargar participantes del reclutamiento DESPUÉS de establecer el reclutamiento
+      console.log('🔄 Llamando a cargarParticipantes después de establecer reclutamiento...');
       try {
-        await cargarParticipantes();
-        console.log('✅ cargarParticipantes completado exitosamente');
+        // Usar setTimeout para asegurar que el estado se haya actualizado
+        setTimeout(async () => {
+          try {
+            await cargarParticipantes();
+            console.log('✅ cargarParticipantes completado exitosamente');
+          } catch (error) {
+            console.error('❌ Error en cargarParticipantes:', error);
+          }
+        }, 100);
       } catch (error) {
-        console.error('❌ Error en cargarParticipantes:', error);
+        console.error('❌ Error programando cargarParticipantes:', error);
       }
     } catch (error) {
       console.error('Error cargando reclutamiento:', error);
