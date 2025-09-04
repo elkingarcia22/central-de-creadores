@@ -84,13 +84,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (investigacion?.responsable_id) {
       console.log('🔍 PASO 5: Buscando responsable...');
-      const { data: responsableData } = await supabase
+      console.log('🔍 ID del responsable:', investigacion.responsable_id);
+      
+      const { data: responsableData, error: responsableError } = await supabase
         .from('usuarios')
-        .select('nombre, apellido')
+        .select('*')
         .eq('id', investigacion.responsable_id)
         .single();
 
-      if (responsableData) {
+      if (responsableError) {
+        console.error('❌ Error consultando responsable:', responsableError);
+      } else if (responsableData) {
+        console.log('🔍 Datos del responsable:', responsableData);
         responsableNombre = responsableData.nombre || 'Sin nombre';
         console.log('✅ Responsable encontrado:', responsableNombre);
       }
@@ -98,13 +103,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (investigacion?.implementador_id) {
       console.log('🔍 PASO 6: Buscando implementador...');
-      const { data: implementadorData } = await supabase
+      console.log('🔍 ID del implementador:', investigacion.implementador_id);
+      
+      const { data: implementadorData, error: implementadorError } = await supabase
         .from('usuarios')
-        .select('nombre, apellido')
+        .select('*')
         .eq('id', investigacion.implementador_id)
         .single();
 
-      if (implementadorData) {
+      if (implementadorError) {
+        console.error('❌ Error consultando implementador:', implementadorError);
+      } else if (implementadorData) {
+        console.log('🔍 Datos del implementador:', implementadorData);
         implementadorNombre = implementadorData.nombre || 'Sin nombre';
         console.log('✅ Implementador encontrado:', implementadorNombre);
       }
