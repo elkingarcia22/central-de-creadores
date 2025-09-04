@@ -17,45 +17,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'ID de participante requerido' });
   }
 
+  console.log('🔍 API reclutamiento-actual - ID participante:', id);
+
   try {
     // Primero, buscar en la tabla de participantes para obtener el reclutamiento_id
+    console.log('🔍 Buscando participante con ID:', id);
     const { data: participanteData, error: participanteError } = await supabase
       .from('participantes')
-      .select('reclutamiento_id')
+      .select('reclutamiento_id, nombre')
       .eq('id', id)
       .single();
 
     if (participanteError) {
-      console.error('Error consultando participante:', participanteError);
+      console.error('❌ Error consultando participante:', participanteError);
       return res.status(404).json({ error: 'Participante no encontrado' });
     }
 
+    console.log('✅ Participante encontrado:', participanteData);
+
     if (!participanteData?.reclutamiento_id) {
+      console.log('❌ Participante no tiene reclutamiento_id:', participanteData);
       return res.status(404).json({ error: 'Participante no tiene reclutamiento asignado' });
     }
 
+    console.log('🔍 Buscando reclutamiento con ID:', participanteData.reclutamiento_id);
+
     // Ahora buscar el reclutamiento usando el ID obtenido
-    const { data: reclutamientos, error } = await supabase
+    const { data: reclutamiento, error: reclutamientoError } = await supabase
       .from('reclutamientos')
       .select('*')
       .eq('id', participanteData.reclutamiento_id)
       .single();
 
-    if (error) {
-      console.error('Error consultando reclutamientos:', error);
-      return res.status(500).json({ error: 'Error interno del servidor' });
-    }
-
-    if (error) {
-      console.error('Error consultando reclutamiento:', error);
+    if (reclutamientoError) {
+      console.error('❌ Error consultando reclutamiento:', reclutamientoError);
       return res.status(404).json({ error: 'Reclutamiento no encontrado' });
     }
 
-    if (!reclutamientos) {
+    if (!reclutamiento) {
+      console.log('❌ No se encontró reclutamiento con ID:', participanteData.reclutamiento_id);
       return res.status(404).json({ error: 'Reclutamiento no encontrado' });
     }
 
-    const reclutamiento = reclutamientos;
+    console.log('✅ Reclutamiento encontrado:', reclutamiento);
     
     // Formatear la respuesta
     const reclutamientoFormateado = {
