@@ -92,15 +92,30 @@ export default function EditarReclutamientoModal({
       
       if (reclutamiento.fecha_sesion) {
         const fecha = new Date(reclutamiento.fecha_sesion);
+        console.log('🔍 === DEBUG FECHA Y HORA ===');
+        console.log('🔍 Fecha sesión recibida:', reclutamiento.fecha_sesion);
+        console.log('🔍 Fecha parseada:', fecha);
+        console.log('🔍 Hora UTC original:', fecha.toTimeString());
+        console.log('🔍 Hora local:', fecha.toLocaleTimeString());
+        
         setFechaSesion(fecha.toISOString().slice(0, 10));
-        setHoraSesion(fecha.toTimeString().slice(0, 5));
+        // Mantener la hora original de la sesión, no convertir a local
+        const horaOriginal = fecha.toTimeString().slice(0, 5);
+        setHoraSesion(horaOriginal);
+        console.log('🔍 Hora establecida en modal:', horaOriginal);
       } else {
         // Si no hay fecha de sesión, usar fecha y hora actual en zona horaria local
         const { date, time } = getCurrentDateTime();
         setFechaSesion(date);
         setHoraSesion(time);
       }
+      
+      console.log('🔍 === DEBUG DURACIÓN ===');
+      console.log('🔍 Duración recibida:', reclutamiento.duracion_sesion);
+      console.log('🔍 Tipo de duración:', typeof reclutamiento.duracion_sesion);
+      
       setDuracionSesion(reclutamiento.duracion_sesion?.toString() || '60');
+      console.log('🔍 Duración establecida en modal:', reclutamiento.duracion_sesion?.toString() || '60');
       setTipoParticipante(reclutamiento.tipo_participante || 'externo');
       setParticipanteId(reclutamiento.participantes_id || '');
       console.log('🔍 Debug - participanteId establecido:', reclutamiento.participantes_id);
