@@ -288,9 +288,9 @@ export default function EditarReclutamientoModal({
         reclutador_id: responsableId,
         fecha_sesion: fechaHoraCompleta,
         hora_sesion: horaSesion,
-        duracion_sesion: parseInt(duracionSesion),
-        investigacion_id: reclutamiento.investigacion_id,
-        tipo_participante: tipoParticipante  // También usar el tipo seleccionado
+        duracion_sesion: parseInt(duracionSesion)
+        // Removido: investigacion_id (no se puede cambiar)
+        // Removido: tipo_participante (campo no existe en la tabla)
       };
 
       if (onSave) {
@@ -317,8 +317,8 @@ export default function EditarReclutamientoModal({
             reclutador_id: responsableId,
             fecha_sesion: fechaHoraCompleta,
             hora_sesion: horaSesion,
-            duracion_sesion: parseInt(duracionSesion),
-            tipo_participante: tipoParticipante
+            duracion_sesion: parseInt(duracionSesion)
+            // Removido: tipo_participante (campo no existe en la tabla)
           }),
         });
 
