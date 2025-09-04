@@ -15,65 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('🔍 Obteniendo investigaciones para participante:', id);
 
-    // Primero obtener el tipo de participante
-    let tipoParticipante = '';
-    let participanteData = null;
-
-    // Buscar en todas las tablas de participantes secuencialmente con mejor manejo de errores
-    console.log('🔍 Buscando participante en todas las tablas:', id);
+    // Usar la misma lógica simple que funciona en el endpoint de debug
+    console.log('🔍 Usando lógica simplificada para búsqueda de participantes');
     
-    // Buscar en participantes (externos)
-    const { data: participanteExterno, error: errorExterno } = await supabaseServer
-      .from('participantes')
-      .select('id, tipo')
-      .eq('id', id)
-      .single();
-
-    console.log('🔍 Búsqueda en participantes (externos):', { data: participanteExterno, error: errorExterno });
-
-    if (participanteExterno) {
-      tipoParticipante = 'externo';
-      participanteData = participanteExterno;
-    } else {
-      // Buscar en participantes_internos
-      const { data: participanteInterno, error: errorInterno } = await supabaseServer
-        .from('participantes_internos')
-        .select('id, tipo')
-        .eq('id', id)
-        .single();
-
-      console.log('🔍 Búsqueda en participantes_internos:', { data: participanteInterno, error: errorInterno });
-
-      if (participanteInterno) {
-        tipoParticipante = 'interno';
-        participanteData = participanteInterno;
-      } else {
-        // Buscar en participantes_friend_family
-        const { data: participanteFriendFamily, error: errorFriendFamily } = await supabaseServer
-          .from('participantes_friend_family')
-          .select('id, tipo')
-          .eq('id', id)
-          .single();
-
-        console.log('🔍 Búsqueda en participantes_friend_family:', { data: participanteFriendFamily, error: errorFriendFamily });
-
-        if (participanteFriendFamily) {
-          tipoParticipante = 'friend_family';
-          participanteData = participanteFriendFamily;
-        }
-      }
-    }
-
-    if (!participanteData) {
-      return res.status(404).json({ error: 'Participante no encontrado' });
-    }
-
-    console.log('🔍 Tipo de participante:', tipoParticipante);
-
-    // Obtener reclutamientos según el tipo de participante
-    console.log('🔍 Consultando reclutamientos para participante:', id, 'tipo:', tipoParticipante);
-    
-    let query = supabaseServer
+    // Buscar directamente en reclutamientos usando OR para cubrir todos los tipos
+    const { data: reclutamientos, error: errorReclutamientos } = await supabaseServer
       .from('reclutamientos')
       .select(`
         id,
@@ -89,18 +35,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           id,
           nombre
         )
-      `);
+      `)
+      .or(`participantes_id.eq.${id},participantes_internos_id.eq.${id},participantes_friend_family_id.eq.${id}`);
 
-    // Construir la consulta según el tipo de participante
-    if (tipoParticipante === 'externo') {
-      query = query.eq('participantes_id', id);
-    } else if (tipoParticipante === 'interno') {
-      query = query.eq('participantes_internos_id', id);
-    } else if (tipoParticipante === 'friend_family') {
-      query = query.eq('participantes_friend_family_id', id);
+    console.log('🔍 Resultado consulta reclutamientos:', { 
+      data: reclutamientos?.length || 0, 
+      error: errorReclutamientos,
+      sample: reclutamientos?.[0]
+    });
+
+    if (errorReclutamientos) {
+      console.error('❌ Error obteniendo reclutamientos:', errorReclutamientos);
+      return res.status(500).json({ error: 'Error obteniendo reclutamientos' });
     }
 
-    const { data: reclutamientos, error: errorReclutamientos } = await query;
+    // Si no hay reclutamientos, devolver array vacío en lugar de error
+    if (!reclutamientos || reclutamientos.length === 0) {
+      console.log('🔍 No se encontraron reclutamientos para el participante');
+      return res.status(200).json({
+        investigaciones: [],
+        participacionesPorMes: {}
+      });
+    }
+
+    console.log('🔍 Reclutamientos encontrados:', reclutamientos.length);
 
     console.log('🔍 Resultado consulta reclutamientos:', { 
       data: reclutamientos?.length || 0, 
