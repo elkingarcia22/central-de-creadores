@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('🔍 Obteniendo seguimientos para investigación:', investigacion_id);
 
-      const { data, error } = await supabaseServer
+      const { data: seguimientos, error } = await supabaseServer
         .from('seguimientos_investigacion')
         .select('*')
         .eq('investigacion_id', investigacion_id)
@@ -70,6 +70,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           details: error.message 
         });
       }
+
+      // Obtener información de participantes externos si existen
+      console.log('🔍 Procesando seguimientos para obtener participantes...');
+      const seguimientosConParticipantes = await Promise.all(
+        (seguimientos || []).map(async (seguimiento) => {
+          console.log('🔍 Procesando seguimiento:', seguimiento.id, 'participante_externo_id:', seguimiento.participante_externo_id);
+          if (seguimiento.participante_externo_id) {
+            try {
+              console.log('🔍 Buscando participante:', seguimiento.participante_externo_id);
+              const { data: participante, error: participanteError } = await supabaseServer
+                .from('participantes')
+                .select('id, nombre, empresa_nombre, email')
+                .eq('id', seguimiento.participante_externo_id)
+                .single();
+
+              if (participanteError) {
+                console.error('❌ Error obteniendo participante:', participanteError);
+              } else if (participante) {
+                console.log('✅ Participante encontrado:', participante);
+                return {
+                  ...seguimiento,
+                  participante_externo: participante
+                };
+              } else {
+                console.log('⚠️ Participante no encontrado');
+              }
+            } catch (error) {
+              console.error('❌ Error obteniendo participante:', error);
+            }
+          }
+          return seguimiento;
+        })
+      );
+
+      const data = seguimientosConParticipantes;
 
       console.log('✅ Seguimientos obtenidos:', data?.length || 0);
 
