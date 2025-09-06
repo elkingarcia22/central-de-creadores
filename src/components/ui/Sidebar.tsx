@@ -80,12 +80,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-500 ease-in-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
-          <div>
+          <div className="transition-transform duration-500 ease-in-out">
             <SimpleAvatar
               src={user?.avatar}
               fallbackText={displayName}
               size="xl"
-              className={`border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-500 ease-in-out ${isExpanded ? 'scale-100' : 'scale-75'}`}
+              className={`border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 ${isExpanded ? 'scale-100' : 'scale-75'}`}
               onClick={onSettings}
             />
           </div>
