@@ -2080,15 +2080,33 @@ const VerReclutamiento: NextPage = () => {
 
     if (participantes.length === 0) {
       return (
-        <EmptyState
-          icon={<ClipboardListIcon className="w-8 h-8" />}
-          title="Sin Participantes"
-          description="Aún no se han reclutado participantes para esta investigación."
-          actionText="Agregar Participante"
-          onAction={() => {
-            showInfo('Funcionalidad en desarrollo', 'La gestión de participantes estará disponible próximamente');
-          }}
-        />
+        <div className="space-y-6">
+          <EmptyState
+            icon={<ClipboardListIcon className="w-8 h-8" />}
+            title="Sin Participantes"
+            description="Aún no se han reclutado participantes para esta investigación."
+          />
+          
+          {/* Botones de acción */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              variant="primary"
+              onClick={() => setShowAgregarParticipanteModal(true)}
+              className="flex items-center gap-2"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Agregar Participante
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAsignarAgendamientoModal(true)}
+              className="flex items-center gap-2"
+            >
+              <CalendarIcon className="w-4 h-4" />
+              Asignar Agendamiento
+            </Button>
+          </div>
+        </div>
       );
     }
 
