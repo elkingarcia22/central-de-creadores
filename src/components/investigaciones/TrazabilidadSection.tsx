@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Typography, Card, Button, Chip } from '../ui';
+import { Typography, Card, Button, Chip, Subtitle, UserAvatar } from '../ui';
 import { 
   ArrowLeftIcon, 
   FileTextIcon, 
   CopyIcon,
   LinkIcon,
-  InfoIcon
+  InfoIcon,
+  BarChartIcon
 } from '../icons';
 import { obtenerTrazabilidadCompleta } from '../../api/supabase-seguimientos';
 import { formatearFecha } from '../../utils/fechas';
@@ -91,11 +92,10 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <LinkIcon className="w-5 h-5 text-primary" />
-          <Typography variant="h3" weight="medium">
+        <div className="flex items-center justify-between mb-6">
+          <Subtitle>
             Trazabilidad
-          </Typography>
+          </Subtitle>
         </div>
         <div className="animate-pulse space-y-3">
           {[1, 2, 3].map(i => (
@@ -129,22 +129,18 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <LinkIcon className="w-5 h-5 text-primary" />
-        <Typography variant="h3" weight="medium">
-          Trazabilidad
-        </Typography>
-        <Chip variant="secondary" className="text-xs">
-          {trazabilidad.origen.seguimientos.length + trazabilidad.derivadas.investigaciones.length} elementos relacionados
-        </Chip>
+      <div className="flex items-center justify-between mb-6">
+        <Subtitle>
+          Trazabilidad ({trazabilidad.origen.seguimientos.length + trazabilidad.derivadas.investigaciones.length})
+        </Subtitle>
       </div>
 
       {/* Origen - Investigaciones que dieron origen a esta */}
       {tieneOrigen && (
-        <Card variant="outlined" padding="lg">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
             <ArrowLeftIcon className="w-4 h-4 text-muted-foreground" />
             <Typography variant="h4" weight="medium">
               Origen
@@ -156,65 +152,121 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
 
           <div className="space-y-4">
             {/* Investigaciones de origen */}
-            {trazabilidad.origen.investigaciones.map((investigacion) => (
-              <div key={investigacion.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FileTextIcon className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <Typography variant="subtitle2" weight="medium">
-                      {investigacion.nombre}
-                    </Typography>
-                    <Typography variant="caption" color="secondary">
+            {trazabilidad.origen.investigaciones.map((investigacion, index) => (
+              <div key={investigacion.id} className="flex items-start gap-3 relative group">
+                {/* Línea vertical del timeline */}
+                <div 
+                  className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted/60"
+                  style={{zIndex:0}} 
+                />
+                
+                {/* Punto del timeline */}
+                <div className="z-10 w-8 flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted border-2 border-white shadow">
+                    <FileTextIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  </div>
+                </div>
+                
+                {/* Contenido de la tarjeta */}
+                <Card className="flex-1 p-4 mb-2">
+                  {/* Header con metadata */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Chip variant={getEstadoColor(investigacion.estado)} size="sm">
+                      {investigacion.estado}
+                    </Chip>
+                    <Typography 
+                      variant="body2" 
+                      className="!text-gray-600 dark:!text-gray-300 font-medium"
+                    >
                       {formatearFecha(investigacion.fecha_inicio)} - {formatearFecha(investigacion.fecha_fin)}
                     </Typography>
                   </div>
-                  <Chip variant={getEstadoColor(investigacion.estado)}>
-                    {investigacion.estado}
-                  </Chip>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
-                  className="flex items-center gap-1"
-                >
-                  <LinkIcon className="w-3 h-3" />
-                  Ver
-                </Button>
+                  
+                  {/* Título de la investigación */}
+                  <Typography 
+                    variant="body1" 
+                    className="!text-gray-700 dark:!text-gray-200 mb-3"
+                  >
+                    {investigacion.nombre}
+                  </Typography>
+
+                  {/* Botón de acción */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
+                    className="flex items-center gap-1"
+                  >
+                    <LinkIcon className="w-3 h-3" />
+                    Ver
+                  </Button>
+                </Card>
               </div>
             ))}
 
             {/* Seguimientos de origen */}
-            {trazabilidad.origen.seguimientos.map((seguimiento) => (
-              <div key={seguimiento.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <CopyIcon className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <Typography variant="subtitle2" weight="medium">
-                      Seguimiento del {formatearFecha(seguimiento.fecha_seguimiento)}
-                    </Typography>
-                    <Typography variant="caption" color="secondary">
-                      {seguimiento.notas.substring(0, 100)}...
-                    </Typography>
+            {trazabilidad.origen.seguimientos.map((seguimiento, index) => (
+              <div key={seguimiento.id} className="flex items-start gap-3 relative group">
+                {/* Línea vertical del timeline */}
+                <div 
+                  className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted/60"
+                  style={{zIndex:0}} 
+                />
+                
+                {/* Punto del timeline */}
+                <div className="z-10 w-8 flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted border-2 border-white shadow">
+                    <CopyIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <Chip variant={getEstadoColor(seguimiento.estado)}>
-                    {seguimiento.estado}
-                  </Chip>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {obtenerNombreUsuario(seguimiento.responsable_id)}
-                </div>
+                
+                {/* Contenido de la tarjeta */}
+                <Card className="flex-1 p-4 mb-2">
+                  {/* Header con metadata */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Chip variant={getEstadoColor(seguimiento.estado)} size="sm">
+                      {seguimiento.estado}
+                    </Chip>
+                    <Typography 
+                      variant="body2" 
+                      className="!text-gray-600 dark:!text-gray-300 font-medium"
+                    >
+                      {obtenerNombreUsuario(seguimiento.responsable_id)}
+                    </Typography>
+                    <UserAvatar 
+                      src={usuarios.find(u => u.id === seguimiento.responsable_id)?.avatar_url} 
+                      fallbackText={obtenerNombreUsuario(seguimiento.responsable_id)} 
+                      size="sm" 
+                    />
+                  </div>
+                  
+                  {/* Título del seguimiento */}
+                  <Typography 
+                    variant="body1" 
+                    className="!text-gray-700 dark:!text-gray-200 mb-2"
+                  >
+                    Seguimiento del {formatearFecha(seguimiento.fecha_seguimiento)}
+                  </Typography>
+
+                  {/* Descripción del seguimiento */}
+                  <Typography 
+                    variant="body2" 
+                    className="!text-gray-600 dark:!text-gray-300"
+                  >
+                    {seguimiento.notas.substring(0, 100)}...
+                  </Typography>
+                </Card>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Derivadas - Investigaciones creadas desde esta */}
       {tieneDerivadas && (
-        <Card variant="outlined" padding="lg">
-          <div className="flex items-center gap-2 mb-4">
-            <ArrowLeftIcon className="w-4 h-4 text-muted-foreground" />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <BarChartIcon className="w-4 h-4 text-muted-foreground" />
             <Typography variant="h4" weight="medium">
               Investigaciones Derivadas
             </Typography>
@@ -225,58 +277,114 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
 
           <div className="space-y-4">
             {/* Investigaciones derivadas */}
-            {trazabilidad.derivadas.investigaciones.map((investigacion) => (
-              <div key={investigacion.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FileTextIcon className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <Typography variant="subtitle2" weight="medium">
-                      {investigacion.nombre}
-                    </Typography>
-                    <Typography variant="caption" color="secondary">
+            {trazabilidad.derivadas.investigaciones.map((investigacion, index) => (
+              <div key={investigacion.id} className="flex items-start gap-3 relative group">
+                {/* Línea vertical del timeline */}
+                <div 
+                  className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted/60"
+                  style={{zIndex:0}} 
+                />
+                
+                {/* Punto del timeline */}
+                <div className="z-10 w-8 flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted border-2 border-white shadow">
+                    <FileTextIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  </div>
+                </div>
+                
+                {/* Contenido de la tarjeta */}
+                <Card className="flex-1 p-4 mb-2">
+                  {/* Header con metadata */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Chip variant={getEstadoColor(investigacion.estado)} size="sm">
+                      {investigacion.estado}
+                    </Chip>
+                    <Typography 
+                      variant="body2" 
+                      className="!text-gray-600 dark:!text-gray-300 font-medium"
+                    >
                       {formatearFecha(investigacion.fecha_inicio)} - {formatearFecha(investigacion.fecha_fin)}
                     </Typography>
                   </div>
-                  <Chip variant={getEstadoColor(investigacion.estado)}>
-                    {investigacion.estado}
-                  </Chip>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
-                  className="flex items-center gap-1"
-                >
-                  <LinkIcon className="w-3 h-3" />
-                  Ver
-                </Button>
+                  
+                  {/* Título de la investigación */}
+                  <Typography 
+                    variant="body1" 
+                    className="!text-gray-700 dark:!text-gray-200 mb-3"
+                  >
+                    {investigacion.nombre}
+                  </Typography>
+
+                  {/* Botón de acción */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
+                    className="flex items-center gap-1"
+                  >
+                    <LinkIcon className="w-3 h-3" />
+                    Ver
+                  </Button>
+                </Card>
               </div>
             ))}
 
             {/* Seguimientos que dieron origen a investigaciones derivadas */}
-            {trazabilidad.derivadas.seguimientos.map((seguimiento) => (
-              <div key={seguimiento.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <CopyIcon className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <Typography variant="subtitle2" weight="medium">
-                      Seguimiento del {formatearFecha(seguimiento.fecha_seguimiento)}
-                    </Typography>
-                    <Typography variant="caption" color="secondary">
-                      {seguimiento.notas.substring(0, 100)}...
-                    </Typography>
+            {trazabilidad.derivadas.seguimientos.map((seguimiento, index) => (
+              <div key={seguimiento.id} className="flex items-start gap-3 relative group">
+                {/* Línea vertical del timeline */}
+                <div 
+                  className="absolute left-4 top-0 bottom-0 w-0.5 bg-muted/60"
+                  style={{zIndex:0}} 
+                />
+                
+                {/* Punto del timeline */}
+                <div className="z-10 w-8 flex flex-col items-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted border-2 border-white shadow">
+                    <CopyIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                   </div>
-                  <Chip variant={getEstadoColor(seguimiento.estado)}>
-                    {seguimiento.estado}
-                  </Chip>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {obtenerNombreUsuario(seguimiento.responsable_id)}
-                </div>
+                
+                {/* Contenido de la tarjeta */}
+                <Card className="flex-1 p-4 mb-2">
+                  {/* Header con metadata */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Chip variant={getEstadoColor(seguimiento.estado)} size="sm">
+                      {seguimiento.estado}
+                    </Chip>
+                    <Typography 
+                      variant="body2" 
+                      className="!text-gray-600 dark:!text-gray-300 font-medium"
+                    >
+                      {obtenerNombreUsuario(seguimiento.responsable_id)}
+                    </Typography>
+                    <UserAvatar 
+                      src={usuarios.find(u => u.id === seguimiento.responsable_id)?.avatar_url} 
+                      fallbackText={obtenerNombreUsuario(seguimiento.responsable_id)} 
+                      size="sm" 
+                    />
+                  </div>
+                  
+                  {/* Título del seguimiento */}
+                  <Typography 
+                    variant="body1" 
+                    className="!text-gray-700 dark:!text-gray-200 mb-2"
+                  >
+                    Seguimiento del {formatearFecha(seguimiento.fecha_seguimiento)}
+                  </Typography>
+
+                  {/* Descripción del seguimiento */}
+                  <Typography 
+                    variant="body2" 
+                    className="!text-gray-600 dark:!text-gray-300"
+                  >
+                    {seguimiento.notas.substring(0, 100)}...
+                  </Typography>
+                </Card>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );
