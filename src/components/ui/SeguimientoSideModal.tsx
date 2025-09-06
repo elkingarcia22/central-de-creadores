@@ -47,14 +47,38 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     fecha_seguimiento: '',
     notas: '',
     responsable_id: '',
-    estado: 'pendiente'
+    estado: 'pendiente',
+    participante_externo_id: ''
   });
   
   const [saving, setSaving] = useState(false);
+  const [participantesExternos, setParticipantesExternos] = useState<any[]>([]);
+  const [cargandoParticipantes, setCargandoParticipantes] = useState(false);
+
+  // Cargar participantes externos
+  const cargarParticipantesExternos = async () => {
+    try {
+      setCargandoParticipantes(true);
+      const response = await fetch('/api/participantes');
+      if (response.ok) {
+        const data = await response.json();
+        setParticipantesExternos(data || []);
+      } else {
+        console.error('Error cargando participantes externos:', response.status);
+      }
+    } catch (error) {
+      console.error('Error cargando participantes externos:', error);
+    } finally {
+      setCargandoParticipantes(false);
+    }
+  };
 
   // Inicializar formulario cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
+      // Cargar participantes externos
+      cargarParticipantesExternos();
+      
       if (seguimiento) {
         // Modo edición
         setFormData({
@@ -62,7 +86,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           fecha_seguimiento: seguimiento.fecha_seguimiento.split('T')[0], // Solo fecha
           notas: seguimiento.notas,
           responsable_id: seguimiento.responsable_id,
-          estado: seguimiento.estado
+          estado: seguimiento.estado,
+          participante_externo_id: seguimiento.participante_externo_id || ''
         });
       } else {
         // Modo creación
@@ -72,7 +97,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           fecha_seguimiento: today,
           notas: '',
           responsable_id: '',
-          estado: 'pendiente' // Siempre pendiente al crear
+          estado: 'pendiente', // Siempre pendiente al crear
+          participante_externo_id: ''
         });
       }
     }
@@ -198,6 +224,27 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
                 disabled={saving}
                 required
               />
+            </div>
+
+            <div>
+              <FilterLabel>Participante Externo (Opcional)</FilterLabel>
+              <Select
+                value={formData.participante_externo_id || ''}
+                onChange={(value) => handleInputChange('participante_externo_id', value.toString())}
+                placeholder={cargandoParticipantes ? "Cargando participantes..." : "Seleccionar participante externo"}
+                disabled={saving || cargandoParticipantes}
+                options={[
+                  { value: '', label: 'Sin participante asociado' },
+                  ...participantesExternos.map(participante => ({
+                    value: participante.id,
+                    label: `${participante.nombre}${participante.empresa_nombre ? ` - ${participante.empresa_nombre}` : ''}`
+                  }))
+                ]}
+                fullWidth
+              />
+              <Typography variant="caption" color="secondary" className="mt-1">
+                Asocia este seguimiento con un participante externo específico si es relevante.
+              </Typography>
             </div>
           </div>
 

@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Typography, Button, Card, Chip, ConfirmModal } from '../ui';
 import SeguimientoSideModal from '../ui/SeguimientoSideModal';
-import { PlusIcon, EditIcon, TrashIcon, CopyIcon, FileTextIcon } from '../icons';
+import { PlusIcon, EditIcon, TrashIcon, CopyIcon, FileTextIcon, UserIcon } from '../icons';
 import { 
   obtenerSeguimientosPorInvestigacion,
   crearSeguimiento,
@@ -308,9 +308,20 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
 
                   {/* Footer */}
                   <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t border-border">
-                    <span>
-                      Responsable: {obtenerNombreUsuario(seguimiento.responsable_id)}
-                    </span>
+                    <div className="flex items-center gap-4">
+                      <span>
+                        Responsable: {obtenerNombreUsuario(seguimiento.responsable_id)}
+                      </span>
+                      {seguimiento.participante_externo && (
+                        <span className="flex items-center gap-1">
+                          <UserIcon className="w-3 h-3" />
+                          Participante: {seguimiento.participante_externo.nombre}
+                          {seguimiento.participante_externo.empresa_nombre && (
+                            <span className="text-xs">({seguimiento.participante_externo.empresa_nombre})</span>
+                          )}
+                        </span>
+                      )}
+                    </div>
                     <span>
                       Creado por: {obtenerNombreUsuario(seguimiento.creado_por)} • {formatearFecha(seguimiento.creado_el)}
                     </span>

@@ -62,7 +62,15 @@ export async function obtenerSeguimientosPorInvestigacion(investigacionId: strin
     console.log('🚀 Ejecutando consulta de seguimientos...');
     const { data, error } = await supabase
       .from('seguimientos_investigacion')
-      .select('*')
+      .select(`
+        *,
+        participante_externo:participantes!seguimientos_investigacion_participante_externo_id_fkey(
+          id,
+          nombre,
+          empresa_nombre,
+          email
+        )
+      `)
       .eq('investigacion_id', investigacionId)
       .order('fecha_seguimiento', { ascending: false });
 
@@ -139,7 +147,8 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
       responsable_id: seguimientoData.responsable_id,
       fecha_seguimiento: seguimientoData.fecha_seguimiento,
       notas: seguimientoData.notas?.substring(0, 50) + '...',
-      estado: seguimientoData.estado
+      estado: seguimientoData.estado,
+      participante_externo_id: seguimientoData.participante_externo_id
     });
     
     // Obtener usuario actual
@@ -150,9 +159,15 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
       
       // Usar cliente admin para bypass RLS
       const datosParaInsertar = {
-        ...seguimientoData,
+        investigacion_id: seguimientoData.investigacion_id,
+        fecha_seguimiento: seguimientoData.fecha_seguimiento,
+        notas: seguimientoData.notas,
+        responsable_id: seguimientoData.responsable_id,
+        estado: seguimientoData.estado,
         creado_por: seguimientoData.responsable_id, // Usar responsable como creador
-        creado_el: new Date().toISOString()
+        creado_el: new Date().toISOString(),
+        // Solo incluir participante_externo_id si existe
+        ...(seguimientoData.participante_externo_id && { participante_externo_id: seguimientoData.participante_externo_id })
       };
 
       console.log('📤 Datos para insertar (admin):', datosParaInsertar);
@@ -209,9 +224,15 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
     console.log('✅ Investigación verificado:', investigacion);
 
     const datosParaInsertar = {
-      ...seguimientoData,
+      investigacion_id: seguimientoData.investigacion_id,
+      fecha_seguimiento: seguimientoData.fecha_seguimiento,
+      notas: seguimientoData.notas,
+      responsable_id: seguimientoData.responsable_id,
+      estado: seguimientoData.estado,
       creado_por: user.id,
-      creado_el: new Date().toISOString()
+      creado_el: new Date().toISOString(),
+      // Solo incluir participante_externo_id si existe
+      ...(seguimientoData.participante_externo_id && { participante_externo_id: seguimientoData.participante_externo_id })
     };
 
     console.log('📤 Datos para insertar:', datosParaInsertar);
@@ -258,9 +279,15 @@ export async function actualizarSeguimiento(seguimientoId: string, updates: Actu
 
     console.log('👤 Usuario autenticado:', user.id);
     
+    // Preparar los datos de actualización, excluyendo campos que no deben actualizarse
+    const datosActualizacion = {
+      ...updates,
+      actualizado_el: new Date().toISOString()
+    };
+    
     const { data, error } = await supabase
       .from('seguimientos_investigacion')
-      .update(updates)
+      .update(datosActualizacion)
       .eq('id', seguimientoId)
       .select('*')
       .single();

@@ -8,6 +8,13 @@ export interface SeguimientoInvestigacion {
   creado_el: string;
   responsable_id: string;
   estado: string; // 'pendiente', 'en_progreso', 'completado', etc.
+  participante_externo_id?: string; // ID del participante externo asociado (opcional)
+  participante_externo?: { // Información del participante externo (opcional)
+    id: string;
+    nombre: string;
+    empresa_nombre?: string;
+    email?: string;
+  };
 }
 
 export interface SeguimientoFormData {
@@ -16,6 +23,7 @@ export interface SeguimientoFormData {
   notas: string;
   responsable_id: string;
   estado: string;
+  participante_externo_id?: string; // ID del participante externo asociado (opcional)
 }
 
 export interface CrearSeguimientoRequest {
@@ -24,6 +32,7 @@ export interface CrearSeguimientoRequest {
   notas: string;
   responsable_id: string;
   estado: string;
+  participante_externo_id?: string; // ID del participante externo asociado (opcional)
 }
 
 export interface ActualizarSeguimientoRequest {
@@ -31,6 +40,7 @@ export interface ActualizarSeguimientoRequest {
   notas?: string;
   responsable_id?: string;
   estado?: string;
+  participante_externo_id?: string; // ID del participante externo asociado (opcional)
 }
 
 // Estados disponibles para seguimientos
