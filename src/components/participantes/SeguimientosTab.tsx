@@ -194,15 +194,21 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
 
   // Manejar eliminación de seguimiento
   const handleEliminarSeguimiento = (seguimiento: Seguimiento) => {
+    console.log('🔍 [SeguimientosTab] Abriendo modal de eliminación para:', seguimiento);
     setSeguimientoParaEliminar(seguimiento);
     setShowModalEliminar(true);
   };
 
   const confirmarEliminacion = async () => {
-    if (!seguimientoParaEliminar) return;
+    if (!seguimientoParaEliminar) {
+      console.log('❌ [SeguimientosTab] No hay seguimiento para eliminar');
+      return;
+    }
+    
+    console.log('🔍 [SeguimientosTab] Confirmando eliminación de:', seguimientoParaEliminar);
     
     try {
-      console.log('🔍 Eliminando seguimiento:', seguimientoParaEliminar.id);
+      console.log('🔍 [SeguimientosTab] Eliminando seguimiento:', seguimientoParaEliminar.id);
       
       const response = await fetch(`/api/seguimientos/${seguimientoParaEliminar.id}`, {
         method: 'DELETE',
@@ -489,9 +495,10 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
             setSeguimientoParaEliminar(null);
           }}
           onConfirm={confirmarEliminacion}
-          titulo="Eliminar Seguimiento"
-          mensaje={`¿Estás seguro de que deseas eliminar este seguimiento? Esta acción no se puede deshacer.`}
-          nombreItem={seguimientoParaEliminar.investigacion_nombre || 'Seguimiento'}
+          participante={{
+            nombre: seguimientoParaEliminar.investigacion_nombre || 'Seguimiento',
+            tipo: 'seguimiento'
+          }}
         />
       )}
     </div>
