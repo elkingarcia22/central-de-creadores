@@ -202,7 +202,13 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       console.log('🔍 [ORIGEN] ID de investigación:', investigacion.id);
                       console.log('🔍 [ORIGEN] URL completa:', `/investigaciones/ver/${investigacion.id}`);
                       console.log('🔍 [ORIGEN] Router actual:', router);
-                      router.push(`/investigaciones/ver/${investigacion.id}`);
+                      try {
+                        await router.push(`/investigaciones/ver/${investigacion.id}`);
+                        console.log('✅ [ORIGEN] Navegación exitosa a:', `/investigaciones/ver/${investigacion.id}`);
+                      } catch (error) {
+                        console.error('❌ [ORIGEN] Error en navegación:', error);
+                        showError('Error al navegar a la investigación');
+                      }
                     }}
                     className="flex items-center gap-1"
                   >
@@ -335,7 +341,13 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                       console.log('🔍 [DERIVADAS] ID de investigación:', investigacion.id);
                       console.log('🔍 [DERIVADAS] URL completa:', `/investigaciones/ver/${investigacion.id}`);
                       console.log('🔍 [DERIVADAS] Router actual:', router);
-                      router.push(`/investigaciones/ver/${investigacion.id}`);
+                      try {
+                        await router.push(`/investigaciones/ver/${investigacion.id}`);
+                        console.log('✅ [DERIVADAS] Navegación exitosa a:', `/investigaciones/ver/${investigacion.id}`);
+                      } catch (error) {
+                        console.error('❌ [DERIVADAS] Error en navegación:', error);
+                        showError('Error al navegar a la investigación');
+                      }
                     }}
                     className="flex items-center gap-1"
                   >
