@@ -253,7 +253,7 @@ export default function ParticipantesUnifiedContainer({
             {isSearchExpanded ? (
               <div className="flex items-center gap-2">
                 <Input
-                  placeholder="Buscar participantes..."
+                  placeholder={activeTab === 'seguimientos' ? "Buscar seguimientos..." : "Buscar participantes..."}
                   value={searchTerm}
                   onChange={handleSearchChange}
                   className="!w-[700px] pl-10 pr-10 py-2"
@@ -280,20 +280,22 @@ export default function ParticipantesUnifiedContainer({
             )}
           </div>
           
-          {/* Icono de filtro */}
-          <Button
-            variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
-            onClick={handleOpenFilters}
-            className="relative p-2 border-0"
-            iconOnly
-            icon={<FilterIcon />}
-          >
-            {getActiveFiltersCount() > 0 && (
-              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
-                {getActiveFiltersCount()}
-              </span>
-            )}
-          </Button>
+          {/* Icono de filtro - Solo para tabs de participantes */}
+          {activeTab !== 'seguimientos' && (
+            <Button
+              variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
+              onClick={handleOpenFilters}
+              className="relative p-2 border-0"
+              iconOnly
+              icon={<FilterIcon />}
+            >
+              {getActiveFiltersCount() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                  {getActiveFiltersCount()}
+                </span>
+              )}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -324,39 +326,41 @@ export default function ParticipantesUnifiedContainer({
           selectable={!!onSelectionChange}
           onSelectionChange={onSelectionChange}
           onRowClick={onRowClick}
-          emptyMessage="No se encontraron participantes que coincidan con los criterios de búsqueda"
-          loadingMessage="Cargando participantes..."
+          emptyMessage={activeTab === 'seguimientos' ? "No se encontraron seguimientos que coincidan con los criterios de búsqueda" : "No se encontraron participantes que coincidan con los criterios de búsqueda"}
+          loadingMessage={activeTab === 'seguimientos' ? "Cargando seguimientos..." : "Cargando participantes..."}
           rowKey="id"
           bulkActions={bulkActions}
           actions={actions}
         />
       )}
 
-      {/* Drawer de filtros avanzados */}
-      <FilterDrawer
-        isOpen={showFilterDrawer}
-        onClose={handleCloseFilters}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        type="participante"
-        participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
-        options={{
-          estados: filterOptions.estados,
-          roles: filterOptions.roles,
-          empresas: filterOptions.empresas,
-          departamentos: filterOptions.departamentos,
-          tieneEmail: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_email', label: 'Con email' },
-            { value: 'sin_email', label: 'Sin email' }
-          ],
-          tieneProductos: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_productos', label: 'Con productos' },
-            { value: 'sin_productos', label: 'Sin productos' }
-          ]
-        }}
-      />
+      {/* Drawer de filtros avanzados - Solo para tabs de participantes */}
+      {activeTab !== 'seguimientos' && (
+        <FilterDrawer
+          isOpen={showFilterDrawer}
+          onClose={handleCloseFilters}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          type="participante"
+          participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
+          options={{
+            estados: filterOptions.estados,
+            roles: filterOptions.roles,
+            empresas: filterOptions.empresas,
+            departamentos: filterOptions.departamentos,
+            tieneEmail: [
+              { value: 'todos', label: 'Todos' },
+              { value: 'con_email', label: 'Con email' },
+              { value: 'sin_email', label: 'Sin email' }
+            ],
+            tieneProductos: [
+              { value: 'todos', label: 'Todos' },
+              { value: 'con_productos', label: 'Con productos' },
+              { value: 'sin_productos', label: 'Sin productos' }
+            ]
+          }}
+        />
+      )}
     </Card>
   );
 }
