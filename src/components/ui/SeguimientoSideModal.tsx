@@ -102,6 +102,16 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     }
   };
 
+  // Actualizar formData cuando cambie el participante pre-cargado
+  useEffect(() => {
+    if (participanteExternoPrecargado) {
+      setFormData(prev => ({
+        ...prev,
+        participante_externo_id: participanteExternoPrecargado.id
+      }));
+    }
+  }, [participanteExternoPrecargado]);
+
   // Inicializar formulario cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
@@ -137,11 +147,11 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           notas: '',
           responsable_id: responsablePorDefecto || '',
           estado: 'pendiente', // Siempre pendiente al crear
-          participante_externo_id: ''
+          participante_externo_id: participanteExternoPrecargado?.id || ''
         });
       }
     }
-  }, [isOpen, seguimiento, investigacionId, responsablePorDefecto]);
+  }, [isOpen, seguimiento, investigacionId, responsablePorDefecto, participanteExternoPrecargado]);
 
   // Efecto adicional para actualizar responsable_id cuando se carguen los usuarios
   useEffect(() => {
