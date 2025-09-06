@@ -1641,8 +1641,7 @@ const VerReclutamiento: NextPage = () => {
     description: string; 
     actionText?: string;
     onAction?: () => void;
-    showParticipantesButtons?: boolean;
-  }> = ({ icon, title, description, actionText, onAction, showParticipantesButtons = false }) => (
+  }> = ({ icon, title, description, actionText, onAction }) => (
     <div className="text-center py-12">
       <div className="flex justify-center mb-4">
         <div className="p-3 bg-muted rounded-full">
@@ -1653,32 +1652,10 @@ const VerReclutamiento: NextPage = () => {
       <Typography variant="body1" color="secondary" className="mb-6 max-w-md mx-auto">
         {description}
       </Typography>
-      
-      {showParticipantesButtons ? (
-        <div className="flex gap-3 justify-center">
-          <Button
-            variant="primary"
-            onClick={() => setShowAgregarParticipanteModal(true)}
-            className="flex items-center gap-2"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Agregar Participante
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => setShowAsignarAgendamientoModal(true)}
-            className="flex items-center gap-2"
-          >
-            <CalendarIcon className="w-4 h-4" />
-            Asignar Agendamiento
-          </Button>
-        </div>
-      ) : (
-        actionText && onAction && (
-          <Button variant="primary" onClick={onAction}>
-            {actionText}
-          </Button>
-        )
+      {actionText && onAction && (
+        <Button variant="primary" onClick={onAction}>
+          {actionText}
+        </Button>
       )}
     </div>
   );
@@ -2113,7 +2090,6 @@ const VerReclutamiento: NextPage = () => {
           icon={<ClipboardListIcon className="w-8 h-8" />}
           title="Sin Participantes"
           description="Aún no se han reclutado participantes para esta investigación."
-          showParticipantesButtons={true}
         />
       );
     }
