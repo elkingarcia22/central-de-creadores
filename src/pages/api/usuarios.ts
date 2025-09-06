@@ -9,86 +9,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('🔍 Consultando usuarios...');
     
-    // Consultar directamente usuarios_con_roles para obtener todos los usuarios disponibles
-    // Esto incluye usuarios que pueden no estar en profiles pero sí en otras tablas
+    // Consultar directamente profiles para obtener datos actualizados
+    // Luego enriquecer con roles desde user_roles
     let { data, error } = await supabase
-      .from('usuarios_con_roles')
-      .select('id, full_name, email, avatar_url, roles')
+      .from('profiles')
+      .select('id, full_name, email, avatar_url')
       .order('full_name');
     
-    console.log('📊 Resultado consulta usuarios_con_roles:');
+    console.log('📊 Resultado consulta profiles:');
     console.log('- Data:', data);
     console.log('- Error:', error);
     console.log('- Count:', data ? data.length : 0);
     
-    // Si no hay datos en usuarios_con_roles, intentar con profiles como fallback
-    if (!data || data.length === 0) {
-      console.log('🔍 No hay datos en usuarios_con_roles, intentando con profiles...');
-      const { data: dataProfiles, error: errorProfiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url')
-        .order('full_name');
+    if (data && data.length > 0) {
+      // Enriquecer con roles desde user_roles
+      console.log('🔍 Enriqueciendo con roles desde user_roles...');
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
       
-      data = dataProfiles;
-      error = errorProfiles;
-      
-      console.log('📊 Resultado consulta profiles:');
-      console.log('- Data:', data);
-      console.log('- Error:', error);
-      console.log('- Count:', data ? data.length : 0);
-    } else {
-      // Si hay datos en usuarios_con_roles, verificar si algunos usuarios no tienen avatar
-      // y buscar sus avatares en profiles
-      console.log('🔍 Verificando avatares faltantes en profiles...');
-      
-      const usuariosSinAvatar = data.filter(usuario => !usuario.avatar_url);
-      console.log(`📊 Usuarios sin avatar: ${usuariosSinAvatar.length}`);
-      
-      if (usuariosSinAvatar.length > 0) {
-        const idsSinAvatar = usuariosSinAvatar.map(u => u.id);
-        console.log('🔍 Buscando avatares en profiles para:', idsSinAvatar);
-        
-        const { data: avataresProfiles, error: errorAvatares } = await supabase
-          .from('profiles')
-          .select('id, avatar_url')
-          .in('id', idsSinAvatar);
-        
-        console.log('📊 Avatares encontrados en profiles:', avataresProfiles);
-        console.log('📊 Error buscando avatares:', errorAvatares);
-        
-        // Crear un mapa de avatares por ID
-        const avataresMap = new Map();
-        avataresProfiles?.forEach(profile => {
-          if (profile.avatar_url) {
-            avataresMap.set(profile.id, profile.avatar_url);
+      if (rolesData && !rolesError) {
+        // Crear un mapa de roles por usuario
+        const rolesMap = new Map();
+        rolesData.forEach(role => {
+          if (!rolesMap.has(role.user_id)) {
+            rolesMap.set(role.user_id, []);
           }
+          rolesMap.get(role.user_id).push(role.role);
         });
         
-        // Actualizar los usuarios con sus avatares encontrados
-        data = data.map(usuario => ({
-          ...usuario,
-          avatar_url: usuario.avatar_url || avataresMap.get(usuario.id) || null
+        // Agregar roles a cada usuario
+        data = data.map(user => ({
+          ...user,
+          roles: rolesMap.get(user.id) || []
         }));
         
-        console.log('✅ Avatares actualizados para usuarios sin avatar');
+        console.log('✅ Roles agregados a usuarios');
+      } else {
+        console.log('⚠️ Error obteniendo roles:', rolesError);
+        // Agregar roles vacíos si no se pueden obtener
+        data = data.map(user => ({
+          ...user,
+          roles: []
+        }));
       }
-    }
-    
-    // Si aún no hay datos, intentar con la tabla usuarios original
-    if (!data || data.length === 0) {
-      console.log('🔍 No hay datos en usuarios_con_roles, intentando con tabla usuarios...');
-      const { data: dataUsuarios, error: errorUsuarios } = await supabase
-        .from('usuarios')
-        .select('id, nombre, correo, activo')
-        .order('nombre');
-      
-      data = dataUsuarios;
-      error = errorUsuarios;
-      
-      console.log('📊 Resultado consulta usuarios:');
-      console.log('- Data:', data);
-      console.log('- Error:', error);
-      console.log('- Count:', data ? data.length : 0);
     }
 
     console.log('📊 Resultado consulta usuarios:');
