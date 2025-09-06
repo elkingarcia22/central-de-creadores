@@ -109,6 +109,7 @@ const VerInvestigacion: NextPage = () => {
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [tiposInvestigacion, setTiposInvestigacion] = useState<any[]>([]);
   const [periodos, setPeriodos] = useState<any[]>([]);
+  const [todasLasInvestigaciones, setTodasLasInvestigaciones] = useState<any[]>([]);
   
   // Estados para catálogos de libretos
   const [catalogosLibreto, setCatalogosLibreto] = useState({
@@ -195,6 +196,7 @@ const VerInvestigacion: NextPage = () => {
         if (!resultado.error && resultado.data) {
           setInvestigacion(resultado.data);
           await cargarDatosAdicionales();
+          await cargarTodasLasInvestigaciones();
           await cargarSeguimientos(id);
           await cargarTrazabilidad(id);
         } else {
@@ -257,6 +259,26 @@ const VerInvestigacion: NextPage = () => {
       }
     } catch (error) {
       console.error('Error cargando datos adicionales:', error);
+    }
+  };
+
+  // Cargar todas las investigaciones para el modal de seguimiento
+  const cargarTodasLasInvestigaciones = async () => {
+    try {
+      console.log('🔍 Cargando todas las investigaciones para modal de seguimiento...');
+      const response = await fetch('/api/investigaciones');
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        setTodasLasInvestigaciones(data);
+        console.log('✅ Todas las investigaciones cargadas:', data.length);
+      } else {
+        console.log('⚠️ Respuesta de investigaciones no es un array:', data);
+        setTodasLasInvestigaciones([]);
+      }
+    } catch (error) {
+      console.error('Error cargando todas las investigaciones:', error);
+      setTodasLasInvestigaciones([]);
     }
   };
 
@@ -1108,10 +1130,7 @@ const VerInvestigacion: NextPage = () => {
         investigacionId={investigacion?.id || ''}
         usuarios={usuarios}
         responsablePorDefecto={userId}
-        investigaciones={investigacion ? [{
-          id: investigacion.id,
-          nombre: investigacion.nombre
-        }] : []}
+        investigaciones={todasLasInvestigaciones}
       />
     </Layout>
   );
