@@ -195,7 +195,7 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       console.log('🔍 [ORIGEN] Datos completos de investigación:', investigacion);
@@ -334,7 +334,7 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       console.log('🔍 [DERIVADAS] Datos completos de investigación:', investigacion);
