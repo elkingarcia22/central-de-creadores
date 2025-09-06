@@ -95,32 +95,32 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
-
+      
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-xl transform transition-transform">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FilterIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h3" className="text-lg font-semibold">
-                Filtros de Seguimientos
-              </Typography>
-              {getActiveFiltersCount() > 0 && (
-                <Chip variant="primary" size="sm">
-                  {getActiveFiltersCount()}
-                </Chip>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              iconOnly
-              icon={<CloseIcon className="w-4 h-4" />}
-            />
-          </div>
-        </div>
+      <div 
+        className={`
+          absolute right-0 top-0 h-full w-full max-w-md
+          bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700
+          transform transition-transform
+          ${className}
+        `}
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <PageHeader
+            title="Filtros de Seguimientos"
+            variant="title-only"
+            onClose={onClose}
+            icon={<FilterIcon className="w-5 h-5" />}
+            className="mb-0"
+            chip={
+              getActiveFiltersCount() > 0 ? {
+                label: getActiveFiltersCount().toString(),
+                variant: 'primary',
+                size: 'sm'
+              } : undefined
+            }
+          />
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -204,24 +204,25 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={clearAllFilters}
-              className="flex-1 flex items-center justify-center gap-2"
-            >
-              <TrashIcon className="w-4 h-4" />
-              Limpiar Filtros
-            </Button>
-            <Button
-              variant="primary"
-              onClick={applyFilters}
-              className="flex-1"
-            >
-              Aplicar
-            </Button>
+          {/* Footer */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={clearAllFilters}
+                className="flex-1 flex items-center justify-center gap-2"
+              >
+                <TrashIcon className="w-4 h-4" />
+                Limpiar Filtros
+              </Button>
+              <Button
+                variant="primary"
+                onClick={applyFilters}
+                className="flex-1"
+              >
+                Aplicar
+              </Button>
+            </div>
           </div>
         </div>
       </div>
