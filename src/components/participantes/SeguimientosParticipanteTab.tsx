@@ -55,6 +55,20 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   const [showCrearModal, setShowCrearModal] = useState(false);
   const [seguimientoEditando, setSeguimientoEditando] = useState<SeguimientoParticipante | null>(null);
   const [showEditarModal, setShowEditarModal] = useState(false);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+
+  // Cargar usuarios
+  const cargarUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        setUsuarios(data || []);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
+    }
+  };
 
   // Cargar seguimientos del participante
   const cargarSeguimientos = async () => {
@@ -82,6 +96,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   useEffect(() => {
     if (participanteId) {
       cargarSeguimientos();
+      cargarUsuarios();
     }
   }, [participanteId]);
 
@@ -292,12 +307,8 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
         isOpen={showCrearModal}
         onClose={() => setShowCrearModal(false)}
         onSave={handleCrearSeguimiento}
-        participanteExterno={{
-          id: participanteId,
-          nombre: participanteNombre,
-          email: participanteEmail,
-          empresa_nombre: participanteEmpresa
-        }}
+        investigacionId="" // Se establecerá cuando se seleccione una investigación
+        usuarios={usuarios}
         responsablePorDefecto={userId}
       />
 
@@ -311,12 +322,8 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
           }}
           onSave={handleEditarSeguimiento}
           seguimiento={seguimientoEditando}
-          participanteExterno={{
-            id: participanteId,
-            nombre: participanteNombre,
-            email: participanteEmail,
-            empresa_nombre: participanteEmpresa
-          }}
+          investigacionId={seguimientoEditando.investigacion_id}
+          usuarios={usuarios}
           responsablePorDefecto={userId}
         />
       )}
