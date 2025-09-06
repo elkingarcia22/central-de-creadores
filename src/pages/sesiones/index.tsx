@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { Layout } from '../../components/ui';
 import { PageHeader } from '../../components/ui';
 import SesionesCalendar from '../../components/sesiones/SesionesCalendar';
-import { SesionEvent } from '../../types/sesiones';
+import { Sesion } from '../../types/sesiones';
 import { 
   CalendarIcon, 
   PlusIcon, 
@@ -18,7 +18,7 @@ const SesionesPage: NextPage = () => {
   const [activeView, setActiveView] = useState<'calendar' | 'list' | 'stats'>('calendar');
 
   // Manejar click en sesión
-  const handleSesionClick = (sesion: SesionEvent) => {
+  const handleSesionClick = (sesion: Sesion) => {
     router.push(`/sesiones/${sesion.id}`);
   };
 
@@ -32,12 +32,12 @@ const SesionesPage: NextPage = () => {
   };
 
   // Manejar editar sesión
-  const handleSesionEdit = (sesion: SesionEvent) => {
+  const handleSesionEdit = (sesion: Sesion) => {
     router.push(`/sesiones/${sesion.id}/editar`);
   };
 
   // Manejar eliminar sesión
-  const handleSesionDelete = (sesion: SesionEvent) => {
+  const handleSesionDelete = (sesion: Sesion) => {
     // Aquí se puede implementar un modal de confirmación
     console.log('Eliminar sesión:', sesion.id);
   };

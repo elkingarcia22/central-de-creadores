@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Sesion, SesionFormData, SesionEvent, SesionesStats } from '../types/sesiones';
+import { Sesion, SesionFormData, SesionesStats } from '../types/sesiones';
 
 interface UseSesionesOptions {
   investigacionId?: string;

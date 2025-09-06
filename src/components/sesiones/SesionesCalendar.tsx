@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Calendar, Button, Card, Typography, Badge, Tooltip } from '../ui';
-import { SesionEvent } from '../../types/sesiones';
+import { Sesion } from '../../types/sesiones';
 import { useSesiones } from '../../hooks/useSesiones';
 import SesionEvent from './SesionEvent';
 import SesionEventDraggable from './SesionEventDraggable';
@@ -17,10 +17,10 @@ import {
 
 interface SesionesCalendarProps {
   investigacionId?: string;
-  onSesionClick?: (sesion: SesionEvent) => void;
+  onSesionClick?: (sesion: Sesion) => void;
   onSesionCreate?: (date?: Date) => void;
-  onSesionEdit?: (sesion: SesionEvent) => void;
-  onSesionDelete?: (sesion: SesionEvent) => void;
+  onSesionEdit?: (sesion: Sesion) => void;
+  onSesionDelete?: (sesion: Sesion) => void;
   className?: string;
 }
 
@@ -35,9 +35,9 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
   const [showFilters, setShowFilters] = useState(false);
-  const [expandedSesion, setExpandedSesion] = useState<SesionEvent | null>(null);
+  const [expandedSesion, setExpandedSesion] = useState<Sesion | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalSesion, setModalSesion] = useState<SesionEvent | null>(null);
+  const [modalSesion, setModalSesion] = useState<Sesion | null>(null);
   const [modalDate, setModalDate] = useState<Date | undefined>(undefined);
 
   // Hook para manejar sesiones
@@ -91,14 +91,14 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   }, [onSesionCreate]);
 
   // Manejar editar sesión
-  const handleEditSesion = useCallback((sesion: SesionEvent) => {
+  const handleEditSesion = useCallback((sesion: Sesion) => {
     setModalSesion(sesion);
     setShowModal(true);
     onSesionEdit?.(sesion);
   }, [onSesionEdit]);
 
   // Manejar eliminar sesión
-  const handleDeleteSesion = useCallback((sesion: SesionEvent) => {
+  const handleDeleteSesion = useCallback((sesion: Sesion) => {
     if (confirm(`¿Estás seguro de que quieres eliminar la sesión "${sesion.titulo}"?`)) {
       deleteSesion(sesion.id);
       onSesionDelete?.(sesion);
