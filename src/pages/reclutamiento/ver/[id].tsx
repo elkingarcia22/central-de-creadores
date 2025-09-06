@@ -465,12 +465,13 @@ const VerReclutamiento: NextPage = () => {
     }
   }, [reclutamiento?.reclutamiento_id, reclutamiento?.investigacion_id, isEditing]);
 
-  // Ajustar tab activo cuando no hay participantes
-  useEffect(() => {
-    if (participantes.length === 0 && activeTab === 'reclutamiento') {
-      setActiveTab('informacion');
-    }
-  }, [participantes.length, activeTab]);
+  // Comentado: Ya no forzamos cambio de tab cuando no hay participantes
+  // para permitir que el usuario vea el EmptyState
+  // useEffect(() => {
+  //   if (participantes.length === 0 && activeTab === 'reclutamiento') {
+  //     setActiveTab('informacion');
+  //   }
+  // }, [participantes.length, activeTab]);
 
   // Función para manejar la edición de un participante
   const handleEditParticipante = async (participante: any) => {
