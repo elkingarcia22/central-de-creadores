@@ -1214,6 +1214,10 @@ export default function InvestigacionesPage() {
           email: u.email || '',
           avatar_url: u.avatar_url || ''
         }))}
+        investigaciones={investigaciones.map(inv => ({
+          id: inv.id,
+          nombre: inv.nombre
+        }))}
       />
     </Layout>
     </>
