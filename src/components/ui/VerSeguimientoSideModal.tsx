@@ -46,18 +46,33 @@ const VerSeguimientoSideModal: React.FC<VerSeguimientoSideModalProps> = ({
     return null;
   }
 
+  const footer = (
+    <div className="flex gap-3">
+      <Button
+        variant="secondary"
+        onClick={onClose}
+      >
+        Cerrar
+      </Button>
+    </div>
+  );
+
   return (
     <SideModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Ver Seguimiento"
-      size="lg"
+      width="lg"
+      footer={footer}
+      showCloseButton={false}
     >
       <div className="space-y-6">
         {/* Header */}
         <PageHeader
-          title="Detalles del Seguimiento"
-          subtitle="Información completa del seguimiento"
+          title="Ver Seguimiento"
+          variant="title-only"
+          color="gray"
+          className="mb-0 -mx-6 -mt-6"
+          onClose={onClose}
           icon={<ClipboardListIcon className="w-5 h-5" />}
         />
 
@@ -146,16 +161,6 @@ const VerSeguimientoSideModal: React.FC<VerSeguimientoSideModalProps> = ({
             />
           </InfoContainer>
         )}
-
-        {/* Footer */}
-        <div className="flex justify-end pt-4 border-t">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-          >
-            Cerrar
-          </Button>
-        </div>
       </div>
     </SideModal>
   );
