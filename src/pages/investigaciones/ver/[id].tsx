@@ -267,17 +267,24 @@ const VerInvestigacion: NextPage = () => {
     try {
       console.log('🔍 Cargando todas las investigaciones para modal de seguimiento...');
       const response = await fetch('/api/investigaciones');
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response ok:', response.ok);
+      
       const data = await response.json();
+      console.log('🔍 Data recibida:', data);
+      console.log('🔍 Es array?', Array.isArray(data));
+      console.log('🔍 Longitud:', data?.length);
       
       if (Array.isArray(data)) {
         setTodasLasInvestigaciones(data);
         console.log('✅ Todas las investigaciones cargadas:', data.length);
+        console.log('✅ Primeras 3 investigaciones:', data.slice(0, 3));
       } else {
         console.log('⚠️ Respuesta de investigaciones no es un array:', data);
         setTodasLasInvestigaciones([]);
       }
     } catch (error) {
-      console.error('Error cargando todas las investigaciones:', error);
+      console.error('❌ Error cargando todas las investigaciones:', error);
       setTodasLasInvestigaciones([]);
     }
   };
@@ -1077,6 +1084,8 @@ const VerInvestigacion: NextPage = () => {
                   console.log('🔍 [VerInvestigacion] Abriendo modal de crear seguimiento');
                   console.log('🔍 [VerInvestigacion] Investigación:', investigacion);
                   console.log('🔍 [VerInvestigacion] Usuarios disponibles:', usuarios.length);
+                  console.log('🔍 [VerInvestigacion] Todas las investigaciones cargadas:', todasLasInvestigaciones.length);
+                  console.log('🔍 [VerInvestigacion] Primeras 3 investigaciones:', todasLasInvestigaciones.slice(0, 3));
                   setShowSeguimientoModal(true);
                 }}
               >
