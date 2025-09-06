@@ -194,7 +194,11 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
+                    onClick={() => {
+                      console.log('🔍 [ORIGEN] Navegando a investigación:', investigacion.id);
+                      console.log('🔍 [ORIGEN] URL completa:', `/investigaciones/ver/${investigacion.id}`);
+                      router.push(`/investigaciones/ver/${investigacion.id}`);
+                    }}
                     className="flex items-center gap-1"
                   >
                     <LinkIcon className="w-3 h-3" />
@@ -319,7 +323,11 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => router.push(`/investigaciones/ver/${investigacion.id}`)}
+                    onClick={() => {
+                      console.log('🔍 [DERIVADAS] Navegando a investigación:', investigacion.id);
+                      console.log('🔍 [DERIVADAS] URL completa:', `/investigaciones/ver/${investigacion.id}`);
+                      router.push(`/investigaciones/ver/${investigacion.id}`);
+                    }}
                     className="flex items-center gap-1"
                   >
                     <LinkIcon className="w-3 h-3" />
