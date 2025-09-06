@@ -189,28 +189,6 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
     }
   };
 
-  // Manejar eliminación de seguimiento
-  const handleEliminarSeguimiento = async (seguimientoId: string) => {
-    try {
-      console.log('🔍 Eliminando seguimiento:', seguimientoId);
-      
-      const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al eliminar seguimiento');
-      }
-
-      console.log('✅ Seguimiento eliminado');
-      showSuccess('Seguimiento eliminado exitosamente');
-      cargarSeguimientos();
-    } catch (error: any) {
-      console.error('❌ Error eliminando seguimiento:', error);
-      showError(error.message || 'Error al eliminar seguimiento');
-    }
-  };
 
   // Abrir modal de edición
   const abrirEditarModal = (seguimiento: SeguimientoParticipante) => {
