@@ -126,6 +126,7 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
 export async function actualizarSeguimiento(seguimientoId: string, updates: ActualizarSeguimientoRequest) {
   try {
     console.log('📝 Actualizando seguimiento:', seguimientoId, updates);
+    console.log('📝 URL de la API:', `/api/seguimientos/${seguimientoId}`);
     
     // Usar la nueva API de seguimientos
     const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
@@ -136,10 +137,22 @@ export async function actualizarSeguimiento(seguimientoId: string, updates: Actu
       body: JSON.stringify(updates),
     });
 
+    console.log('📝 Response status:', response.status);
+    console.log('📝 Response headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('❌ Error en API de seguimientos:', errorData);
-      return { data: null, error: errorData.error || 'Error actualizando seguimiento' };
+      // Intentar obtener el texto de la respuesta para debuggear
+      const responseText = await response.text();
+      console.error('❌ Error response text:', responseText);
+      
+      try {
+        const errorData = JSON.parse(responseText);
+        console.error('❌ Error en API de seguimientos (JSON):', errorData);
+        return { data: null, error: errorData.error || 'Error actualizando seguimiento' };
+      } catch (parseError) {
+        console.error('❌ Error parseando respuesta como JSON:', parseError);
+        return { data: null, error: `Error del servidor (${response.status}): ${responseText.substring(0, 200)}` };
+      }
     }
 
     const result = await response.json();

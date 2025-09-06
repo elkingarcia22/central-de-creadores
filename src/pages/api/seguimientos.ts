@@ -191,13 +191,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { id } = req.query;
       const { investigacion_id, fecha_seguimiento, notas, responsable_id, estado, participante_externo_id } = req.body;
 
+      console.log('🔧 [API] PUT request recibido');
+      console.log('🔧 [API] Query params:', req.query);
+      console.log('🔧 [API] Body:', req.body);
+
       if (!id || typeof id !== 'string') {
+        console.error('❌ [API] ID de seguimiento no válido:', id);
         return res.status(400).json({ error: 'ID de seguimiento requerido' });
       }
 
       console.log('🔧 Actualizando seguimiento:', id);
       console.log('📝 Datos:', { investigacion_id, fecha_seguimiento, notas, responsable_id, estado, participante_externo_id });
 
+      console.log('🔧 [API] Ejecutando consulta a Supabase...');
       const { data, error } = await supabaseServer
         .from('seguimientos_investigacion')
         .update({
@@ -212,6 +218,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .eq('id', id)
         .select('*')
         .single();
+
+      console.log('🔧 [API] Resultado de Supabase - data:', data);
+      console.log('🔧 [API] Resultado de Supabase - error:', error);
 
       if (error) {
         console.error('❌ Error actualizando seguimiento:', error);
