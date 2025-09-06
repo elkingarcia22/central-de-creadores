@@ -45,15 +45,12 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
   className = ''
 }) => {
   const { theme } = useTheme();
-  const [localFilters, setLocalFilters] = useState<FilterValuesSeguimientos>(filters);
-
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters]);
 
   const handleFilterChange = (key: keyof FilterValuesSeguimientos, value: string) => {
-    const newFilters = { ...localFilters, [key]: value };
-    setLocalFilters(newFilters);
+    onFiltersChange({
+      ...filters,
+      [key]: value
+    });
   };
 
   const clearAllFilters = () => {
@@ -66,23 +63,17 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
       fecha_seguimiento_desde: '',
       fecha_seguimiento_hasta: ''
     };
-    setLocalFilters(clearedFilters);
     onFiltersChange(clearedFilters);
-  };
-
-  const applyFilters = () => {
-    onFiltersChange(localFilters);
-    onClose();
   };
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (localFilters.estado_seguimiento && localFilters.estado_seguimiento !== 'todos') count++;
-    if (localFilters.responsable_seguimiento && localFilters.responsable_seguimiento !== 'todos') count++;
-    if (localFilters.participante_seguimiento && localFilters.participante_seguimiento !== 'todos') count++;
-    if (localFilters.investigacion_seguimiento && localFilters.investigacion_seguimiento !== 'todos') count++;
-    if (localFilters.fecha_seguimiento_desde) count++;
-    if (localFilters.fecha_seguimiento_hasta) count++;
+    if (filters.estado_seguimiento && filters.estado_seguimiento !== 'todos') count++;
+    if (filters.responsable_seguimiento && filters.responsable_seguimiento !== 'todos') count++;
+    if (filters.participante_seguimiento && filters.participante_seguimiento !== 'todos') count++;
+    if (filters.investigacion_seguimiento && filters.investigacion_seguimiento !== 'todos') count++;
+    if (filters.fecha_seguimiento_desde) count++;
+    if (filters.fecha_seguimiento_hasta) count++;
     return count;
   };
 
@@ -133,7 +124,7 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
                 { value: 'todos', label: 'Todos' },
                 ...(options.estados || [])
               ]}
-              value={localFilters.estado_seguimiento || 'todos'}
+              value={filters.estado_seguimiento || 'todos'}
               onChange={(value) => handleFilterChange('estado_seguimiento', value)}
               fullWidth
             />
@@ -148,7 +139,7 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
                 { value: 'todos', label: 'Todos' },
                 ...(options.responsables || [])
               ]}
-              value={localFilters.responsable_seguimiento || 'todos'}
+              value={filters.responsable_seguimiento || 'todos'}
               onChange={(value) => handleFilterChange('responsable_seguimiento', value)}
               fullWidth
             />
@@ -163,7 +154,7 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
                 { value: 'todos', label: 'Todos' },
                 ...(options.participantes || [])
               ]}
-              value={localFilters.participante_seguimiento || 'todos'}
+              value={filters.participante_seguimiento || 'todos'}
               onChange={(value) => handleFilterChange('participante_seguimiento', value)}
               fullWidth
             />
@@ -178,7 +169,7 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
                 { value: 'todos', label: 'Todos' },
                 ...(options.investigaciones || [])
               ]}
-              value={localFilters.investigacion_seguimiento || 'todos'}
+              value={filters.investigacion_seguimiento || 'todos'}
               onChange={(value) => handleFilterChange('investigacion_seguimiento', value)}
               fullWidth
             />
@@ -190,13 +181,13 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
             <div className="space-y-2">
               <DatePicker
                 placeholder="Fecha desde..."
-                value={localFilters.fecha_seguimiento_desde || ''}
+                value={filters.fecha_seguimiento_desde || ''}
                 onChange={(e) => handleFilterChange('fecha_seguimiento_desde', e.target.value)}
                 fullWidth
               />
               <DatePicker
                 placeholder="Fecha hasta..."
-                value={localFilters.fecha_seguimiento_hasta || ''}
+                value={filters.fecha_seguimiento_hasta || ''}
                 onChange={(e) => handleFilterChange('fecha_seguimiento_hasta', e.target.value)}
                 fullWidth
               />
@@ -217,7 +208,7 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
               </Button>
               <Button
                 variant="primary"
-                onClick={applyFilters}
+                onClick={onClose}
                 className="flex-1"
               >
                 Aplicar
