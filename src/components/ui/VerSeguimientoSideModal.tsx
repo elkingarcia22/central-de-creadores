@@ -33,12 +33,14 @@ interface VerSeguimientoSideModalProps {
   isOpen: boolean;
   onClose: () => void;
   seguimiento: Seguimiento | null;
+  onEdit?: (seguimiento: Seguimiento) => void;
 }
 
 const VerSeguimientoSideModal: React.FC<VerSeguimientoSideModalProps> = ({
   isOpen,
   onClose,
-  seguimiento
+  seguimiento,
+  onEdit
 }) => {
   const { theme } = useTheme();
 
@@ -54,6 +56,14 @@ const VerSeguimientoSideModal: React.FC<VerSeguimientoSideModalProps> = ({
       >
         Cerrar
       </Button>
+      {onEdit && (
+        <Button
+          variant="primary"
+          onClick={() => onEdit(seguimiento)}
+        >
+          Editar
+        </Button>
+      )}
     </div>
   );
 

@@ -530,6 +530,11 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
           setSeguimientoParaVer(null);
         }}
         seguimiento={seguimientoParaVer}
+        onEdit={(seguimiento) => {
+          setShowVerModal(false);
+          setSeguimientoParaVer(null);
+          abrirEditarModal(seguimiento);
+        }}
       />
     </div>
   );
