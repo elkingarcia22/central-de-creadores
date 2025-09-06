@@ -1147,12 +1147,7 @@ export default function ParticipantesPage() {
               title="Participantes"
               subtitle="Gestiona todos los participantes de tu portafolio"
               color="purple"
-              primaryAction={activeTab === 'seguimientos' ? {
-                label: "Nuevo Seguimiento",
-                onClick: () => setShowCrearSeguimientoModal(true),
-                variant: "primary",
-                icon: <PlusIcon className="w-4 h-4" />
-              } : {
+              primaryAction={{
                 label: "Nuevo Participante",
                 onClick: () => setShowDropdown(!showDropdown),
                 variant: "primary",

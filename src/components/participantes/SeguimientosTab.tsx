@@ -419,6 +419,19 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Botón para crear nuevo seguimiento */}
+      {seguimientos.length > 0 && (
+        <div className="flex justify-end">
+          <Button
+            variant="primary"
+            onClick={() => setShowCrearModal(true)}
+            icon={<PlusIcon className="w-4 h-4" />}
+          >
+            Nuevo Seguimiento
+          </Button>
+        </div>
+      )}
+      
       {/* Tabla de seguimientos */}
       {seguimientos.length === 0 ? (
         <EmptyState
