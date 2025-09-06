@@ -113,7 +113,7 @@ export default function ParticipantesPage() {
   // Estados para filtros de seguimientos
   const [responsables, setResponsables] = useState<Array<{ value: string; label: string }>>([]);
   const [investigaciones, setInvestigaciones] = useState<Array<{ value: string; label: string }>>([]);
-  const [participantes, setParticipantes] = useState<Array<{ value: string; label: string }>>([]);
+  const [participantesFiltros, setParticipantesFiltros] = useState<Array<{ value: string; label: string }>>([]);
   
   // Estados para filtros específicos por tipo
   const [filtersExternos, setFiltersExternos] = useState<FilterValuesParticipantes>({
@@ -262,7 +262,7 @@ export default function ParticipantesPage() {
 
       // Cargar participantes únicos de los seguimientos
       const participantesUnicos = [...new Set(seguimientos.map(s => s.participante_externo).filter(Boolean))];
-      setParticipantes(participantesUnicos.map(participante => ({
+      setParticipantesFiltros(participantesUnicos.map(participante => ({
         value: participante.id,
         label: participante.nombre || 'Sin nombre'
       })));
@@ -1384,7 +1384,7 @@ export default function ParticipantesPage() {
               departamentos: departamentos,
               responsables: responsables,
               investigaciones: investigaciones,
-              participantes: participantes,
+              participantes: participantesFiltros,
             }}
             // Log para verificar las opciones de filtro
             {...(() => {
