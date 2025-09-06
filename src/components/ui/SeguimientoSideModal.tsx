@@ -119,6 +119,25 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     }
   }, [isOpen, seguimiento, investigacionId, responsablePorDefecto]);
 
+  // Efecto adicional para actualizar responsable_id cuando se carguen los usuarios
+  useEffect(() => {
+    if (isOpen && seguimiento && usuarios.length > 0) {
+      console.log('🔍 [SeguimientoSideModal] Usuarios cargados, actualizando responsable_id');
+      console.log('🔍 [SeguimientoSideModal] responsable_id actual:', seguimiento.responsable_id);
+      
+      // Verificar si el responsable_id existe en los usuarios
+      const responsableExiste = usuarios.find(user => user.id === seguimiento.responsable_id);
+      console.log('🔍 [SeguimientoSideModal] responsable existe en usuarios:', responsableExiste);
+      
+      if (responsableExiste) {
+        setFormData(prev => ({
+          ...prev,
+          responsable_id: seguimiento.responsable_id
+        }));
+      }
+    }
+  }, [isOpen, seguimiento, usuarios]);
+
   const handleInputChange = (field: keyof SeguimientoFormData, value: string) => {
     setFormData(prev => ({
       ...prev,
