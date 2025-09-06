@@ -52,13 +52,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4' : ''} relative`}>
+      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4 px-3' : ''} relative`}>
         {/* Botón de colapsar/expandir en la esquina superior derecha */}
         {onToggleCollapse && (
           <Tooltip content={isCollapsed ? 'Expandir menú' : 'Colapsar menú'} position="bottom">
             <button
               onClick={onToggleCollapse}
-              className="absolute top-2 right-2 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors"
+              className={`absolute p-1 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors ${isCollapsed ? 'top-3 right-3' : 'top-2 right-2'}`}
               aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
             >
               {isCollapsed ? (
