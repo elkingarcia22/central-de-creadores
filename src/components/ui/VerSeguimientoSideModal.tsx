@@ -4,8 +4,8 @@ import SideModal from './SideModal';
 import Button from './Button';
 import Typography from './Typography';
 import { PageHeader } from './';
-import FilterLabel from './FilterLabel';
-import { ClipboardListIcon, UserIcon, CalendarIcon, FileTextIcon, BuildingIcon } from '../icons';
+import { InfoContainer, InfoItem } from './InfoContainer';
+import { ClipboardListIcon, UserIcon, CalendarIcon, FileTextIcon, BuildingIcon, ClockIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getChipVariant } from '../../utils/chipUtils';
 import Chip from './Chip';
@@ -62,108 +62,89 @@ const VerSeguimientoSideModal: React.FC<VerSeguimientoSideModalProps> = ({
         />
 
         {/* Información del Participante */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <UserIcon className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <Typography variant="h3" weight="semibold">
-                {seguimiento.participante_externo?.nombre || 'Sin participante'}
-              </Typography>
-              {seguimiento.participante_externo?.empresa_nombre && (
-                <Typography variant="body2" className="text-muted-foreground">
-                  {seguimiento.participante_externo.empresa_nombre}
-                </Typography>
-              )}
-            </div>
-          </div>
-        </div>
+        {seguimiento.participante_externo && (
+          <InfoContainer 
+            title="Participante Asociado" 
+            icon={<UserIcon className="w-4 h-4" />}
+          >
+            <InfoItem 
+              label="Nombre" 
+              value={seguimiento.participante_externo.nombre}
+              size="lg"
+            />
+            {seguimiento.participante_externo.empresa_nombre && (
+              <InfoItem 
+                label="Empresa" 
+                value={seguimiento.participante_externo.empresa_nombre}
+                size="lg"
+              />
+            )}
+            {seguimiento.participante_externo.email && (
+              <InfoItem 
+                label="Email" 
+                value={seguimiento.participante_externo.email}
+                size="lg"
+              />
+            )}
+          </InfoContainer>
+        )}
 
-        {/* Grid de información */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Investigación */}
-          <div className="space-y-2">
-            <FilterLabel>Investigación</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border">
-              <Typography variant="body2" weight="medium">
-                {seguimiento.investigacion_nombre}
-              </Typography>
-              <Typography variant="caption" className="text-muted-foreground">
-                ID: {seguimiento.investigacion_id.substring(0, 8)}...
-              </Typography>
-            </div>
-          </div>
+        {/* Información del Seguimiento */}
+        <InfoContainer 
+          title="Información del Seguimiento" 
+          icon={<ClipboardListIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Investigación" 
+            value={seguimiento.investigacion_nombre}
+            size="lg"
+          />
+          <InfoItem 
+            label="ID Investigación" 
+            value={`${seguimiento.investigacion_id.substring(0, 8)}...`}
+            size="lg"
+          />
+          <InfoItem 
+            label="Estado" 
+            value={<Chip variant={getChipVariant(seguimiento.estado)} size="sm">{seguimiento.estado}</Chip>}
+            size="lg"
+          />
+          <InfoItem 
+            label="Responsable" 
+            value={seguimiento.responsable_nombre}
+            size="lg"
+          />
+        </InfoContainer>
 
-          {/* Estado */}
-          <div className="space-y-2">
-            <FilterLabel>Estado</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border">
-              <Chip variant={getChipVariant(seguimiento.estado)} size="sm">
-                {seguimiento.estado}
-              </Chip>
-            </div>
-          </div>
-
-          {/* Fecha de Seguimiento */}
-          <div className="space-y-2">
-            <FilterLabel>Fecha de Seguimiento</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-              <Typography variant="body2">
-                {formatearFecha(seguimiento.fecha_seguimiento)}
-              </Typography>
-            </div>
-          </div>
-
-          {/* Responsable */}
-          <div className="space-y-2">
-            <FilterLabel>Responsable</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border flex items-center gap-2">
-              <UserIcon className="w-4 h-4 text-muted-foreground" />
-              <Typography variant="body2">
-                {seguimiento.responsable_nombre}
-              </Typography>
-            </div>
-          </div>
-
-          {/* Fecha de Creación */}
-          <div className="space-y-2">
-            <FilterLabel>Fecha de Creación</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-              <Typography variant="body2">
-                {formatearFecha(seguimiento.creado_el)}
-              </Typography>
-            </div>
-          </div>
-
-          {/* Email del Participante */}
-          {seguimiento.participante_externo?.email && (
-            <div className="space-y-2">
-              <FilterLabel>Email del Participante</FilterLabel>
-              <div className="p-3 bg-muted/50 rounded-lg border">
-                <Typography variant="body2">
-                  {seguimiento.participante_externo.email}
-                </Typography>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Fechas */}
+        <InfoContainer 
+          title="Fechas" 
+          icon={<ClockIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Fecha de Seguimiento" 
+            value={formatearFecha(seguimiento.fecha_seguimiento)}
+            size="lg"
+          />
+          <InfoItem 
+            label="Fecha de Creación" 
+            value={formatearFecha(seguimiento.creado_el)}
+            size="lg"
+          />
+        </InfoContainer>
 
         {/* Notas */}
         {seguimiento.notas && (
-          <div className="space-y-2">
-            <FilterLabel>Notas</FilterLabel>
-            <div className="p-3 bg-muted/50 rounded-lg border">
-              <div className="flex items-start gap-2">
-                <FileTextIcon className="w-4 h-4 text-muted-foreground mt-0.5" />
-                <Typography variant="body2" className="whitespace-pre-wrap">
-                  {seguimiento.notas}
-                </Typography>
-              </div>
-            </div>
-          </div>
+          <InfoContainer 
+            title="Notas del Seguimiento" 
+            icon={<FileTextIcon className="w-4 h-4" />}
+          >
+            <InfoItem 
+              label="Descripción" 
+              value={seguimiento.notas}
+              size="lg"
+            />
+          </InfoContainer>
         )}
 
         {/* Footer */}
