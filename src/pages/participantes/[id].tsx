@@ -21,6 +21,7 @@ import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
+import { SeguimientosParticipanteTab } from '../../components/participantes/SeguimientosParticipanteTab';
 import ParticipacionesUnifiedContainer from '../../components/participantes/ParticipacionesUnifiedContainer';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../components/ui/FilterDrawer';
@@ -1363,7 +1364,20 @@ export default function DetalleParticipante() {
                     usuarios={usuarios}
                   />
                 )
-              }
+              },
+              // Solo mostrar tab de seguimientos para participantes externos
+              ...(participante?.tipo === 'externo' ? [{
+                id: 'seguimientos',
+                label: 'Seguimientos',
+                content: (
+                  <SeguimientosParticipanteTab
+                    participanteId={id as string}
+                    participanteNombre={participante?.nombre || ''}
+                    participanteEmail={participante?.email || ''}
+                    participanteEmpresa={participante?.empresa_nombre}
+                  />
+                )
+              }] : [])
             ]}
             activeTab={activeTab}
             onTabChange={setActiveTab}
