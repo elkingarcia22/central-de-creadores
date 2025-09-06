@@ -77,15 +77,15 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-500 ease-in-out ${isExpanded ? '' : 'py-4 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-500 ease-in-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div>
             <SimpleAvatar
               src={user?.avatar}
               fallbackText={displayName}
-              size={isExpanded ? "xl" : "lg"}
-              className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-500 ease-in-out"
+              size="xl"
+              className={`border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-500 ease-in-out ${isExpanded ? 'scale-100' : 'scale-75'}`}
               onClick={onSettings}
             />
           </div>
@@ -93,18 +93,18 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Selector de rol siempre visible */}
         {user && (
-          <div className={`mt-3 text-center w-full flex flex-col items-center ${isExpanded ? '' : 'mt-2'}`}>
-            {isExpanded && (
+          <div className={`text-center w-full flex flex-col items-center transition-all duration-500 ease-in-out ${isExpanded ? 'mt-3' : 'mt-2'}`}>
+            <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'opacity-100 max-h-6' : 'opacity-0 max-h-0 overflow-hidden'}`}>
               <Typography variant="body2" weight="medium" className="text-foreground truncate">
                 {displayName}
               </Typography>
-            )}
+            </div>
             <RolSelector variant="sidebar" className="text-muted-foreground" isCollapsed={!isExpanded} />
           </div>
         )}
       </div>
 
-      <nav className={`flex-1 px-2 py-4 space-y-2 ${isExpanded ? '' : 'px-1'}`}>
+      <nav className={`flex-1 py-4 space-y-2 transition-all duration-500 ease-in-out ${isExpanded ? 'px-2' : 'px-1'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 ${isExpanded ? '' : 'px-1'}`}>
+      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-500 ease-in-out ${isExpanded ? 'px-2' : 'px-1'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
