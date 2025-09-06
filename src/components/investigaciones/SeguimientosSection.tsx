@@ -420,48 +420,35 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
     }
   ];
 
-  // Acciones de la tabla
-  const getRowActions = (seguimiento: SeguimientoInvestigacion) => {
-    const actions = [
-      {
-        label: 'Ver',
-        icon: <EyeIcon className="w-4 h-4" />,
-        onClick: () => abrirVerModal(seguimiento)
-      }
-    ];
 
-    if (investigacionEstado === 'en_progreso' && 
-        seguimiento.estado !== 'convertido' && 
-        seguimiento.estado !== 'completado') {
-      actions.push(
-        {
-          label: 'Editar',
-          icon: <EditIcon className="w-4 h-4" />,
-          onClick: () => abrirEditarModal(seguimiento)
-        },
-        {
-          label: 'Convertir',
-          icon: <CopyIcon className="w-4 h-4" />,
-          onClick: () => handleConvertirSeguimiento(seguimiento)
-        },
-        {
-          label: 'Eliminar',
-          icon: <TrashIcon className="w-4 h-4" />,
-          onClick: () => handleEliminarSeguimiento(seguimiento)
-        }
-      );
+  // Acciones estáticas para la tabla (se aplicarán a todas las filas)
+  const tableActions = [
+    {
+      label: 'Ver',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoInvestigacion) => abrirVerModal(row),
+      title: 'Ver detalles del seguimiento'
+    },
+    {
+      label: 'Editar',
+      icon: <EditIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoInvestigacion) => abrirEditarModal(row),
+      title: 'Editar seguimiento'
+    },
+    {
+      label: 'Convertir',
+      icon: <CopyIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoInvestigacion) => handleConvertirSeguimiento(row),
+      title: 'Convertir seguimiento a investigación'
+    },
+    {
+      label: 'Eliminar',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoInvestigacion) => handleEliminarSeguimiento(row),
+      className: 'text-red-600 hover:text-red-700',
+      title: 'Eliminar seguimiento'
     }
-
-    return actions;
-  };
-
-  const tableActions = seguimientosFiltrados.map(seguimiento => ({
-    label: 'Acciones',
-    icon: <MoreVerticalIcon className="w-4 h-4" />,
-    onClick: (row: SeguimientoInvestigacion) => {
-      // Las acciones se manejan individualmente en getRowActions
-    }
-  }));
+  ];
 
   if (loading) {
     return (
