@@ -18,6 +18,7 @@ import {
 import { formatearFecha } from '../../utils/fechas';
 import { getChipVariant } from '../../utils/chipUtils';
 import SeguimientoSideModal from '../ui/SeguimientoSideModal';
+import VerSeguimientoSideModal from '../ui/VerSeguimientoSideModal';
 
 interface Seguimiento {
   id: string;
@@ -73,6 +74,8 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
   const [showEditarModal, setShowEditarModal] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [seguimientoParaEliminar, setSeguimientoParaEliminar] = useState<Seguimiento | null>(null);
+  const [seguimientoParaVer, setSeguimientoParaVer] = useState<Seguimiento | null>(null);
+  const [showVerModal, setShowVerModal] = useState(false);
 
   // Cargar usuarios
   const cargarUsuarios = async () => {
@@ -240,6 +243,12 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
     setShowEditarModal(true);
   };
 
+  // Abrir modal de vista
+  const abrirVerModal = (seguimiento: Seguimiento) => {
+    setSeguimientoParaVer(seguimiento);
+    setShowVerModal(true);
+  };
+
   // Convertir seguimiento a investigación
   const handleConvertirSeguimiento = (seguimiento: Seguimiento) => {
     router.push(`/investigaciones/convertir-seguimiento/${seguimiento.id}`);
@@ -347,6 +356,12 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
   const getRowActions = (seguimiento: Seguimiento) => {
     const actions = [
       {
+        label: 'Ver',
+        icon: <EyeIcon className="w-4 h-4" />,
+        onClick: () => abrirVerModal(seguimiento),
+        title: 'Ver detalles del seguimiento'
+      },
+      {
         label: 'Ver Investigación',
         icon: <EyeIcon className="w-4 h-4" />,
         onClick: () => handleVerInvestigacion(seguimiento),
@@ -394,6 +409,12 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
 
   // Acciones estáticas para la tabla (se aplicarán a todas las filas)
   const tableActions = [
+    {
+      label: 'Ver',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => abrirVerModal(row),
+      title: 'Ver detalles del seguimiento'
+    },
     {
       label: 'Ver Investigación',
       icon: <EyeIcon className="w-4 h-4" />,
@@ -499,6 +520,16 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
         confirmText="Eliminar"
         cancelText="Cancelar"
         type="error"
+      />
+
+      {/* Modal para ver seguimiento */}
+      <VerSeguimientoSideModal
+        isOpen={showVerModal}
+        onClose={() => {
+          setShowVerModal(false);
+          setSeguimientoParaVer(null);
+        }}
+        seguimiento={seguimientoParaVer}
       />
     </div>
   );
