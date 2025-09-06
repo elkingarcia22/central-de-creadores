@@ -296,10 +296,18 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
               <Select
                 value={formData.investigacion_id}
                 onChange={(value) => handleInputChange('investigacion_id', value)}
-                options={investigaciones.map(inv => ({
-                  value: inv.id,
-                  label: inv.nombre
-                }))}
+                options={(() => {
+                  const options = investigaciones.map(inv => ({
+                    value: inv.id,
+                    label: inv.nombre
+                  }));
+                  console.log('🔍 [SeguimientoSideModal] Renderizando Select con:', {
+                    value: formData.investigacion_id,
+                    investigaciones: investigaciones,
+                    options: options
+                  });
+                  return options;
+                })()}
                 placeholder="Seleccionar investigación"
                 disabled={saving}
                 required
