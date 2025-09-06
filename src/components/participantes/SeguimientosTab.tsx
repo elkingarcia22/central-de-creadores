@@ -345,6 +345,41 @@ export const SeguimientosTab: React.FC = () => {
     return actions;
   };
 
+  // Acciones estáticas para la tabla (se aplicarán a todas las filas)
+  const tableActions = [
+    {
+      label: 'Ver Investigación',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => handleVerInvestigacion(row),
+      title: 'Ver detalles de la investigación'
+    },
+    {
+      label: 'Editar',
+      icon: <EditIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => abrirEditarModal(row),
+      title: 'Editar seguimiento'
+    },
+    {
+      label: 'Convertir',
+      icon: <CopyIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => handleConvertirSeguimiento(row),
+      title: 'Convertir seguimiento a investigación'
+    },
+    {
+      label: 'Ver Participante',
+      icon: <LinkIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => handleVerParticipante(row),
+      title: 'Ver detalles del participante'
+    },
+    {
+      label: 'Eliminar',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (row: Seguimiento) => handleEliminarSeguimiento(row.id),
+      className: 'text-red-600 hover:text-red-700',
+      title: 'Eliminar seguimiento'
+    }
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -389,7 +424,7 @@ export const SeguimientosTab: React.FC = () => {
           sortable={true}
           pagination={true}
           pageSize={10}
-          actions={getRowActions}
+          actions={tableActions}
           onRowClick={(seguimiento) => abrirEditarModal(seguimiento)}
         />
       )}
