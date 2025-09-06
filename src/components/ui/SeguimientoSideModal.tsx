@@ -62,6 +62,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     investigaciones: investigaciones?.length || 0,
     investigacionesData: investigaciones
   });
+  
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
   
@@ -73,6 +74,22 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     estado: 'pendiente',
     participante_externo_id: participanteExternoPrecargado?.id || ''
   });
+  
+  // Log adicional para debuggear el problema
+  if (isOpen) {
+    console.log('🔍 [SeguimientoSideModal] Modal abierto - Debug completo:', {
+      investigacionId,
+      investigaciones,
+      usuarios: usuarios?.length || 0,
+      formData: {
+        investigacion_id: formData.investigacion_id,
+        fecha_seguimiento: formData.fecha_seguimiento,
+        responsable_id: formData.responsable_id,
+        estado: formData.estado,
+        participante_externo_id: formData.participante_externo_id
+      }
+    });
+  }
   
   const [saving, setSaving] = useState(false);
   const [participantesExternos, setParticipantesExternos] = useState<any[]>([]);
