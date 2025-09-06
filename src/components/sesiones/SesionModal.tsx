@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Input, Select, Textarea, DatePicker, Typography, Card } from '../ui';
+import { Modal, Button, Input, Select, Textarea, DatePicker, Typography, Card, Switch } from '../ui';
 import { Sesion, SesionFormData } from '../../types/sesiones';
+import GoogleCalendarSync from './GoogleCalendarSync';
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -56,6 +57,7 @@ const SesionModal: React.FC<SesionModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showGoogleSync, setShowGoogleSync] = useState(false);
 
   // Inicializar formulario
   useEffect(() => {
@@ -386,6 +388,39 @@ const SesionModal: React.FC<SesionModalProps> = ({
               rows={3}
             />
           </div>
+        </Card>
+
+        {/* Google Calendar Sync */}
+        <Card variant="elevated" padding="md">
+          <div className="flex items-center justify-between mb-4">
+            <Typography variant="h4">
+              Google Calendar
+            </Typography>
+            <Switch
+              checked={showGoogleSync}
+              onCheckedChange={setShowGoogleSync}
+            />
+          </div>
+          
+          {showGoogleSync && sesion && (
+            <GoogleCalendarSync
+              sesion={sesion}
+              onSync={(sesion, googleEvent) => {
+                console.log('Sesión sincronizada:', sesion.id, googleEvent.id);
+              }}
+              onUnsync={(sesion) => {
+                console.log('Sesión desincronizada:', sesion.id);
+              }}
+            />
+          )}
+          
+          {showGoogleSync && !sesion && (
+            <div className="text-center py-4">
+              <Typography variant="body2" color="secondary">
+                Guarda la sesión primero para habilitar la sincronización con Google Calendar
+              </Typography>
+            </div>
+          )}
         </Card>
 
         {/* Acciones */}
