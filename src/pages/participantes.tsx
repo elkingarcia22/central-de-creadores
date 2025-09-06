@@ -110,6 +110,10 @@ export default function ParticipantesPage() {
   const [empresas, setEmpresas] = useState<Array<{ value: string; label: string }>>([]);
   const [departamentos, setDepartamentos] = useState<Array<{ value: string; label: string }>>([]);
   
+  // Estados para filtros de seguimientos
+  const [responsables, setResponsables] = useState<Array<{ value: string; label: string }>>([]);
+  const [investigaciones, setInvestigaciones] = useState<Array<{ value: string; label: string }>>([]);
+  
   // Estados para filtros específicos por tipo
   const [filtersExternos, setFiltersExternos] = useState<FilterValuesParticipantes>({
     busqueda: '',
@@ -234,12 +238,44 @@ export default function ParticipantesPage() {
     }
   }, [showError]);
 
+  // Cargar catálogos para filtros de seguimientos
+  const cargarCatalogosSeguimientos = useCallback(async () => {
+    try {
+      // Cargar responsables (usuarios)
+      const responseUsuarios = await fetch('/api/usuarios');
+      if (responseUsuarios.ok) {
+        const dataUsuarios = await responseUsuarios.json();
+        const usuariosArray = Array.isArray(dataUsuarios) ? dataUsuarios : (dataUsuarios?.usuarios || []);
+        setResponsables(usuariosArray.map((usuario: any) => ({
+          value: usuario.id,
+          label: usuario.full_name || usuario.nombre || 'Sin nombre'
+        })));
+      }
+
+      // Cargar investigaciones únicas de los seguimientos
+      const investigacionesUnicas = [...new Set(seguimientos.map(s => s.investigacion_nombre).filter(Boolean))];
+      setInvestigaciones(investigacionesUnicas.map(nombre => ({
+        value: nombre,
+        label: nombre
+      })));
+    } catch (error) {
+      console.error('Error cargando catálogos de seguimientos:', error);
+    }
+  }, [seguimientos]);
+
   // Cargar datos iniciales
   useEffect(() => {
     cargarParticipantes();
     cargarCatalogos();
     cargarSeguimientos();
   }, [cargarSeguimientos]);
+
+  // Cargar catálogos de seguimientos cuando cambien los seguimientos
+  useEffect(() => {
+    if (seguimientos.length > 0) {
+      cargarCatalogosSeguimientos();
+    }
+  }, [cargarCatalogosSeguimientos]);
 
   // Cerrar dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -1338,6 +1374,8 @@ export default function ParticipantesPage() {
               roles: rolesEmpresa,
               empresas: empresas,
               departamentos: departamentos,
+              responsables: responsables,
+              investigaciones: investigaciones,
             }}
             // Log para verificar las opciones de filtro
             {...(() => {
