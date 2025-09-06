@@ -8,6 +8,7 @@ import FilterDrawer from '../ui/FilterDrawer';
 import Tabs from '../ui/Tabs';
 import { Subtitle } from '../ui/Subtitle';
 import { SearchIcon, FilterIcon } from '../icons';
+import { SeguimientosTab } from './SeguimientosTab';
 
 interface ParticipantesUnifiedContainerProps {
   // Datos
@@ -44,6 +45,10 @@ interface ParticipantesUnifiedContainerProps {
 
   // Acciones de la tabla
   actions?: any[];
+  
+  // Props para seguimientos
+  showCrearSeguimientoModal?: boolean;
+  onCloseCrearSeguimientoModal?: () => void;
 }
 
 export default function ParticipantesUnifiedContainer({
@@ -64,7 +69,9 @@ export default function ParticipantesUnifiedContainer({
   setActiveTab,
   tabs,
   filterOptions,
-  actions
+  actions,
+  showCrearSeguimientoModal,
+  onCloseCrearSeguimientoModal
 }: ParticipantesUnifiedContainerProps) {
   const router = useRouter();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -272,22 +279,29 @@ export default function ParticipantesUnifiedContainer({
         className="w-full"
       />
 
-      {/* Tabla de participantes */}
-      <DataTable
-        data={participantesFiltradas}
-        columns={columns}
-        loading={loading}
-        searchable={false}
-        filterable={false}
-        selectable={!!onSelectionChange}
-        onSelectionChange={onSelectionChange}
-        onRowClick={onRowClick}
-        emptyMessage="No se encontraron participantes que coincidan con los criterios de búsqueda"
-        loadingMessage="Cargando participantes..."
-        rowKey="id"
-        bulkActions={bulkActions}
-        actions={actions}
-      />
+      {/* Contenido según el tab activo */}
+      {activeTab === 'seguimientos' ? (
+        <SeguimientosTab 
+          showCrearModal={showCrearSeguimientoModal}
+          onCloseCrearModal={onCloseCrearSeguimientoModal}
+        />
+      ) : (
+        <DataTable
+          data={participantesFiltradas}
+          columns={columns}
+          loading={loading}
+          searchable={false}
+          filterable={false}
+          selectable={!!onSelectionChange}
+          onSelectionChange={onSelectionChange}
+          onRowClick={onRowClick}
+          emptyMessage="No se encontraron participantes que coincidan con los criterios de búsqueda"
+          loadingMessage="Cargando participantes..."
+          rowKey="id"
+          bulkActions={bulkActions}
+          actions={actions}
+        />
+      )}
 
       {/* Drawer de filtros avanzados */}
       <FilterDrawer

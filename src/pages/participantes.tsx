@@ -100,6 +100,7 @@ export default function ParticipantesPage() {
   const [participantePerfilamientoTemp, setParticipantePerfilamientoTemp] = useState<any>(null);
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
+  const [showCrearSeguimientoModal, setShowCrearSeguimientoModal] = useState(false);
   
   // Estados para catálogos de filtros
   const [estadosParticipante, setEstadosParticipante] = useState<Array<{ value: string; label: string }>>([]);
@@ -1078,7 +1079,12 @@ export default function ParticipantesPage() {
               title="Participantes"
               subtitle="Gestiona todos los participantes de tu portafolio"
               color="purple"
-              primaryAction={{
+              primaryAction={activeTab === 'seguimientos' ? {
+                label: "Nuevo Seguimiento",
+                onClick: () => setShowCrearSeguimientoModal(true),
+                variant: "primary",
+                icon: <PlusIcon className="w-4 h-4" />
+              } : {
                 label: "Nuevo Participante",
                 onClick: () => setShowDropdown(!showDropdown),
                 variant: "primary",
@@ -1233,11 +1239,8 @@ export default function ParticipantesPage() {
             });
             return null;
           })()}
-          {/* Mostrar contenido según el tab activo */}
-          {activeTab === 'seguimientos' ? (
-            <SeguimientosTab />
-          ) : (
-            <ParticipantesUnifiedContainer
+          {/* Contenedor unificado con soporte para seguimientos */}
+          <ParticipantesUnifiedContainer
               participantes={participantes}
               loading={loading}
               searchTerm={searchTerm}
@@ -1353,8 +1356,9 @@ export default function ParticipantesPage() {
                 className: 'text-red-600 hover:text-red-700'
               }
             ]}
+            showCrearSeguimientoModal={showCrearSeguimientoModal}
+            onCloseCrearSeguimientoModal={() => setShowCrearSeguimientoModal(false)}
             />
-          )}
 
 
 

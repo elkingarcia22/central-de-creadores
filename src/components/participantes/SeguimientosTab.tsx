@@ -37,7 +37,15 @@ interface Seguimiento {
   creado_el: string;
 }
 
-export const SeguimientosTab: React.FC = () => {
+interface SeguimientosTabProps {
+  showCrearModal?: boolean;
+  onCloseCrearModal?: () => void;
+}
+
+export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({ 
+  showCrearModal: externalShowCrearModal, 
+  onCloseCrearModal 
+}) => {
   const router = useRouter();
   const { userId } = useFastUser();
   const { showError, showSuccess } = useToast();
@@ -45,7 +53,11 @@ export const SeguimientosTab: React.FC = () => {
   const [seguimientos, setSeguimientos] = useState<Seguimiento[]>([]);
   const [loading, setLoading] = useState(true);
   const [usuarios, setUsuarios] = useState<any[]>([]);
-  const [showCrearModal, setShowCrearModal] = useState(false);
+  const [internalShowCrearModal, setInternalShowCrearModal] = useState(false);
+  
+  // Usar el modal externo si está disponible, sino usar el interno
+  const showCrearModal = externalShowCrearModal !== undefined ? externalShowCrearModal : internalShowCrearModal;
+  const setShowCrearModal = onCloseCrearModal || setInternalShowCrearModal;
   const [seguimientoEditando, setSeguimientoEditando] = useState<Seguimiento | null>(null);
   const [showEditarModal, setShowEditarModal] = useState(false);
 
@@ -390,22 +402,6 @@ export const SeguimientosTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <Subtitle>
-          Seguimientos ({seguimientos.length})
-        </Subtitle>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => setShowCrearModal(true)}
-          className="flex items-center gap-2"
-        >
-          <PlusIcon className="w-4 h-4" />
-          Nuevo Seguimiento
-        </Button>
-      </div>
-
       {/* Tabla de seguimientos */}
       {seguimientos.length === 0 ? (
         <EmptyState
