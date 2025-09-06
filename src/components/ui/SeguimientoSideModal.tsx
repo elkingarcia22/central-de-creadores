@@ -61,9 +61,12 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
   const cargarParticipantesExternos = async () => {
     try {
       setCargandoParticipantes(true);
+      console.log('🔍 [SeguimientoSideModal] Cargando participantes externos...');
       const response = await fetch('/api/participantes');
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 [SeguimientoSideModal] Participantes externos cargados:', data?.length || 0);
+        console.log('🔍 [SeguimientoSideModal] Datos de participantes:', data);
         setParticipantesExternos(data || []);
       } else {
         console.error('Error cargando participantes externos:', response.status);
@@ -83,6 +86,10 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       
       if (seguimiento) {
         // Modo edición
+        console.log('🔍 [SeguimientoSideModal] Modo edición - seguimiento recibido:', seguimiento);
+        console.log('🔍 [SeguimientoSideModal] participante_externo_id:', seguimiento.participante_externo_id);
+        console.log('🔍 [SeguimientoSideModal] participante_externo:', seguimiento.participante_externo);
+        
         setFormData({
           investigacion_id: seguimiento.investigacion_id,
           fecha_seguimiento: seguimiento.fecha_seguimiento.split('T')[0], // Solo fecha
@@ -230,6 +237,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
 
             <div>
               <FilterLabel>Participante Externo (Opcional)</FilterLabel>
+              {console.log('🔍 [SeguimientoSideModal] Select value:', formData.participante_externo_id)}
+              {console.log('🔍 [SeguimientoSideModal] Options disponibles:', participantesExternos.length)}
               <Select
                 value={formData.participante_externo_id || ''}
                 onChange={(value) => handleInputChange('participante_externo_id', value.toString())}
