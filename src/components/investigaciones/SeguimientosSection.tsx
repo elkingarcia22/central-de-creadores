@@ -182,14 +182,8 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
   // Obtener nombre del usuario
   const obtenerNombreUsuario = (userId: string) => {
     if (!userId) return 'Usuario desconocido';
-    console.log('🔍 Buscando usuario:', userId);
-    console.log('🔍 Usuarios disponibles:', usuarios.length);
-    console.log('🔍 IDs de usuarios:', usuarios.map(u => u.id));
     const usuario = usuarios.find(u => u.id === userId);
-    console.log('🔍 Usuario encontrado:', usuario);
-    const nombre = usuario?.full_name || usuario?.email || 'Usuario desconocido';
-    console.log('🔍 Nombre devuelto:', nombre);
-    return nombre;
+    return usuario?.full_name || usuario?.email || 'Usuario desconocido';
   };
 
   if (loading) {
@@ -329,7 +323,7 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
                       )}
                     </div>
                     <span>
-                      Creado por: {obtenerNombreUsuario(seguimiento.creado_por)} • {formatearFecha(seguimiento.creado_el)}
+                      {formatearFecha(seguimiento.creado_el)}
                     </span>
                   </div>
                 </div>
