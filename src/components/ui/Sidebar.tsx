@@ -50,15 +50,34 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const displayName = user?.name || user?.email || 'Usuario';
   const [isHovered, setIsHovered] = React.useState(false);
-  const isExpanded = isHovered;
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  
+  // Delay para la expansión
+  React.useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (isHovered) {
+      timeoutId = setTimeout(() => {
+        setIsExpanded(true);
+      }, 300); // 300ms de delay antes de expandir
+    } else {
+      setIsExpanded(false); // Colapsar inmediatamente al quitar el hover
+    }
+    
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isHovered]);
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'} ${className}`}
+      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-500 ease-in-out ${isExpanded ? 'w-64' : 'w-16'} ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isExpanded ? '' : 'py-4 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-500 ease-in-out ${isExpanded ? '' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div>
@@ -66,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               src={user?.avatar}
               fallbackText={displayName}
               size={isExpanded ? "xl" : "lg"}
-              className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-300"
+              className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-500 ease-in-out"
               onClick={onSettings}
             />
           </div>
