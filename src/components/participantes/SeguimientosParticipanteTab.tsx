@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useFastUser } from '../../contexts/FastUserContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Typography, Card, Button, Chip, Subtitle, EmptyState } from '../ui';
+import DataTable from '../ui/DataTable';
+import ActionsMenu from '../ui/ActionsMenu';
+import ConfirmModal from '../ui/ConfirmModal';
 import { 
   ClipboardListIcon, 
   PlusIcon, 
   EditIcon, 
   TrashIcon, 
   CopyIcon,
-  LinkIcon
+  LinkIcon,
+  EyeIcon
 } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getChipVariant } from '../../utils/chipUtils';
 import SeguimientoSideModal from '../ui/SeguimientoSideModal';
+import VerSeguimientoSideModal from '../ui/VerSeguimientoSideModal';
 import { obtenerSeguimientosPorParticipante, crearSeguimiento } from '../../api/supabase-seguimientos';
 
 interface SeguimientoParticipante {
@@ -56,6 +62,10 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   const [seguimientoEditando, setSeguimientoEditando] = useState<SeguimientoParticipante | null>(null);
   const [showEditarModal, setShowEditarModal] = useState(false);
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [seguimientoParaVer, setSeguimientoParaVer] = useState<SeguimientoParticipante | null>(null);
+  const [showVerModal, setShowVerModal] = useState(false);
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [seguimientoParaEliminar, setSeguimientoParaEliminar] = useState<SeguimientoParticipante | null>(null);
 
   // Cargar usuarios
   const cargarUsuarios = async () => {
@@ -214,10 +224,192 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
     setShowEditarModal(true);
   };
 
+  // Abrir modal de vista
+  const abrirVerModal = (seguimiento: SeguimientoParticipante) => {
+    setSeguimientoParaVer(seguimiento);
+    setShowVerModal(true);
+  };
+
+  // Manejar eliminación de seguimiento con confirmación
+  const handleEliminarSeguimiento = (seguimiento: SeguimientoParticipante) => {
+    setSeguimientoParaEliminar(seguimiento);
+    setShowModalEliminar(true);
+  };
+
+  const confirmarEliminacion = async () => {
+    if (!seguimientoParaEliminar) return;
+    
+    try {
+      console.log('🔍 Eliminando seguimiento:', seguimientoParaEliminar.id);
+      
+      const response = await fetch(`/api/seguimientos/${seguimientoParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al eliminar seguimiento');
+      }
+
+      console.log('✅ Seguimiento eliminado');
+      showSuccess('Seguimiento eliminado exitosamente');
+      setShowModalEliminar(false);
+      setSeguimientoParaEliminar(null);
+      cargarSeguimientos();
+    } catch (error: any) {
+      console.error('❌ Error eliminando seguimiento:', error);
+      showError(error.message || 'Error al eliminar seguimiento');
+    }
+  };
+
+  // Convertir seguimiento a investigación
+  const handleConvertirSeguimiento = (seguimiento: SeguimientoParticipante) => {
+    router.push(`/investigaciones/convertir-seguimiento/${seguimiento.id}`);
+  };
+
+  // Ver investigación
+  const handleVerInvestigacion = (seguimiento: SeguimientoParticipante) => {
+    router.push(`/investigaciones/ver/${seguimiento.investigacion_id}`);
+  };
+
   // Obtener color del estado
   const getEstadoColor = (estado: string): any => {
     return getChipVariant(estado);
   };
+
+  // Definir columnas de la tabla
+  const columns = [
+    {
+      key: 'investigacion',
+      label: 'Investigación',
+      sortable: true,
+      render: (value: any, row: SeguimientoParticipante) => (
+        <Typography variant="body2" weight="medium">
+          {row.investigacion_nombre}
+        </Typography>
+      )
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      sortable: true,
+      render: (value: any, row: SeguimientoParticipante) => (
+        <Chip variant={getEstadoColor(row.estado)} size="sm">
+          {row.estado}
+        </Chip>
+      )
+    },
+    {
+      key: 'fecha_seguimiento',
+      label: 'Fecha Seguimiento',
+      sortable: true,
+      render: (value: any, row: SeguimientoParticipante) => (
+        <Typography variant="body2">
+          {formatearFecha(row.fecha_seguimiento)}
+        </Typography>
+      )
+    },
+    {
+      key: 'responsable',
+      label: 'Responsable',
+      sortable: true,
+      render: (value: any, row: SeguimientoParticipante) => (
+        <Typography variant="body2">
+          {row.responsable_nombre}
+        </Typography>
+      )
+    },
+    {
+      key: 'creado_el',
+      label: 'Creado',
+      sortable: true,
+      render: (value: any, row: SeguimientoParticipante) => (
+        <Typography variant="body2" className="text-muted-foreground">
+          {formatearFecha(row.creado_el)}
+        </Typography>
+      )
+    }
+  ];
+
+  // Acciones para cada fila
+  const getRowActions = (seguimiento: SeguimientoParticipante) => {
+    const actions = [
+      {
+        label: 'Ver',
+        icon: <EyeIcon className="w-4 h-4" />,
+        onClick: () => abrirVerModal(seguimiento),
+        title: 'Ver detalles del seguimiento'
+      },
+      {
+        label: 'Ver Investigación',
+        icon: <EyeIcon className="w-4 h-4" />,
+        onClick: () => handleVerInvestigacion(seguimiento),
+        title: 'Ver detalles de la investigación'
+      },
+      {
+        label: 'Editar',
+        icon: <EditIcon className="w-4 h-4" />,
+        onClick: () => abrirEditarModal(seguimiento),
+        title: 'Editar seguimiento'
+      }
+    ];
+
+    // Agregar acción de convertir solo si el estado lo permite
+    if (seguimiento.estado !== 'convertido' && seguimiento.estado !== 'completado') {
+      actions.push({
+        label: 'Convertir',
+        icon: <CopyIcon className="w-4 h-4" />,
+        onClick: () => handleConvertirSeguimiento(seguimiento),
+        title: 'Convertir seguimiento a investigación'
+      });
+    }
+
+    // Agregar acción de eliminar
+    actions.push({
+      label: 'Eliminar',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: () => handleEliminarSeguimiento(seguimiento),
+      className: 'text-red-600 hover:text-red-700',
+      title: 'Eliminar seguimiento'
+    });
+
+    return actions;
+  };
+
+  // Acciones estáticas para la tabla (se aplicarán a todas las filas)
+  const tableActions = [
+    {
+      label: 'Ver',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoParticipante) => abrirVerModal(row),
+      title: 'Ver detalles del seguimiento'
+    },
+    {
+      label: 'Ver Investigación',
+      icon: <EyeIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoParticipante) => handleVerInvestigacion(row),
+      title: 'Ver detalles de la investigación'
+    },
+    {
+      label: 'Editar',
+      icon: <EditIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoParticipante) => abrirEditarModal(row),
+      title: 'Editar seguimiento'
+    },
+    {
+      label: 'Convertir',
+      icon: <CopyIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoParticipante) => handleConvertirSeguimiento(row),
+      title: 'Convertir seguimiento a investigación'
+    },
+    {
+      label: 'Eliminar',
+      icon: <TrashIcon className="w-4 h-4" />,
+      onClick: (row: SeguimientoParticipante) => handleEliminarSeguimiento(row),
+      className: 'text-red-600 hover:text-red-700',
+      title: 'Eliminar seguimiento'
+    }
+  ];
 
   if (loading) {
     return (
@@ -245,7 +437,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
         </Button>
       </div>
 
-      {/* Lista de seguimientos */}
+      {/* Tabla de seguimientos */}
       {seguimientos.length === 0 ? (
         <EmptyState
           icon={<ClipboardListIcon className="w-8 h-8" />}
@@ -255,69 +447,17 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
           onAction={() => setShowCrearModal(true)}
         />
       ) : (
-        <div className="space-y-4">
-          {seguimientos.map((seguimiento) => (
-            <Card key={seguimiento.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  {/* Header con información básica */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <Chip variant={getEstadoColor(seguimiento.estado)} size="sm">
-                      {seguimiento.estado}
-                    </Chip>
-                    <Typography variant="body2" className="text-muted-foreground">
-                      {formatearFecha(seguimiento.fecha_seguimiento)}
-                    </Typography>
-                  </div>
-
-                  {/* Información de la investigación */}
-                  <div className="mb-2">
-                    <Typography variant="subtitle2" weight="medium" className="mb-1">
-                      Investigación: {seguimiento.investigacion_nombre}
-                    </Typography>
-                    <Typography variant="body2" className="text-muted-foreground">
-                      Responsable: {seguimiento.responsable_nombre}
-                    </Typography>
-                  </div>
-
-                  {/* Notas del seguimiento */}
-                  <Typography variant="body2" className="text-gray-700 dark:text-gray-300">
-                    {seguimiento.notas}
-                  </Typography>
-
-                  {/* Footer con fecha de creación */}
-                  <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
-                    <Typography variant="caption" className="text-muted-foreground">
-                      Creado el {formatearFecha(seguimiento.creado_el)}
-                    </Typography>
-                  </div>
-                </div>
-
-                {/* Acciones */}
-                <div className="flex items-center gap-2 ml-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => abrirEditarModal(seguimiento)}
-                    className="flex items-center gap-1"
-                  >
-                    <EditIcon className="w-3 h-3" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEliminarSeguimiento(seguimiento.id)}
-                    className="flex items-center gap-1 !text-destructive"
-                  >
-                    <TrashIcon className="w-3 h-3 text-destructive" />
-                    Eliminar
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <DataTable
+          data={seguimientos}
+          columns={columns}
+          loading={loading}
+          searchable={false}
+          sortable={true}
+          pagination={true}
+          pageSize={10}
+          actions={tableActions}
+          onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
+        />
       )}
 
       {/* Modal para crear seguimiento */}
@@ -345,6 +485,36 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
           responsablePorDefecto={userId}
         />
       )}
+
+      {/* Modal para ver seguimiento */}
+      <VerSeguimientoSideModal
+        isOpen={showVerModal}
+        onClose={() => {
+          setShowVerModal(false);
+          setSeguimientoParaVer(null);
+        }}
+        seguimiento={seguimientoParaVer}
+        onEdit={(seguimiento) => {
+          setShowVerModal(false);
+          setSeguimientoParaVer(null);
+          abrirEditarModal(seguimiento);
+        }}
+      />
+
+      {/* Modal de confirmación para eliminar seguimiento */}
+      <ConfirmModal
+        isOpen={!!seguimientoParaEliminar}
+        onClose={() => {
+          setShowModalEliminar(false);
+          setSeguimientoParaEliminar(null);
+        }}
+        onConfirm={confirmarEliminacion}
+        title="Eliminar Seguimiento"
+        message={`¿Estás seguro de que deseas eliminar este seguimiento? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="error"
+      />
     </div>
   );
 };
