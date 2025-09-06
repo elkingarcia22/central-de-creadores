@@ -53,6 +53,7 @@ class MCPMaestroServer {
     this.forceAuto = true;
     this.noPrompts = true;
     this.skipAllConfirmations = true;
+    this.isInitialized = false;
     
     // Inicializar el servidor MCP
     this.server = new Server(
@@ -84,6 +85,32 @@ class MCPMaestroServer {
     console.log(chalk.cyan('✅ Auto-commit activado'));
     console.log(chalk.cyan('✅ Auto-backup activado'));
     console.log(chalk.cyan('✅ Auto-recuperación de contexto activada'));
+  }
+
+  async initializeSystem() {
+    if (this.isInitialized) {
+      return;
+    }
+    
+    try {
+      console.log('🔧 Inicializando sistema MCP Maestro...');
+      
+      // Inicializar herramientas básicas
+      await this.contextManager.initializeStorage();
+      
+      // Recuperar contexto automáticamente si está habilitado
+      if (this.autoRecoverContext) {
+        await this.autoRecoverContext();
+      }
+      
+      this.isInitialized = true;
+      console.log('✅ Sistema MCP Maestro inicializado correctamente');
+      
+    } catch (error) {
+      console.error('❌ Error inicializando sistema:', error);
+      // Continuar aunque haya error para no bloquear el servidor
+      this.isInitialized = true;
+    }
   }
 
   

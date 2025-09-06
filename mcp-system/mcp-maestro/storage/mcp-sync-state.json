@@ -1,5 +1,5 @@
 {
-  "last_sync": "2025-09-03T19:18:52.738Z",
+  "last_sync": "2025-09-06T00:56:00.240Z",
   "results": {
     "design-system": {
       "success": true,
@@ -213,17 +213,17 @@
           ]
         }
       },
-      "timestamp": "2025-09-03T19:18:42.819Z"
+      "timestamp": "2025-09-06T00:55:45.884Z"
     },
     "code-structure": {
       "success": true,
       "mcp": "code-structure",
       "data": {
         "structure": {
-          "total_files": 473,
+          "total_files": 480,
           "total_directories": 55,
           "file_types": {
-            ".ts": 161,
+            ".ts": 168,
             ".tsx": 244,
             ".swp": 1,
             ".backup": 8,
@@ -354,7 +354,7 @@
           "total_dependencies": 39
         }
       },
-      "timestamp": "2025-09-03T19:18:42.960Z"
+      "timestamp": "2025-09-06T00:55:45.985Z"
     },
     "testing-qa": {
       "success": true,
@@ -421,14 +421,14 @@
         },
         "coverage": {
           "coverage_exists": false,
-          "coverage_path": "../../coverage"
+          "coverage_path": "/Users/elkinmac/Documents/central-de-creadores/coverage"
         },
         "issues": {
           "eslint_configured": false,
           "linting_enabled": false
         }
       },
-      "timestamp": "2025-09-03T19:18:45.446Z"
+      "timestamp": "2025-09-06T00:55:50.516Z"
     },
     "supabase": {
       "success": true,
@@ -537,7 +537,7 @@
           ]
         }
       },
-      "timestamp": "2025-09-03T19:18:52.738Z"
+      "timestamp": "2025-09-06T00:56:00.240Z"
     }
   },
   "summary": {
