@@ -105,6 +105,7 @@ export default function ParticipantesPage() {
   const [participanteParaSeguimiento, setParticipanteParaSeguimiento] = useState<any>(null);
   const [seguimientos, setSeguimientos] = useState<any[]>([]);
   const [seguimientosLoading, setSeguimientosLoading] = useState(false);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
   
   // Estados para catálogos de filtros
   const [estadosParticipante, setEstadosParticipante] = useState<Array<{ value: string; label: string }>>([]);
@@ -249,6 +250,7 @@ export default function ParticipantesPage() {
       if (responseUsuarios.ok) {
         const dataUsuarios = await responseUsuarios.json();
         const usuariosArray = Array.isArray(dataUsuarios) ? dataUsuarios : (dataUsuarios?.usuarios || []);
+        setUsuarios(usuariosArray); // Guardar usuarios completos
         setResponsables(usuariosArray.map((usuario: any) => ({
           value: usuario.id,
           label: usuario.full_name || usuario.nombre || 'Sin nombre'
@@ -286,6 +288,13 @@ export default function ParticipantesPage() {
       cargarCatalogosSeguimientos();
     }
   }, [cargarCatalogosSeguimientos]);
+
+  // Cargar usuarios cuando se abra el modal de seguimiento
+  useEffect(() => {
+    if (showCrearSeguimientoModal && usuarios.length === 0) {
+      cargarCatalogosSeguimientos();
+    }
+  }, [showCrearSeguimientoModal, usuarios.length, cargarCatalogosSeguimientos]);
 
   // Cerrar dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -1605,7 +1614,7 @@ export default function ParticipantesPage() {
                 }
               }}
               investigacionId=""
-              usuarios={[]}
+              usuarios={usuarios}
               responsablePorDefecto={userId}
               participanteExternoPrecargado={{
                 id: participanteParaSeguimiento.id,
