@@ -49,9 +49,98 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     // Obtener seguimientos
     try {
-      const { investigacion_id, participante_externo_id } = req.query;
+      const { investigacion_id, participante_externo_id, all } = req.query;
 
-      // Validar que al menos uno de los parámetros esté presente
+      // Si se solicita todos los seguimientos
+      if (all === 'true') {
+        console.log('🔍 Obteniendo todos los seguimientos...');
+        
+        const { data: seguimientos, error } = await supabaseServer
+          .from('seguimientos_investigacion')
+          .select('*')
+          .order('fecha_seguimiento', { ascending: false });
+
+        if (error) {
+          console.error('❌ Error obteniendo todos los seguimientos:', error);
+          return res.status(500).json({ 
+            error: 'Error obteniendo seguimientos', 
+            details: error.message 
+          });
+        }
+
+        // Enriquecer con información relacionada
+        const seguimientosConInfo = await Promise.all(
+          (seguimientos || []).map(async (seguimiento) => {
+            let seguimientoEnriquecido = { ...seguimiento };
+
+            // Obtener información del participante externo si existe
+            if (seguimiento.participante_externo_id) {
+              try {
+                const { data: participante, error: participanteError } = await supabaseServer
+                  .from('participantes')
+                  .select('id, nombre, email')
+                  .eq('id', seguimiento.participante_externo_id)
+                  .single();
+
+                if (!participanteError && participante) {
+                  seguimientoEnriquecido.participante_externo = {
+                    id: participante.id,
+                    nombre: participante.nombre,
+                    empresa_nombre: null,
+                    email: participante.email
+                  };
+                }
+              } catch (error) {
+                console.error('❌ Error obteniendo participante:', error);
+              }
+            }
+
+            // Obtener información de la investigación
+            if (seguimiento.investigacion_id) {
+              try {
+                const { data: investigacion, error: investigacionError } = await supabaseServer
+                  .from('investigaciones')
+                  .select('id, nombre')
+                  .eq('id', seguimiento.investigacion_id)
+                  .single();
+
+                if (!investigacionError && investigacion) {
+                  seguimientoEnriquecido.investigacion_nombre = investigacion.nombre;
+                }
+              } catch (error) {
+                console.error('❌ Error obteniendo investigación:', error);
+              }
+            }
+
+            // Obtener información del responsable
+            if (seguimiento.responsable_id) {
+              try {
+                const { data: responsable, error: responsableError } = await supabaseServer
+                  .from('profiles')
+                  .select('id, full_name')
+                  .eq('id', seguimiento.responsable_id)
+                  .single();
+
+                if (!responsableError && responsable) {
+                  seguimientoEnriquecido.responsable_nombre = responsable.full_name;
+                }
+              } catch (error) {
+                console.error('❌ Error obteniendo responsable:', error);
+              }
+            }
+
+            return seguimientoEnriquecido;
+          })
+        );
+
+        console.log('✅ Todos los seguimientos obtenidos:', seguimientosConInfo?.length || 0);
+        return res.status(200).json({
+          success: true,
+          data: seguimientosConInfo || []
+        });
+      }
+
+      // Validar que al menos uno de los parámetros esté presente para consultas específicas
       if (!investigacion_id && !participante_externo_id) {
         return res.status(400).json({ error: 'ID de investigación o participante externo requerido' });
       }

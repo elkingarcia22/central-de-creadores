@@ -27,6 +27,7 @@ import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { DolorSideModal } from '../components/ui';
 import { SeleccionarCategoriaPerfilamientoModal } from '../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from '../components/participantes/CrearPerfilamientoModal';
+import { SeguimientosTab } from '../components/participantes/SeguimientosTab';
 import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
@@ -1232,70 +1233,79 @@ export default function ParticipantesPage() {
             });
             return null;
           })()}
-          <ParticipantesUnifiedContainer
-            participantes={participantes}
-            loading={loading}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filters={
-              (() => {
-                const selectedFilters = activeTab === 'externos' ? filtersExternos :
-                  activeTab === 'internos' ? filtersInternos :
-                  activeTab === 'friend_family' ? filtersFriendFamily :
-                  filters;
-                
-                console.log('🔍 Filtros seleccionados para ParticipantesUnifiedContainer:', {
-                  activeTab,
-                  selectedFilters,
-                  estado_participante: selectedFilters.estado_participante
-                });
-                
-                return selectedFilters;
-              })()
-            }
-            setFilters={handleFiltersChange}
-            showFilterDrawer={showFilterDrawer}
-            setShowFilterDrawer={setShowFilterDrawer}
-            getActiveFiltersCount={getActiveFiltersCount}
-            columns={
-              activeTab === 'externos' ? columnsExternos :
-              activeTab === 'internos' ? columnsInternos :
-              activeTab === 'friend_family' ? columnsFriendFamily :
-              columnsExternos // fallback
-            }
-            // Log para verificar las columnas
-            {...(() => {
-              const selectedColumns = activeTab === 'externos' ? columnsExternos :
+          {/* Mostrar contenido según el tab activo */}
+          {activeTab === 'seguimientos' ? (
+            <SeguimientosTab />
+          ) : (
+            <ParticipantesUnifiedContainer
+              participantes={participantes}
+              loading={loading}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filters={
+                (() => {
+                  const selectedFilters = activeTab === 'externos' ? filtersExternos :
+                    activeTab === 'internos' ? filtersInternos :
+                    activeTab === 'friend_family' ? filtersFriendFamily :
+                    filters;
+                  
+                  console.log('🔍 Filtros seleccionados para ParticipantesUnifiedContainer:', {
+                    activeTab,
+                    selectedFilters,
+                    estado_participante: selectedFilters.estado_participante
+                  });
+                  
+                  return selectedFilters;
+                })()
+              }
+              setFilters={handleFiltersChange}
+              showFilterDrawer={showFilterDrawer}
+              setShowFilterDrawer={setShowFilterDrawer}
+              getActiveFiltersCount={getActiveFiltersCount}
+              columns={
+                activeTab === 'externos' ? columnsExternos :
                 activeTab === 'internos' ? columnsInternos :
                 activeTab === 'friend_family' ? columnsFriendFamily :
-                columnsExternos;
-              console.log('🔍 Columnas seleccionadas:', {
-                activeTab,
-                columnsLength: selectedColumns.length,
-                firstColumn: selectedColumns[0]
-              });
-              return {};
-            })()}
-            onRowClick={handleVerParticipante}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            tabs={[
-              {
-                value: 'externos',
-                label: 'Externos',
-                count: participantesExternos.length
-              },
-              {
-                value: 'internos',
-                label: 'Internos',
-                count: participantesInternos.length
-              },
-              {
-                value: 'friend_family',
-                label: 'Friend & Family',
-                count: participantesFriendFamily.length
+                columnsExternos // fallback
               }
-            ]}
+              // Log para verificar las columnas
+              {...(() => {
+                const selectedColumns = activeTab === 'externos' ? columnsExternos :
+                  activeTab === 'internos' ? columnsInternos :
+                  activeTab === 'friend_family' ? columnsFriendFamily :
+                  columnsExternos;
+                console.log('🔍 Columnas seleccionadas:', {
+                  activeTab,
+                  columnsLength: selectedColumns.length,
+                  firstColumn: selectedColumns[0]
+                });
+                return {};
+              })()}
+              onRowClick={handleVerParticipante}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              tabs={[
+                {
+                  value: 'externos',
+                  label: 'Externos',
+                  count: participantesExternos.length
+                },
+                {
+                  value: 'internos',
+                  label: 'Internos',
+                  count: participantesInternos.length
+                },
+                {
+                  value: 'friend_family',
+                  label: 'Friend & Family',
+                  count: participantesFriendFamily.length
+                },
+                {
+                  value: 'seguimientos',
+                  label: 'Seguimientos',
+                  count: 0 // Se calculará dinámicamente
+                }
+              ]}
             filterOptions={{
               estados: estadosParticipante,
               roles: rolesEmpresa,
@@ -1343,7 +1353,8 @@ export default function ParticipantesPage() {
                 className: 'text-red-600 hover:text-red-700'
               }
             ]}
-          />
+            />
+          )}
 
 
 
