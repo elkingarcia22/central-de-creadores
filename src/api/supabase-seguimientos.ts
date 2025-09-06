@@ -126,10 +126,10 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
 export async function actualizarSeguimiento(seguimientoId: string, updates: ActualizarSeguimientoRequest) {
   try {
     console.log('📝 Actualizando seguimiento:', seguimientoId, updates);
-    console.log('📝 URL de la API:', `/api/seguimientos-new/${seguimientoId}`);
+    console.log('📝 URL de la API:', `/api/seguimientos/${seguimientoId}`);
     
-    // Usar la API nueva para testing
-    const response = await fetch(`/api/seguimientos-new/${seguimientoId}`, {
+    // Usar la API correcta con ruta dinámica
+    const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -169,7 +169,7 @@ export async function eliminarSeguimiento(seguimientoId: string) {
   try {
     console.log('🗑️ Eliminando seguimiento:', seguimientoId);
     
-    // Usar la nueva API de seguimientos
+    // Usar la API correcta con ruta dinámica
     const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
       method: 'DELETE',
     });
