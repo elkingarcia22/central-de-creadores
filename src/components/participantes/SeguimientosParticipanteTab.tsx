@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useFastUser } from '../../contexts/FastUserContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -6,6 +6,8 @@ import { Typography, Card, Button, Chip, Subtitle, EmptyState } from '../ui';
 import DataTable from '../ui/DataTable';
 import ActionsMenu from '../ui/ActionsMenu';
 import ConfirmModal from '../ui/ConfirmModal';
+import Input from '../ui/Input';
+import SeguimientosFilterDrawer, { FilterValuesSeguimientos } from '../ui/SeguimientosFilterDrawer';
 import { 
   ClipboardListIcon, 
   PlusIcon, 
@@ -13,7 +15,9 @@ import {
   TrashIcon, 
   CopyIcon,
   LinkIcon,
-  EyeIcon
+  EyeIcon,
+  SearchIcon,
+  FilterIcon
 } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -67,6 +71,18 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   const [showVerModal, setShowVerModal] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [seguimientoParaEliminar, setSeguimientoParaEliminar] = useState<SeguimientoParticipante | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  const [filtersSeguimientos, setFiltersSeguimientos] = useState<FilterValuesSeguimientos>({
+    busqueda: '',
+    estado_seguimiento: 'todos',
+    responsable_seguimiento: 'todos',
+    participante_seguimiento: 'todos',
+    investigacion_seguimiento: 'todos',
+    fecha_seguimiento_desde: '',
+    fecha_seguimiento_hasta: ''
+  });
 
   // Cargar usuarios
   const cargarUsuarios = async () => {
@@ -251,6 +267,96 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
     router.push(`/investigaciones/ver/${seguimiento.investigacion_id}`);
   };
 
+  // Manejar búsqueda
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleExpandSearch = () => {
+    setIsSearchExpanded(true);
+  };
+
+  const handleCollapseSearch = () => {
+    setIsSearchExpanded(false);
+    setSearchTerm('');
+  };
+
+  // Manejar filtros
+  const handleOpenFilters = () => {
+    setShowFilterDrawer(true);
+  };
+
+  const handleCloseFilters = () => {
+    setShowFilterDrawer(false);
+  };
+
+  // Contar filtros activos
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filtersSeguimientos.estado_seguimiento && filtersSeguimientos.estado_seguimiento !== 'todos') count++;
+    if (filtersSeguimientos.responsable_seguimiento && filtersSeguimientos.responsable_seguimiento !== 'todos') count++;
+    if (filtersSeguimientos.participante_seguimiento && filtersSeguimientos.participante_seguimiento !== 'todos') count++;
+    if (filtersSeguimientos.investigacion_seguimiento && filtersSeguimientos.investigacion_seguimiento !== 'todos') count++;
+    if (filtersSeguimientos.fecha_seguimiento_desde) count++;
+    if (filtersSeguimientos.fecha_seguimiento_hasta) count++;
+    return count;
+  };
+
+  // Filtrar seguimientos basado en searchTerm y filtros
+  const seguimientosFiltrados = useMemo(() => {
+    if (!seguimientos) return [];
+    
+    let filtered = seguimientos;
+
+    // Aplicar filtros de búsqueda
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(seguimiento => 
+        seguimiento.participante_externo?.nombre?.toLowerCase().includes(term) ||
+        seguimiento.investigacion_nombre?.toLowerCase().includes(term) ||
+        seguimiento.responsable_nombre?.toLowerCase().includes(term) ||
+        seguimiento.estado?.toLowerCase().includes(term)
+      );
+    }
+
+    // Aplicar filtros específicos de seguimientos
+    if (filtersSeguimientos.estado_seguimiento && filtersSeguimientos.estado_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.estado === filtersSeguimientos.estado_seguimiento);
+    }
+
+    if (filtersSeguimientos.responsable_seguimiento && filtersSeguimientos.responsable_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.responsable_id === filtersSeguimientos.responsable_seguimiento);
+    }
+
+    if (filtersSeguimientos.participante_seguimiento && filtersSeguimientos.participante_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.participante_externo_id === filtersSeguimientos.participante_seguimiento);
+    }
+
+    if (filtersSeguimientos.investigacion_seguimiento && filtersSeguimientos.investigacion_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.investigacion_nombre === filtersSeguimientos.investigacion_seguimiento);
+    }
+
+    // Filtro por rango de fechas
+    if (filtersSeguimientos.fecha_seguimiento_desde) {
+      const fechaDesde = new Date(filtersSeguimientos.fecha_seguimiento_desde);
+      filtered = filtered.filter(s => {
+        const fechaSeguimiento = new Date(s.fecha_seguimiento);
+        return fechaSeguimiento >= fechaDesde;
+      });
+    }
+
+    if (filtersSeguimientos.fecha_seguimiento_hasta) {
+      const fechaHasta = new Date(filtersSeguimientos.fecha_seguimiento_hasta);
+      fechaHasta.setHours(23, 59, 59, 999); // Incluir todo el día
+      filtered = filtered.filter(s => {
+        const fechaSeguimiento = new Date(s.fecha_seguimiento);
+        return fechaSeguimiento <= fechaHasta;
+      });
+    }
+
+    return filtered;
+  }, [seguimientos, searchTerm, filtersSeguimientos]);
+
   // Obtener color del estado
   const getEstadoColor = (estado: string): any => {
     return getChipVariant(estado);
@@ -400,34 +506,87 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* Header con buscador y filtros */}
       <div className="flex items-center justify-between mb-6">
-        <Subtitle>
-          Seguimientos ({seguimientos.length})
-        </Subtitle>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => setShowCrearModal(true)}
-          className="flex items-center gap-2"
-        >
-          <PlusIcon className="w-4 h-4" />
-          Nuevo Seguimiento
-        </Button>
+        <div className="flex items-center gap-3">
+          <Subtitle>
+            Seguimientos ({seguimientosFiltrados.length} de {seguimientos.length})
+          </Subtitle>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          {/* Buscador */}
+          <div className="relative">
+            {isSearchExpanded ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Buscar seguimientos..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="!w-[300px] pl-10 pr-10 py-2"
+                  icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
+                  iconPosition="left"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCollapseSearch}
+                  className="text-gray-500 hover:text-gray-700 border-0"
+                >
+                  ✕
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={handleExpandSearch}
+                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                iconOnly
+                icon={<SearchIcon className="w-5 h-5" />}
+              />
+            )}
+          </div>
+          
+          {/* Filtros */}
+          <Button
+            variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
+            onClick={handleOpenFilters}
+            className="relative p-2 border-0"
+            iconOnly
+            icon={<FilterIcon />}
+          >
+            {getActiveFiltersCount() > 0 && (
+              <span className="absolute -top-1 -right-1 bg-white text-primary text-xs font-medium px-2 py-1 rounded-full">
+                {getActiveFiltersCount()}
+              </span>
+            )}
+          </Button>
+
+          {/* Botón Nuevo Seguimiento */}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setShowCrearModal(true)}
+            className="flex items-center gap-2"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Nuevo Seguimiento
+          </Button>
+        </div>
       </div>
 
       {/* Tabla de seguimientos */}
-      {seguimientos.length === 0 ? (
+      {seguimientosFiltrados.length === 0 ? (
         <EmptyState
           icon={<ClipboardListIcon className="w-8 h-8" />}
-          title="Sin seguimientos registrados"
-          description="Este participante no tiene seguimientos registrados."
+          title={seguimientos.length === 0 ? "Sin seguimientos registrados" : "No se encontraron seguimientos"}
+          description={seguimientos.length === 0 ? "Este participante no tiene seguimientos registrados." : "No se encontraron seguimientos que coincidan con los criterios de búsqueda."}
           actionText="Crear Primer Seguimiento"
           onAction={() => setShowCrearModal(true)}
         />
       ) : (
         <DataTable
-          data={seguimientos}
+          data={seguimientosFiltrados}
           columns={columns}
           loading={loading}
           searchable={false}
@@ -493,6 +652,23 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
         confirmText="Eliminar"
         cancelText="Cancelar"
         type="error"
+      />
+
+      {/* Drawer de filtros de seguimientos */}
+      <SeguimientosFilterDrawer
+        isOpen={showFilterDrawer}
+        onClose={handleCloseFilters}
+        filters={filtersSeguimientos}
+        onFiltersChange={setFiltersSeguimientos}
+        usuarios={usuarios}
+        investigaciones={seguimientos.map(s => ({
+          id: s.investigacion_id,
+          nombre: s.investigacion_nombre
+        }))}
+        participantes={[{
+          id: participanteId,
+          nombre: participanteNombre
+        }]}
       />
     </div>
   );
