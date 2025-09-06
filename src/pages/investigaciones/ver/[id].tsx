@@ -265,26 +265,36 @@ const VerInvestigacion: NextPage = () => {
   // Cargar todas las investigaciones para el modal de seguimiento
   const cargarTodasLasInvestigaciones = async () => {
     try {
-      console.log('🔍 Cargando todas las investigaciones para modal de seguimiento...');
+      console.log('🔍 [VerInvestigacion] INICIO - Cargando todas las investigaciones para modal de seguimiento...');
+      console.log('🔍 [VerInvestigacion] URL de la API:', '/api/investigaciones');
+      
       const response = await fetch('/api/investigaciones');
-      console.log('🔍 Response status:', response.status);
-      console.log('🔍 Response ok:', response.ok);
+      console.log('🔍 [VerInvestigacion] Response status:', response.status);
+      console.log('🔍 [VerInvestigacion] Response ok:', response.ok);
+      console.log('🔍 [VerInvestigacion] Response headers:', response.headers);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
       const data = await response.json();
-      console.log('🔍 Data recibida:', data);
-      console.log('🔍 Es array?', Array.isArray(data));
-      console.log('🔍 Longitud:', data?.length);
+      console.log('🔍 [VerInvestigacion] Data recibida:', data);
+      console.log('🔍 [VerInvestigacion] Es array?', Array.isArray(data));
+      console.log('🔍 [VerInvestigacion] Longitud:', data?.length);
+      console.log('🔍 [VerInvestigacion] Tipo de data:', typeof data);
       
       if (Array.isArray(data)) {
         setTodasLasInvestigaciones(data);
-        console.log('✅ Todas las investigaciones cargadas:', data.length);
-        console.log('✅ Primeras 3 investigaciones:', data.slice(0, 3));
+        console.log('✅ [VerInvestigacion] Todas las investigaciones cargadas:', data.length);
+        console.log('✅ [VerInvestigacion] Primeras 3 investigaciones:', data.slice(0, 3));
+        console.log('✅ [VerInvestigacion] Estado todasLasInvestigaciones actualizado');
       } else {
-        console.log('⚠️ Respuesta de investigaciones no es un array:', data);
+        console.log('⚠️ [VerInvestigacion] Respuesta de investigaciones no es un array:', data);
         setTodasLasInvestigaciones([]);
       }
     } catch (error) {
-      console.error('❌ Error cargando todas las investigaciones:', error);
+      console.error('❌ [VerInvestigacion] Error cargando todas las investigaciones:', error);
+      console.error('❌ [VerInvestigacion] Error details:', error.message);
       setTodasLasInvestigaciones([]);
     }
   };
