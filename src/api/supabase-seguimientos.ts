@@ -126,10 +126,10 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
 export async function actualizarSeguimiento(seguimientoId: string, updates: ActualizarSeguimientoRequest) {
   try {
     console.log('📝 Actualizando seguimiento:', seguimientoId, updates);
-    console.log('📝 URL de la API:', `/api/seguimientos/${seguimientoId}`);
+    console.log('📝 URL de la API:', `/api/seguimientos-simple/${seguimientoId}`);
     
-    // Usar la nueva API de seguimientos
-    const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
+    // Usar la API simplificada para testing
+    const response = await fetch(`/api/seguimientos-simple/${seguimientoId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
