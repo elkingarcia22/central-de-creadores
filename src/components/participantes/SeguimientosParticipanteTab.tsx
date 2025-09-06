@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useFastUser } from '../../contexts/FastUserContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Typography, Button, Chip, Subtitle, EmptyState } from '../ui';
-import Card from '../ui/Card';
 import DataTable from '../ui/DataTable';
 import ActionsMenu from '../ui/ActionsMenu';
 import ConfirmModal from '../ui/ConfirmModal';
@@ -523,7 +522,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   }
 
   return (
-    <Card variant="elevated" padding="lg" className="space-y-6">
+    <div className="rounded-lg bg-card text-card-foreground border border-slate-100 dark:border-slate-800 p-6 space-y-6">
       {/* Header del contenedor con iconos integrados */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
