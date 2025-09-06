@@ -204,6 +204,12 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
 
   // Abrir modal de edición
   const abrirEditarModal = (seguimiento: SeguimientoParticipante) => {
+    console.log('🔍 [SeguimientosParticipanteTab] Abriendo modal de edición');
+    console.log('🔍 [SeguimientosParticipanteTab] Seguimiento a editar:', seguimiento);
+    console.log('🔍 [SeguimientosParticipanteTab] responsable_id del seguimiento:', seguimiento.responsable_id);
+    console.log('🔍 [SeguimientosParticipanteTab] usuarios disponibles:', usuarios);
+    console.log('🔍 [SeguimientosParticipanteTab] userId actual:', userId);
+    
     setSeguimientoEditando(seguimiento);
     setShowEditarModal(true);
   };

@@ -41,6 +41,13 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
   responsablePorDefecto,
   loading = false
 }) => {
+  console.log('🔍 [SeguimientoSideModal] Props recibidas:', {
+    isOpen,
+    seguimiento,
+    investigacionId,
+    usuarios: usuarios?.length || 0,
+    responsablePorDefecto
+  });
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
   
