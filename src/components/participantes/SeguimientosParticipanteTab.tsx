@@ -53,6 +53,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   participanteEmail,
   participanteEmpresa
 }) => {
+  const router = useRouter();
   const { userId } = useFastUser();
   const { showError, showSuccess } = useToast();
   
