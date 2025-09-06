@@ -252,6 +252,35 @@ export async function restaurarSeguimientoDesdeInvestigacion(investigacionId: st
 export async function crearInvestigacionDesdeSeguimiento(seguimientoId: string, datosInvestigacion: any) {
   try {
     console.log('🔄 Creando investigación desde seguimiento:', seguimientoId);
+    console.log('🔍 Datos recibidos:', datosInvestigacion);
+    
+    // Validar que los IDs sean UUIDs válidos
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    
+    if (datosInvestigacion.tipo_investigacion_id && !uuidRegex.test(datosInvestigacion.tipo_investigacion_id)) {
+      console.error('❌ tipo_investigacion_id no es un UUID válido:', datosInvestigacion.tipo_investigacion_id);
+      return { data: null, error: 'ID de tipo de investigación no válido' };
+    }
+    
+    if (datosInvestigacion.producto_id && !uuidRegex.test(datosInvestigacion.producto_id)) {
+      console.error('❌ producto_id no es un UUID válido:', datosInvestigacion.producto_id);
+      return { data: null, error: 'ID de producto no válido' };
+    }
+    
+    if (datosInvestigacion.periodo_id && !uuidRegex.test(datosInvestigacion.periodo_id)) {
+      console.error('❌ periodo_id no es un UUID válido:', datosInvestigacion.periodo_id);
+      return { data: null, error: 'ID de período no válido' };
+    }
+    
+    if (datosInvestigacion.responsable_id && !uuidRegex.test(datosInvestigacion.responsable_id)) {
+      console.error('❌ responsable_id no es un UUID válido:', datosInvestigacion.responsable_id);
+      return { data: null, error: 'ID de responsable no válido' };
+    }
+    
+    if (datosInvestigacion.implementador_id && !uuidRegex.test(datosInvestigacion.implementador_id)) {
+      console.error('❌ implementador_id no es un UUID válido:', datosInvestigacion.implementador_id);
+      return { data: null, error: 'ID de implementador no válido' };
+    }
     
     // Primero obtener el seguimiento
     const { data: seguimiento, error: seguimientoError } = await obtenerSeguimientoPorId(seguimientoId);

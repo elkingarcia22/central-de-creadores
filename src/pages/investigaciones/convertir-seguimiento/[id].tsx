@@ -100,6 +100,13 @@ const ConvertirSeguimientoPage: NextPage = () => {
         setSeguimiento(seguimientoRes.data);
         
         // Cargar catálogos
+        console.log('📊 Catálogos cargados:', {
+          usuarios: usuariosRes.data?.length || 0,
+          tipos: tiposRes.data?.length || 0,
+          periodos: periodosRes.data?.length || 0,
+          productos: productosRes.data?.length || 0
+        });
+        
         setUsuarios(usuariosRes.data || []);
         setTiposInvestigacion(tiposRes.data || []);
         setPeriodos(periodosRes.data || []);
@@ -172,6 +179,15 @@ const ConvertirSeguimientoPage: NextPage = () => {
 
     setConverting(true);
     try {
+      console.log('🔍 Datos del formulario antes de enviar:', formData);
+      console.log('🔍 IDs específicos:', {
+        tipo_investigacion_id: formData.tipo_investigacion_id,
+        producto_id: formData.producto_id,
+        periodo_id: formData.periodo_id,
+        responsable_id: formData.responsable_id,
+        implementador_id: formData.implementador_id
+      });
+      
       const response = await crearInvestigacionDesdeSeguimiento(id as string, formData);
       
       if (response.error) {
