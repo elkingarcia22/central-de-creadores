@@ -1076,22 +1076,37 @@ const VerInvestigacion: NextPage = () => {
           <div className="flex flex-wrap gap-3">
             {/* Botón Crear Seguimiento - Solo mostrar si la investigación está en progreso */}
             {investigacion.estado?.toLowerCase().trim() === 'en_progreso' && (
-              <Button
-                variant="outline"
-                className="flex items-center gap-2"
-                onClick={() => {
-                  // Abrir directamente el modal de seguimiento
-                  console.log('🔍 [VerInvestigacion] Abriendo modal de crear seguimiento');
-                  console.log('🔍 [VerInvestigacion] Investigación:', investigacion);
-                  console.log('🔍 [VerInvestigacion] Usuarios disponibles:', usuarios.length);
-                  console.log('🔍 [VerInvestigacion] Todas las investigaciones cargadas:', todasLasInvestigaciones.length);
-                  console.log('🔍 [VerInvestigacion] Primeras 3 investigaciones:', todasLasInvestigaciones.slice(0, 3));
-                  setShowSeguimientoModal(true);
-                }}
-              >
-                <PlusIcon className="w-4 h-4" />
-                Crear Seguimiento
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    // Abrir directamente el modal de seguimiento
+                    console.log('🔍 [VerInvestigacion] Abriendo modal de crear seguimiento');
+                    console.log('🔍 [VerInvestigacion] Investigación:', investigacion);
+                    console.log('🔍 [VerInvestigacion] Usuarios disponibles:', usuarios.length);
+                    console.log('🔍 [VerInvestigacion] Todas las investigaciones cargadas:', todasLasInvestigaciones.length);
+                    console.log('🔍 [VerInvestigacion] Primeras 3 investigaciones:', todasLasInvestigaciones.slice(0, 3));
+                    setShowSeguimientoModal(true);
+                  }}
+                >
+                  <PlusIcon className="w-4 h-4" />
+                  Crear Seguimiento
+                </Button>
+                
+                {/* Botón de test para recargar investigaciones */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={async () => {
+                    console.log('🔍 [VerInvestigacion] Recargando investigaciones manualmente...');
+                    await cargarTodasLasInvestigaciones();
+                    console.log('🔍 [VerInvestigacion] Investigaciones recargadas:', todasLasInvestigaciones.length);
+                  }}
+                >
+                  🔄 Recargar
+                </Button>
+              </>
             )}
 
             {/* Menú de Acciones */}
