@@ -300,14 +300,9 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       label: 'Investigación',
       sortable: true,
       render: (value: any, row: Seguimiento) => (
-        <div>
-          <Typography variant="body2" weight="medium">
-            {row.investigacion_nombre}
-          </Typography>
-          <Typography variant="caption" className="text-muted-foreground">
-            ID: {row.investigacion_id.substring(0, 8)}...
-          </Typography>
-        </div>
+        <Typography variant="body2" weight="medium">
+          {row.investigacion_nombre}
+        </Typography>
       )
     },
     {
