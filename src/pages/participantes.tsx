@@ -106,6 +106,7 @@ export default function ParticipantesPage() {
   const [seguimientos, setSeguimientos] = useState<any[]>([]);
   const [seguimientosLoading, setSeguimientosLoading] = useState(false);
   const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [investigacionesModal, setInvestigacionesModal] = useState<any[]>([]);
   
   // Estados para catálogos de filtros
   const [estadosParticipante, setEstadosParticipante] = useState<Array<{ value: string; label: string }>>([]);
@@ -263,6 +264,13 @@ export default function ParticipantesPage() {
         value: nombre,
         label: nombre
       })));
+
+      // Cargar todas las investigaciones para el modal
+      const responseInvestigaciones = await fetch('/api/investigaciones');
+      if (responseInvestigaciones.ok) {
+        const dataInvestigaciones = await responseInvestigaciones.json();
+        setInvestigacionesModal(dataInvestigaciones || []);
+      }
 
       // Cargar participantes únicos de los seguimientos
       const participantesUnicos = [...new Set(seguimientos.map(s => s.participante_externo).filter(Boolean))];
@@ -1588,33 +1596,46 @@ export default function ParticipantesPage() {
               }}
               onSave={async (seguimientoData) => {
                 try {
+                  console.log('🔍 [Crear Seguimiento] Datos recibidos:', seguimientoData);
+                  console.log('🔍 [Crear Seguimiento] Participante:', participanteParaSeguimiento);
+                  
+                  const requestData = {
+                    ...seguimientoData,
+                    participante_externo_id: participanteParaSeguimiento.id
+                  };
+                  
+                  console.log('🔍 [Crear Seguimiento] Datos a enviar:', requestData);
+                  
                   const response = await fetch('/api/seguimientos', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                      ...seguimientoData,
-                      participante_externo_id: participanteParaSeguimiento.id
-                    }),
+                    body: JSON.stringify(requestData),
                   });
 
+                  console.log('🔍 [Crear Seguimiento] Response status:', response.status);
+                  
                   if (response.ok) {
+                    const result = await response.json();
+                    console.log('🔍 [Crear Seguimiento] Seguimiento creado:', result);
                     showSuccess('Seguimiento creado exitosamente');
                     setShowCrearSeguimientoModal(false);
                     setParticipanteParaSeguimiento(null);
                     cargarSeguimientos();
                   } else {
                     const errorData = await response.json();
+                    console.error('🔍 [Crear Seguimiento] Error response:', errorData);
                     showError(errorData.message || 'Error al crear el seguimiento');
                   }
                 } catch (error) {
-                  console.error('Error al crear seguimiento:', error);
-                  showError('Error al crear el seguimiento');
+                  console.error('🔍 [Crear Seguimiento] Error catch:', error);
+                  showError('Error al crear el seguimiento: ' + (error instanceof Error ? error.message : 'Error desconocido'));
                 }
               }}
               investigacionId=""
               usuarios={usuarios}
+              investigaciones={investigacionesModal}
               responsablePorDefecto={userId}
               participanteExternoPrecargado={{
                 id: participanteParaSeguimiento.id,

@@ -35,6 +35,10 @@ interface SeguimientoSideModalProps {
     email: string;
     empresa_nombre?: string;
   };
+  investigaciones?: Array<{
+    id: string;
+    nombre: string;
+  }>;
 }
 
 const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
@@ -46,7 +50,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
   usuarios,
   responsablePorDefecto,
   loading = false,
-  participanteExternoPrecargado
+  participanteExternoPrecargado,
+  investigaciones = []
 }) => {
   console.log('🔍 [SeguimientoSideModal] Props recibidas:', {
     isOpen,
@@ -276,6 +281,22 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
               <DatePicker
                 value={formData.fecha_seguimiento}
                 onChange={(e) => handleInputChange('fecha_seguimiento', e.target.value)}
+                disabled={saving}
+                required
+                fullWidth
+              />
+            </div>
+
+            <div>
+              <FilterLabel>Investigación *</FilterLabel>
+              <Select
+                value={formData.investigacion_id}
+                onChange={(value) => handleInputChange('investigacion_id', value)}
+                options={investigaciones.map(inv => ({
+                  value: inv.id,
+                  label: inv.nombre
+                }))}
+                placeholder="Seleccionar investigación"
                 disabled={saving}
                 required
                 fullWidth
