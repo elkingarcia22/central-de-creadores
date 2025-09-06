@@ -95,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <nav className={`flex-1 px-2 py-4 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+      <nav className={`flex-1 px-2 py-4 space-y-2 transition-all duration-300 ease-in-out ${isCollapsed ? 'px-1' : ''}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-300 ease-in-out ${isCollapsed ? 'px-1' : ''}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
@@ -158,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
               href="#"
-              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-gray-500" /> : <MoonIcon className="w-6 h-6 text-gray-500" />}
+              icon={theme === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
               isCollapsed={isCollapsed}
               onClick={toggleTheme}
               asButton={true}
@@ -186,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label="Cerrar sesión"
               href="#"
-              icon={<LogoutIcon className="w-6 h-6 text-red-500" />}
+              icon={<LogoutIcon className="w-6 h-6" />}
               isCollapsed={isCollapsed}
               onClick={onLogout}
               asButton={true}
