@@ -44,10 +44,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 Obteniendo métricas de reclutamientos desde vista...');
     console.log('👤 Usuario ID:', usuarioId, 'Es Admin:', esAdmin, 'Rol:', rol);
 
-    // Construir consulta base usando la vista corregida
+    // Construir consulta directa a las tablas (evitando la vista dañada)
     let queryInvestigaciones = supabase
-      .from('vista_reclutamientos_completa')
-      .select('*');
+      .from('investigaciones')
+      .select(`
+        id,
+        nombre,
+        estado,
+        fecha_inicio,
+        fecha_fin,
+        responsable_id,
+        implementador_id,
+        descripcion,
+        creado_el,
+        actualizado_el,
+        riesgo_automatico
+      `)
+      .eq('estado', 'por_agendar');
 
     // Aplicar filtros de asignación si no es administrador
     if (esAdmin !== 'true' && usuarioId) {
@@ -71,6 +84,101 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('✅ Investigaciones por agendar obtenidas:', investigacionesPorAgendar?.length || 0);
 
+    // Obtener datos adicionales necesarios para cada investigación
+    const investigacionesCompletas = await Promise.all((investigacionesPorAgendar || []).map(async (inv) => {
+      // Obtener datos del responsable
+      let responsable_nombre = 'Sin asignar';
+      let responsable_email = 'Sin asignar';
+      if (inv.responsable_id) {
+        const { data: responsableData } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', inv.responsable_id)
+          .single();
+        if (responsableData) {
+          responsable_nombre = responsableData.full_name || responsableData.email || 'Sin asignar';
+          responsable_email = responsableData.email || 'Sin asignar';
+        }
+      }
+
+      // Obtener datos del implementador
+      let implementador_nombre = 'Sin asignar';
+      let implementador_email = 'Sin asignar';
+      if (inv.implementador_id) {
+        const { data: implementadorData } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', inv.implementador_id)
+          .single();
+        if (implementadorData) {
+          implementador_nombre = implementadorData.full_name || implementadorData.email || 'Sin asignar';
+          implementador_email = implementadorData.email || 'Sin asignar';
+        }
+      }
+
+      // Obtener datos del libreto
+      const { data: libretoData } = await supabase
+        .from('libretos_investigacion')
+        .select('problema_situacion, numero_participantes')
+        .eq('investigacion_id', inv.id)
+        .single();
+
+      // Obtener participantes reclutados
+      const { data: participantesData } = await supabase
+        .from('reclutamientos')
+        .select('id')
+        .eq('investigacion_id', inv.id);
+
+      const participantes_reclutados = participantesData?.length || 0;
+      const participantes_requeridos = libretoData?.numero_participantes || 0;
+
+      // Calcular estado de reclutamiento basado en progreso
+      let estado_reclutamiento_nombre = 'Pendiente';
+      let estado_reclutamiento_color = '#6B7280';
+      let progreso_reclutamiento = '0/0';
+      let progreso_porcentaje = 0;
+
+      if (participantes_requeridos > 0) {
+        progreso_porcentaje = Math.round((participantes_reclutados / participantes_requeridos) * 100);
+        progreso_reclutamiento = `${participantes_reclutados}/${participantes_requeridos}`;
+        
+        if (participantes_reclutados === 0) {
+          estado_reclutamiento_nombre = 'Pendiente';
+          estado_reclutamiento_color = '#6B7280';
+        } else if (participantes_reclutados < participantes_requeridos) {
+          estado_reclutamiento_nombre = 'En progreso';
+          estado_reclutamiento_color = '#3B82F6';
+        } else {
+          estado_reclutamiento_nombre = 'Agendada';
+          estado_reclutamiento_color = '#10B981';
+        }
+      }
+
+      return {
+        reclutamiento_id: inv.id, // Usar ID de investigación como reclutamiento_id temporal
+        investigacion_id: inv.id,
+        titulo_investigacion: inv.nombre,
+        estado_investigacion: inv.estado,
+        fecha_inicio: inv.fecha_inicio,
+        fecha_fin: inv.fecha_fin,
+        responsable_nombre,
+        responsable_email,
+        responsable_id: inv.responsable_id,
+        implementador_nombre,
+        implementador_email,
+        implementador_id: inv.implementador_id,
+        titulo_libreto: libretoData?.problema_situacion || 'Sin libreto',
+        participantes_requeridos,
+        participantes_reclutados,
+        progreso_reclutamiento,
+        progreso_porcentaje,
+        estado_reclutamiento_nombre,
+        estado_reclutamiento_color,
+        tiene_libreto: !!libretoData,
+        tiene_participantes: participantes_reclutados > 0
+      };
+    }));
+
     // Obtener reclutamientos asignados al usuario para agendamiento (simplificado)
     let reclutamientosAsignados: any[] = [];
     if (usuarioId) {
@@ -90,19 +198,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         reclutamientosAsignados = asignaciones || [];
       }
     }
-    if (investigacionesPorAgendar && investigacionesPorAgendar.length > 0) {
+    if (investigacionesCompletas && investigacionesCompletas.length > 0) {
       console.log('🔍 Detalles de investigaciones por agendar:');
-      investigacionesPorAgendar.forEach((inv, index) => {
+      investigacionesCompletas.forEach((inv, index) => {
         console.log(`  ${index + 1}. ${inv.titulo_investigacion} (ID: ${inv.investigacion_id})`);
         console.log(`     - Responsable: ${inv.responsable_nombre}`);
         console.log(`     - Implementador: ${inv.implementador_nombre}`);
         console.log(`     - Tiene libreto: ${inv.tiene_libreto}`);
         console.log(`     - Tiene participantes: ${inv.tiene_participantes}`);
+        console.log(`     - Progreso: ${inv.progreso_reclutamiento}`);
+        console.log(`     - Estado: ${inv.estado_reclutamiento_nombre}`);
       });
     }
 
-    // La vista ya tiene todos los datos necesarios, solo necesitamos formatear la respuesta
-    const investigacionesFormateadas = (investigacionesPorAgendar || []).map(inv => {
+    // Formatear la respuesta usando los datos completos
+    const investigacionesFormateadas = (investigacionesCompletas || []).map(inv => {
       // Calcular riesgo de reclutamiento basado en fecha de inicio
       let riesgo_reclutamiento = 'bajo';
       let riesgo_reclutamiento_color = '#10B981';
@@ -142,18 +252,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         investigacion_fecha_fin: inv.fecha_fin,
         investigacion_riesgo: inv.riesgo_automatico,
         libreto_titulo: inv.titulo_libreto,
-        libreto_descripcion: inv.descripcion_libreto,
+        libreto_descripcion: inv.titulo_libreto, // Usar título como descripción
         libreto_numero_participantes: inv.participantes_requeridos,
         responsable_nombre: inv.responsable_nombre,
         responsable_correo: inv.responsable_email,
-        responsable_id: inv.responsable_id, // Agregar ID del responsable
+        responsable_id: inv.responsable_id,
         implementador_nombre: inv.implementador_nombre,
         implementador_correo: inv.implementador_email,
-        implementador_id: inv.implementador_id, // Agregar ID del implementador
-        estado_reclutamiento_id: inv.estado_reclutamiento_id,
+        implementador_id: inv.implementador_id,
+        estado_reclutamiento_id: null, // No disponible en consulta directa
         estado_reclutamiento_nombre: inv.estado_reclutamiento_nombre,
         estado_reclutamiento_color: inv.estado_reclutamiento_color,
-        fecha_sesion: inv.fecha_sesion,
+        fecha_sesion: null, // No disponible en consulta directa
         participantes_reclutados: inv.participantes_reclutados,
         progreso_reclutamiento: inv.progreso_reclutamiento,
         porcentaje_completitud: inv.progreso_porcentaje,
