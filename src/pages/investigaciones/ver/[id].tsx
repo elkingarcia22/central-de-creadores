@@ -1052,6 +1052,9 @@ const VerInvestigacion: NextPage = () => {
                 className="flex items-center gap-2"
                 onClick={() => {
                   // Abrir directamente el modal de seguimiento
+                  console.log('🔍 [VerInvestigacion] Abriendo modal de crear seguimiento');
+                  console.log('🔍 [VerInvestigacion] Investigación:', investigacion);
+                  console.log('🔍 [VerInvestigacion] Usuarios disponibles:', usuarios.length);
                   setShowSeguimientoModal(true);
                 }}
               >
