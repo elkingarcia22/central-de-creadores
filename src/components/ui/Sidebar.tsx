@@ -158,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
               href="#"
-              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-muted-foreground" /> : <MoonIcon className="w-6 h-6 text-muted-foreground" />}
+              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-gray-500" /> : <MoonIcon className="w-6 h-6 text-gray-500" />}
               isCollapsed={isCollapsed}
               onClick={toggleTheme}
               asButton={true}
@@ -186,11 +186,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label="Cerrar sesión"
               href="#"
-              icon={<LogoutIcon className="w-6 h-6 text-red-600" />}
+              icon={<LogoutIcon className="w-6 h-6 text-red-500" />}
               isCollapsed={isCollapsed}
               onClick={onLogout}
               asButton={true}
-              className="text-red-600 hover:text-red-700"
+              className="text-red-500 hover:text-red-600"
             />
           );
 
