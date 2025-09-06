@@ -60,13 +60,25 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   // Cargar usuarios
   const cargarUsuarios = async () => {
     try {
+      console.log('🔍 Cargando usuarios...');
       const response = await fetch('/api/usuarios');
       if (response.ok) {
         const data = await response.json();
-        setUsuarios(data || []);
+        console.log('🔍 Datos de usuarios recibidos:', data);
+        console.log('🔍 Tipo de datos:', typeof data);
+        console.log('🔍 Es array:', Array.isArray(data));
+        
+        // Asegurar que sea un array
+        const usuariosArray = Array.isArray(data) ? data : (data?.data || []);
+        console.log('🔍 Usuarios finales:', usuariosArray);
+        setUsuarios(usuariosArray);
+      } else {
+        console.error('Error en respuesta de usuarios:', response.status);
+        setUsuarios([]);
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+      setUsuarios([]);
     }
   };
 

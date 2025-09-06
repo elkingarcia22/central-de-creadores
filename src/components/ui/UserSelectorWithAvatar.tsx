@@ -39,7 +39,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
 
   // Buscar usuario seleccionado de forma segura
   const selectedUser = React.useMemo(() => {
-    if (!value || !users || users.length === 0) return null;
+    if (!value || !users || !Array.isArray(users) || users.length === 0) return null;
     return users.find(user => user && user.id === value) || null;
   }, [value, users]);
 
