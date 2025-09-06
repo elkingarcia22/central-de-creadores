@@ -37,7 +37,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     (href !== '/' && router.asPath.startsWith(href))
   );
   
-  const baseClasses = `flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-150 overflow-hidden ${
+  const baseClasses = `flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-150 h-10 min-h-10 ${
     isCollapsed ? 'justify-center px-2' : ''
   }`;
   
@@ -85,7 +85,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           aria-expanded={open}
         >
           <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
-          <span className={`flex-1 text-left transition-all duration-150 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>{label}</span>
+          <span className={`flex-1 text-left transition-all duration-150 ${isCollapsed ? 'opacity-0 max-w-0 overflow-hidden' : 'opacity-100 max-w-full'}`}>{label}</span>
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
           )}
@@ -116,7 +116,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         onClick={onClick}
       >
         <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
-        <span className={`transition-all duration-150 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>{label}</span>
+        <span className={`transition-all duration-150 ${isCollapsed ? 'opacity-0 max-w-0 overflow-hidden' : 'opacity-100 max-w-full'}`}>{label}</span>
       </button>
     );
   }
@@ -147,7 +147,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       }}
     >
       <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
-      <span className={`transition-all duration-150 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>{label}</span>
+      <span className={`transition-all duration-150 ${isCollapsed ? 'opacity-0 max-w-0 overflow-hidden' : 'opacity-100 max-w-full'}`}>{label}</span>
     </Link>
   );
 };
