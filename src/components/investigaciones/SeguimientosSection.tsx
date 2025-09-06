@@ -270,16 +270,16 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
                             onClick={() => {
                               handleConvertirSeguimiento(seguimiento);
                             }}
-                            className="flex items-center gap-1 text-primary"
+                            className="flex items-center gap-1"
                           >
                             <CopyIcon className="w-3 h-3" />
                             Convertir
                           </Button>
                           <Button
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setSeguimientoEliminar(seguimiento)}
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 text-destructive"
                           >
                             <TrashIcon className="w-3 h-3" />
                             Eliminar

@@ -79,9 +79,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           if (seguimiento.participante_externo_id) {
             try {
               console.log('🔍 Buscando participante:', seguimiento.participante_externo_id);
+              // Consultar directamente la tabla participantes con las columnas correctas
               const { data: participante, error: participanteError } = await supabaseServer
                 .from('participantes')
-                .select('id, nombre, empresa_nombre, email')
+                .select('id, nombre, email')
                 .eq('id', seguimiento.participante_externo_id)
                 .single();
 
@@ -91,7 +92,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 console.log('✅ Participante encontrado:', participante);
                 return {
                   ...seguimiento,
-                  participante_externo: participante
+                  participante_externo: {
+                    id: participante.id,
+                    nombre: participante.nombre,
+                    empresa_nombre: null, // No disponible en la consulta directa
+                    email: participante.email
+                  }
                 };
               } else {
                 console.log('⚠️ Participante no encontrado');
