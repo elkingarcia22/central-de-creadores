@@ -5,7 +5,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { Typography, Card, Button, Chip, Subtitle, EmptyState } from '../ui';
 import DataTable from '../ui/DataTable';
 import ActionsMenu from '../ui/ActionsMenu';
-import ConfirmarEliminacionModal from '../ui/ConfirmarEliminacionModal';
+import ConfirmModal from '../ui/ConfirmModal';
 import { 
   ClipboardListIcon, 
   PlusIcon, 
@@ -487,20 +487,19 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       )}
 
       {/* Modal de confirmación para eliminar seguimiento */}
-      {showModalEliminar && seguimientoParaEliminar && (
-        <ConfirmarEliminacionModal
-          isOpen={showModalEliminar}
-          onClose={() => {
-            setShowModalEliminar(false);
-            setSeguimientoParaEliminar(null);
-          }}
-          onConfirm={confirmarEliminacion}
-          participante={{
-            nombre: seguimientoParaEliminar.investigacion_nombre || 'Seguimiento',
-            tipo: 'seguimiento'
-          }}
-        />
-      )}
+      <ConfirmModal
+        isOpen={!!seguimientoParaEliminar}
+        onClose={() => {
+          setShowModalEliminar(false);
+          setSeguimientoParaEliminar(null);
+        }}
+        onConfirm={confirmarEliminacion}
+        title="Eliminar Seguimiento"
+        message={`¿Estás seguro de que deseas eliminar este seguimiento? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        type="error"
+      />
     </div>
   );
 };

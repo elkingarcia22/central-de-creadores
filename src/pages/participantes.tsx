@@ -22,7 +22,7 @@ import CrearParticipanteExternoModal from '../components/ui/CrearParticipanteExt
 import CrearParticipanteInternoModal from '../components/ui/CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from '../components/ui/CrearParticipanteFriendFamilyModal';
 import EditarParticipanteModal from '../components/ui/EditarParticipanteModal';
-import ConfirmarEliminacionModal from '../components/ui/ConfirmarEliminacionModal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import ErrorEliminacionModal from '../components/ui/ErrorEliminacionModal';
 import { DolorSideModal } from '../components/ui';
 import { SeleccionarCategoriaPerfilamientoModal } from '../components/participantes/SeleccionarCategoriaPerfilamientoModal';
@@ -1502,14 +1502,18 @@ export default function ParticipantesPage() {
           />
 
           {/* Modal de confirmación de eliminación */}
-          <ConfirmarEliminacionModal
+          <ConfirmModal
             isOpen={showModalEliminar}
             onClose={() => {
               setShowModalEliminar(false);
               setParticipanteParaEliminar(null);
             }}
             onConfirm={confirmarEliminacion}
-            participante={participanteParaEliminar}
+            title="Eliminar Participante"
+            message={`¿Estás seguro de que deseas eliminar el participante "${participanteParaEliminar?.nombre}"? Esta acción no se puede deshacer.`}
+            confirmText="Eliminar"
+            cancelText="Cancelar"
+            type="error"
             loading={eliminandoParticipante}
           />
 
