@@ -5,10 +5,12 @@ import Input from '../ui/Input';
 import Button from '../ui/Button';
 import DataTable from '../ui/DataTable';
 import FilterDrawer from '../ui/FilterDrawer';
+import SeguimientosFilterDrawer, { FilterValuesSeguimientos } from '../ui/SeguimientosFilterDrawer';
 import Tabs from '../ui/Tabs';
 import { Subtitle } from '../ui/Subtitle';
 import { SearchIcon, FilterIcon } from '../icons';
 import { SeguimientosTab } from './SeguimientosTab';
+
 
 interface ParticipantesUnifiedContainerProps {
   // Datos
@@ -43,6 +45,7 @@ interface ParticipantesUnifiedContainerProps {
     departamentos: Array<{value: string, label: string}>;
     responsables?: Array<{value: string, label: string}>;
     investigaciones?: Array<{value: string, label: string}>;
+    participantes?: Array<{value: string, label: string}>;
   };
 
   // Acciones de la tabla
@@ -83,6 +86,15 @@ export default function ParticipantesUnifiedContainer({
 }: ParticipantesUnifiedContainerProps) {
   const router = useRouter();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [filtersSeguimientos, setFiltersSeguimientos] = useState<FilterValuesSeguimientos>({
+    busqueda: '',
+    estado_seguimiento: 'todos',
+    responsable_seguimiento: 'todos',
+    participante_seguimiento: 'todos',
+    investigacion_seguimiento: 'todos',
+    fecha_seguimiento_desde: '',
+    fecha_seguimiento_hasta: ''
+  });
 
   // Efecto para cerrar la búsqueda con Escape
   useEffect(() => {
@@ -221,43 +233,41 @@ export default function ParticipantesUnifiedContainer({
     }
 
     // Aplicar filtros específicos de seguimientos
-    if (filters.estado_seguimiento && filters.estado_seguimiento !== 'todos') {
-      filtered = filtered.filter(s => s.estado === filters.estado_seguimiento);
+    if (filtersSeguimientos.estado_seguimiento && filtersSeguimientos.estado_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.estado === filtersSeguimientos.estado_seguimiento);
     }
 
-    if (filters.responsable_seguimiento && filters.responsable_seguimiento !== 'todos') {
-      filtered = filtered.filter(s => s.responsable_id === filters.responsable_seguimiento);
+    if (filtersSeguimientos.responsable_seguimiento && filtersSeguimientos.responsable_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.responsable_id === filtersSeguimientos.responsable_seguimiento);
     }
 
-    if (filters.investigacion_seguimiento && filters.investigacion_seguimiento !== 'todos') {
-      filtered = filtered.filter(s => s.investigacion_nombre === filters.investigacion_seguimiento);
+    if (filtersSeguimientos.participante_seguimiento && filtersSeguimientos.participante_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.participante_externo_id === filtersSeguimientos.participante_seguimiento);
     }
 
-    if (filters.fecha_seguimiento && filters.fecha_seguimiento !== 'todos') {
-      const hoy = new Date();
-      const fechaFiltro = new Date(filters.fecha_seguimiento);
-      
+    if (filtersSeguimientos.investigacion_seguimiento && filtersSeguimientos.investigacion_seguimiento !== 'todos') {
+      filtered = filtered.filter(s => s.investigacion_nombre === filtersSeguimientos.investigacion_seguimiento);
+    }
+
+    // Filtro por rango de fechas
+    if (filtersSeguimientos.fecha_seguimiento_desde) {
+      const fechaDesde = new Date(filtersSeguimientos.fecha_seguimiento_desde);
       filtered = filtered.filter(s => {
         const fechaSeguimiento = new Date(s.fecha_seguimiento);
-        
-        switch (filters.fecha_seguimiento) {
-          case 'hoy':
-            return fechaSeguimiento.toDateString() === hoy.toDateString();
-          case 'esta_semana':
-            const inicioSemana = new Date(hoy);
-            inicioSemana.setDate(hoy.getDate() - hoy.getDay());
-            return fechaSeguimiento >= inicioSemana;
-          case 'este_mes':
-            return fechaSeguimiento.getMonth() === hoy.getMonth() && 
-                   fechaSeguimiento.getFullYear() === hoy.getFullYear();
-          default:
-            return true;
-        }
+        return fechaSeguimiento >= fechaDesde;
+      });
+    }
+
+    if (filtersSeguimientos.fecha_seguimiento_hasta) {
+      const fechaHasta = new Date(filtersSeguimientos.fecha_seguimiento_hasta);
+      filtered = filtered.filter(s => {
+        const fechaSeguimiento = new Date(s.fecha_seguimiento);
+        return fechaSeguimiento <= fechaHasta;
       });
     }
 
     return filtered;
-  }, [seguimientos, searchTerm, filters]);
+  }, [seguimientos, searchTerm, filtersSeguimientos]);
 
   const handleOpenFilters = () => {
     setShowFilterDrawer(true);
@@ -371,45 +381,51 @@ export default function ParticipantesUnifiedContainer({
       )}
 
       {/* Drawer de filtros avanzados */}
-      <FilterDrawer
-        isOpen={showFilterDrawer}
-        onClose={handleCloseFilters}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        type="participante"
-        participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
-        options={activeTab === 'seguimientos' ? {
-          // Opciones de filtros para seguimientos usando campos existentes
-          estados: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'pendiente', label: 'Pendiente' },
-            { value: 'en_progreso', label: 'En Progreso' },
-            { value: 'completado', label: 'Completado' },
-            { value: 'convertido', label: 'Convertido' }
-          ],
-          responsables: filterOptions.responsables || [],
-          usuarios: filterOptions.responsables?.map(r => ({
-            id: r.value,
-            full_name: r.label
-          })) || []
-        } : {
-          // Opciones de filtros para participantes
-          estados: filterOptions.estados,
-          roles: filterOptions.roles,
-          empresas: filterOptions.empresas,
-          departamentos: filterOptions.departamentos,
-          tieneEmail: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_email', label: 'Con email' },
-            { value: 'sin_email', label: 'Sin email' }
-          ],
-          tieneProductos: [
-            { value: 'todos', label: 'Todos' },
-            { value: 'con_productos', label: 'Con productos' },
-            { value: 'sin_productos', label: 'Sin productos' }
-          ]
-        }}
-      />
+      {activeTab === 'seguimientos' ? (
+        <SeguimientosFilterDrawer
+          isOpen={showFilterDrawer}
+          onClose={handleCloseFilters}
+          filters={filtersSeguimientos}
+          onFiltersChange={setFiltersSeguimientos}
+          options={{
+            estados: [
+              { value: 'pendiente', label: 'Pendiente' },
+              { value: 'en_progreso', label: 'En Progreso' },
+              { value: 'completado', label: 'Completado' },
+              { value: 'convertido', label: 'Convertido' }
+            ],
+            responsables: filterOptions.responsables || [],
+            participantes: filterOptions.participantes || [],
+            investigaciones: filterOptions.investigaciones || []
+          }}
+        />
+      ) : (
+        <FilterDrawer
+          isOpen={showFilterDrawer}
+          onClose={handleCloseFilters}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          type="participante"
+          participanteType={activeTab as 'externos' | 'internos' | 'friend_family'}
+          options={{
+            // Opciones de filtros para participantes
+            estados: filterOptions.estados,
+            roles: filterOptions.roles,
+            empresas: filterOptions.empresas,
+            departamentos: filterOptions.departamentos,
+            tieneEmail: [
+              { value: 'todos', label: 'Todos' },
+              { value: 'con_email', label: 'Con email' },
+              { value: 'sin_email', label: 'Sin email' }
+            ],
+            tieneProductos: [
+              { value: 'todos', label: 'Todos' },
+              { value: 'con_productos', label: 'Con productos' },
+              { value: 'sin_productos', label: 'Sin productos' }
+            ]
+          }}
+        />
+      )}
     </Card>
   );
 }
