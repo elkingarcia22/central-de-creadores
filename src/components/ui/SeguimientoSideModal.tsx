@@ -29,6 +29,12 @@ interface SeguimientoSideModalProps {
   }>;
   responsablePorDefecto?: string | null;
   loading?: boolean;
+  participanteExternoPrecargado?: {
+    id: string;
+    nombre: string;
+    email: string;
+    empresa_nombre?: string;
+  };
 }
 
 const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
@@ -39,7 +45,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
   investigacionId,
   usuarios,
   responsablePorDefecto,
-  loading = false
+  loading = false,
+  participanteExternoPrecargado
 }) => {
   console.log('🔍 [SeguimientoSideModal] Props recibidas:', {
     isOpen,
@@ -57,7 +64,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     notas: '',
     responsable_id: '',
     estado: 'pendiente',
-    participante_externo_id: ''
+    participante_externo_id: participanteExternoPrecargado?.id || ''
   });
   
   const [saving, setSaving] = useState(false);
@@ -74,7 +81,17 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
         const data = await response.json();
         console.log('🔍 [SeguimientoSideModal] Participantes externos cargados:', data?.length || 0);
         console.log('🔍 [SeguimientoSideModal] Datos de participantes:', data);
-        setParticipantesExternos(data || []);
+        
+        // Si hay un participante pre-cargado, asegurarse de que esté en la lista
+        let participantes = data || [];
+        if (participanteExternoPrecargado) {
+          const yaExiste = participantes.find(p => p.id === participanteExternoPrecargado.id);
+          if (!yaExiste) {
+            participantes = [participanteExternoPrecargado, ...participantes];
+          }
+        }
+        
+        setParticipantesExternos(participantes);
       } else {
         console.error('Error cargando participantes externos:', response.status);
       }
@@ -269,8 +286,11 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
 
             <div>
               <FilterLabel>Participante Externo (Opcional)</FilterLabel>
-              {console.log('🔍 [SeguimientoSideModal] Select value:', formData.participante_externo_id)}
-              {console.log('🔍 [SeguimientoSideModal] Options disponibles:', participantesExternos.length)}
+              {(() => {
+                console.log('🔍 [SeguimientoSideModal] Select value:', formData.participante_externo_id);
+                console.log('🔍 [SeguimientoSideModal] Options disponibles:', participantesExternos.length);
+                return null;
+              })()}
               <Select
                 value={String(formData.participante_externo_id || '')}
                 onChange={(value) => handleInputChange('participante_externo_id', String(value))}

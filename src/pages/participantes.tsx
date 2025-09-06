@@ -28,7 +28,8 @@ import { DolorSideModal } from '../components/ui';
 import { SeleccionarCategoriaPerfilamientoModal } from '../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from '../components/participantes/CrearPerfilamientoModal';
 import { SeguimientosTab } from '../components/participantes/SeguimientosTab';
-import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon } from '../components/icons';
+import SeguimientoSideModal from '../components/ui/SeguimientoSideModal';
+import { SearchIcon, PlusIcon, UserIcon, ParticipantesIcon, BuildingIcon, UsersIcon, CheckCircleIcon, EyeIcon, EditIcon, TrashIcon, MoreVerticalIcon, FilterIcon, MessageIcon, AlertTriangleIcon, ClipboardListIcon } from '../components/icons';
 import { getChipVariant, getChipText } from '../utils/chipUtils';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
 
@@ -101,6 +102,7 @@ export default function ParticipantesPage() {
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   const [showCrearSeguimientoModal, setShowCrearSeguimientoModal] = useState(false);
+  const [participanteParaSeguimiento, setParticipanteParaSeguimiento] = useState<any>(null);
   const [seguimientos, setSeguimientos] = useState<any[]>([]);
   const [seguimientosLoading, setSeguimientosLoading] = useState(false);
   
@@ -713,6 +715,11 @@ export default function ParticipantesPage() {
     setParticipantePerfilamientoTemp(participante);
     setParticipanteParaPerfilamiento(participante);
     setShowModalPerfilamiento(true);
+  };
+
+  const handleCrearSeguimiento = (participante: Participante) => {
+    setParticipanteParaSeguimiento(participante);
+    setShowCrearSeguimientoModal(true);
   };
 
   // Funciones para manejar filtros
@@ -1393,35 +1400,50 @@ export default function ParticipantesPage() {
             })()}
             onSelectionChange={handleSelectionChange}
             bulkActions={bulkActions}
-            actions={[
-              {
-                label: 'Ver Detalles',
-                icon: <EyeIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleVerParticipante(row)
-              },
-              {
-                label: 'Editar',
-                icon: <EditIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleEditarParticipante(row)
-              },
-              {
-                label: 'Crear Dolor',
-                icon: <AlertTriangleIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleCrearDolor(row)
-                            },
-              {
-                label: 'Crear Perfilamiento',
-                icon: <MessageIcon className="w-4 h-4" />,
-                onClick: (row: any) => handleCrearPerfilamiento(row),
-                className: 'text-popover-foreground hover:text-popover-foreground/80'
-              },
-              {
+            actions={(() => {
+              const baseActions = [
+                {
+                  label: 'Ver Detalles',
+                  icon: <EyeIcon className="w-4 h-4" />,
+                  onClick: (row: any) => handleVerParticipante(row)
+                },
+                {
+                  label: 'Editar',
+                  icon: <EditIcon className="w-4 h-4" />,
+                  onClick: (row: any) => handleEditarParticipante(row)
+                },
+                {
+                  label: 'Crear Dolor',
+                  icon: <AlertTriangleIcon className="w-4 h-4" />,
+                  onClick: (row: any) => handleCrearDolor(row)
+                },
+                {
+                  label: 'Crear Perfilamiento',
+                  icon: <MessageIcon className="w-4 h-4" />,
+                  onClick: (row: any) => handleCrearPerfilamiento(row),
+                  className: 'text-popover-foreground hover:text-popover-foreground/80'
+                }
+              ];
+
+              // Agregar "Crear Seguimiento" solo para participantes externos
+              if (activeTab === 'externos') {
+                baseActions.push({
+                  label: 'Crear Seguimiento',
+                  icon: <ClipboardListIcon className="w-4 h-4" />,
+                  onClick: (row: any) => handleCrearSeguimiento(row),
+                  className: 'text-blue-600 hover:text-blue-700'
+                });
+              }
+
+              baseActions.push({
                 label: 'Eliminar',
                 icon: <TrashIcon className="w-4 h-4" />,
                 onClick: (row: any) => handleEliminarParticipante(row),
                 className: 'text-red-600 hover:text-red-700'
-              }
-            ]}
+              });
+
+              return baseActions;
+            })()}
             showCrearSeguimientoModal={showCrearSeguimientoModal}
             onCloseCrearSeguimientoModal={() => setShowCrearSeguimientoModal(false)}
             seguimientos={seguimientos}
@@ -1544,6 +1566,53 @@ export default function ParticipantesPage() {
                 setCategoriaSeleccionada(null);
                 setParticipantePerfilamientoTemp(null);
                 showSuccess('Perfilamiento creado exitosamente');
+              }}
+            />
+          )}
+
+          {/* Modal para crear seguimiento desde participante */}
+          {showCrearSeguimientoModal && participanteParaSeguimiento && (
+            <SeguimientoSideModal
+              isOpen={showCrearSeguimientoModal}
+              onClose={() => {
+                setShowCrearSeguimientoModal(false);
+                setParticipanteParaSeguimiento(null);
+              }}
+              onSave={async (seguimientoData) => {
+                try {
+                  const response = await fetch('/api/seguimientos', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      ...seguimientoData,
+                      participante_externo_id: participanteParaSeguimiento.id
+                    }),
+                  });
+
+                  if (response.ok) {
+                    showSuccess('Seguimiento creado exitosamente');
+                    setShowCrearSeguimientoModal(false);
+                    setParticipanteParaSeguimiento(null);
+                    cargarSeguimientos();
+                  } else {
+                    const errorData = await response.json();
+                    showError(errorData.message || 'Error al crear el seguimiento');
+                  }
+                } catch (error) {
+                  console.error('Error al crear seguimiento:', error);
+                  showError('Error al crear el seguimiento');
+                }
+              }}
+              investigacionId=""
+              usuarios={[]}
+              responsablePorDefecto={userId}
+              participanteExternoPrecargado={{
+                id: participanteParaSeguimiento.id,
+                nombre: participanteParaSeguimiento.nombre,
+                email: participanteParaSeguimiento.email,
+                empresa_nombre: participanteParaSeguimiento.empresa_nombre
               }}
             />
           )}
