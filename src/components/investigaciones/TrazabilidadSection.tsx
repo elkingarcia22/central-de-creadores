@@ -64,6 +64,7 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
         return;
       }
       
+      console.log('🔍 Datos de trazabilidad recibidos:', response.data);
       setTrazabilidad(response.data);
     } catch (error) {
       console.error('Error cargando trazabilidad:', error);
@@ -194,7 +195,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       console.log('🔍 [ORIGEN] Navegando a investigación:', investigacion.id);
                       console.log('🔍 [ORIGEN] URL completa:', `/investigaciones/ver/${investigacion.id}`);
                       router.push(`/investigaciones/ver/${investigacion.id}`);
@@ -323,7 +326,9 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       console.log('🔍 [DERIVADAS] Navegando a investigación:', investigacion.id);
                       console.log('🔍 [DERIVADAS] URL completa:', `/investigaciones/ver/${investigacion.id}`);
                       router.push(`/investigaciones/ver/${investigacion.id}`);
