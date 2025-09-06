@@ -90,13 +90,17 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
         console.log('🔍 [SeguimientoSideModal] participante_externo_id:', seguimiento.participante_externo_id);
         console.log('🔍 [SeguimientoSideModal] participante_externo:', seguimiento.participante_externo);
         
+        // Asegurar que participante_externo_id sea string
+        const participanteId = seguimiento.participante_externo_id ? String(seguimiento.participante_externo_id) : '';
+        console.log('🔍 [SeguimientoSideModal] participante_externo_id procesado:', participanteId);
+        
         setFormData({
           investigacion_id: seguimiento.investigacion_id,
           fecha_seguimiento: seguimiento.fecha_seguimiento.split('T')[0], // Solo fecha
           notas: seguimiento.notas,
           responsable_id: seguimiento.responsable_id,
           estado: seguimiento.estado,
-          participante_externo_id: seguimiento.participante_externo_id || ''
+          participante_externo_id: participanteId
         });
       } else {
         // Modo creación
@@ -240,14 +244,14 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
               {console.log('🔍 [SeguimientoSideModal] Select value:', formData.participante_externo_id)}
               {console.log('🔍 [SeguimientoSideModal] Options disponibles:', participantesExternos.length)}
               <Select
-                value={formData.participante_externo_id || ''}
-                onChange={(value) => handleInputChange('participante_externo_id', value.toString())}
+                value={String(formData.participante_externo_id || '')}
+                onChange={(value) => handleInputChange('participante_externo_id', String(value))}
                 placeholder={cargandoParticipantes ? "Cargando participantes..." : "Seleccionar participante externo"}
                 disabled={saving || cargandoParticipantes}
                 options={[
                   { value: '', label: 'Sin participante asociado' },
                   ...participantesExternos.map(participante => ({
-                    value: participante.id,
+                    value: String(participante.id),
                     label: `${participante.nombre}${participante.empresa_nombre ? ` - ${participante.empresa_nombre}` : ''}`
                   }))
                 ]}
