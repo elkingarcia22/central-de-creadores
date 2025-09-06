@@ -58,7 +58,9 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     seguimiento,
     investigacionId,
     usuarios: usuarios?.length || 0,
-    responsablePorDefecto
+    responsablePorDefecto,
+    investigaciones: investigaciones?.length || 0,
+    investigacionesData: investigaciones
   });
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
@@ -146,6 +148,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       } else {
         // Modo creación
         const today = new Date().toISOString().split('T')[0];
+        console.log('🔍 [SeguimientoSideModal] Modo creación - investigacionId:', investigacionId);
+        console.log('🔍 [SeguimientoSideModal] Modo creación - investigaciones disponibles:', investigaciones);
         setFormData({
           investigacion_id: investigacionId,
           fecha_seguimiento: today,
