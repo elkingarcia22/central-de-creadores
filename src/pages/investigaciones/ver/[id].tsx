@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
+import { useFastUser } from '../../../contexts/FastUserContext';
 import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState, Subtitle } from '../../../components/ui';
 import { SeguimientosSection } from '../../../components/investigaciones/SeguimientosSection';
 import { TrazabilidadSection } from '../../../components/investigaciones/TrazabilidadSection';
@@ -96,6 +97,7 @@ const VerInvestigacion: NextPage = () => {
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showError, showSuccess, showWarning, showInfo } = useToast();
+  const { userId } = useFastUser();
   
   const [investigacion, setInvestigacion] = useState<InvestigacionDetalle | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1101,6 +1103,7 @@ const VerInvestigacion: NextPage = () => {
         onSave={handleCrearSeguimiento}
         investigacionId={investigacion?.id || ''}
         usuarios={usuarios}
+        responsablePorDefecto={userId}
       />
     </Layout>
   );

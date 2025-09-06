@@ -27,6 +27,7 @@ interface SeguimientoSideModalProps {
     email: string;
     avatar_url?: string;
   }>;
+  responsablePorDefecto?: string | null;
   loading?: boolean;
 }
 
@@ -37,6 +38,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
   seguimiento,
   investigacionId,
   usuarios,
+  responsablePorDefecto,
   loading = false
 }) => {
   const { theme } = useTheme();
@@ -96,13 +98,13 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           investigacion_id: investigacionId,
           fecha_seguimiento: today,
           notas: '',
-          responsable_id: '',
+          responsable_id: responsablePorDefecto || '',
           estado: 'pendiente', // Siempre pendiente al crear
           participante_externo_id: ''
         });
       }
     }
-  }, [isOpen, seguimiento, investigacionId]);
+  }, [isOpen, seguimiento, investigacionId, responsablePorDefecto]);
 
   const handleInputChange = (field: keyof SeguimientoFormData, value: string) => {
     setFormData(prev => ({
