@@ -79,14 +79,16 @@ export const getEstadoSesionText = (estado: string): string => {
 };
 
 // Función para obtener el color del badge de estado de participante
-export const getEstadoParticipanteVariant = (estado: string): 'success' | 'secondary' | 'warning' => {
+export const getEstadoParticipanteVariant = (estado: string): 'terminada' | 'pendiente' | 'transitoria' | 'fallo' | 'secondary' => {
   const estadoLower = estado?.toLowerCase()?.trim()?.replace(/\s+/g, ' ');
   
   switch (estadoLower) {
-    case 'activo': return 'success';           // Verde
-    case 'inactivo': return 'secondary';       // Gris claro
-    case 'pendiente': return 'warning';        // Amarillo
-    case 'pendiente de agendamiento': return 'warning'; // Amarillo (transitorio)
+    case 'activo': return 'terminada';         // Verde (estado exitoso)
+    case 'disponible': return 'terminada';     // Verde (estado exitoso)
+    case 'en enfriamiento': return 'pendiente'; // Azul (estado pendiente)
+    case 'pendiente': return 'pendiente';      // Azul (estado pendiente)
+    case 'pendiente de agendamiento': return 'transitoria'; // Amarillo (estado transitorio)
+    case 'inactivo': return 'fallo';           // Rojo (estado fallido)
     default: return 'secondary';               // Gris claro
   }
 };
@@ -104,6 +106,10 @@ export const getEstadoParticipanteText = (estado: string): string => {
       return 'Pendiente';
     case 'pendiente de agendamiento':
       return 'Pendiente de Agendamiento';
+    case 'disponible':
+      return 'Disponible';
+    case 'en enfriamiento':
+      return 'En Enfriamiento';
     default:
       return 'Sin Estado';
   }

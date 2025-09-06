@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         actualizado_el,
         riesgo_automatico
       `)
-      .eq('estado', 'por_agendar');
+      .in('estado', ['por_agendar', 'por_iniciar', 'en_progreso', 'finalizado']);
 
     // Aplicar filtros de asignación si no es administrador
     if (esAdmin !== 'true' && usuarioId) {
@@ -123,11 +123,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .eq('investigacion_id', inv.id)
         .single();
 
-      // Obtener participantes reclutados
+      // Obtener participantes reclutados (solo los que tienen participantes asignados y NO están en "Pendiente de agendamiento")
       const { data: participantesData } = await supabase
         .from('reclutamientos')
-        .select('id')
-        .eq('investigacion_id', inv.id);
+        .select(`
+          id, 
+          participantes_id, 
+          participantes_internos_id, 
+          participantes_friend_family_id,
+          estado_agendamiento,
+          estado_agendamiento_cat!inner(nombre)
+        `)
+        .eq('investigacion_id', inv.id)
+        .or('participantes_id.not.is.null,participantes_internos_id.not.is.null,participantes_friend_family_id.not.is.null')
+        .neq('estado_agendamiento_cat.nombre', 'Pendiente de agendamiento');
 
       const participantes_reclutados = participantesData?.length || 0;
       const participantes_requeridos = libretoData?.numero_participantes || 0;
@@ -161,6 +170,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_investigacion: inv.estado,
         fecha_inicio: inv.fecha_inicio,
         fecha_fin: inv.fecha_fin,
+        riesgo_automatico: inv.riesgo_automatico,
         responsable_nombre,
         responsable_email,
         responsable_id: inv.responsable_id,
@@ -199,7 +209,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
     if (investigacionesCompletas && investigacionesCompletas.length > 0) {
-      console.log('🔍 Detalles de investigaciones por agendar:');
+      console.log('🔍 Detalles de investigaciones:');
       investigacionesCompletas.forEach((inv, index) => {
         console.log(`  ${index + 1}. ${inv.titulo_investigacion} (ID: ${inv.investigacion_id})`);
         console.log(`     - Responsable: ${inv.responsable_nombre}`);
@@ -209,6 +219,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log(`     - Progreso: ${inv.progreso_reclutamiento}`);
         console.log(`     - Estado: ${inv.estado_reclutamiento_nombre}`);
       });
+    }
+
+    // Actualizar investigaciones basado en el estado de la tabla principal de reclutamiento
+    console.log('🔄 Verificando investigaciones que necesitan actualización de estado...');
+    
+    const investigacionesParaActualizar = investigacionesCompletas.filter(inv => {
+      // Agendada -> por_iniciar
+      if (inv.estado_reclutamiento_nombre === 'Agendada' && inv.estado_investigacion === 'por_agendar') {
+        return true;
+      }
+      // En progreso -> por_agendar
+      if (inv.estado_reclutamiento_nombre === 'En progreso' && inv.estado_investigacion !== 'por_agendar') {
+        return true;
+      }
+      return false;
+    });
+
+    if (investigacionesParaActualizar.length > 0) {
+      console.log(`📋 ${investigacionesParaActualizar.length} investigaciones necesitan actualización:`);
+      investigacionesParaActualizar.forEach(inv => {
+        console.log(`  - ${inv.titulo_investigacion} (${inv.investigacion_id}): ${inv.estado_reclutamiento_nombre} -> ${inv.estado_investigacion}`);
+      });
+
+      for (const investigacion of investigacionesParaActualizar) {
+        let nuevoEstado = null;
+        
+        if (investigacion.estado_reclutamiento_nombre === 'Agendada') {
+          nuevoEstado = 'por_iniciar';
+        } else if (investigacion.estado_reclutamiento_nombre === 'En progreso') {
+          nuevoEstado = 'por_agendar';
+        }
+
+        if (nuevoEstado) {
+          const { error: errorUpdate } = await supabase
+            .from('investigaciones')
+            .update({ 
+              estado: nuevoEstado
+            })
+            .eq('id', investigacion.investigacion_id);
+
+          if (errorUpdate) {
+            console.error(`❌ Error actualizando investigación ${investigacion.titulo_investigacion}:`, errorUpdate);
+          } else {
+            console.log(`✅ Investigación "${investigacion.titulo_investigacion}" actualizada a "${nuevoEstado}"`);
+          }
+        }
+      }
+    } else {
+      console.log('ℹ️ No hay investigaciones que necesiten actualización de estado');
     }
 
     // Formatear la respuesta usando los datos completos
@@ -250,7 +309,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_investigacion: inv.estado_investigacion,
         investigacion_fecha_inicio: inv.fecha_inicio,
         investigacion_fecha_fin: inv.fecha_fin,
-        investigacion_riesgo: inv.riesgo_automatico,
+        investigacion_riesgo: inv.riesgo_automatico || 'bajo',
         libreto_titulo: inv.titulo_libreto,
         libreto_descripcion: inv.titulo_libreto, // Usar título como descripción
         libreto_numero_participantes: inv.participantes_requeridos,

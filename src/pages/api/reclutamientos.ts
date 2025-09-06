@@ -84,6 +84,79 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       console.log('✅ Reclutamiento creado exitosamente:', data);
+
+      // Ejecutar lógica de actualización automática de investigaciones
+      console.log('🔄 Ejecutando lógica de actualización automática...');
+      try {
+        // Obtener datos del libreto para calcular el estado
+        const { data: libretoData } = await supabase
+          .from('libretos_investigacion')
+          .select('numero_participantes')
+          .eq('investigacion_id', investigacion_id)
+          .single();
+
+        // Obtener participantes reclutados (solo los que tienen participantes asignados y NO están en "Pendiente de agendamiento")
+        const { data: participantesData } = await supabase
+          .from('reclutamientos')
+          .select(`
+            id, 
+            participantes_id, 
+            participantes_internos_id, 
+            participantes_friend_family_id,
+            estado_agendamiento,
+            estado_agendamiento_cat!inner(nombre)
+          `)
+          .eq('investigacion_id', investigacion_id)
+          .or('participantes_id.not.is.null,participantes_internos_id.not.is.null,participantes_friend_family_id.not.is.null')
+          .neq('estado_agendamiento_cat.nombre', 'Pendiente de agendamiento');
+
+        const participantes_reclutados = participantesData?.length || 0;
+        const participantes_requeridos = libretoData?.numero_participantes || 0;
+
+        // Calcular estado de reclutamiento
+        let estado_reclutamiento_nombre = 'Pendiente';
+        if (participantes_requeridos > 0) {
+          if (participantes_reclutados === 0) {
+            estado_reclutamiento_nombre = 'Pendiente';
+          } else if (participantes_reclutados < participantes_requeridos) {
+            estado_reclutamiento_nombre = 'En progreso';
+          } else {
+            estado_reclutamiento_nombre = 'Agendada';
+          }
+        }
+
+        console.log(`📊 Estado calculado: ${estado_reclutamiento_nombre} (${participantes_reclutados}/${participantes_requeridos})`);
+
+        // Actualizar estado de la investigación si es necesario
+        let nuevoEstadoInvestigacion = null;
+        
+        if (estado_reclutamiento_nombre === 'Agendada') {
+          nuevoEstadoInvestigacion = 'por_iniciar';
+        } else if (estado_reclutamiento_nombre === 'En progreso') {
+          nuevoEstadoInvestigacion = 'por_agendar';
+        }
+
+        if (nuevoEstadoInvestigacion) {
+          const { error: errorUpdate } = await supabase
+            .from('investigaciones')
+            .update({ 
+              estado: nuevoEstadoInvestigacion
+            })
+            .eq('id', investigacion_id);
+
+          if (errorUpdate) {
+            console.error('❌ Error actualizando estado de investigación:', errorUpdate);
+          } else {
+            console.log(`✅ Investigación actualizada a "${nuevoEstadoInvestigacion}"`);
+          }
+        } else {
+          console.log('ℹ️ No se requiere actualización del estado de investigación');
+        }
+      } catch (error) {
+        console.error('❌ Error en lógica de actualización automática:', error);
+        // No fallar la respuesta principal por este error
+      }
+
       return res.status(201).json(data);
     } catch (error) {
       console.error('Error en la API:', error);

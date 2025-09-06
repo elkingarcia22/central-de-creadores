@@ -18,6 +18,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       estado_reclutamiento_id
     });
 
+    // Obtener el nombre del estado para verificar si es "Agendada"
+    const { data: estadoData, error: estadoError } = await supabase
+      .from('estado_agendamiento_cat')
+      .select('nombre')
+      .eq('id', estado_reclutamiento_id)
+      .single();
+
+    if (estadoError) {
+      console.error('❌ Error obteniendo nombre del estado:', estadoError);
+      return res.status(500).json({ error: 'Error obteniendo información del estado' });
+    }
+
+    const nombreEstado = estadoData?.nombre;
+    console.log('📋 Nombre del estado:', nombreEstado);
+
     // Actualizar el estado de agendamiento en todos los reclutamientos de la investigación
     const { data, error } = await supabase
       .from('reclutamientos')
@@ -34,10 +49,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('✅ Estado de reclutamiento actualizado exitosamente:', data);
+
+    // La lógica de actualización de investigaciones se maneja en metricas-reclutamientos.ts
+    // basada en los estados de la tabla principal de reclutamiento (Agendada, En progreso, etc.)
+    console.log(`ℹ️ Estado ${nombreEstado} actualizado. La investigación se actualizará automáticamente cuando se cargue la tabla principal.`);
+
     return res.status(200).json({ 
       success: true, 
       message: 'Estado de reclutamiento actualizado correctamente',
-      data 
+      data,
+      estadoNombre: nombreEstado
     });
 
   } catch (error) {
