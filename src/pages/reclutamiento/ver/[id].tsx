@@ -2063,6 +2063,10 @@ const VerReclutamiento: NextPage = () => {
   };
 
   const ParticipantesContent: React.FC = () => {
+    console.log('🔍 ParticipantesContent render - participantes.length:', participantes.length);
+    console.log('🔍 ParticipantesContent render - loadingParticipantes:', loadingParticipantes);
+    console.log('🔍 ParticipantesContent render - participantes:', participantes);
+    
     if (loadingParticipantes) {
       return (
         <div className="space-y-6">
@@ -2079,6 +2083,7 @@ const VerReclutamiento: NextPage = () => {
     }
 
     if (participantes.length === 0) {
+      console.log('🔍 Mostrando EmptyState - participantes.length es 0');
       return (
         <div className="space-y-6">
           <EmptyState
