@@ -39,8 +39,15 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
 
   // Buscar usuario seleccionado de forma segura
   const selectedUser = React.useMemo(() => {
-    if (!value || !users || !Array.isArray(users) || users.length === 0) return null;
-    return users.find(user => user && user.id === value) || null;
+    console.log('🔍 UserSelectorWithAvatar - value:', value);
+    console.log('🔍 UserSelectorWithAvatar - users:', users);
+    if (!value || !users || !Array.isArray(users) || users.length === 0) {
+      console.log('🔍 UserSelectorWithAvatar - No se puede buscar usuario');
+      return null;
+    }
+    const found = users.find(user => user && user.id === value) || null;
+    console.log('🔍 UserSelectorWithAvatar - usuario encontrado:', found);
+    return found;
   }, [value, users]);
 
   // Lista de usuarios a mostrar con validación

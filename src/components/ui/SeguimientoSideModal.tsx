@@ -89,6 +89,8 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
         console.log('🔍 [SeguimientoSideModal] Modo edición - seguimiento recibido:', seguimiento);
         console.log('🔍 [SeguimientoSideModal] participante_externo_id:', seguimiento.participante_externo_id);
         console.log('🔍 [SeguimientoSideModal] participante_externo:', seguimiento.participante_externo);
+        console.log('🔍 [SeguimientoSideModal] responsable_id:', seguimiento.responsable_id);
+        console.log('🔍 [SeguimientoSideModal] usuarios disponibles:', usuarios);
         
         // Asegurar que participante_externo_id sea string
         const participanteId = seguimiento.participante_externo_id ? String(seguimiento.participante_externo_id) : '';
