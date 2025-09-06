@@ -228,9 +228,13 @@ export default function DetalleParticipante() {
       const response = await fetch('/api/investigaciones');
       if (response.ok) {
         const data = await response.json();
-        const investigacionesData = data?.investigaciones || [];
+        // La API devuelve un array directo, no un objeto con propiedad investigaciones
+        const investigacionesData = Array.isArray(data) ? data : (data?.investigaciones || []);
         setTodasLasInvestigaciones(investigacionesData);
         console.log('✅ Todas las investigaciones cargadas para modal de seguimiento:', investigacionesData.length);
+        console.log('🔍 Datos de investigaciones:', investigacionesData);
+      } else {
+        console.error('❌ Error en respuesta de API investigaciones:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error cargando todas las investigaciones:', error);
