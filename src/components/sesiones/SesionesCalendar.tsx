@@ -3,6 +3,9 @@ import { Calendar, Button, Card, Typography, Badge, Tooltip } from '../ui';
 import { SesionEvent } from '../../types/sesiones';
 import { useSesiones } from '../../hooks/useSesiones';
 import SesionEvent from './SesionEvent';
+import SesionEventDraggable from './SesionEventDraggable';
+import SesionExpanded from './SesionExpanded';
+import SesionModal from './SesionModal';
 import { 
   PlusIcon, 
   CalendarIcon, 
@@ -32,6 +35,10 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
   const [showFilters, setShowFilters] = useState(false);
+  const [expandedSesion, setExpandedSesion] = useState<SesionEvent | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalSesion, setModalSesion] = useState<SesionEvent | null>(null);
+  const [modalDate, setModalDate] = useState<Date | undefined>(undefined);
 
   // Hook para manejar sesiones
   const {
@@ -64,19 +71,80 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   const handleEventClick = useCallback((event: any) => {
     const sesion = sesionesEventos.find(s => s.id === event.id);
     if (sesion) {
+      setExpandedSesion(sesion);
       onSesionClick?.(sesion);
     }
   }, [sesionesEventos, onSesionClick]);
 
   // Manejar click en fecha
   const handleDateClick = useCallback((date: Date) => {
+    setModalDate(date);
+    setShowModal(true);
     onSesionCreate?.(date);
   }, [onSesionCreate]);
 
   // Manejar agregar evento
   const handleAddEvent = useCallback(() => {
+    setModalDate(undefined);
+    setShowModal(true);
     onSesionCreate?.();
   }, [onSesionCreate]);
+
+  // Manejar editar sesión
+  const handleEditSesion = useCallback((sesion: SesionEvent) => {
+    setModalSesion(sesion);
+    setShowModal(true);
+    onSesionEdit?.(sesion);
+  }, [onSesionEdit]);
+
+  // Manejar eliminar sesión
+  const handleDeleteSesion = useCallback((sesion: SesionEvent) => {
+    if (confirm(`¿Estás seguro de que quieres eliminar la sesión "${sesion.titulo}"?`)) {
+      deleteSesion(sesion.id);
+      onSesionDelete?.(sesion);
+    }
+  }, [deleteSesion, onSesionDelete]);
+
+  // Manejar mover sesión
+  const handleMoveSesion = useCallback(async (eventId: string, newDate: Date, newTimeSlot?: number) => {
+    try {
+      const sesion = sesionesEventos.find(s => s.id === eventId);
+      if (sesion) {
+        const updatedData = {
+          fecha_programada: newDate,
+          ...(newTimeSlot && { duracion_minutos: newTimeSlot * 30 })
+        };
+        await updateSesion(eventId, updatedData);
+      }
+    } catch (error) {
+      console.error('Error moviendo sesión:', error);
+    }
+  }, [sesionesEventos, updateSesion]);
+
+  // Manejar redimensionar sesión
+  const handleResizeSesion = useCallback(async (eventId: string, newDuration: number) => {
+    try {
+      await updateSesion(eventId, { duracion_minutos: newDuration });
+    } catch (error) {
+      console.error('Error redimensionando sesión:', error);
+    }
+  }, [updateSesion]);
+
+  // Manejar guardar sesión
+  const handleSaveSesion = useCallback(async (data: any) => {
+    try {
+      if (modalSesion) {
+        await updateSesion(modalSesion.id, data);
+      } else {
+        await createSesion({ ...data, investigacion_id: investigacionId });
+      }
+      setShowModal(false);
+      setModalSesion(null);
+      setModalDate(undefined);
+    } catch (error) {
+      console.error('Error guardando sesión:', error);
+    }
+  }, [modalSesion, updateSesion, createSesion, investigacionId]);
 
   // Manejar cambio de vista
   const handleViewChange = useCallback((newView: 'month' | 'week' | 'day' | 'agenda') => {
@@ -365,6 +433,43 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modal de sesión expandida */}
+      {expandedSesion && (
+        <SesionExpanded
+          sesion={expandedSesion}
+          onClose={() => setExpandedSesion(null)}
+          onEdit={handleEditSesion}
+          onDelete={handleDeleteSesion}
+          onDuplicate={(sesion) => {
+            // Implementar duplicación
+            console.log('Duplicar sesión:', sesion.id);
+          }}
+          onShare={(sesion) => {
+            // Implementar compartir
+            console.log('Compartir sesión:', sesion.id);
+          }}
+          onExport={(sesion) => {
+            // Implementar exportar
+            console.log('Exportar sesión:', sesion.id);
+          }}
+        />
+      )}
+
+      {/* Modal de crear/editar sesión */}
+      <SesionModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setModalSesion(null);
+          setModalDate(undefined);
+        }}
+        onSave={handleSaveSesion}
+        sesion={modalSesion}
+        investigacionId={investigacionId}
+        fechaPredefinida={modalDate}
+        loading={loading}
+      />
     </div>
   );
 };
