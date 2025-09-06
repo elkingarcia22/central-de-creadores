@@ -123,6 +123,9 @@ export default function DetalleParticipante() {
   // Estado para usuarios (para filtros de perfilamiento)
   const [usuarios, setUsuarios] = useState<any[]>([]);
   
+  // Estado para todas las investigaciones (para modal de seguimiento)
+  const [todasLasInvestigaciones, setTodasLasInvestigaciones] = useState<any[]>([]);
+  
   // Estados para acciones del header
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
@@ -173,6 +176,7 @@ export default function DetalleParticipante() {
       cargarDolores();
       cargarComentarios();
       cargarUsuarios();
+      cargarTodasLasInvestigaciones();
     }
   }, [id]);
 
@@ -216,6 +220,20 @@ export default function DetalleParticipante() {
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+    }
+  };
+
+  const cargarTodasLasInvestigaciones = async () => {
+    try {
+      const response = await fetch('/api/investigaciones');
+      if (response.ok) {
+        const data = await response.json();
+        const investigacionesData = data?.investigaciones || [];
+        setTodasLasInvestigaciones(investigacionesData);
+        console.log('✅ Todas las investigaciones cargadas para modal de seguimiento:', investigacionesData.length);
+      }
+    } catch (error) {
+      console.error('Error cargando todas las investigaciones:', error);
     }
   };
 
@@ -1607,9 +1625,10 @@ export default function DetalleParticipante() {
             showError('Error al crear seguimiento');
           }
         }}
-        investigacionId=""
+        investigacionId={todasLasInvestigaciones.length > 0 ? todasLasInvestigaciones[0].id : ""}
         usuarios={usuarios}
         participanteExternoPrecargado={participanteParaCrearSeguimiento}
+        investigaciones={todasLasInvestigaciones}
       />
     </Layout>
   );
