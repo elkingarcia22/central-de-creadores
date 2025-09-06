@@ -1104,6 +1104,10 @@ const VerInvestigacion: NextPage = () => {
         investigacionId={investigacion?.id || ''}
         usuarios={usuarios}
         responsablePorDefecto={userId}
+        investigaciones={investigacion ? [{
+          id: investigacion.id,
+          nombre: investigacion.nombre
+        }] : []}
       />
     </Layout>
   );
