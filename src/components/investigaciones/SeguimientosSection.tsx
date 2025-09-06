@@ -35,6 +35,7 @@ import type { SeguimientoInvestigacion, SeguimientoFormData } from '../../types/
 
 interface SeguimientosSectionProps {
   investigacionId: string;
+  investigacionNombre: string;
   investigacionEstado: string;
   usuarios: Array<{
     id: string;
@@ -61,6 +62,7 @@ const getEstadoBadgeVariant = (estado: string): any => {
 
 export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
   investigacionId,
+  investigacionNombre,
   investigacionEstado,
   usuarios,
   tiposInvestigacion,
@@ -574,6 +576,10 @@ export const SeguimientosSection: React.FC<SeguimientosSectionProps> = ({
         seguimiento={seguimientoEditando}
         investigacionId={investigacionId}
         usuarios={usuarios}
+        investigaciones={[{
+          id: investigacionId,
+          nombre: investigacionNombre
+        }]}
       />
 
       {/* Modal para ver seguimiento */}

@@ -955,6 +955,7 @@ const VerInvestigacion: NextPage = () => {
         <SeguimientosSection
           key={`${investigacion.id}-seguimientos-${haySeguimientos}-${seguimientosKey}`}
           investigacionId={investigacion.id}
+          investigacionNombre={investigacion.nombre}
           investigacionEstado={investigacion.estado || ''}
           usuarios={usuarios}
           tiposInvestigacion={tiposInvestigacion}
