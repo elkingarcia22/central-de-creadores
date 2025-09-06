@@ -290,6 +290,23 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
     setShowFilterDrawer(false);
   };
 
+  // Efecto para cerrar la búsqueda con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchExpanded) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    if (isSearchExpanded) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isSearchExpanded]);
+
   // Contar filtros activos
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -505,17 +522,21 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header con buscador y filtros */}
-      <div className="flex items-center justify-between mb-6">
+    <Card variant="elevated" padding="lg" className="space-y-6">
+      {/* Header del contenedor con iconos integrados */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Subtitle>
-            Seguimientos ({seguimientosFiltrados.length} de {seguimientos.length})
+            Seguimientos
           </Subtitle>
+          <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+            {seguimientosFiltrados.length} de {seguimientos.length}
+          </span>
         </div>
         
+        {/* Iconos de búsqueda y filtro en la misma línea */}
         <div className="flex items-center gap-2">
-          {/* Buscador */}
+          {/* Icono de búsqueda que se expande */}
           <div className="relative">
             {isSearchExpanded ? (
               <div className="flex items-center gap-2">
@@ -523,9 +544,10 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
                   placeholder="Buscar seguimientos..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="!w-[300px] pl-10 pr-10 py-2"
+                  className="!w-[700px] pl-10 pr-10 py-2"
                   icon={<SearchIcon className="w-5 h-5 text-gray-400" />}
                   iconPosition="left"
+                  autoFocus
                 />
                 <Button
                   variant="ghost"
@@ -547,7 +569,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
             )}
           </div>
           
-          {/* Filtros */}
+          {/* Icono de filtro */}
           <Button
             variant={getActiveFiltersCount() > 0 ? "primary" : "ghost"}
             onClick={handleOpenFilters}
@@ -561,41 +583,45 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
               </span>
             )}
           </Button>
-
-          {/* Botón Nuevo Seguimiento */}
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setShowCrearModal(true)}
-            className="flex items-center gap-2"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Nuevo Seguimiento
-          </Button>
         </div>
       </div>
 
       {/* Tabla de seguimientos */}
-      {seguimientosFiltrados.length === 0 ? (
-        <EmptyState
-          icon={<ClipboardListIcon className="w-8 h-8" />}
-          title={seguimientos.length === 0 ? "Sin seguimientos registrados" : "No se encontraron seguimientos"}
-          description={seguimientos.length === 0 ? "Este participante no tiene seguimientos registrados." : "No se encontraron seguimientos que coincidan con los criterios de búsqueda."}
-          actionText="Crear Primer Seguimiento"
-          onAction={() => setShowCrearModal(true)}
-        />
+      {seguimientos.length > 0 ? (
+        seguimientosFiltrados.length > 0 ? (
+          <DataTable
+            data={seguimientosFiltrados}
+            columns={columns}
+            loading={loading}
+            searchable={false}
+            filterable={false}
+            selectable={false}
+            emptyMessage="No se encontraron seguimientos que coincidan con los criterios de búsqueda"
+            rowKey="id"
+            actions={tableActions}
+            onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <ClipboardListIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Typography variant="h3" className="text-gray-600 dark:text-gray-400 mb-2">
+              No se encontraron seguimientos
+            </Typography>
+            <Typography variant="body2" className="text-gray-500 dark:text-gray-500">
+              No se encontraron seguimientos que coincidan con los criterios de búsqueda.
+            </Typography>
+          </div>
+        )
       ) : (
-        <DataTable
-          data={seguimientosFiltrados}
-          columns={columns}
-          loading={loading}
-          searchable={false}
-          sortable={true}
-          pagination={true}
-          pageSize={10}
-          actions={tableActions}
-          onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
-        />
+        <div className="text-center py-12">
+          <ClipboardListIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <Typography variant="h3" className="text-gray-600 dark:text-gray-400 mb-2">
+            Sin seguimientos registrados
+          </Typography>
+          <Typography variant="body2" className="text-gray-500 dark:text-gray-500">
+            Este participante no tiene seguimientos registrados.
+          </Typography>
+        </div>
       )}
 
       {/* Modal para crear seguimiento */}
