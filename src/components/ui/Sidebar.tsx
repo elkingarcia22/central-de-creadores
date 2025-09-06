@@ -75,8 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             <SimpleAvatar
               src={user?.avatar}
               fallbackText={displayName}
-              size="xl"
-              className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-opacity"
+              size={isCollapsed ? "lg" : "xl"}
+              className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-300"
               onClick={onSettings}
             />
           </div>
