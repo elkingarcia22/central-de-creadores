@@ -1430,8 +1430,7 @@ export default function ParticipantesPage() {
                 baseActions.push({
                   label: 'Crear Seguimiento',
                   icon: <ClipboardListIcon className="w-4 h-4" />,
-                  onClick: (row: any) => handleCrearSeguimiento(row),
-                  className: 'text-blue-600 hover:text-blue-700'
+                  onClick: (row: any) => handleCrearSeguimiento(row)
                 });
               }
 
