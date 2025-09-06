@@ -1,7 +1,7 @@
 import React from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Layout from '../../components/layout/Layout';
+import { Layout } from '../../components/ui';
 import { PageHeader } from '../../components/ui';
 import SesionesCalendar from '../../components/sesiones/SesionesCalendar';
 import { SesionEvent } from '../../types/sesiones';

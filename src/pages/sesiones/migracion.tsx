@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NextPage } from 'next';
-import Layout from '../../components/layout/Layout';
+import { Layout } from '../../components/ui';
 import { PageHeader, Button, Card, Typography, Badge, Alert } from '../../components/ui';
 import { 
   DatabaseIcon, 
