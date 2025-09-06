@@ -685,6 +685,8 @@ export default function DetalleParticipante() {
 
   const handleCrearSeguimiento = (participante: any) => {
     // Abrir modal de crear seguimiento
+    console.log('🔍 Abriendo modal de crear seguimiento con participante:', participante);
+    console.log('🔍 Investigaciones disponibles:', todasLasInvestigaciones);
     setParticipanteParaCrearSeguimiento(participante);
     setShowModalCrearSeguimiento(true);
   };
@@ -1601,39 +1603,41 @@ export default function DetalleParticipante() {
       )}
 
       {/* Modal de crear seguimiento desde header */}
-      <SeguimientoSideModal
-        isOpen={showModalCrearSeguimiento}
-        onClose={() => {
-          setShowModalCrearSeguimiento(false);
-          setParticipanteParaCrearSeguimiento(null);
-        }}
-        onSave={async (data) => {
-          try {
-            const response = await fetch('/api/seguimientos', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-              throw new Error('Error al crear seguimiento');
-            }
-
+      {showModalCrearSeguimiento && (
+        <SeguimientoSideModal
+          isOpen={showModalCrearSeguimiento}
+          onClose={() => {
             setShowModalCrearSeguimiento(false);
             setParticipanteParaCrearSeguimiento(null);
-            showSuccess('Seguimiento creado exitosamente');
-          } catch (error) {
-            console.error('Error al crear seguimiento:', error);
-            showError('Error al crear seguimiento');
-          }
-        }}
-        investigacionId={todasLasInvestigaciones.length > 0 ? todasLasInvestigaciones[0].id : ""}
-        usuarios={usuarios}
-        participanteExternoPrecargado={participanteParaCrearSeguimiento}
-        investigaciones={todasLasInvestigaciones}
-      />
+          }}
+          onSave={async (data) => {
+            try {
+              const response = await fetch('/api/seguimientos', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+              });
+
+              if (!response.ok) {
+                throw new Error('Error al crear seguimiento');
+              }
+
+              setShowModalCrearSeguimiento(false);
+              setParticipanteParaCrearSeguimiento(null);
+              showSuccess('Seguimiento creado exitosamente');
+            } catch (error) {
+              console.error('Error al crear seguimiento:', error);
+              showError('Error al crear seguimiento');
+            }
+          }}
+          investigacionId={todasLasInvestigaciones.length > 0 ? todasLasInvestigaciones[0].id : ""}
+          usuarios={usuarios}
+          participanteExternoPrecargado={participanteParaCrearSeguimiento}
+          investigaciones={todasLasInvestigaciones}
+        />
+      )}
     </Layout>
   );
 }
