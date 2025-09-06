@@ -127,35 +127,24 @@ export async function actualizarSeguimiento(seguimientoId: string, updates: Actu
   try {
     console.log('📝 Actualizando seguimiento:', seguimientoId, updates);
     
-    // Verificar autenticación del usuario
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error('❌ Error de autenticación:', authError);
-      return { data: null, error: 'Usuario no autenticado' };
+    // Usar la nueva API de seguimientos
+    const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('❌ Error en API de seguimientos:', errorData);
+      return { data: null, error: errorData.error || 'Error actualizando seguimiento' };
     }
 
-    console.log('👤 Usuario autenticado:', user.id);
-    
-    // Preparar los datos de actualización, excluyendo campos que no deben actualizarse
-    const datosActualizacion = {
-      ...updates,
-      actualizado_el: new Date().toISOString()
-    };
-    
-    const { data, error } = await supabase
-      .from('seguimientos_investigacion')
-      .update(datosActualizacion)
-      .eq('id', seguimientoId)
-      .select('*')
-      .single();
-
-    if (error) {
-      console.error('❌ Error actualizando seguimiento:', error);
-      return { data: null, error: error.message };
-    }
-
-    console.log('✅ Seguimiento actualizado exitosamente:', data);
-    return { data, error: null };
+    const result = await response.json();
+    console.log('✅ Seguimiento actualizado exitosamente:', result.data);
+    return { data: result.data, error: null };
   } catch (error: any) {
     console.error('❌ Error en actualizarSeguimiento:', error);
     return { data: null, error: error.message };
@@ -167,23 +156,15 @@ export async function eliminarSeguimiento(seguimientoId: string) {
   try {
     console.log('🗑️ Eliminando seguimiento:', seguimientoId);
     
-    // Verificar autenticación del usuario
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error('❌ Error de autenticación:', authError);
-      return { data: null, error: 'Usuario no autenticado' };
-    }
+    // Usar la nueva API de seguimientos
+    const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
+      method: 'DELETE',
+    });
 
-    console.log('👤 Usuario autenticado:', user.id);
-    
-    const { error } = await supabase
-      .from('seguimientos_investigacion')
-      .delete()
-      .eq('id', seguimientoId);
-
-    if (error) {
-      console.error('❌ Error eliminando seguimiento:', error);
-      return { data: null, error: error.message };
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('❌ Error en API de seguimientos:', errorData);
+      return { data: null, error: errorData.error || 'Error eliminando seguimiento' };
     }
 
     console.log('✅ Seguimiento eliminado exitosamente');
