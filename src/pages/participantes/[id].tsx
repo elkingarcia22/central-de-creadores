@@ -11,11 +11,11 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState, SeguimientoSideModal } from '../../components/ui';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon as ClockIconSolid, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, ClipboardListIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
@@ -129,9 +129,11 @@ export default function DetalleParticipante() {
   const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
   const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
+  const [showModalCrearSeguimiento, setShowModalCrearSeguimiento] = useState(false);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<any>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<any>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<any>(null);
+  const [participanteParaCrearSeguimiento, setParticipanteParaCrearSeguimiento] = useState<any>(null);
   const [participanteParaPerfilamiento, setParticipanteParaPerfilamiento] = useState<any>(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any>(null);
   const [participantePerfilamientoTemp, setParticipantePerfilamientoTemp] = useState<any>(null);
@@ -657,6 +659,12 @@ export default function DetalleParticipante() {
     setParticipantePerfilamientoTemp(participante);
     setParticipanteParaPerfilamiento(participante);
     setShowModalPerfilamiento(true);
+  };
+
+  const handleCrearSeguimiento = (participante: any) => {
+    // Abrir modal de crear seguimiento
+    setParticipanteParaCrearSeguimiento(participante);
+    setShowModalCrearSeguimiento(true);
   };
 
   // Componente de contenido de información
@@ -1239,6 +1247,11 @@ export default function DetalleParticipante() {
                   className: 'text-popover-foreground hover:text-popover-foreground/80'
                 },
                 {
+                  label: 'Crear Seguimiento',
+                  icon: <ClipboardListIcon className="w-4 h-4" />,
+                  onClick: () => handleCrearSeguimiento(participante)
+                },
+                {
                   label: 'Eliminar',
                   icon: <TrashIcon className="w-4 h-4" />,
                   onClick: () => handleEliminarParticipante(participante),
@@ -1564,6 +1577,40 @@ export default function DetalleParticipante() {
           }}
         />
       )}
+
+      {/* Modal de crear seguimiento desde header */}
+      <SeguimientoSideModal
+        isOpen={showModalCrearSeguimiento}
+        onClose={() => {
+          setShowModalCrearSeguimiento(false);
+          setParticipanteParaCrearSeguimiento(null);
+        }}
+        onSave={async (data) => {
+          try {
+            const response = await fetch('/api/seguimientos', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+              throw new Error('Error al crear seguimiento');
+            }
+
+            setShowModalCrearSeguimiento(false);
+            setParticipanteParaCrearSeguimiento(null);
+            showSuccess('Seguimiento creado exitosamente');
+          } catch (error) {
+            console.error('Error al crear seguimiento:', error);
+            showError('Error al crear seguimiento');
+          }
+        }}
+        investigacionId=""
+        usuarios={usuarios}
+        participanteExternoPrecargado={participanteParaCrearSeguimiento}
+      />
     </Layout>
   );
 }
