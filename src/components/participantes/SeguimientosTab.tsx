@@ -5,6 +5,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { Typography, Card, Button, Chip, Subtitle, EmptyState } from '../ui';
 import DataTable from '../ui/DataTable';
 import ActionsMenu from '../ui/ActionsMenu';
+import ConfirmarEliminacionModal from '../ui/ConfirmarEliminacionModal';
 import { 
   ClipboardListIcon, 
   PlusIcon, 
@@ -70,6 +71,8 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
   const setShowCrearModal = onCloseCrearModal || setInternalShowCrearModal;
   const [seguimientoEditando, setSeguimientoEditando] = useState<Seguimiento | null>(null);
   const [showEditarModal, setShowEditarModal] = useState(false);
+  const [showModalEliminar, setShowModalEliminar] = useState(false);
+  const [seguimientoParaEliminar, setSeguimientoParaEliminar] = useState<Seguimiento | null>(null);
 
   // Cargar usuarios
   const cargarUsuarios = async () => {
@@ -190,11 +193,18 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
   };
 
   // Manejar eliminación de seguimiento
-  const handleEliminarSeguimiento = async (seguimientoId: string) => {
+  const handleEliminarSeguimiento = (seguimiento: Seguimiento) => {
+    setSeguimientoParaEliminar(seguimiento);
+    setShowModalEliminar(true);
+  };
+
+  const confirmarEliminacion = async () => {
+    if (!seguimientoParaEliminar) return;
+    
     try {
-      console.log('🔍 Eliminando seguimiento:', seguimientoId);
+      console.log('🔍 Eliminando seguimiento:', seguimientoParaEliminar.id);
       
-      const response = await fetch(`/api/seguimientos/${seguimientoId}`, {
+      const response = await fetch(`/api/seguimientos/${seguimientoParaEliminar.id}`, {
         method: 'DELETE',
       });
 
@@ -205,6 +215,8 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
 
       console.log('✅ Seguimiento eliminado');
       showSuccess('Seguimiento eliminado exitosamente');
+      setShowModalEliminar(false);
+      setSeguimientoParaEliminar(null);
       if (onRefresh) {
         onRefresh();
       } else {
@@ -366,7 +378,7 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
     actions.push({
       label: 'Eliminar',
       icon: <TrashIcon className="w-4 h-4" />,
-      onClick: () => handleEliminarSeguimiento(seguimiento.id),
+      onClick: () => handleEliminarSeguimiento(seguimiento),
       className: 'text-red-600 hover:text-red-700',
       title: 'Eliminar seguimiento'
     });
@@ -403,7 +415,7 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
     {
       label: 'Eliminar',
       icon: <TrashIcon className="w-4 h-4" />,
-      onClick: (row: Seguimiento) => handleEliminarSeguimiento(row.id),
+      onClick: (row: Seguimiento) => handleEliminarSeguimiento(row),
       className: 'text-red-600 hover:text-red-700',
       title: 'Eliminar seguimiento'
     }
@@ -465,6 +477,21 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
           investigacionId={seguimientoEditando.investigacion_id}
           usuarios={usuarios}
           responsablePorDefecto={userId}
+        />
+      )}
+
+      {/* Modal de confirmación para eliminar seguimiento */}
+      {showModalEliminar && seguimientoParaEliminar && (
+        <ConfirmarEliminacionModal
+          isOpen={showModalEliminar}
+          onClose={() => {
+            setShowModalEliminar(false);
+            setSeguimientoParaEliminar(null);
+          }}
+          onConfirm={confirmarEliminacion}
+          titulo="Eliminar Seguimiento"
+          mensaje={`¿Estás seguro de que deseas eliminar este seguimiento? Esta acción no se puede deshacer.`}
+          nombreItem={seguimientoParaEliminar.investigacion_nombre || 'Seguimiento'}
         />
       )}
     </div>
