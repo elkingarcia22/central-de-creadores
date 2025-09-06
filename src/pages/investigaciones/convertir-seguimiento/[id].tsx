@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
-import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Input, Select, DatePicker, UserSelectorWithAvatar, Chip, PageHeader, FormContainer, FormItem } from '../../../components/ui';
 import { 
   ArrowLeftIcon,
   InfoIcon,
@@ -238,54 +238,35 @@ const ConvertirSeguimientoPage: NextPage = () => {
     <Layout rol={rolSeleccionado}>
       <div className="py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push('/investigaciones')}
-              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            </button>
-            <div>
-              <Typography variant="h2">Convertir Seguimiento en Investigación</Typography>
-              <Typography variant="body2" color="secondary">
-                Crear una nueva investigación basada en este seguimiento
-              </Typography>
-            </div>
-          </div>
-
-          {/* Acciones */}
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              onClick={handleCancel}
-              disabled={converting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              loading={converting}
-              className="flex items-center gap-2"
-            >
-              <CopyIcon className="w-4 h-4" />
-              Convertir en Investigación
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title="Convertir Seguimiento en Investigación"
+          subtitle="Crear una nueva investigación basada en este seguimiento"
+          color="blue"
+          primaryAction={{
+            label: "Convertir en Investigación",
+            onClick: handleSubmit,
+            variant: "primary",
+            disabled: converting,
+            loading: converting,
+            icon: <CopyIcon className="w-4 h-4" />
+          }}
+          secondaryActions={[
+            {
+              label: "Cancelar",
+              onClick: handleCancel,
+              variant: "secondary"
+            }
+          ]}
+        />
 
         {/* Contenido */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Seguimiento Base */}
-          <Card variant="default" padding="lg">
-            <div className="flex items-center gap-2 mb-6">
-              <FileTextIcon className="w-5 h-5 text-primary" />
-              <Typography variant="h3" weight="medium">
-                Seguimiento Base
-              </Typography>
-            </div>
-            
+          <FormContainer
+            title="Seguimiento Base"
+            icon={<FileTextIcon className="w-5 h-5" />}
+            spacing="md"
+          >
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Chip variant="info">
@@ -306,18 +287,17 @@ const ConvertirSeguimientoPage: NextPage = () => {
                 Responsable: {obtenerNombreUsuario(seguimiento.responsable_id)}
               </div>
             </div>
-          </Card>
+          </FormContainer>
 
           {/* Formulario de Investigación */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Información básica */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <InfoIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h4">Información de la Investigación</Typography>
-              </div>
-              
-              <div className="space-y-4">
+            <FormContainer
+              title="Información de la Investigación"
+              icon={<InfoIcon className="w-5 h-5" />}
+              spacing="md"
+            >
+              <FormItem layout="full">
                 <Input
                   label="Nombre de la investigación"
                   placeholder="Ej: Investigación de usabilidad del dashboard"
@@ -326,7 +306,9 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-                
+              </FormItem>
+              
+              <FormItem layout="full">
                 <div>
                   <Typography variant="subtitle2" weight="medium" className="mb-2">
                     Descripción
@@ -337,25 +319,25 @@ const ConvertirSeguimientoPage: NextPage = () => {
                     placeholder="Descripción detallada de la investigación"
                     rows={4}
                     disabled={converting}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md  bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
-              </div>
-            </Card>
+              </FormItem>
+            </FormContainer>
 
             {/* Fechas */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <SesionesIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h4">Fechas</Typography>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormContainer
+              title="Fechas"
+              icon={<SesionesIcon className="w-5 h-5" />}
+              spacing="md"
+            >
+              <FormItem layout="third">
                 <DatePicker
                   label="Fecha de inicio"
                   value={formData.fecha_inicio}
                   onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
                   required
+                  fullWidth
                 />
                 
                 <DatePicker
@@ -363,6 +345,7 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   value={formData.fecha_fin}
                   onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
                   required
+                  fullWidth
                 />
 
                 <Select
@@ -376,17 +359,16 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   }))}
                   fullWidth
                 />
-              </div>
-            </Card>
+              </FormItem>
+            </FormContainer>
 
             {/* Equipo */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <UserIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h4">Equipo</Typography>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormContainer
+              title="Equipo"
+              icon={<UserIcon className="w-5 h-5" />}
+              spacing="md"
+            >
+              <FormItem layout="half">
                 <UserSelectorWithAvatar
                   label="Responsable"
                   value={formData.responsable_id}
@@ -395,6 +377,7 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   placeholder="Seleccionar responsable"
                   disabled={converting}
                   required
+                  fullWidth
                 />
                 
                 <UserSelectorWithAvatar
@@ -405,18 +388,18 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   placeholder="Seleccionar implementador"
                   disabled={converting}
                   required
+                  fullWidth
                 />
-              </div>
-            </Card>
+              </FormItem>
+            </FormContainer>
 
-            {/* Tipo de Investigación */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <ConfiguracionesIcon className="w-5 h-5 text-primary" />
-                <Typography variant="h4">Configuración</Typography>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Configuración */}
+            <FormContainer
+              title="Configuración"
+              icon={<ConfiguracionesIcon className="w-5 h-5" />}
+              spacing="md"
+            >
+              <FormItem layout="half">
                 <Select
                   label="Tipo de investigación"
                   placeholder="Seleccionar tipo"
@@ -442,8 +425,8 @@ const ConvertirSeguimientoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-              </div>
-            </Card>
+              </FormItem>
+            </FormContainer>
           </form>
         </div>
       </div>
