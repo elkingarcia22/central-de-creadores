@@ -40,18 +40,28 @@ interface Seguimiento {
 interface SeguimientosTabProps {
   showCrearModal?: boolean;
   onCloseCrearModal?: () => void;
+  seguimientos?: Seguimiento[];
+  loading?: boolean;
+  onRefresh?: () => void;
 }
 
 export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({ 
   showCrearModal: externalShowCrearModal, 
-  onCloseCrearModal 
+  onCloseCrearModal,
+  seguimientos: externalSeguimientos,
+  loading: externalLoading,
+  onRefresh
 }) => {
   const router = useRouter();
   const { userId } = useFastUser();
   const { showError, showSuccess } = useToast();
   
-  const [seguimientos, setSeguimientos] = useState<Seguimiento[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [internalSeguimientos, setInternalSeguimientos] = useState<Seguimiento[]>([]);
+  const [internalLoading, setInternalLoading] = useState(true);
+  
+  // Usar datos externos si están disponibles, sino usar los internos
+  const seguimientos = externalSeguimientos !== undefined ? externalSeguimientos : internalSeguimientos;
+  const loading = externalLoading !== undefined ? externalLoading : internalLoading;
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [internalShowCrearModal, setInternalShowCrearModal] = useState(false);
   
@@ -76,10 +86,15 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
     }
   };
 
-  // Cargar todos los seguimientos
+  // Cargar todos los seguimientos (solo si no hay datos externos)
   const cargarSeguimientos = async () => {
+    if (externalSeguimientos !== undefined) {
+      // Si hay datos externos, no cargar internamente
+      return;
+    }
+    
     try {
-      setLoading(true);
+      setInternalLoading(true);
       console.log('🔍 Cargando todos los seguimientos...');
       
       // Obtener todos los seguimientos (sin filtro de participante)
@@ -90,13 +105,13 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       
       const result = await response.json();
       console.log('✅ Seguimientos cargados:', result.data?.length || 0);
-      setSeguimientos(result.data || []);
+      setInternalSeguimientos(result.data || []);
     } catch (error) {
       console.error('❌ Error cargando seguimientos:', error);
       showError('Error al cargar seguimientos');
-      setSeguimientos([]);
+      setInternalSeguimientos([]);
     } finally {
-      setLoading(false);
+      setInternalLoading(false);
     }
   };
 
@@ -128,7 +143,11 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       
       showSuccess('Seguimiento creado exitosamente');
       setShowCrearModal(false);
-      cargarSeguimientos();
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        cargarSeguimientos();
+      }
     } catch (error: any) {
       console.error('❌ Error creando seguimiento:', error);
       showError(error.message || 'Error al crear seguimiento');
@@ -159,7 +178,11 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       showSuccess('Seguimiento actualizado exitosamente');
       setShowEditarModal(false);
       setSeguimientoEditando(null);
-      cargarSeguimientos();
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        cargarSeguimientos();
+      }
     } catch (error: any) {
       console.error('❌ Error actualizando seguimiento:', error);
       showError(error.message || 'Error al actualizar seguimiento');
@@ -182,7 +205,11 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
 
       console.log('✅ Seguimiento eliminado');
       showSuccess('Seguimiento eliminado exitosamente');
-      cargarSeguimientos();
+      if (onRefresh) {
+        onRefresh();
+      } else {
+        cargarSeguimientos();
+      }
     } catch (error: any) {
       console.error('❌ Error eliminando seguimiento:', error);
       showError(error.message || 'Error al eliminar seguimiento');
@@ -416,7 +443,7 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
           data={seguimientos}
           columns={columns}
           loading={loading}
-          searchable={true}
+          searchable={false}
           sortable={true}
           pagination={true}
           pageSize={10}

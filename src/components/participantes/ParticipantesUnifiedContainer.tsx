@@ -49,6 +49,9 @@ interface ParticipantesUnifiedContainerProps {
   // Props para seguimientos
   showCrearSeguimientoModal?: boolean;
   onCloseCrearSeguimientoModal?: () => void;
+  seguimientos?: any[];
+  seguimientosLoading?: boolean;
+  onRefreshSeguimientos?: () => void;
 }
 
 export default function ParticipantesUnifiedContainer({
@@ -71,7 +74,10 @@ export default function ParticipantesUnifiedContainer({
   filterOptions,
   actions,
   showCrearSeguimientoModal,
-  onCloseCrearSeguimientoModal
+  onCloseCrearSeguimientoModal,
+  seguimientos,
+  seguimientosLoading,
+  onRefreshSeguimientos
 }: ParticipantesUnifiedContainerProps) {
   const router = useRouter();
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -195,6 +201,27 @@ export default function ParticipantesUnifiedContainer({
     return filtradas;
   }, [participantes, activeTab, searchTerm, filters]);
 
+  // Filtrar seguimientos basado en searchTerm
+  const seguimientosFiltrados = useMemo(() => {
+    if (!seguimientos) return [];
+    
+    let filtered = seguimientos;
+
+    // Aplicar filtros de búsqueda
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(seguimiento => 
+        seguimiento.participante_externo?.nombre?.toLowerCase().includes(term) ||
+        seguimiento.investigacion_nombre?.toLowerCase().includes(term) ||
+        seguimiento.responsable_nombre?.toLowerCase().includes(term) ||
+        seguimiento.notas?.toLowerCase().includes(term) ||
+        seguimiento.estado?.toLowerCase().includes(term)
+      );
+    }
+
+    return filtered;
+  }, [seguimientos, searchTerm]);
+
   const handleOpenFilters = () => {
     setShowFilterDrawer(true);
   };
@@ -284,6 +311,9 @@ export default function ParticipantesUnifiedContainer({
         <SeguimientosTab 
           showCrearModal={showCrearSeguimientoModal}
           onCloseCrearModal={onCloseCrearSeguimientoModal}
+          seguimientos={seguimientosFiltrados}
+          loading={seguimientosLoading}
+          onRefresh={onRefreshSeguimientos}
         />
       ) : (
         <DataTable

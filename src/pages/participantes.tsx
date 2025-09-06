@@ -101,6 +101,8 @@ export default function ParticipantesPage() {
   const [errorEliminacion, setErrorEliminacion] = useState<any>(null);
   const [eliminandoParticipante, setEliminandoParticipante] = useState(false);
   const [showCrearSeguimientoModal, setShowCrearSeguimientoModal] = useState(false);
+  const [seguimientos, setSeguimientos] = useState<any[]>([]);
+  const [seguimientosLoading, setSeguimientosLoading] = useState(false);
   
   // Estados para catálogos de filtros
   const [estadosParticipante, setEstadosParticipante] = useState<Array<{ value: string; label: string }>>([]);
@@ -209,13 +211,35 @@ export default function ParticipantesPage() {
     tiene_productos: 'todos'
   });
 
+  // Cargar seguimientos
+  const cargarSeguimientos = useCallback(async () => {
+    try {
+      setSeguimientosLoading(true);
+      console.log('🔍 Cargando seguimientos...');
+      
+      const response = await fetch('/api/seguimientos?all=true');
+      if (!response.ok) {
+        throw new Error('Error al cargar seguimientos');
+      }
+      
+      const result = await response.json();
+      console.log('✅ Seguimientos cargados:', result.data?.length || 0);
+      setSeguimientos(result.data || []);
+    } catch (error) {
+      console.error('❌ Error cargando seguimientos:', error);
+      showError('Error al cargar seguimientos');
+      setSeguimientos([]);
+    } finally {
+      setSeguimientosLoading(false);
+    }
+  }, [showError]);
+
   // Cargar datos iniciales
   useEffect(() => {
     cargarParticipantes();
     cargarCatalogos();
-  }, []);
-
-
+    cargarSeguimientos();
+  }, [cargarSeguimientos]);
 
   // Cerrar dropdown cuando se hace clic fuera
   useEffect(() => {
@@ -1358,6 +1382,9 @@ export default function ParticipantesPage() {
             ]}
             showCrearSeguimientoModal={showCrearSeguimientoModal}
             onCloseCrearSeguimientoModal={() => setShowCrearSeguimientoModal(false)}
+            seguimientos={seguimientos}
+            seguimientosLoading={seguimientosLoading}
+            onRefreshSeguimientos={cargarSeguimientos}
             />
 
 
