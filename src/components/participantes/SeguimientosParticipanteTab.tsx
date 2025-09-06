@@ -68,8 +68,8 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
         console.log('🔍 Tipo de datos:', typeof data);
         console.log('🔍 Es array:', Array.isArray(data));
         
-        // Asegurar que sea un array
-        const usuariosArray = Array.isArray(data) ? data : (data?.data || []);
+        // Asegurar que sea un array - la API devuelve { usuarios: [...] }
+        const usuariosArray = Array.isArray(data) ? data : (data?.usuarios || data?.data || []);
         console.log('🔍 Usuarios finales:', usuariosArray);
         setUsuarios(usuariosArray);
       } else {
