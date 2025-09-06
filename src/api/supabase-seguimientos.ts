@@ -19,75 +19,20 @@ export async function obtenerSeguimientosPorInvestigacion(investigacionId: strin
     console.log('🔍 === INICIO OBTENER SEGUIMIENTOS ===');
     console.log('🔍 Investigación ID:', investigacionId);
     
-    // Verificar autenticación del usuario
-    console.log('🔐 Verificando autenticación...');
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.log('⚠️ Usuario no autenticado, usando cliente admin...');
-      
-      // Usar cliente admin para bypass RLS
-      const { data, error } = await supabaseAdmin
-        .from('seguimientos_investigacion')
-        .select('*')
-        .eq('investigacion_id', investigacionId)
-        .order('fecha_seguimiento', { ascending: false });
-
-      if (error) {
-        console.error('❌ Error obteniendo seguimientos (admin):', error);
-        return { data: null, error: error.message };
-      }
-
-      console.log('✅ Seguimientos obtenidos (admin):', data?.length || 0);
-      return { data: data || [], error: null };
-    }
-
-    console.log('👤 Usuario autenticado:', user.id);
+    // Usar la nueva API de seguimientos
+    const response = await fetch(`/api/seguimientos?investigacion_id=${investigacionId}`);
     
-    // Verificar que la investigación existe
-    console.log('🔍 Verificando que la investigación existe...');
-    const { data: investigacion, error: investigacionError } = await supabase
-      .from('investigaciones')
-      .select('id, nombre')
-      .eq('id', investigacionId)
-      .single();
-    
-    if (investigacionError || !investigacion) {
-      console.error('❌ Investigación no encontrada:', investigacionId, investigacionError);
-      return { data: null, error: 'La investigación no existe' };
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('❌ Error en API de seguimientos:', errorData);
+      return { data: null, error: errorData.error || 'Error obteniendo seguimientos' };
     }
     
-    console.log('✅ Investigación verificada:', investigacion.nombre);
+    const result = await response.json();
+    console.log('✅ Seguimientos obtenidos desde API:', result.data?.length || 0);
     
-    // Obtener seguimientos con contexto de usuario autenticado
-    console.log('🚀 Ejecutando consulta de seguimientos...');
-    const { data, error } = await supabase
-      .from('seguimientos_investigacion')
-      .select(`
-        *,
-        participante_externo:participantes!seguimientos_investigacion_participante_externo_id_fkey(
-          id,
-          nombre,
-          empresa_nombre,
-          email
-        )
-      `)
-      .eq('investigacion_id', investigacionId)
-      .order('fecha_seguimiento', { ascending: false });
-
-    if (error) {
-      console.error('❌ Error obteniendo seguimientos:', error);
-      console.error('❌ Detalles del error:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
-      return { data: null, error: error.message };
-    }
-
-    console.log('✅ Seguimientos obtenidos:', data?.length || 0);
-    if (data && data.length > 0) {
-      console.log('📋 Detalles de seguimientos:', data.map(s => ({
+    if (result.data && result.data.length > 0) {
+      console.log('📋 Detalles de seguimientos:', result.data.map((s: any) => ({
         id: s.id,
         estado: s.estado,
         fecha: s.fecha_seguimiento,
@@ -96,7 +41,7 @@ export async function obtenerSeguimientosPorInvestigacion(investigacionId: strin
     }
     
     console.log('🔍 === FIN OBTENER SEGUIMIENTOS ===');
-    return { data: data || [], error: null };
+    return { data: result.data || [], error: null };
   } catch (error: any) {
     console.error('❌ Error inesperado en obtenerSeguimientosPorInvestigacion:', error);
     console.error('❌ Stack trace:', error.stack);
@@ -151,113 +96,25 @@ export async function crearSeguimiento(seguimientoData: CrearSeguimientoRequest)
       participante_externo_id: seguimientoData.participante_externo_id
     });
     
-    // Obtener usuario actual
-    console.log('🔐 Verificando autenticación...');
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.log('⚠️ Usuario no autenticado, usando cliente admin...');
-      
-      // Usar cliente admin para bypass RLS
-      const datosParaInsertar = {
-        investigacion_id: seguimientoData.investigacion_id,
-        fecha_seguimiento: seguimientoData.fecha_seguimiento,
-        notas: seguimientoData.notas,
-        responsable_id: seguimientoData.responsable_id,
-        estado: seguimientoData.estado,
-        creado_por: seguimientoData.responsable_id, // Usar responsable como creador
-        creado_el: new Date().toISOString(),
-        // Solo incluir participante_externo_id si existe
-        ...(seguimientoData.participante_externo_id && { participante_externo_id: seguimientoData.participante_externo_id })
-      };
-
-      console.log('📤 Datos para insertar (admin):', datosParaInsertar);
-      console.log('🚀 Ejecutando inserción (admin)...');
-
-      const { data, error } = await supabaseAdmin
-        .from('seguimientos_investigacion')
-        .insert([datosParaInsertar])
-        .select('*')
-        .single();
-
-      if (error) {
-        console.error('❌ Error creando seguimiento (admin):', error);
-        return { data: null, error: error.message };
-      }
-
-      console.log('✅ Seguimiento creado exitosamente (admin):', data);
-      console.log('📝 === FIN CREAR SEGUIMIENTO ===');
-      return { data, error: null };
-    }
-
-    console.log('👤 Usuario autenticado:', user.id);
-
-    // Verificar que el responsable_id existe en profiles
-    if (seguimientoData.responsable_id) {
-      console.log('🔍 Verificando responsable...');
-      const { data: responsable, error: responsableError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .eq('id', seguimientoData.responsable_id)
-        .single();
-      
-      if (responsableError || !responsable) {
-        console.error('❌ Responsable no encontrado:', seguimientoData.responsable_id, responsableError);
-        return { data: null, error: 'El responsable seleccionado no existe en el sistema' };
-      }
-      
-      console.log('✅ Responsable verificado:', responsable);
-    }
-
-    // Verificar que la investigación existe
-    console.log('🔍 Verificando investigación...');
-    const { data: investigacion, error: investigacionError } = await supabase
-      .from('investigaciones')
-      .select('id, nombre')
-      .eq('id', seguimientoData.investigacion_id)
-      .single();
+    // Usar la nueva API de seguimientos
+    const response = await fetch('/api/seguimientos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(seguimientoData)
+    });
     
-    if (investigacionError || !investigacion) {
-      console.error('❌ Investigación no encontrada:', seguimientoData.investigacion_id, investigacionError);
-      return { data: null, error: 'La investigación seleccionada no existe en el sistema' };
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('❌ Error en API de seguimientos:', errorData);
+      return { data: null, error: errorData.error || 'Error creando seguimiento' };
     }
     
-    console.log('✅ Investigación verificado:', investigacion);
-
-    const datosParaInsertar = {
-      investigacion_id: seguimientoData.investigacion_id,
-      fecha_seguimiento: seguimientoData.fecha_seguimiento,
-      notas: seguimientoData.notas,
-      responsable_id: seguimientoData.responsable_id,
-      estado: seguimientoData.estado,
-      creado_por: user.id,
-      creado_el: new Date().toISOString(),
-      // Solo incluir participante_externo_id si existe
-      ...(seguimientoData.participante_externo_id && { participante_externo_id: seguimientoData.participante_externo_id })
-    };
-
-    console.log('📤 Datos para insertar:', datosParaInsertar);
-    console.log('🚀 Ejecutando inserción...');
-
-    const { data, error } = await supabase
-      .from('seguimientos_investigacion')
-      .insert([datosParaInsertar])
-      .select('*')
-      .single();
-
-    if (error) {
-      console.error('❌ Error creando seguimiento:', error);
-      console.error('❌ Detalles del error:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
-      return { data: null, error: error.message };
-    }
-
-    console.log('✅ Seguimiento creado exitosamente:', data);
+    const result = await response.json();
+    console.log('✅ Seguimiento creado exitosamente desde API:', result.data);
     console.log('📝 === FIN CREAR SEGUIMIENTO ===');
-    return { data, error: null };
+    return { data: result.data, error: null };
   } catch (error: any) {
     console.error('❌ Error inesperado en crearSeguimiento:', error);
     console.error('❌ Stack trace:', error.stack);
