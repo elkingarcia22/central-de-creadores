@@ -198,8 +198,10 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('🔍 [ORIGEN] Navegando a investigación:', investigacion.id);
+                      console.log('🔍 [ORIGEN] Datos completos de investigación:', investigacion);
+                      console.log('🔍 [ORIGEN] ID de investigación:', investigacion.id);
                       console.log('🔍 [ORIGEN] URL completa:', `/investigaciones/ver/${investigacion.id}`);
+                      console.log('🔍 [ORIGEN] Router actual:', router);
                       router.push(`/investigaciones/ver/${investigacion.id}`);
                     }}
                     className="flex items-center gap-1"
@@ -329,8 +331,10 @@ export const TrazabilidadSection: React.FC<TrazabilidadSectionProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('🔍 [DERIVADAS] Navegando a investigación:', investigacion.id);
+                      console.log('🔍 [DERIVADAS] Datos completos de investigación:', investigacion);
+                      console.log('🔍 [DERIVADAS] ID de investigación:', investigacion.id);
                       console.log('🔍 [DERIVADAS] URL completa:', `/investigaciones/ver/${investigacion.id}`);
+                      console.log('🔍 [DERIVADAS] Router actual:', router);
                       router.push(`/investigaciones/ver/${investigacion.id}`);
                     }}
                     className="flex items-center gap-1"
