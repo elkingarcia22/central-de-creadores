@@ -49,33 +49,23 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { theme, toggleTheme } = useTheme();
   const displayName = user?.name || user?.email || 'Usuario';
+  const [isHovered, setIsHovered] = React.useState(false);
+  const isExpanded = isHovered;
 
   return (
-    <div className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 ${className}`}>
-      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isCollapsed ? 'py-4 px-1' : ''} relative`}>
-        {/* Botón de colapsar/expandir en la esquina superior derecha */}
-        {onToggleCollapse && (
-          <Tooltip content={isCollapsed ? 'Expandir menú' : 'Colapsar menú'} position="bottom">
-            <button
-              onClick={onToggleCollapse}
-              className={`absolute p-1 rounded-md hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors ${isCollapsed ? 'top-2 right-0' : 'top-2 right-2'}`}
-              aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-            >
-              {isCollapsed ? (
-                <ChevronRightIcon className="w-4 h-4 text-muted-foreground" />
-              ) : (
-                <ChevronLeftIcon className="w-4 h-4 text-muted-foreground" />
-              )}
-            </button>
-          </Tooltip>
-        )}
+    <div 
+      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ${isExpanded ? 'w-64' : 'w-16'} ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`flex flex-col items-center justify-center py-6 px-2 border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ${isExpanded ? '' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div>
             <SimpleAvatar
               src={user?.avatar}
               fallbackText={displayName}
-              size={isCollapsed ? "lg" : "xl"}
+              size={isExpanded ? "xl" : "lg"}
               className="border-2 border-slate-100 dark:border-zinc-700 cursor-pointer hover:opacity-80 transition-all duration-300"
               onClick={onSettings}
             />
@@ -84,29 +74,29 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Selector de rol siempre visible */}
         {user && (
-          <div className={`mt-3 text-center w-full flex flex-col items-center ${isCollapsed ? 'mt-2' : ''}`}>
-            {!isCollapsed && (
+          <div className={`mt-3 text-center w-full flex flex-col items-center ${isExpanded ? '' : 'mt-2'}`}>
+            {isExpanded && (
               <Typography variant="body2" weight="medium" className="text-foreground truncate">
                 {displayName}
               </Typography>
             )}
-            <RolSelector variant="sidebar" className="text-muted-foreground" isCollapsed={isCollapsed} />
+            <RolSelector variant="sidebar" className="text-muted-foreground" isCollapsed={!isExpanded} />
           </div>
         )}
       </div>
 
-      <nav className={`flex-1 px-2 py-4 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+      <nav className={`flex-1 px-2 py-4 space-y-2 ${isExpanded ? '' : 'px-1'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
               {...item}
-              isCollapsed={isCollapsed}
+              isCollapsed={!isExpanded}
               onClick={() => onItemClick?.(item.href)}
             />
           );
 
           // Solo usar tooltip cuando está contraído
-          if (isCollapsed) {
+          if (!isExpanded) {
             return (
               <Tooltip 
                 key={item.href}
@@ -123,18 +113,18 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 ${isCollapsed ? 'px-1' : ''}`}>
+      <div className={`px-2 py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 ${isExpanded ? '' : 'px-1'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
             <NavigationItem
               {...item}
-              isCollapsed={isCollapsed}
+              isCollapsed={!isExpanded}
               onClick={() => onItemClick?.(item.href)}
             />
           );
 
-          if (isCollapsed) {
+          if (!isExpanded) {
             return (
               <Tooltip 
                 key={item.href}
@@ -158,14 +148,14 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}
               href="#"
-              icon={theme === 'dark' ? <SunIcon className="w-6 h-6 text-gray-500" /> : <MoonIcon className="w-6 h-6 text-gray-500" />}
-              isCollapsed={isCollapsed}
+              icon={theme === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
+              isCollapsed={!isExpanded}
               onClick={toggleTheme}
               asButton={true}
             />
           );
 
-          if (isCollapsed) {
+          if (!isExpanded) {
             return (
               <Tooltip 
                 content={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'} 
@@ -186,15 +176,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavigationItem
               label="Cerrar sesión"
               href="#"
-              icon={<LogoutIcon className="w-6 h-6 text-red-500" />}
-              isCollapsed={isCollapsed}
+              icon={<LogoutIcon className="w-6 h-6" />}
+              isCollapsed={!isExpanded}
               onClick={onLogout}
               asButton={true}
               className="text-red-500 hover:text-red-600"
             />
           );
 
-          if (isCollapsed) {
+          if (!isExpanded) {
             return (
               <Tooltip 
                 content="Cerrar sesión" 
