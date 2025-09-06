@@ -1330,7 +1330,7 @@ export default function ParticipantesPage() {
                 {
                   value: 'seguimientos',
                   label: 'Seguimientos',
-                  count: 0 // Se calculará dinámicamente
+                  count: seguimientos.length
                 }
               ]}
             filterOptions={{

@@ -314,16 +314,6 @@ export const SeguimientosTab: React.FC<SeguimientosTabProps> = ({
       )
     },
     {
-      key: 'notas',
-      label: 'Notas',
-      sortable: false,
-      render: (value: any, row: Seguimiento) => (
-        <Typography variant="body2" className="max-w-xs truncate">
-          {row.notas || 'Sin notas'}
-        </Typography>
-      )
-    },
-    {
       key: 'creado_el',
       label: 'Creado',
       sortable: true,

@@ -214,7 +214,6 @@ export default function ParticipantesUnifiedContainer({
         seguimiento.participante_externo?.nombre?.toLowerCase().includes(term) ||
         seguimiento.investigacion_nombre?.toLowerCase().includes(term) ||
         seguimiento.responsable_nombre?.toLowerCase().includes(term) ||
-        seguimiento.notas?.toLowerCase().includes(term) ||
         seguimiento.estado?.toLowerCase().includes(term)
       );
     }
