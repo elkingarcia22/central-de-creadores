@@ -87,10 +87,10 @@ export const obtenerPeriodos = async (): Promise<RespuestaAPI<Periodo[]>> => {
     
     // TEMPORAL: Retornar datos mock para evitar error 400
     const mockPeriodos = [
-      { id: '1', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
-      { id: '2', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
-      { id: '3', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
-      { id: '4', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
+      { id: '550e8400-e29b-41d4-a716-446655440001', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
+      { id: '550e8400-e29b-41d4-a716-446655440002', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
+      { id: '550e8400-e29b-41d4-a716-446655440003', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
+      { id: '550e8400-e29b-41d4-a716-446655440004', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
     ];
     
     console.log('✅ Períodos mock devueltos:', mockPeriodos.length);
@@ -344,10 +344,10 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     // Obtener datos de períodos - TEMPORAL: Usando datos mock para evitar error 400
     console.log('🔧 TEMP: Mock de períodos en obtenerInvestigaciones (primera ocurrencia)...');
     const periodos = [
-      { id: '1', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
-      { id: '2', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
-      { id: '3', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
-      { id: '4', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
+      { id: '550e8400-e29b-41d4-a716-446655440001', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
+      { id: '550e8400-e29b-41d4-a716-446655440002', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
+      { id: '550e8400-e29b-41d4-a716-446655440003', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
+      { id: '550e8400-e29b-41d4-a716-446655440004', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
     ];
     
     /* CONSULTA ORIGINAL COMENTADA - CAUSA ERROR 400
@@ -533,10 +533,10 @@ export const obtenerInvestigacionPorId = async (id: string): Promise<RespuestaAP
     // Obtener datos de períodos - TEMPORAL: Usando datos mock para evitar error 400
     console.log('🔧 TEMP: Mock de períodos en obtenerInvestigacionPorId (segunda ocurrencia)...');
     const periodos = [
-      { id: '1', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
-      { id: '2', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
-      { id: '3', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
-      { id: '4', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
+      { id: '550e8400-e29b-41d4-a716-446655440001', nombre: 'Q1 2025', etiqueta: '2025-Q1' },
+      { id: '550e8400-e29b-41d4-a716-446655440002', nombre: 'Q2 2025', etiqueta: '2025-Q2' },
+      { id: '550e8400-e29b-41d4-a716-446655440003', nombre: 'Q3 2025', etiqueta: '2025-Q3' },
+      { id: '550e8400-e29b-41d4-a716-446655440004', nombre: 'Q4 2025', etiqueta: '2025-Q4' }
     ];
     
     /* CONSULTA ORIGINAL COMENTADA - CAUSA ERROR 400
