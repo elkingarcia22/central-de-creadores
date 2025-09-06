@@ -660,15 +660,26 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
         onClose={handleCloseFilters}
         filters={filtersSeguimientos}
         onFiltersChange={setFiltersSeguimientos}
-        usuarios={usuarios}
-        investigaciones={seguimientos.map(s => ({
-          id: s.investigacion_id,
-          nombre: s.investigacion_nombre
-        }))}
-        participantes={[{
-          id: participanteId,
-          nombre: participanteNombre
-        }]}
+        options={{
+          estados: [
+            { value: 'pendiente', label: 'Pendiente' },
+            { value: 'en_progreso', label: 'En Progreso' },
+            { value: 'convertido', label: 'Convertido' },
+            { value: 'cancelado', label: 'Cancelado' }
+          ],
+          responsables: usuarios.map(u => ({
+            value: u.id,
+            label: u.nombre
+          })),
+          participantes: [{
+            value: participanteId,
+            label: participanteNombre
+          }],
+          investigaciones: seguimientos.map(s => ({
+            value: s.investigacion_nombre,
+            label: s.investigacion_nombre
+          }))
+        }}
       />
     </div>
   );
