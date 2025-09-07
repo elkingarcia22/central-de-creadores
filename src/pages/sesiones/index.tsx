@@ -249,12 +249,14 @@ const SesionesPage: NextPage = () => {
       return;
     }
     
-    // Construir la URL con el ID del participante y reclutamiento_id
-    const participacionUrl = `/participacion/${participanteId}?reclutamiento_id=${sesion.id}`;
+    // Construir la URL con el ID del participante, reclutamiento_id y returnUrl
+    const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+    const participacionUrl = `/participacion/${participanteId}?reclutamiento_id=${sesion.id}&returnUrl=${returnUrl}`;
     
     console.log('🚀 [CORRECCIÓN APLICADA] Navegando a vista de sesión:', participacionUrl);
     console.log('🚀 [CORRECCIÓN APLICADA] ID del participante:', participanteId);
     console.log('🚀 [CORRECCIÓN APLICADA] ID de reclutamiento:', sesion.id);
+    console.log('🚀 [CORRECCIÓN APLICADA] URL de retorno:', returnUrl);
     router.push(participacionUrl);
   };
 
