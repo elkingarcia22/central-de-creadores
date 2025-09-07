@@ -188,14 +188,20 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   // Manejar acciones del side modal
   const handleSideModalEdit = useCallback((sesion: SesionEvent) => {
+    console.log('🚀 [AGENDA EDIT] handleSideModalEdit ejecutándose');
+    console.log('🚀 [AGENDA EDIT] SesionEvent recibido:', JSON.stringify(sesion, null, 2));
+    
     setShowSideModal(false);
     
-    console.log('🔍 [DEBUG] SesionEvent original completo:', JSON.stringify(sesion, null, 2));
-    console.log('🔍 [DEBUG] Campos específicos:', {
+    console.log('🔍 [AGENDA EDIT] SesionEvent original completo:', JSON.stringify(sesion, null, 2));
+    console.log('🔍 [AGENDA EDIT] Campos específicos:', {
       id: sesion.id,
+      title: sesion.title,
+      start: sesion.start,
+      end: sesion.end,
       participante: sesion.participante,
       reclutador: sesion.reclutador,
-        reclutador_id: (sesion as any).reclutador_id,
+      reclutador_id: (sesion as any).reclutador_id,
       investigacion_nombre: sesion.investigacion_nombre,
       tipo_participante: sesion.tipo_participante,
       estado_agendamiento: sesion.estado_agendamiento,
@@ -203,7 +209,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
       fecha_asignado: sesion.fecha_asignado,
       estado_real: sesion.estado_real,
       responsable_real: sesion.responsable_real,
-      implementador_real: sesion.implementador_real
+      implementador_real: sesion.implementador_real,
+      duracion_minutos: sesion.duracion_minutos,
+      fecha_programada: sesion.fecha_programada,
+      investigacion_id: sesion.investigacion_id
     });
     
     // Convertir SesionEvent a Sesion para la función de edición
@@ -242,10 +251,12 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
       ...(sesion.implementador_real && { implementador_real: sesion.implementador_real })
     } as any; // Usar any para permitir campos adicionales
     
-    console.log('🔍 [DEBUG] SesionData convertida completa:', JSON.stringify(sesionData, null, 2));
+    console.log('🔍 [AGENDA EDIT] SesionData convertida completa:', JSON.stringify(sesionData, null, 2));
     
     // Establecer la sesión a editar y abrir el modal
+    console.log('🚀 [AGENDA EDIT] Estableciendo sesionToEdit:', JSON.stringify(sesion, null, 2));
     setSesionToEdit(sesion);
+    console.log('🚀 [AGENDA EDIT] Abriendo modal de edición');
     setShowEditModal(true);
   }, []);
 
@@ -321,9 +332,19 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   // Funciones wrapper para convertir CalendarEvent a SesionEvent
   const handleCalendarEventEdit = useCallback((event: any) => {
+    console.log('🚀 [AGENDA EDIT] handleCalendarEventEdit ejecutándose');
+    console.log('🚀 [AGENDA EDIT] CalendarEvent recibido:', JSON.stringify(event, null, 2));
+    console.log('🚀 [AGENDA EDIT] sesionesEventos disponibles:', sesionesEventos.length);
+    
     const sesion = sesionesEventos.find(s => s.id === event.id);
+    console.log('🚀 [AGENDA EDIT] SesionEvent encontrado:', sesion ? 'SÍ' : 'NO');
+    
     if (sesion) {
+      console.log('🚀 [AGENDA EDIT] SesionEvent encontrado:', JSON.stringify(sesion, null, 2));
       handleSideModalEdit(sesion);
+    } else {
+      console.error('❌ [AGENDA EDIT] No se encontró SesionEvent con ID:', event.id);
+      console.log('❌ [AGENDA EDIT] IDs disponibles en sesionesEventos:', sesionesEventos.map(s => s.id));
     }
   }, [sesionesEventos, handleSideModalEdit]);
 
@@ -461,6 +482,9 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
       {/* Modal de edición de reclutamiento */}
       {sesionToEdit && (() => {
+        console.log('🚀 [AGENDA EDIT] Renderizando modal de edición');
+        console.log('🚀 [AGENDA EDIT] sesionToEdit en render:', JSON.stringify(sesionToEdit, null, 2));
+        
         const reclutamientoData = {
           id: sesionToEdit.id,
           investigacion_id: sesionToEdit.investigacion_id,
@@ -488,8 +512,9 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
           investigacion_nombre: sesionToEdit.investigacion_nombre
         };
         
-        console.log('🔍 [DEBUG MODAL CALENDAR] Datos que se envían al modal:', JSON.stringify(reclutamientoData, null, 2));
-        console.log('🔍 [DEBUG MODAL CALENDAR] sesionToEdit original:', JSON.stringify(sesionToEdit, null, 2));
+        console.log('🔍 [AGENDA EDIT] Datos que se envían al modal:', JSON.stringify(reclutamientoData, null, 2));
+        console.log('🔍 [AGENDA EDIT] sesionToEdit original:', JSON.stringify(sesionToEdit, null, 2));
+        console.log('🔍 [AGENDA EDIT] showEditModal:', showEditModal);
         
         return (
           <EditarReclutamientoModal
