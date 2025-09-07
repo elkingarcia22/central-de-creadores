@@ -82,16 +82,13 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     setDragStart({ x: e.clientX, y: e.clientY });
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      console.log('🔄 [DRAG] handleMouseMove', { isDragging, hasEventRef: !!eventRef.current });
       if (!isDragging || !eventRef.current) return;
       
       const deltaX = moveEvent.clientX - dragStart.x;
       const deltaY = moveEvent.clientY - dragStart.y;
       
-      console.log('📐 [DRAG] Delta calculado', { deltaX, deltaY });
-      
-      // Si hay movimiento significativo, marcar como dragged
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+      // Si hay movimiento significativo, marcar como dragged (solo una vez)
+      if ((Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) && !hasDragged) {
         setHasDragged(true);
         console.log('🎯 [DRAG] Marcando como dragged');
       }
