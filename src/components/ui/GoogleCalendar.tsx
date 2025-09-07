@@ -54,6 +54,10 @@ export interface GoogleCalendarProps {
   showNavigation?: boolean;
   enableDragDrop?: boolean;
   className?: string;
+  // Props para búsqueda
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
+  showSearch?: boolean;
 }
 
 const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
@@ -70,13 +74,53 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   showAddButton = true,
   showNavigation = true,
   enableDragDrop = false,
-  className = ''
+  className = '',
+  // Props de búsqueda
+  searchTerm = '',
+  onSearchChange,
+  showSearch = true
 }) => {
   console.log('🔧 GoogleCalendar props:', { enableDragDrop, eventsCount: events.length });
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   // Estados para drag and drop - ahora manejados por DraggableEvent
   const calendarRef = useRef<HTMLDivElement>(null);
+  
+  // Estados para búsqueda
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  
+  // Funciones para manejar búsqueda
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    onSearchChange?.(value);
+  };
+  
+  const handleExpandSearch = () => {
+    setIsSearchExpanded(true);
+  };
+  
+  const handleCollapseSearch = () => {
+    setIsSearchExpanded(false);
+    onSearchChange?.('');
+  };
+  
+  // Efecto para cerrar la búsqueda con Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isSearchExpanded) {
+        setIsSearchExpanded(false);
+        onSearchChange?.('');
+      }
+    };
+
+    if (isSearchExpanded) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isSearchExpanded, onSearchChange]);
 
   // Colores de eventos sutiles basados en tipo de participante
   const eventColors = {
@@ -153,26 +197,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     onDateChange?.(today);
   }, [onDateChange]);
 
-  // Obtener eventos para una fecha específica
-  const getEventsForDate = useCallback((date: Date) => {
-    const dayEvents = events.filter(event => {
-      const eventDate = new Date(event.start);
-      return eventDate.toDateString() === date.toDateString();
-    });
-        // if (dayEvents.length > 0) {
-        //   console.log('📅 Events for', date.toDateString(), ':', dayEvents.length);
-        // }
-    return dayEvents;
-  }, [events]);
-
-  // Obtener eventos para un rango de fechas
-  const getEventsForDateRange = useCallback((startDate: Date, endDate: Date) => {
-    return events.filter(event => {
-      const eventStart = new Date(event.start);
-      const eventEnd = new Date(event.end);
-      return eventStart <= endDate && eventEnd >= startDate;
-    });
-  }, [events]);
 
   // Verificar si es hoy
   const isToday = useCallback((date: Date) => {
@@ -546,6 +570,40 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     gray: 'bg-gray-500'
   };
 
+  // Función para filtrar eventos basado en el término de búsqueda
+  const filteredEvents = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return events;
+    }
+    
+    const term = searchTerm.toLowerCase().trim();
+    return events.filter(event => {
+      // Buscar en título
+      if (event.title?.toLowerCase().includes(term)) return true;
+      
+      // Buscar en descripción
+      if (event.description?.toLowerCase().includes(term)) return true;
+      
+      // Buscar en ubicación
+      if (event.location?.toLowerCase().includes(term)) return true;
+      
+      // Buscar en nombre de investigación
+      if (event.investigacion_nombre?.toLowerCase().includes(term)) return true;
+      
+      // Buscar en estado
+      if (event.estado_agendamiento?.toLowerCase().includes(term)) return true;
+      if (event.estado?.toLowerCase().includes(term)) return true;
+      
+      // Buscar en participantes
+      if (event.participantes?.some(p => 
+        p.nombre?.toLowerCase().includes(term) || 
+        p.email?.toLowerCase().includes(term)
+      )) return true;
+      
+      return false;
+    });
+  }, [events, searchTerm]);
+
   // Función para obtener el color del participante
   const getParticipantColor = (event: CalendarEvent) => {
     // Usar el color del evento si está disponible
@@ -556,9 +614,30 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     return participantColors.blue;
   };
 
+  // Obtener eventos para una fecha específica
+  const getEventsForDate = useCallback((date: Date) => {
+    const dayEvents = filteredEvents.filter(event => {
+      const eventDate = new Date(event.start);
+      return eventDate.toDateString() === date.toDateString();
+    });
+        // if (dayEvents.length > 0) {
+        //   console.log('📅 Events for', date.toDateString(), ':', dayEvents.length);
+        // }
+    return dayEvents;
+  }, [filteredEvents]);
+
+  // Obtener eventos para un rango de fechas
+  const getEventsForDateRange = useCallback((startDate: Date, endDate: Date) => {
+    return filteredEvents.filter(event => {
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+      return eventStart <= endDate && eventEnd >= startDate;
+    });
+  }, [filteredEvents]);
+
   // Renderizar vista de agenda
   const renderAgendaView = () => {
-    const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+    const sortedEvents = [...filteredEvents].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
     
     return (
       <div className="space-y-4">
@@ -725,9 +804,52 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
 
           {/* Navegación derecha */}
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-              <SearchIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            </button>
+            {/* Buscador expandible */}
+            {showSearch && (
+              <div className="relative">
+                {isSearchExpanded ? (
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <SearchIcon className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Buscar eventos..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="block w-[300px] pl-9 pr-9 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        autoFocus
+                      />
+                      {searchTerm && (
+                        <button
+                          onClick={() => onSearchChange?.('')}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCollapseSearch}
+                      className="text-gray-500 hover:text-gray-700 border-0"
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={handleExpandSearch}
+                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full border-0"
+                    iconOnly
+                    icon={<SearchIcon className="w-4 h-4" />}
+                  />
+                )}
+              </div>
+            )}
             
             {/* Selector de vista */}
             <div className="flex rounded-lg border border-gray-200 dark:border-gray-700">

@@ -42,6 +42,14 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
   const [showSideModal, setShowSideModal] = useState(false);
   const [selectedSesion, setSelectedSesion] = useState<SesionEvent | null>(null);
   
+  // Estados para búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Función para manejar cambio de búsqueda
+  const handleSearchChange = (term: string) => {
+    setSearchTerm(term);
+  };
+  
   const router = useRouter();
 
   // Hook para manejar sesiones
@@ -183,7 +191,7 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
       id: sesion.id,
       participante: sesion.participante,
       reclutador: sesion.reclutador,
-      reclutador_id: sesion.reclutador_id,
+        reclutador_id: (sesion as any).reclutador_id,
       investigacion_nombre: sesion.investigacion_nombre,
       tipo_participante: sesion.tipo_participante,
       estado_agendamiento: sesion.estado_agendamiento,
@@ -338,6 +346,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         showNavigation={true}
         enableDragDrop={true}
         className="min-h-[600px]"
+        // Props de búsqueda
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        showSearch={true}
       />
 
       {/* Loading overlay */}
