@@ -312,6 +312,35 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     // Por ejemplo, cambiar el estado a "en_curso" o abrir la sesión
   }, []);
 
+  // Funciones wrapper para convertir CalendarEvent a SesionEvent
+  const handleCalendarEventEdit = useCallback((event: any) => {
+    const sesion = sesionesEventos.find(s => s.id === event.id);
+    if (sesion) {
+      handleSideModalEdit(sesion);
+    }
+  }, [sesionesEventos, handleSideModalEdit]);
+
+  const handleCalendarEventDelete = useCallback((event: any) => {
+    const sesion = sesionesEventos.find(s => s.id === event.id);
+    if (sesion) {
+      handleSideModalDelete(sesion);
+    }
+  }, [sesionesEventos, handleSideModalDelete]);
+
+  const handleCalendarEventViewMore = useCallback((event: any) => {
+    const sesion = sesionesEventos.find(s => s.id === event.id);
+    if (sesion) {
+      handleSideModalViewMore(sesion);
+    }
+  }, [sesionesEventos, handleSideModalViewMore]);
+
+  const handleCalendarEventIniciar = useCallback((event: any) => {
+    const sesion = sesionesEventos.find(s => s.id === event.id);
+    if (sesion) {
+      handleSideModalIniciar(sesion);
+    }
+  }, [sesionesEventos, handleSideModalIniciar]);
+
 
 
   if (error) {
@@ -345,6 +374,11 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         onDateChange={handleDateChange}
         onEventMove={handleMoveSesion}
         onEventResize={handleResizeSesion}
+        // Props para acciones específicas
+        onEventEdit={handleCalendarEventEdit}
+        onEventDelete={handleCalendarEventDelete}
+        onEventViewMore={handleCalendarEventViewMore}
+        onEventIniciar={handleCalendarEventIniciar}
         showAddButton={false}
         showNavigation={true}
         enableDragDrop={true}

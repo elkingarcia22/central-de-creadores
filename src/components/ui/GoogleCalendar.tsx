@@ -51,6 +51,11 @@ export interface GoogleCalendarProps {
   onDateChange?: (date: Date) => void;
   onEventMove?: (eventId: string, newDate: Date, newTimeSlot?: number) => Promise<void>;
   onEventResize?: (eventId: string, newDuration: number) => Promise<void>;
+  // Props para acciones específicas
+  onEventEdit?: (event: CalendarEvent) => void;
+  onEventDelete?: (event: CalendarEvent) => void;
+  onEventViewMore?: (event: CalendarEvent) => void;
+  onEventIniciar?: (event: CalendarEvent) => void;
   showAddButton?: boolean;
   showNavigation?: boolean;
   enableDragDrop?: boolean;
@@ -72,6 +77,11 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   onDateChange,
   onEventMove,
   onEventResize,
+  // Props para acciones específicas
+  onEventEdit,
+  onEventDelete,
+  onEventViewMore,
+  onEventIniciar,
   showAddButton = true,
   showNavigation = true,
   enableDragDrop = false,
@@ -694,9 +704,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => {
-                    console.log('Ingresar a sesión:', event.id);
-                  }}
+                  onClick={() => onEventIniciar?.(event)}
                   icon={<PlayIcon className="w-4 h-4" />}
                 >
                   Iniciar
@@ -706,21 +714,17 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                   actions={[
                     {
                       label: 'Ver más',
-                      onClick: () => onEventClick?.(event),
+                      onClick: () => onEventViewMore?.(event),
                       icon: <UserIcon className="w-4 h-4" />
                     },
                     {
                       label: 'Editar',
-                      onClick: () => {
-                        console.log('Editar sesión:', event.id);
-                      },
+                      onClick: () => onEventEdit?.(event),
                       icon: <CalendarIcon className="w-4 h-4" />
                     },
                     {
                       label: 'Eliminar',
-                      onClick: () => {
-                        console.log('Eliminar sesión:', event.id);
-                      },
+                      onClick: () => onEventDelete?.(event),
                       icon: <TrashIcon className="w-4 h-4" />,
                       className: 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-100'
                     }
