@@ -4,6 +4,7 @@
 // Estados pendientes (azul)
 export const ESTADOS_PENDIENTES = [
   'pendiente',
+  'programada',
   'por agendar',
   'por_agendar',
   'en borrador',
@@ -15,6 +16,7 @@ export const ESTADOS_PENDIENTES = [
 export const ESTADOS_TRANSITORIOS = [
   'en progreso',
   'en_progreso',
+  'en_curso',
   'pendiente de agendamiento',
   'pausado',
   'medio',
@@ -27,6 +29,7 @@ export const ESTADOS_TERMINADOS = [
   'agendada',
   'finalizado',
   'completado',
+  'completada',
   'convertido',
   'bajo',
   'activo',

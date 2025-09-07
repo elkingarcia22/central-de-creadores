@@ -561,10 +561,16 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
               <div className="flex items-center gap-2">
                 {(event.estado || event.estado_agendamiento) && (
                   <Badge variant={
-                    (event.estado_agendamiento || event.estado) === 'Finalizado' ? 'success' :
-                    (event.estado_agendamiento || event.estado) === 'Cancelado' ? 'danger' :
-                    (event.estado_agendamiento || event.estado) === 'Pendiente de agendamiento' ? 'warning' :
-                    (event.estado_agendamiento || event.estado) === 'En proceso' ? 'info' :
+                    // Mapear estados de sesión (estado) a colores
+                    event.estado === 'completada' ? 'success' :
+                    event.estado === 'cancelada' ? 'danger' :
+                    event.estado === 'en_curso' ? 'info' :
+                    event.estado === 'programada' ? 'primary' :
+                    // Mapear estados de agendamiento (estado_agendamiento) a colores
+                    event.estado_agendamiento === 'Finalizado' ? 'success' :
+                    event.estado_agendamiento === 'Cancelado' ? 'danger' :
+                    event.estado_agendamiento === 'Pendiente de agendamiento' ? 'warning' :
+                    event.estado_agendamiento === 'En progreso' ? 'info' :
                     'secondary'
                   }>
                     {event.estado_agendamiento || event.estado || 'Sin estado'}
