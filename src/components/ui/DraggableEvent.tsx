@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 
 interface DraggableEventProps {
   event: {
@@ -29,6 +29,18 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ y: 0, duration: 0 });
+  const [hasDragged, setHasDragged] = useState(false);
+
+  // Reset hasDragged después de un tiempo para permitir clicks futuros
+  useEffect(() => {
+    if (hasDragged) {
+      const timer = setTimeout(() => {
+        setHasDragged(false);
+        console.log('🔄 [DRAG] Reseteando hasDragged');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [hasDragged]);
 
   const eventColors = {
     primary: 'bg-blue-50 border-l-4 border-blue-500 text-blue-800 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-200', // Interno
@@ -66,6 +78,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     
     console.log('🚀 [DRAG] Iniciando drag', { x: e.clientX, y: e.clientY });
     setIsDragging(true);
+    setHasDragged(false); // Reset hasDragged al inicio
     setDragStart({ x: e.clientX, y: e.clientY });
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
@@ -76,6 +89,12 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const deltaY = moveEvent.clientY - dragStart.y;
       
       console.log('📐 [DRAG] Delta calculado', { deltaX, deltaY });
+      
+      // Si hay movimiento significativo, marcar como dragged
+      if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        setHasDragged(true);
+        console.log('🎯 [DRAG] Marcando como dragged');
+      }
       
       // Mover el elemento visualmente
       eventRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -188,6 +207,12 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       `}
       onClick={(e) => {
         e.stopPropagation();
+        console.log('🖱️ [CLICK] onClick ejecutándose', { hasDragged });
+        if (hasDragged) {
+          console.log('❌ [CLICK] Ignorando click porque se hizo drag and drop');
+          return;
+        }
+        console.log('✅ [CLICK] Ejecutando onEventClick');
         onEventClick?.(event);
       }}
       onMouseDown={handleMouseDown}
