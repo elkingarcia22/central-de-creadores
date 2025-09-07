@@ -1,68 +1,167 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout } from '../../components/ui';
-import { PageHeader } from '../../components/ui';
-import SesionesCalendar from '../../components/sesiones/SesionesCalendar';
+import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge } from '../../components/ui';
+import { CalendarIcon, PlusIcon, ListIcon, BarChartIcon } from '../../components/icons';
 import { Sesion } from '../../types/sesiones';
-import { 
-  CalendarIcon, 
-  PlusIcon, 
-  ListIcon,
-  BarChartIcon,
-  SettingsIcon
-} from '../../components/icons';
 
 const SesionesPage: NextPage = () => {
   const router = useRouter();
-  const [activeView, setActiveView] = useState<'calendar' | 'list' | 'stats'>('calendar');
+  const [activeView, setActiveView] = useState<'calendar' | 'list' | 'stats'>('list');
+  const [activeTab, setActiveTab] = useState<'todas' | 'programada' | 'en_curso' | 'completada' | 'cancelada'>('todas');
+  const [sesiones, setSesiones] = useState<Sesion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Manejar click en sesión
-  const handleSesionClick = (sesion: Sesion) => {
-    router.push(`/sesiones/${sesion.id}`);
+  // Cargar sesiones reales de la API
+  useEffect(() => {
+    const cargarSesiones = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        console.log('🔄 Cargando sesiones de reclutamiento...');
+        
+        const response = await fetch('/api/sesiones-reclutamiento');
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📊 Respuesta completa:', data);
+        console.log('📊 Número de sesiones:', data.sesiones?.length || 0);
+        
+        if (data.sesiones && Array.isArray(data.sesiones)) {
+          console.log('✅ Estableciendo sesiones:', data.sesiones.length);
+          setSesiones(data.sesiones);
+        } else {
+          console.log('⚠️ No hay sesiones en la respuesta');
+          setSesiones([]);
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('❌ Error cargando sesiones:', err);
+        setError(err instanceof Error ? err.message : 'Error al cargar las sesiones');
+        setLoading(false);
+      }
+    };
+
+    cargarSesiones();
+  }, []);
+
+  // Filtrar sesiones por estado
+  const getSesionesPorEstado = (estado: string) => {
+    if (estado === 'todas') return sesiones;
+    return sesiones.filter(sesion => sesion.estado === estado);
   };
 
-  // Manejar crear nueva sesión
-  const handleSesionCreate = (date?: Date) => {
-    const params = new URLSearchParams();
-    if (date) {
-      params.append('fecha', date.toISOString());
+  // Contar sesiones por estado
+  const contarSesiones = (estado: string) => {
+    return getSesionesPorEstado(estado).length;
+  };
+
+  // Formatear fecha
+  const formatFecha = (fecha: Date | string | null) => {
+    if (!fecha) return 'Sin fecha';
+    
+    try {
+      const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+      
+      if (isNaN(fechaObj.getTime())) {
+        return 'Fecha inválida';
+      }
+      
+      return new Intl.DateTimeFormat('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(fechaObj);
+    } catch (error) {
+      return 'Error en fecha';
     }
-    router.push(`/sesiones/nueva?${params.toString()}`);
   };
 
-  // Manejar editar sesión
-  const handleSesionEdit = (sesion: Sesion) => {
-    router.push(`/sesiones/${sesion.id}/editar`);
-  };
+  // Componente de card simple
+  const SesionCardSimple = ({ sesion }: { sesion: Sesion }) => (
+    <div className="p-4 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {sesion.investigacion_nombre || 'Sin investigación'}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            {sesion.titulo}
+          </p>
+        </div>
+        <Badge 
+          variant={
+            sesion.estado === 'completada' ? 'green' :
+            sesion.estado === 'en_curso' ? 'orange' :
+            sesion.estado === 'programada' ? 'blue' :
+            sesion.estado === 'cancelada' ? 'red' : 'default'
+          }
+        >
+          {sesion.estado}
+        </Badge>
+      </div>
 
-  // Manejar eliminar sesión
-  const handleSesionDelete = (sesion: Sesion) => {
-    // Aquí se puede implementar un modal de confirmación
-    console.log('Eliminar sesión:', sesion.id);
-  };
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Fecha y Hora</p>
+          <p className="text-sm font-medium">{formatFecha(sesion.fecha_programada)}</p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Participante</p>
+          <p className="text-sm font-medium">
+            {sesion.titulo?.split(' - ')[0] || 'Sin participante'}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Empresa</p>
+          <p className="text-sm font-medium">
+            {sesion.ubicacion || 'Sin empresa'}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 mb-1">Duración</p>
+          <p className="text-sm font-medium">
+            {sesion.duracion_minutos ? `${Math.floor(sesion.duracion_minutos / 60)}h ${sesion.duracion_minutos % 60}m` : 'N/A'}
+          </p>
+        </div>
+      </div>
 
-  // Navegación entre vistas
-  const viewTabs = [
-    {
-      id: 'calendar',
-      label: 'Calendario',
-      icon: <CalendarIcon className="w-4 h-4" />,
-      description: 'Vista de calendario con todas las sesiones'
-    },
-    {
-      id: 'list',
-      label: 'Lista',
-      icon: <ListIcon className="w-4 h-4" />,
-      description: 'Lista detallada de sesiones'
-    },
-    {
-      id: 'stats',
-      label: 'Estadísticas',
-      icon: <BarChartIcon className="w-4 h-4" />,
-      description: 'Estadísticas y métricas de sesiones'
-    }
-  ];
+      <div className="flex gap-2">
+        <button
+          className="px-3 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+          onClick={() => router.push(`/participacion/${sesion.id}`)}
+        >
+          Ver Participación
+        </button>
+        <button
+          className="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded hover:bg-gray-200 transition-colors"
+          onClick={() => console.log('Editar sesión:', sesion.id)}
+        >
+          Editar
+        </button>
+        <button
+          className="px-3 py-1 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors"
+          onClick={() => console.log('Ingresar a sesión:', sesion.id)}
+        >
+          Ingresar
+        </button>
+        <button
+          className="px-3 py-1 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
+          onClick={() => console.log('Eliminar sesión:', sesion.id)}
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <Layout>
@@ -70,86 +169,136 @@ const SesionesPage: NextPage = () => {
         {/* Header */}
         <PageHeader
           title="Sesiones"
-          description="Gestiona y programa sesiones de investigación"
-          icon={<CalendarIcon className="w-6 h-6" />}
-          actions={[
-            {
-              label: 'Nueva Sesión',
-              icon: <PlusIcon className="w-4 h-4" />,
-              onClick: () => handleSesionCreate(),
-              variant: 'primary' as const
-            },
-            {
-              label: 'Configuración',
-              icon: <SettingsIcon className="w-4 h-4" />,
-              onClick: () => router.push('/sesiones/configuracion'),
-              variant: 'outline' as const
-            }
-          ]}
+          subtitle="Gestiona y programa sesiones de investigación y testing"
+          color="blue"
+          primaryAction={{
+            label: "Nueva Sesión",
+            onClick: () => router.push('/sesiones/nueva'),
+            variant: "primary",
+            icon: <PlusIcon className="w-4 h-4" />
+          }}
         />
 
         {/* Navegación de vistas */}
-        <div className="mb-6">
-          <div className="flex border-b border-border">
-            {viewTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveView(tab.id as any)}
-                className={`
-                  flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors
-                  ${activeView === tab.id
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border'
-                  }
-                `}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <Tabs
+          items={[
+            { value: 'calendar', label: 'Calendario' },
+            { value: 'list', label: 'Lista' },
+            { value: 'stats', label: 'Estadísticas' }
+          ]}
+          value={activeView}
+          onValueChange={(value) => setActiveView(value as 'calendar' | 'list' | 'stats')}
+          variant="underline"
+          className="mb-6"
+        />
 
         {/* Contenido según vista activa */}
         <div className="min-h-[600px]">
           {activeView === 'calendar' && (
-            <SesionesCalendar
-              onSesionClick={handleSesionClick}
-              onSesionCreate={handleSesionCreate}
-              onSesionEdit={handleSesionEdit}
-              onSesionDelete={handleSesionDelete}
-            />
-          )}
-          
-          {activeView === 'list' && (
             <div className="text-center py-12">
-              <ListIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Vista de Lista</h3>
-              <p className="text-muted-foreground mb-4">
-                La vista de lista estará disponible próximamente
-              </p>
-              <button
-                onClick={() => setActiveView('calendar')}
-                className="text-primary hover:underline"
-              >
-                Ver en calendario
-              </button>
+              <CalendarIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Vista de Calendario</h3>
+              <p className="text-muted-foreground mb-4">Aquí se mostrará el calendario de sesiones.</p>
             </div>
           )}
-          
+
+          {activeView === 'list' && (
+            <div className="space-y-6">
+              {/* Header con estadísticas */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <Subtitle>
+                    Sesiones Programadas
+                  </Subtitle>
+                  <Typography variant="body2" color="secondary">
+                    {loading ? 'Cargando...' : `${sesiones.length} sesión${sesiones.length !== 1 ? 'es' : ''} programada${sesiones.length !== 1 ? 's' : ''}`}
+                  </Typography>
+                </div>
+              </div>
+
+              {/* Estado de carga */}
+              {loading && (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="p-4 border rounded-lg animate-pulse bg-gray-50 dark:bg-gray-800">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="h-3 bg-gray-200 rounded"></div>
+                        <div className="h-3 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Estado de error */}
+              {error && (
+                <div className="text-center py-12">
+                  <div className="text-red-500 mb-4">
+                    <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Error al cargar sesiones</h3>
+                  <p className="text-muted-foreground mb-4">{error}</p>
+                  <button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
+                    onClick={() => window.location.reload()}
+                  >
+                    Reintentar
+                  </button>
+                </div>
+              )}
+
+              {/* Estado vacío */}
+              {!loading && !error && sesiones.length === 0 && (
+                <div className="text-center py-12">
+                  <CalendarIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No hay sesiones</h3>
+                  <p className="text-muted-foreground mb-4">Aún no se han programado sesiones de investigación</p>
+                  <button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
+                    onClick={() => router.push('/sesiones/nueva')}
+                  >
+                    Crear primera sesión
+                  </button>
+                </div>
+              )}
+
+              {/* Tabs por estado */}
+              {!loading && !error && sesiones.length > 0 && (
+                <div>
+                  <Tabs
+                    items={[
+                      { value: 'todas', label: 'Todas', count: contarSesiones('todas') },
+                      { value: 'programada', label: 'Programadas', count: contarSesiones('programada') },
+                      { value: 'en_curso', label: 'En Curso', count: contarSesiones('en_curso') },
+                      { value: 'completada', label: 'Completadas', count: contarSesiones('completada') },
+                      { value: 'cancelada', label: 'Canceladas', count: contarSesiones('cancelada') }
+                    ]}
+                    value={activeTab}
+                    onValueChange={(value) => setActiveTab(value as any)}
+                    variant="underline"
+                    className="mb-6"
+                  />
+
+                  {/* Cards de sesiones filtradas */}
+                  <div className="space-y-4">
+                    {getSesionesPorEstado(activeTab).map((sesion) => (
+                      <SesionCardSimple key={sesion.id} sesion={sesion} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {activeView === 'stats' && (
             <div className="text-center py-12">
               <BarChartIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Estadísticas</h3>
-              <p className="text-muted-foreground mb-4">
-                Las estadísticas detalladas estarán disponibles próximamente
-              </p>
-              <button
-                onClick={() => setActiveView('calendar')}
-                className="text-primary hover:underline"
-              >
-                Ver en calendario
-              </button>
+              <h3 className="text-lg font-semibold mb-2">Vista de Estadísticas</h3>
+              <p className="text-muted-foreground mb-4">Aquí se mostrarán las estadísticas de sesiones.</p>
             </div>
           )}
         </div>

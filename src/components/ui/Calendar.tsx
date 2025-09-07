@@ -1,5 +1,9 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Typography, Button, Card, Badge, Tooltip } from './index';
+import Typography from './Typography';
+import Button from './Button';
+import Card from './Card';
+import Badge from './Badge';
+import Tooltip from './Tooltip';
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon, 
