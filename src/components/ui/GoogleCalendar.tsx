@@ -373,6 +373,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         onEventResize={onEventResize}
+                        dropTargetDate={dragOverDate}
                       />
                     ))}
                     
