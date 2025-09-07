@@ -527,14 +527,33 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     );
   };
 
+  // Colores sólidos para círculos de participantes
+  const participantColors = {
+    primary: 'bg-blue-500',
+    secondary: 'bg-purple-500', 
+    info: 'bg-cyan-500',
+    success: 'bg-green-500',
+    warning: 'bg-yellow-500',
+    error: 'bg-red-500',
+    blue: 'bg-blue-500',
+    green: 'bg-green-500',
+    yellow: 'bg-yellow-500',
+    red: 'bg-red-500',
+    purple: 'bg-purple-500',
+    orange: 'bg-orange-500',
+    teal: 'bg-teal-500',
+    pink: 'bg-pink-500',
+    gray: 'bg-gray-500'
+  };
+
   // Función para obtener el color del participante
   const getParticipantColor = (event: CalendarEvent) => {
     // Usar el color del evento si está disponible
     if (event.color) {
-      return eventColors[event.color];
+      return participantColors[event.color] || participantColors.blue;
     }
     // Por defecto usar azul
-    return eventColors.blue;
+    return participantColors.blue;
   };
 
   // Renderizar vista de agenda
@@ -543,7 +562,18 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     
     return (
       <div className="space-y-4">
-        {sortedEvents.map((event) => (
+        {sortedEvents.map((event) => {
+          // Debug: Log para ver qué datos tiene el evento
+          console.log('🔍 Evento en agenda:', {
+            id: event.id,
+            title: event.title,
+            estado_agendamiento: event.estado_agendamiento,
+            estado: event.estado,
+            color: event.color,
+            investigacion_nombre: event.investigacion_nombre
+          });
+          
+          return (
           <Card key={event.id} className="" padding="lg">
             {/* Header con acciones en la parte superior derecha */}
             <div className="flex items-start justify-between mb-4">
@@ -634,7 +664,8 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
               </div>
             </div>
           </Card>
-        ))}
+          );
+        })}
       </div>
     );
   };
