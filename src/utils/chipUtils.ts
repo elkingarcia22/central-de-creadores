@@ -108,9 +108,15 @@ export const getChipVariant = (value: string): string => {
     return 'fallo'; // Rojo
   }
   if (valueLower === 'pendiente de agendamiento') {
-    return 'transitoria'; // Amarillo
+    return 'pendiente'; // Azul
+  }
+  if (valueLower === 'pendiente') {
+    return 'pendiente'; // Azul
   }
   if (valueLower === 'en progreso') {
+    return 'transitoria'; // Amarillo
+  }
+  if (valueLower === 'en_progreso') {
     return 'transitoria'; // Amarillo
   }
   
