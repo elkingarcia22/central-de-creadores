@@ -151,8 +151,9 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
           ...(newTimeSlot && { duracion_minutos: newTimeSlot * 30 })
         };
         console.log('📝 [MOVE] Datos a actualizar:', updatedData);
-        await updateSesion(eventId, updatedData);
-        console.log('✅ [MOVE] Sesión movida exitosamente');
+        const sesionActualizada = await updateSesion(eventId, updatedData);
+        console.log('✅ [MOVE] Sesión movida exitosamente:', sesionActualizada);
+        console.log('🔄 [MOVE] Estado actualizado, sesionesEventos debería reflejar el cambio');
       }
     } catch (error) {
       console.error('❌ [MOVE] Error moviendo sesión:', error);

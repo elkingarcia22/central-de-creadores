@@ -48,6 +48,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
   });
 
   // Convertir sesiones a eventos de calendario
+  console.log('🔄 [EVENTS] Recalculando eventos del calendario con', sesiones.length, 'sesiones');
   const sesionesEventos: SesionEvent[] = sesiones
     .filter(sesion => sesion.fecha_programada) // Filtrar sesiones sin fecha
     .map(sesion => {
@@ -244,9 +245,12 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       }
 
       const sesionActualizada = await response.json();
-      setSesiones(prev => 
-        prev.map(s => s.id === id ? sesionActualizada : s)
-      );
+      console.log('🔄 [UPDATE] Actualizando estado local con sesión:', sesionActualizada);
+      setSesiones(prev => {
+        const nuevoEstado = prev.map(s => s.id === id ? sesionActualizada : s);
+        console.log('🔄 [UPDATE] Nuevo estado de sesiones:', nuevoEstado.length, 'sesiones');
+        return nuevoEstado;
+      });
       return sesionActualizada;
     } catch (err) {
       setError('Error al actualizar la sesión');
