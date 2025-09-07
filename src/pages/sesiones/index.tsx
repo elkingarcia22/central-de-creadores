@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones } from '../../components/ui';
+import { getChipVariant } from '../../utils/chipUtils';
 import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
 import { Sesion } from '../../types/sesiones';
@@ -403,23 +404,6 @@ const SesionesPage: NextPage = () => {
     }
   };
 
-  // Función para obtener el color del chip según el estado
-  const getChipVariant = (estado: string) => {
-    switch (estado) {
-      case 'Finalizado':
-        return 'success';
-      case 'En progreso':
-        return 'primary';
-      case 'Cancelado':
-        return 'danger';
-      case 'Pendiente':
-        return 'warning';
-      case 'Pendiente de agendamiento':
-        return 'info';
-      default:
-        return 'default';
-    }
-  };
 
   // Función para obtener el texto del estado
   const getEstadoText = (estado: string) => {
