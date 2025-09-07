@@ -27,6 +27,7 @@ export interface CalendarEvent {
   // Propiedades específicas para sesiones
   titulo?: string;
   estado?: string;
+  estado_agendamiento?: string;
   tipo_sesion?: string;
   duracion_minutos?: number;
   ubicacion?: string;
@@ -451,9 +452,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
       <div className="space-y-1">
         {/* Header del día */}
         <div className="p-4 border border-gray-200 dark:border-gray-700 bg-card text-card-foreground rounded-lg">
-          <Typography variant="h3" weight="semibold">
-            {formatDate(currentDate, 'long')}
-          </Typography>
           <Typography variant="body2" color="secondary">
             {dayEvents.length} evento{dayEvents.length !== 1 ? 's' : ''}
           </Typography>
@@ -561,9 +559,15 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                 )}
               </div>
               <div className="flex items-center gap-2">
-                {event.status && (
-                  <Badge variant={event.status === 'confirmed' ? 'success' : event.status === 'pending' ? 'warning' : 'danger'}>
-                    {event.status}
+                {(event.estado || event.estado_agendamiento) && (
+                  <Badge variant={
+                    (event.estado_agendamiento || event.estado) === 'Finalizado' ? 'success' :
+                    (event.estado_agendamiento || event.estado) === 'Cancelado' ? 'danger' :
+                    (event.estado_agendamiento || event.estado) === 'Pendiente de agendamiento' ? 'warning' :
+                    (event.estado_agendamiento || event.estado) === 'En proceso' ? 'info' :
+                    'secondary'
+                  }>
+                    {event.estado_agendamiento || event.estado || 'Sin estado'}
                   </Badge>
                 )}
                 <button
@@ -619,7 +623,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
               </Button>
             </div>
             
-            <Typography variant="h3" weight="medium">
+            <Typography variant="h3" weight="medium" color="secondary">
               {formatDate(currentDate, view === 'month' ? 'month' : 'long')}
             </Typography>
           </div>
