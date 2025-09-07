@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { useRouter } from 'next/router';
-import { Button, Card, Typography, Badge, Tooltip } from '../ui';
+import { Button, Card, Typography, Badge, Tooltip, EditarReclutamientoModal } from '../ui';
 import GoogleCalendar from '../ui/GoogleCalendar';
 import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useSesionesCalendar } from '../../hooks/useSesionesCalendar';
@@ -44,6 +44,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
   
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Estados para modal de edición
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [sesionToEdit, setSesionToEdit] = useState<SesionEvent | null>(null);
   
   // Función para manejar cambio de búsqueda
   const handleSearchChange = (term: string) => {
@@ -239,8 +243,11 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     } as any; // Usar any para permitir campos adicionales
     
     console.log('🔍 [DEBUG] SesionData convertida completa:', JSON.stringify(sesionData, null, 2));
-    onSesionEdit?.(sesionData);
-  }, [onSesionEdit]);
+    
+    // Establecer la sesión a editar y abrir el modal
+    setSesionToEdit(sesion);
+    setShowEditModal(true);
+  }, []);
 
   const handleSideModalDelete = useCallback((sesion: SesionEvent) => {
     // No cerrar el modal lateral inmediatamente, dejar que el modal de confirmación se maneje
@@ -341,6 +348,21 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     }
   }, [sesionesEventos, handleSideModalIniciar]);
 
+  // Funciones para manejar el modal de edición
+  const handleCloseEditModal = useCallback(() => {
+    setShowEditModal(false);
+    setSesionToEdit(null);
+  }, []);
+
+  const handleEditSuccess = useCallback(() => {
+    setShowEditModal(false);
+    setSesionToEdit(null);
+    // Recargar las sesiones
+    loadSesiones();
+    // Llamar al callback del componente padre si existe
+    onRefresh?.();
+  }, [loadSesiones, onRefresh]);
+
 
 
   if (error) {
@@ -436,6 +458,48 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
           }}
         />
       )}
+
+      {/* Modal de edición de reclutamiento */}
+      {sesionToEdit && (() => {
+        const reclutamientoData = {
+          id: sesionToEdit.id,
+          investigacion_id: sesionToEdit.investigacion_id,
+          participantes_id: sesionToEdit.participante?.id,
+          fecha_sesion: sesionToEdit.start,
+          hora_sesion: sesionToEdit.hora_sesion,
+          duracion_sesion: sesionToEdit.duracion_minutos,
+          estado_agendamiento: sesionToEdit.estado_agendamiento,
+          reclutador_id: sesionToEdit.reclutador?.id,
+          // El modal busca responsable_pre_cargado, así que lo mapeamos correctamente
+          responsable_pre_cargado: sesionToEdit.reclutador ? {
+            id: sesionToEdit.reclutador.id,
+            full_name: sesionToEdit.reclutador.full_name || sesionToEdit.reclutador.email || '',
+            email: sesionToEdit.reclutador.email || '',
+            avatar_url: (sesionToEdit.reclutador as any).avatar_url || ''
+          } : ((sesionToEdit as any).reclutador_id ? {
+            id: (sesionToEdit as any).reclutador_id,
+            full_name: 'Usuario',
+            email: '',
+            avatar_url: ''
+          } : null),
+          // Agregar información adicional para el modal
+          participante: sesionToEdit.participante,
+          tipo_participante: sesionToEdit.tipo_participante,
+          investigacion_nombre: sesionToEdit.investigacion_nombre
+        };
+        
+        console.log('🔍 [DEBUG MODAL CALENDAR] Datos que se envían al modal:', JSON.stringify(reclutamientoData, null, 2));
+        console.log('🔍 [DEBUG MODAL CALENDAR] sesionToEdit original:', JSON.stringify(sesionToEdit, null, 2));
+        
+        return (
+          <EditarReclutamientoModal
+            isOpen={showEditModal}
+            onClose={handleCloseEditModal}
+            onSuccess={handleEditSuccess}
+            reclutamiento={reclutamientoData}
+          />
+        );
+      })()}
 
     </div>
   );
