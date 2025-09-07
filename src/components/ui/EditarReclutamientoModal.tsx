@@ -354,8 +354,35 @@ export default function EditarReclutamientoModal({
     }
   };
 
+  // Función para el botón del footer
+  const handleFooterSubmit = () => {
+    const e = new Event('submit') as any;
+    handleSubmit(e);
+  };
+
+  // Footer para el modal
+  const footer = (
+    <div className="flex gap-3">
+      <Button 
+        variant="secondary" 
+        onClick={onClose} 
+        disabled={loading}
+      >
+        Cancelar
+      </Button>
+      <Button 
+        variant="primary" 
+        onClick={handleFooterSubmit}
+        loading={loading} 
+        disabled={loading}
+      >
+        Guardar Cambios
+      </Button>
+    </div>
+  );
+
   return (
-    <SideModal isOpen={isOpen} onClose={onClose} width="lg" footer={null} showCloseButton={false}>
+    <SideModal isOpen={isOpen} onClose={onClose} width="lg" footer={footer} showCloseButton={false}>
       <div className="flex flex-col h-full -m-6">
         {/* Header con PageHeader */}
         <PageHeader
@@ -559,10 +586,6 @@ export default function EditarReclutamientoModal({
               );
             })()}
 
-            <div className="flex justify-end gap-3">
-              <Button variant="secondary" onClick={onClose} disabled={loading}>Cancelar</Button>
-              <Button variant="primary" type="submit" loading={loading} disabled={loading}>Guardar Cambios</Button>
-            </div>
           </form>
         </div>
       </div>
