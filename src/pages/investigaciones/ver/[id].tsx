@@ -5,7 +5,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useFastUser } from '../../../contexts/FastUserContext';
-import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState, Subtitle } from '../../../components/ui';
+import { Layout, Typography, Card, Button, Tabs, Chip, ActionsMenu, LinkModal, PageHeader, InfoContainer, InfoItem, EmptyState, Subtitle, ParticipantCard } from '../../../components/ui';
 import { SeguimientosSection } from '../../../components/investigaciones/SeguimientosSection';
 import { TrazabilidadSection } from '../../../components/investigaciones/TrazabilidadSection';
 import ActividadesTab from '../../../components/investigaciones/ActividadesTab';
@@ -133,6 +133,11 @@ const VerInvestigacion: NextPage = () => {
   const [haySeguimientos, setHaySeguimientos] = useState(false);
   const [hayTrazabilidad, setHayTrazabilidad] = useState(false);
   const [seguimientosKey, setSeguimientosKey] = useState(0);
+  
+  // Estados para participantes
+  const [participantes, setParticipantes] = useState<any[]>([]);
+  const [loadingParticipantes, setLoadingParticipantes] = useState(false);
+  const [hayParticipantes, setHayParticipantes] = useState(false);
 
   // Cargar seguimientos para saber si hay
   const cargarSeguimientos = async (investigacionId: string) => {
@@ -186,6 +191,39 @@ const VerInvestigacion: NextPage = () => {
     }
   };
 
+  // Función para cargar participantes del reclutamiento asociado
+  const cargarParticipantes = async (investigacionId: string) => {
+    try {
+      setLoadingParticipantes(true);
+      console.log('🔄 Cargando participantes para investigación:', investigacionId);
+      
+      const response = await fetch(`/api/participantes-reclutamiento?investigacion_id=${investigacionId}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Participantes cargados:', data);
+        const participantesData = data.participantes || data;
+        setParticipantes(participantesData);
+        setHayParticipantes(participantesData && participantesData.length > 0);
+      } else {
+        console.error('❌ Error cargando participantes:', response.statusText);
+        setParticipantes([]);
+        setHayParticipantes(false);
+      }
+    } catch (error) {
+      console.error('❌ Error cargando participantes:', error);
+      setParticipantes([]);
+      setHayParticipantes(false);
+    } finally {
+      setLoadingParticipantes(false);
+    }
+  };
+
   // Cargar los datos de la investigación
   useEffect(() => {
     const cargarInvestigacion = async () => {
@@ -199,6 +237,7 @@ const VerInvestigacion: NextPage = () => {
           await cargarTodasLasInvestigaciones();
           await cargarSeguimientos(id);
           await cargarTrazabilidad(id);
+          await cargarParticipantes(id);
         } else {
           showError('No se pudo cargar la investigación', resultado.error || 'Error desconocido');
         }
@@ -969,7 +1008,67 @@ const VerInvestigacion: NextPage = () => {
     );
   };
 
+  // Contenido del tab Participantes
+  const ParticipantesContent: React.FC = () => {
+    console.log('🔍 ParticipantesContent render - participantes.length:', participantes.length);
+    console.log('🔍 ParticipantesContent render - loadingParticipantes:', loadingParticipantes);
+    console.log('🔍 ParticipantesContent render - participantes:', participantes);
+    
+    if (loadingParticipantes) {
+      return (
+        <div className="space-y-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-muted rounded w-1/4"></div>
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={`skeleton-${i}`} className="h-20 bg-muted rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
+    if (participantes.length === 0) {
+      console.log('🔍 Mostrando EmptyState - participantes.length es 0');
+      return (
+        <EmptyState
+          icon={<ClipboardListIcon className="w-8 h-8" />}
+          title="Sin Participantes"
+          description="Aún no se han reclutado participantes para esta investigación."
+        />
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Header con estadísticas */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <Subtitle>
+              Participantes Reclutados
+            </Subtitle>
+            <Typography variant="body2" color="secondary">
+              {participantes.length} participante{participantes.length !== 1 ? 's' : ''} reclutado{participantes.length !== 1 ? 's' : ''}
+            </Typography>
+          </div>
+        </div>
+
+        {/* Cards de Participantes */}
+        <div className="space-y-4">
+          {participantes.map((participante, index) => (
+            <ParticipantCard
+              key={`${participante.id}-${index}`}
+              participante={participante}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onConvertAgendamiento={() => {}}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   // Tabs dinámicos
   const tabs = [
@@ -985,6 +1084,13 @@ const VerInvestigacion: NextPage = () => {
       icon: <FileTextIcon className="w-4 h-4" />, 
       content: <LibretoContent />
     },
+    // Mostrar tab de participantes solo si hay participantes
+    ...(hayParticipantes ? [{
+      id: 'participantes',
+      label: 'Participantes y Asignaciones',
+      icon: <ClipboardListIcon className="w-4 h-4" />, 
+      content: <ParticipantesContent />
+    }] : []),
     // Mostrar tab de seguimientos solo si hay seguimientos existentes
     ...(haySeguimientos ? [{
       id: 'seguimientos',
