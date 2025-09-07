@@ -188,13 +188,13 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   // Manejar acciones del side modal
   const handleSideModalEdit = useCallback((sesion: SesionEvent) => {
-    console.log('🚀 [AGENDA EDIT] handleSideModalEdit ejecutándose');
-    console.log('🚀 [AGENDA EDIT] SesionEvent recibido:', JSON.stringify(sesion, null, 2));
+    console.log('🚀 [SIDE MODAL EDIT] handleSideModalEdit ejecutándose');
+    console.log('🚀 [SIDE MODAL EDIT] SesionEvent recibido:', JSON.stringify(sesion, null, 2));
     
     setShowSideModal(false);
     
-    console.log('🔍 [AGENDA EDIT] SesionEvent original completo:', JSON.stringify(sesion, null, 2));
-    console.log('🔍 [AGENDA EDIT] Campos específicos:', {
+    console.log('🔍 [SIDE MODAL EDIT] SesionEvent original completo:', JSON.stringify(sesion, null, 2));
+    console.log('🔍 [SIDE MODAL EDIT] Campos específicos:', {
       id: sesion.id,
       title: sesion.title,
       start: sesion.start,
@@ -215,48 +215,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
       investigacion_id: sesion.investigacion_id
     });
     
-    // Convertir SesionEvent a Sesion para la función de edición
-    const sesionData: Sesion = {
-      id: sesion.id,
-      investigacion_id: sesion.investigacion_id,
-      titulo: sesion.titulo,
-      fecha_programada: sesion.start,
-      duracion_minutos: sesion.duracion_minutos,
-      estado: sesion.estado,
-      moderador_id: sesion.moderador_id,
-      moderador_nombre: sesion.moderador_nombre,
-      // Mapear participante correctamente
-      participante: sesion.participante || (sesion.participantes?.[0] ? {
-        id: sesion.participantes[0].participante_id,
-        nombre: sesion.participantes[0].participante_nombre || 'Sin nombre',
-        email: sesion.participantes[0].participante_email || '',
-        tipo: sesion.tipo_participante || 'externo'
-      } : null),
-      // Mapear reclutador correctamente
-      reclutador: sesion.reclutador,
-      reclutador_id: sesion.reclutador?.id,
-      // Mapear información adicional
-      investigacion_nombre: sesion.investigacion_nombre,
-      tipo_participante: sesion.tipo_participante,
-      estado_agendamiento: sesion.estado_agendamiento,
-      hora_sesion: sesion.hora_sesion,
-      fecha_asignado: sesion.fecha_asignado,
-      created_at: sesion.created_at,
-      updated_at: sesion.updated_at,
-      tipo_sesion: sesion.tipo_sesion || 'virtual',
-      grabacion_permitida: sesion.grabacion_permitida || false,
-      // Agregar campos enriquecidos del reclutamiento
-      ...(sesion.estado_real && { estado_real: sesion.estado_real }),
-      ...(sesion.responsable_real && { responsable_real: sesion.responsable_real }),
-      ...(sesion.implementador_real && { implementador_real: sesion.implementador_real })
-    } as any; // Usar any para permitir campos adicionales
-    
-    console.log('🔍 [AGENDA EDIT] SesionData convertida completa:', JSON.stringify(sesionData, null, 2));
-    
-    // Establecer la sesión a editar y abrir el modal
-    console.log('🚀 [AGENDA EDIT] Estableciendo sesionToEdit:', JSON.stringify(sesion, null, 2));
+    // Establecer la sesión a editar y abrir el modal directamente
+    console.log('🚀 [SIDE MODAL EDIT] Estableciendo sesionToEdit:', JSON.stringify(sesion, null, 2));
     setSesionToEdit(sesion);
-    console.log('🚀 [AGENDA EDIT] Abriendo modal de edición');
+    console.log('🚀 [SIDE MODAL EDIT] Abriendo modal de edición');
     setShowEditModal(true);
   }, []);
 
