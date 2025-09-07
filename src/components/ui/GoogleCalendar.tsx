@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { Button, Typography, Badge, Tooltip } from './';
+import { Button, Typography, Badge, Tooltip, Card, Chip, ActionsMenu } from './';
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon, 
@@ -8,9 +8,12 @@ import {
   ClockIcon,
   LocationIcon,
   MoreVerticalIcon,
-  SearchIcon
+  SearchIcon,
+  UserIcon,
+  TrashIcon
 } from '../icons';
 import DraggableEvent from './DraggableEvent';
+import { getChipVariant } from '../../utils/chipUtils';
 
 export interface CalendarEvent {
   id: string;
@@ -33,6 +36,7 @@ export interface CalendarEvent {
   ubicacion?: string;
   moderador_nombre?: string;
   participantes?: any[];
+  investigacion_nombre?: string;
 }
 
 export interface GoogleCalendarProps {
@@ -523,6 +527,16 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     );
   };
 
+  // Función para obtener el color del participante
+  const getParticipantColor = (event: CalendarEvent) => {
+    // Usar el color del evento si está disponible
+    if (event.color) {
+      return eventColors[event.color];
+    }
+    // Por defecto usar azul
+    return eventColors.blue;
+  };
+
   // Renderizar vista de agenda
   const renderAgendaView = () => {
     const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
@@ -530,59 +544,96 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     return (
       <div className="space-y-4">
         {sortedEvents.map((event) => (
-          <div
-            key={event.id}
-            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-card text-card-foreground transition-shadow cursor-pointer"
-            onClick={() => onEventClick?.(event)}
-          >
-            <div className="flex items-start gap-4">
-              <div className={`w-4 h-4 rounded-full mt-1 ${eventColors[event.color || 'blue']}`}></div>
+          <Card key={event.id} className="" padding="lg">
+            {/* Header con acciones en la parte superior derecha */}
+            <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <Typography variant="body1" weight="semibold">
+                <div className="flex items-center gap-3 mb-2">
+                  {/* Círculo de color del participante */}
+                  <div className={`w-4 h-4 rounded-full ${getParticipantColor(event)}`}></div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {event.investigacion_nombre || event.title || 'Sin investigación'}
+                  </h3>
+                  <Chip 
+                    variant={getChipVariant(event.estado_agendamiento || 'Sin estado') as any}
+                    size="sm"
+                  >
+                    {event.estado_agendamiento || 'Sin estado'}
+                  </Chip>
+                </div>
+                
+                <p className="text-muted-foreground text-sm">
                   {event.title}
-                </Typography>
-                <Typography variant="body2" color="secondary" className="mt-1">
-                  {formatDate(new Date(event.start), 'long')} • {formatTime(new Date(event.start))} - {formatTime(new Date(event.end))}
-                </Typography>
-                {event.description && (
-                  <Typography variant="body2" color="secondary" className="mt-2">
-                    {event.description}
-                  </Typography>
-                )}
-                {event.location && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <LocationIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <Typography variant="body2" color="secondary">
-                      {event.location}
-                    </Typography>
-                  </div>
-                )}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                {event.estado_agendamiento && (
-                  <Badge variant={
-                    // Mapear estados de agendamiento a colores
-                    event.estado_agendamiento === 'Finalizado' ? 'success' :
-                    event.estado_agendamiento === 'Cancelado' ? 'danger' :
-                    event.estado_agendamiento === 'Pendiente de agendamiento' ? 'warning' :
-                    event.estado_agendamiento === 'En progreso' ? 'info' :
-                    'secondary'
-                  }>
-                    {event.estado_agendamiento}
-                  </Badge>
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Aquí se puede agregar menú de acciones
+
+              {/* Acciones en la parte superior derecha */}
+              <div className="flex gap-2 ml-4">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    console.log('Ingresar a sesión:', event.id);
                   }}
-                  className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
                 >
-                  <MoreVerticalIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                </button>
+                  Ingresar
+                </Button>
+                
+                <ActionsMenu
+                  actions={[
+                    {
+                      label: 'Ver más',
+                      onClick: () => onEventClick?.(event),
+                      icon: <UserIcon className="w-4 h-4" />
+                    },
+                    {
+                      label: 'Editar',
+                      onClick: () => {
+                        console.log('Editar sesión:', event.id);
+                      },
+                      icon: <CalendarIcon className="w-4 h-4" />
+                    },
+                    {
+                      label: 'Eliminar',
+                      onClick: () => {
+                        console.log('Eliminar sesión:', event.id);
+                      },
+                      icon: <TrashIcon className="w-4 h-4" />,
+                      className: 'text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-100'
+                    }
+                  ]}
+                />
               </div>
             </div>
-          </div>
+
+            {/* Contenido optimizado en grid de 2 columnas */}
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Fecha y Hora</p>
+                <p className="text-sm font-medium text-foreground">
+                  {formatDate(new Date(event.start), 'long')} • {formatTime(new Date(event.start))} - {formatTime(new Date(event.end))}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Participante</p>
+                <p className="text-sm font-medium text-foreground">
+                  {event.title?.split(' - ')[0] || 'Sin participante'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Empresa</p>
+                <p className="text-sm font-medium text-foreground">
+                  {event.location || 'Sin empresa'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Duración</p>
+                <p className="text-sm font-medium text-foreground">
+                  {event.duracion_minutos ? `${Math.floor(event.duracion_minutos / 60)}h ${event.duracion_minutos % 60}m` : 'N/A'}
+                </p>
+              </div>
+            </div>
+          </Card>
         ))}
       </div>
     );
