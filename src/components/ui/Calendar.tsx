@@ -4,6 +4,7 @@ import Button from './Button';
 import Card from './Card';
 import Badge from './Badge';
 import Tooltip from './Tooltip';
+import SesionEventDraggable from '../sesiones/SesionEventDraggable';
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon, 
@@ -46,12 +47,18 @@ export interface CalendarProps {
   onViewChange?: (view: CalendarProps['view']) => void;
   /** Callback cuando se cambia la fecha */
   onDateChange?: (date: Date) => void;
+  /** Callback cuando se mueve un evento */
+  onEventMove?: (eventId: string, newDate: Date, newTimeSlot?: number) => Promise<void>;
+  /** Callback cuando se redimensiona un evento */
+  onEventResize?: (eventId: string, newDuration: number) => Promise<void>;
   /** Mostrar botón de agregar evento */
   showAddButton?: boolean;
   /** Mostrar navegación */
   showNavigation?: boolean;
   /** Mostrar mini calendario */
   showMiniCalendar?: boolean;
+  /** Habilitar drag and drop */
+  enableDragDrop?: boolean;
   /** Clases CSS adicionales */
   className?: string;
 }
@@ -65,9 +72,12 @@ const Calendar: React.FC<CalendarProps> = ({
   onAddEvent,
   onViewChange,
   onDateChange,
+  onEventMove,
+  onEventResize,
   showAddButton = true,
   showNavigation = true,
   showMiniCalendar = true,
+  enableDragDrop = false,
   className = ''
 }) => {
   const [currentDate, setCurrentDate] = useState(initialDate);
@@ -156,7 +166,7 @@ const Calendar: React.FC<CalendarProps> = ({
 
   // Formatear fecha
   const formatDate = useCallback((date: Date, format: 'short' | 'long' | 'month' | 'day' = 'short') => {
-    const options: Intl.DateTimeFormatOptions = {
+    const options: Record<string, Intl.DateTimeFormatOptions> = {
       short: { month: 'short', day: 'numeric' },
       long: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
       month: { month: 'long', year: 'numeric' },
@@ -189,12 +199,12 @@ const Calendar: React.FC<CalendarProps> = ({
   // Obtener color del evento
   const getEventColor = useCallback((color?: CalendarEvent['color']) => {
     const colors = {
-      primary: 'bg-primary text-white',
-      secondary: 'bg-gray-500 text-white',
-      success: 'bg-green-500 text-white',
-      warning: 'bg-yellow-500 text-white',
-      error: 'bg-red-500 text-white',
-      info: 'bg-primary text-primary-foreground'
+      primary: 'bg-blue-50 border-l-4 border-blue-500 text-blue-800 dark:bg-blue-900/20 dark:border-blue-400 dark:text-blue-200', // Interno
+      secondary: 'bg-purple-50 border-l-4 border-purple-500 text-purple-800 dark:bg-purple-900/20 dark:border-purple-400 dark:text-purple-200', // Friend & Family
+      info: 'bg-cyan-50 border-l-4 border-cyan-500 text-cyan-800 dark:bg-cyan-900/20 dark:border-cyan-400 dark:text-cyan-200', // Externo
+      success: 'bg-green-50 border-l-4 border-green-500 text-green-800 dark:bg-green-900/20 dark:border-green-400 dark:text-green-200',
+      warning: 'bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-400 dark:text-yellow-200',
+      error: 'bg-red-50 border-l-4 border-red-500 text-red-800 dark:bg-red-900/20 dark:border-red-400 dark:text-red-200'
     };
     
     return colors[color || 'primary'];
@@ -229,6 +239,7 @@ const Calendar: React.FC<CalendarProps> = ({
               return (
                 <div
                   key={dayIndex}
+                  data-date={date.toISOString()}
                   className={`
                     min-h-[80px] p-1 border border-gray-200 cursor-pointer transition-all duration-200
                     hover:bg-gray-50 hover:border-primary/30
@@ -267,23 +278,63 @@ const Calendar: React.FC<CalendarProps> = ({
                   
                   {/* Eventos del día */}
                   <div className="space-y-1">
-                    {dayEvents.slice(0, 2).map((event) => (
-                      <div
-                        key={event.id}
-                        className={`
-                          p-1 rounded text-xs cursor-pointer truncate
-                          ${getEventColor(event.color)}
-                          hover:opacity-80 transition-opacity
-                        `}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEventClick?.(event);
-                        }}
-                        title={event.title}
-                      >
-                        {event.title}
-                      </div>
-                    ))}
+                    {dayEvents.slice(0, 2).map((event) => {
+                      // Verificar si es un evento de sesión con drag and drop habilitado
+                      const isSesionEvent = enableDragDrop && (
+                        'titulo' in event || 
+                        'estado' in event || 
+                        'tipo_sesion' in event ||
+                        'duracion_minutos' in event
+                      );
+                      
+                      // Debug log
+                      if (enableDragDrop) {
+                        console.log('🔍 Evento en calendario:', {
+                          id: event.id,
+                          title: event.title,
+                          hasTitulo: 'titulo' in event,
+                          hasEstado: 'estado' in event,
+                          hasTipoSesion: 'tipo_sesion' in event,
+                          hasDuracion: 'duracion_minutos' in event,
+                          isSesionEvent,
+                          eventKeys: Object.keys(event)
+                        });
+                      }
+                      
+                      if (isSesionEvent) {
+                        return (
+                          <SesionEventDraggable
+                            key={event.id}
+                            sesion={event as any}
+                            onClick={(sesion) => onEventClick?.(sesion as any)}
+                            onMove={onEventMove}
+                            onResize={onEventResize}
+                            compact={true}
+                            showActions={false}
+                            draggable={enableDragDrop}
+                            resizable={enableDragDrop}
+                          />
+                        );
+                      }
+                      
+                      return (
+                        <div
+                          key={event.id}
+                          className={`
+                            p-1 rounded text-xs cursor-pointer truncate
+                            ${getEventColor(event.color)}
+                            hover:opacity-80 transition-opacity
+                          `}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEventClick?.(event);
+                          }}
+                          title={event.title}
+                        >
+                          {event.title}
+                        </div>
+                      );
+                    })}
                     
                     {dayEvents.length > 2 && (
                       <Typography variant="caption" color="secondary" className="block">
@@ -420,7 +471,7 @@ const Calendar: React.FC<CalendarProps> = ({
                     {event.title}
                   </Typography>
                   {event.status && (
-                    <Badge variant={event.status === 'confirmed' ? 'success' : event.status === 'pending' ? 'warning' : 'error'}>
+                    <Badge variant={event.status === 'confirmed' ? 'success' : event.status === 'pending' ? 'warning' : 'danger'}>
                       {event.status}
                     </Badge>
                   )}

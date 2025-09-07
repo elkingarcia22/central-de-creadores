@@ -70,21 +70,21 @@ export const Tabs: React.FC<TabsProps> = ({
     default: {
       container: 'border-b border-border',
       tab: `transition-all duration-200 font-medium ${sizeClasses[size]} relative`,
-      active: 'text-primary border-b-2 border-primary bg-primary/5',
+      active: 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20',
       inactive: 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border hover:bg-muted/50',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },
     pills: {
       container: 'bg-muted rounded-lg p-1',
       tab: `transition-all duration-200 font-medium rounded-md ${sizeClasses[size]}`,
-      active: 'text-primary-foreground bg-primary ',
+      active: 'text-white bg-blue-600 ',
       inactive: 'text-muted-foreground hover:text-foreground hover:bg-muted',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },
     underline: {
       container: '',
       tab: `transition-all duration-200 font-medium relative ${sizeClasses[size]}`,
-      active: 'text-blue-500 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary',
+      active: 'text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600',
       inactive: 'text-gray-500 hover:text-gray-900',
       disabled: 'text-muted-foreground cursor-not-allowed'
     }
@@ -112,7 +112,7 @@ export const Tabs: React.FC<TabsProps> = ({
             >
               <span className={fullWidth ? '' : 'whitespace-nowrap'}>{item.label}</span>
               {item.count !== undefined && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full min-w-[16px] h-4 flex items-center justify-center">
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center">
                   {item.count}
                 </span>
               )}
@@ -139,7 +139,7 @@ export const Tabs: React.FC<TabsProps> = ({
               )}
               <span className={fullWidth ? '' : 'whitespace-nowrap'}>{tab.label}</span>
               {tab.badge && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full min-w-[16px] h-4 flex items-center justify-center">
+                <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full min-w-[16px] h-4 flex items-center justify-center">
                   {tab.badge}
                 </span>
               )}

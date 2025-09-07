@@ -85,16 +85,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   // Mapeo de colores
   const colorMap = {
     blue: {
-      icon: 'text-primary',
-      bg: 'bg-primary/10 dark:bg-primary/20'
+      icon: 'text-blue-600',
+      bg: 'bg-blue-50 dark:bg-blue-900/20'
     },
     green: {
       icon: 'text-green-600',
       bg: 'bg-green-50 dark:bg-green-900/20'
     },
     purple: {
-      icon: 'text-primary',
-      bg: 'bg-primary/10 dark:bg-primary/20'
+      icon: 'text-blue-600',
+      bg: 'bg-blue-50 dark:bg-blue-900/20'
     },
     orange: {
       icon: 'text-orange-600',

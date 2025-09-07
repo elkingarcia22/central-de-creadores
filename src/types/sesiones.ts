@@ -3,7 +3,7 @@ export interface Sesion {
   investigacion_id: string;
   titulo: string;
   descripcion?: string;
-  fecha_programada: Date;
+  fecha_programada: Date | null;
   duracion_minutos: number;
   estado: 'programada' | 'en_curso' | 'completada' | 'cancelada' | 'reprogramada';
   tipo_sesion: 'virtual' | 'presencial' | 'hibrida';
@@ -24,6 +24,25 @@ export interface Sesion {
   google_event_id?: string;
   created_at: Date;
   updated_at: Date;
+  
+  // Campos adicionales de la API de reclutamientos
+  investigacion_nombre?: string;
+  participante?: {
+    id: string;
+    nombre: string;
+    email: string;
+    tipo: 'externo' | 'interno' | 'friend_family';
+  };
+  tipo_participante?: 'externo' | 'interno' | 'friend_family';
+  reclutador?: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+  estado_agendamiento?: string;
+  estado_agendamiento_color?: string;
+  hora_sesion?: string;
+  fecha_asignado?: string;
 }
 
 export interface SesionParticipante {
@@ -68,10 +87,15 @@ export interface SesionEvent extends Sesion {
   attendees?: string[];
   location?: string;
   status?: 'confirmed' | 'pending' | 'cancelled';
+  title?: string; // Para compatibilidad con CalendarEvent
   // Campos específicos de sesiones
   participantes: SesionParticipante[];
   investigacion_nombre?: string;
   investigacion_color?: string;
+  // Información real del reclutamiento
+  estado_real?: string;
+  responsable_real?: string;
+  implementador_real?: string;
 }
 
 export interface GoogleCalendarEvent {

@@ -55,9 +55,9 @@
   --card-foreground: 248 250 252; /* slate-50 */
   
   /* === COLORES PRIMARIOS CORREGIDOS === */
-  --primary: 120 160 255;        /* Azul pastel suave */
+  --primary: 107 114 128;        /* gray-500 - Gris suave */
   --primary-foreground: 255 255 255; /* BLANCO - Corregido para contraste */
-  --primary-hover: 96 165 250;   /* blue-400 - Hover más claro */
+  --primary-hover: 75 85 99;   /* gray-600 - Hover más oscuro */
   
   --secondary: 39 39 42;         /* zinc-800 - Gris medio */
   --secondary-foreground: 250 250 250; /* BLANCO - Corregido para contraste */

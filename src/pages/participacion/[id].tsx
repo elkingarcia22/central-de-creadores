@@ -119,7 +119,7 @@ interface ComentarioParticipante {
 
 export default function VistaParticipacion() {
   const router = useRouter();
-  const { id, reclutamiento_id } = router.query;
+  const { id, reclutamiento_id, returnUrl } = router.query;
   const { rolSeleccionado } = useRol();
   const { theme } = useTheme();
   const { showError, showSuccess } = useToast();
@@ -1858,9 +1858,15 @@ export default function VistaParticipacion() {
               onClick={() => {
                 console.log('🔙 NAVEGACIÓN ATRÁS - Iniciando navegación...');
                 console.log('🔍 reclutamientoActual:', reclutamientoActual);
+                console.log('🔍 returnUrl:', returnUrl);
                 
-                // Si tenemos investigacion_id, navegar a la vista específica del reclutamiento
-                if (reclutamientoActual?.investigacion_id) {
+                // Si tenemos returnUrl, usarlo para regresar a la página anterior
+                if (returnUrl && typeof returnUrl === 'string') {
+                  const decodedReturnUrl = decodeURIComponent(returnUrl);
+                  console.log('🔙 Navegando a returnUrl:', decodedReturnUrl);
+                  router.push(decodedReturnUrl);
+                } else if (reclutamientoActual?.investigacion_id) {
+                  // Si tenemos investigacion_id, navegar a la vista específica del reclutamiento
                   const targetUrl = `/reclutamiento/ver/${reclutamientoActual.investigacion_id}`;
                   console.log('🔙 Navegando a vista específica del reclutamiento:', targetUrl);
                   router.push(targetUrl);
@@ -1875,7 +1881,7 @@ export default function VistaParticipacion() {
               <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>
             <PageHeader
-              title={`Participación: ${participante.nombre}`}
+              title={`Sesión: ${participante.nombre}`}
               variant="compact"
               color="purple"
               className="mb-0"

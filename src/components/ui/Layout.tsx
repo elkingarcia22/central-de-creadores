@@ -221,7 +221,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         onItemClick={handleSidebarNavigation}
       />
       {/* Sidebar para desktop */}
-      <div className={`hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
+      <div className={`hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 z-40 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
         <Sidebar
           title="Central de creadores"
           items={currentMenu}

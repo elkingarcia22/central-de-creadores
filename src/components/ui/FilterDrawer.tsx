@@ -116,6 +116,9 @@ export interface FilterOptions {
   estados_agendamiento?: Array<{ value: string; label: string }>;
   tipos_investigacion?: Array<{ value: string; label: string }>;
   responsables_participaciones?: Array<{ value: string; label: string }>;
+  // Campos específicos para sesiones
+  investigaciones?: Array<{ value: string; label: string }>;
+  responsables_sesiones?: Array<{ value: string; label: string }>;
 }
 
 // Interface específica para filtros de participantes
@@ -190,14 +193,26 @@ export interface FilterValuesHistorialEmpresa {
   fecha_hasta?: string;
 }
 
+// Interface específica para filtros de sesiones
+export interface FilterValuesSesiones {
+  busqueda?: string;
+  tipo_participante?: string | 'todos';
+  investigacion?: string | 'todos';
+  responsable?: string | 'todos';
+  fecha_sesion_desde?: string;
+  fecha_sesion_hasta?: string;
+  duracion_sesion_min?: string;
+  duracion_sesion_max?: string;
+}
+
 interface FilterDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa;
-  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa) => void;
+  filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa | FilterValuesSesiones;
+  onFiltersChange: (filters: FilterValuesInvestigacion | FilterValuesReclutamiento | FilterValuesParticipantes | FilterValuesEmpresa | FilterValuesDolores | FilterValuesPerfilamiento | FilterValuesParticipaciones | FilterValuesHistorialEmpresa | FilterValuesSesiones) => void;
   options: FilterOptions;
   className?: string;
-  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento' | 'participaciones' | 'historial_empresa';
+  type?: 'investigacion' | 'reclutamiento' | 'participante' | 'empresa' | 'dolores' | 'perfilamiento' | 'participaciones' | 'historial_empresa' | 'sesiones';
   participanteType?: 'externos' | 'internos' | 'friend_family';
 }
 
@@ -298,6 +313,17 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         duracion_sesion_min: '',
         duracion_sesion_max: ''
       } as FilterValuesParticipaciones);
+    } else if (type === 'sesiones') {
+      onFiltersChange({
+        busqueda: '',
+        tipo_participante: 'todos',
+        investigacion: 'todos',
+        responsable: 'todos',
+        fecha_sesion_desde: '',
+        fecha_sesion_hasta: '',
+        duracion_sesion_min: '',
+        duracion_sesion_max: ''
+      } as FilterValuesSesiones);
     } else {
       onFiltersChange({
         estados: [],
@@ -394,6 +420,15 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       if (partFilters.fecha_participacion_hasta) count++;
       if (partFilters.duracion_sesion_min) count++;
       if (partFilters.duracion_sesion_max) count++;
+    } else if (type === 'sesiones') {
+      const sesFilters = filters as FilterValuesSesiones;
+      if (sesFilters.tipo_participante && sesFilters.tipo_participante !== 'todos') count++;
+      if (sesFilters.investigacion && sesFilters.investigacion !== 'todos') count++;
+      if (sesFilters.responsable && sesFilters.responsable !== 'todos') count++;
+      if (sesFilters.fecha_sesion_desde) count++;
+      if (sesFilters.fecha_sesion_hasta) count++;
+      if (sesFilters.duracion_sesion_min) count++;
+      if (sesFilters.duracion_sesion_max) count++;
     } else if (type === 'historial_empresa') {
       const histFilters = filters as FilterValuesHistorialEmpresa;
       if (histFilters.estado && histFilters.estado !== 'todos') count++;
@@ -1208,6 +1243,89 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     <Input
                       placeholder="Máximo"
                       value={(filters as FilterValuesParticipaciones).duracion_sesion_max || ''}
+                      onChange={(e) => handleFilterChange('duracion_sesion_max', e.target.value)}
+                      type="number"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : type === 'sesiones' ? (
+              // Filtros específicos para sesiones
+              <>
+                {/* Tipo de Participante */}
+                <div>
+                  <FilterLabel>Tipo de Participante</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar tipo..."
+                    options={[
+                      { value: 'todos', label: 'Todos los tipos' },
+                      { value: 'externo', label: 'Externo' },
+                      { value: 'interno', label: 'Interno' },
+                      { value: 'friend_family', label: 'Friend & Family' }
+                    ]}
+                    value={(filters as FilterValuesSesiones).tipo_participante || 'todos'}
+                    onChange={(value) => handleFilterChange('tipo_participante', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Investigación */}
+                <div>
+                  <FilterLabel>Investigación</FilterLabel>
+                  <Select
+                    placeholder="Seleccionar investigación..."
+                    options={[
+                      { value: 'todos', label: 'Todas las investigaciones' },
+                      ...(options.investigaciones || [])
+                    ]}
+                    value={(filters as FilterValuesSesiones).investigacion || 'todos'}
+                    onChange={(value) => handleFilterChange('investigacion', value)}
+                    fullWidth
+                  />
+                </div>
+
+                {/* Responsable */}
+                <div>
+                  <FilterLabel>Responsable</FilterLabel>
+                  <UserSelect
+                    value={(filters as FilterValuesSesiones).responsable || 'todos'}
+                    onChange={(value) => handleFilterChange('responsable', value)}
+                    users={options.usuarios || []}
+                    placeholder="Seleccionar responsable..."
+                    fullWidth
+                  />
+                </div>
+
+                {/* Fecha de Sesión */}
+                <div>
+                  <FilterLabel>Fecha de Sesión</FilterLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    <DatePicker
+                      placeholder="Desde..."
+                      value={(filters as FilterValuesSesiones).fecha_sesion_desde || ''}
+                      onChange={(e) => handleFilterChange('fecha_sesion_desde', e.target.value)}
+                    />
+                    <DatePicker
+                      placeholder="Hasta..."
+                      value={(filters as FilterValuesSesiones).fecha_sesion_hasta || ''}
+                      onChange={(e) => handleFilterChange('fecha_sesion_hasta', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Duración de Sesión */}
+                <div>
+                  <FilterLabel>Duración de Sesión (minutos)</FilterLabel>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Mínimo"
+                      value={(filters as FilterValuesSesiones).duracion_sesion_min || ''}
+                      onChange={(e) => handleFilterChange('duracion_sesion_min', e.target.value)}
+                      type="number"
+                    />
+                    <Input
+                      placeholder="Máximo"
+                      value={(filters as FilterValuesSesiones).duracion_sesion_max || ''}
                       onChange={(e) => handleFilterChange('duracion_sesion_max', e.target.value)}
                       type="number"
                     />

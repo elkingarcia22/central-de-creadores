@@ -1,18 +1,15 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Calendar, Button, Card, Typography, Badge, Tooltip } from '../ui';
-import { Sesion } from '../../types/sesiones';
-import { useSesiones } from '../../hooks/useSesiones';
-import SesionEvent from './SesionEvent';
+import React, { useState, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react';
+import { useRouter } from 'next/router';
+import { Button, Card, Typography, Badge, Tooltip } from '../ui';
+import GoogleCalendar from '../ui/GoogleCalendar';
+import { Sesion, SesionEvent } from '../../types/sesiones';
+import { useSesionesCalendar } from '../../hooks/useSesionesCalendar';
+import SesionEventComponent from './SesionEvent';
 import SesionEventDraggable from './SesionEventDraggable';
 import SesionExpanded from './SesionExpanded';
-import SesionModal from './SesionModal';
+import SesionSideModal from './SesionSideModal';
 import { 
-  PlusIcon, 
-  CalendarIcon, 
-  FilterIcon,
-  RefreshIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon
+  RefreshIcon
 } from '../icons';
 
 interface SesionesCalendarProps {
@@ -21,27 +18,35 @@ interface SesionesCalendarProps {
   onSesionCreate?: (date?: Date) => void;
   onSesionEdit?: (sesion: Sesion) => void;
   onSesionDelete?: (sesion: Sesion) => void;
+  onRefresh?: () => void;
   className?: string;
 }
 
-const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
+export interface SesionesCalendarRef {
+  refresh: () => void;
+  closeSideModal: () => void;
+}
+
+const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(({
   investigacionId,
   onSesionClick,
   onSesionCreate,
   onSesionEdit,
   onSesionDelete,
+  onRefresh,
   className = ''
-}) => {
+}, ref) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day' | 'agenda'>('month');
-  const [showFilters, setShowFilters] = useState(false);
-  const [expandedSesion, setExpandedSesion] = useState<Sesion | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [modalSesion, setModalSesion] = useState<Sesion | null>(null);
-  const [modalDate, setModalDate] = useState<Date | undefined>(undefined);
+  const [expandedSesion, setExpandedSesion] = useState<SesionEvent | null>(null);
+  const [showSideModal, setShowSideModal] = useState(false);
+  const [selectedSesion, setSelectedSesion] = useState<SesionEvent | null>(null);
+  
+  const router = useRouter();
 
   // Hook para manejar sesiones
   const {
+    sesiones,
     sesionesEventos,
     loading,
     error,
@@ -51,14 +56,14 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
     updateSesion,
     deleteSesion,
     refreshStats
-  } = useSesiones({
+  } = useSesionesCalendar({
     investigacionId,
     autoLoad: true
   });
 
   // Formatear fecha para mostrar
   const formatDate = useCallback((date: Date, format: 'short' | 'long' | 'month' = 'short') => {
-    const options: Intl.DateTimeFormatOptions = {
+    const options: Record<string, Intl.DateTimeFormatOptions> = {
       short: { month: 'short', day: 'numeric' },
       long: { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
       month: { month: 'long', year: 'numeric' }
@@ -71,29 +76,46 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   const handleEventClick = useCallback((event: any) => {
     const sesion = sesionesEventos.find(s => s.id === event.id);
     if (sesion) {
-      setExpandedSesion(sesion);
-      onSesionClick?.(sesion);
+      setSelectedSesion(sesion);
+      setShowSideModal(true);
+      // Convertir SesionEvent a Sesion para onSesionClick
+      const sesionData: Sesion = {
+        id: sesion.id,
+        investigacion_id: sesion.investigacion_id,
+        titulo: sesion.titulo,
+        fecha_programada: sesion.start,
+        duracion_minutos: sesion.duracion_minutos,
+        estado: sesion.estado,
+        moderador_id: sesion.moderador_id,
+        moderador_nombre: sesion.moderador_nombre,
+        participante: sesion.participantes?.[0] ? {
+        id: sesion.participantes[0].participante_id,
+        nombre: sesion.participantes[0].participante_nombre || 'Sin nombre',
+        email: sesion.participantes[0].participante_email || '',
+        tipo: 'externo' as const
+      } : null,
+        investigacion_nombre: sesion.investigacion_nombre,
+        created_at: sesion.created_at,
+        updated_at: sesion.updated_at,
+        tipo_sesion: sesion.tipo_sesion || 'virtual',
+        grabacion_permitida: sesion.grabacion_permitida || false
+      };
+      onSesionClick?.(sesionData);
     }
   }, [sesionesEventos, onSesionClick]);
 
   // Manejar click en fecha
   const handleDateClick = useCallback((date: Date) => {
-    setModalDate(date);
-    setShowModal(true);
     onSesionCreate?.(date);
   }, [onSesionCreate]);
 
   // Manejar agregar evento
   const handleAddEvent = useCallback(() => {
-    setModalDate(undefined);
-    setShowModal(true);
     onSesionCreate?.();
   }, [onSesionCreate]);
 
   // Manejar editar sesión
   const handleEditSesion = useCallback((sesion: Sesion) => {
-    setModalSesion(sesion);
-    setShowModal(true);
     onSesionEdit?.(sesion);
   }, [onSesionEdit]);
 
@@ -107,6 +129,7 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
 
   // Manejar mover sesión
   const handleMoveSesion = useCallback(async (eventId: string, newDate: Date, newTimeSlot?: number) => {
+    // console.log('🔄 handleMoveSesion called:', { eventId, newDate, newTimeSlot });
     try {
       const sesion = sesionesEventos.find(s => s.id === eventId);
       if (sesion) {
@@ -115,6 +138,7 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
           ...(newTimeSlot && { duracion_minutos: newTimeSlot * 30 })
         };
         await updateSesion(eventId, updatedData);
+        // console.log('✅ Sesion moved successfully');
       }
     } catch (error) {
       console.error('Error moviendo sesión:', error);
@@ -130,21 +154,6 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
     }
   }, [updateSesion]);
 
-  // Manejar guardar sesión
-  const handleSaveSesion = useCallback(async (data: any) => {
-    try {
-      if (modalSesion) {
-        await updateSesion(modalSesion.id, data);
-      } else {
-        await createSesion({ ...data, investigacion_id: investigacionId });
-      }
-      setShowModal(false);
-      setModalSesion(null);
-      setModalDate(undefined);
-    } catch (error) {
-      console.error('Error guardando sesión:', error);
-    }
-  }, [modalSesion, updateSesion, createSesion, investigacionId]);
 
   // Manejar cambio de vista
   const handleViewChange = useCallback((newView: 'month' | 'week' | 'day' | 'agenda') => {
@@ -156,93 +165,148 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
     setCurrentDate(date);
   }, []);
 
-  // Navegación
-  const goToPrevious = useCallback(() => {
-    const newDate = new Date(currentDate);
-    if (view === 'month') {
-      newDate.setMonth(newDate.getMonth() - 1);
-    } else if (view === 'week') {
-      newDate.setDate(newDate.getDate() - 7);
-    } else if (view === 'day') {
-      newDate.setDate(newDate.getDate() - 1);
-    }
-    setCurrentDate(newDate);
-  }, [currentDate, view]);
+  // Exponer la función de actualización al componente padre
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      console.log('🔄 Refrescando calendario desde componente padre...');
+      loadSesiones();
+    },
+    closeSideModal: () => setShowSideModal(false)
+  }), [loadSesiones]);
 
-  const goToNext = useCallback(() => {
-    const newDate = new Date(currentDate);
-    if (view === 'month') {
-      newDate.setMonth(newDate.getMonth() + 1);
-    } else if (view === 'week') {
-      newDate.setDate(newDate.getDate() + 7);
-    } else if (view === 'day') {
-      newDate.setDate(newDate.getDate() + 1);
-    }
-    setCurrentDate(newDate);
-  }, [currentDate, view]);
+  // Manejar acciones del side modal
+  const handleSideModalEdit = useCallback((sesion: SesionEvent) => {
+    setShowSideModal(false);
+    
+    console.log('🔍 [DEBUG] SesionEvent original completo:', JSON.stringify(sesion, null, 2));
+    console.log('🔍 [DEBUG] Campos específicos:', {
+      id: sesion.id,
+      participante: sesion.participante,
+      reclutador: sesion.reclutador,
+      reclutador_id: sesion.reclutador_id,
+      investigacion_nombre: sesion.investigacion_nombre,
+      tipo_participante: sesion.tipo_participante,
+      estado_agendamiento: sesion.estado_agendamiento,
+      hora_sesion: sesion.hora_sesion,
+      fecha_asignado: sesion.fecha_asignado,
+      estado_real: sesion.estado_real,
+      responsable_real: sesion.responsable_real,
+      implementador_real: sesion.implementador_real
+    });
+    
+    // Convertir SesionEvent a Sesion para la función de edición
+    const sesionData: Sesion = {
+      id: sesion.id,
+      investigacion_id: sesion.investigacion_id,
+      titulo: sesion.titulo,
+      fecha_programada: sesion.start,
+      duracion_minutos: sesion.duracion_minutos,
+      estado: sesion.estado,
+      moderador_id: sesion.moderador_id,
+      moderador_nombre: sesion.moderador_nombre,
+      // Mapear participante correctamente
+      participante: sesion.participante || (sesion.participantes?.[0] ? {
+        id: sesion.participantes[0].participante_id,
+        nombre: sesion.participantes[0].participante_nombre || 'Sin nombre',
+        email: sesion.participantes[0].participante_email || '',
+        tipo: sesion.tipo_participante || 'externo'
+      } : null),
+      // Mapear reclutador correctamente
+      reclutador: sesion.reclutador,
+      reclutador_id: sesion.reclutador?.id,
+      // Mapear información adicional
+      investigacion_nombre: sesion.investigacion_nombre,
+      tipo_participante: sesion.tipo_participante,
+      estado_agendamiento: sesion.estado_agendamiento,
+      hora_sesion: sesion.hora_sesion,
+      fecha_asignado: sesion.fecha_asignado,
+      created_at: sesion.created_at,
+      updated_at: sesion.updated_at,
+      tipo_sesion: sesion.tipo_sesion || 'virtual',
+      grabacion_permitida: sesion.grabacion_permitida || false,
+      // Agregar campos enriquecidos del reclutamiento
+      ...(sesion.estado_real && { estado_real: sesion.estado_real }),
+      ...(sesion.responsable_real && { responsable_real: sesion.responsable_real }),
+      ...(sesion.implementador_real && { implementador_real: sesion.implementador_real })
+    } as any; // Usar any para permitir campos adicionales
+    
+    console.log('🔍 [DEBUG] SesionData convertida completa:', JSON.stringify(sesionData, null, 2));
+    onSesionEdit?.(sesionData);
+  }, [onSesionEdit]);
 
-  const goToToday = useCallback(() => {
-    const today = new Date();
-    setCurrentDate(today);
+  const handleSideModalDelete = useCallback((sesion: SesionEvent) => {
+    // No cerrar el modal lateral inmediatamente, dejar que el modal de confirmación se maneje
+    // Convertir SesionEvent a Sesion para la función de eliminación
+    const sesionData: Sesion = {
+      id: sesion.id,
+      investigacion_id: sesion.investigacion_id,
+      titulo: sesion.titulo,
+      fecha_programada: sesion.start,
+      duracion_minutos: sesion.duracion_minutos,
+      estado: sesion.estado,
+      moderador_id: sesion.moderador_id,
+      moderador_nombre: sesion.moderador_nombre,
+      participante: sesion.participantes?.[0] ? {
+        id: sesion.participantes[0].participante_id,
+        nombre: sesion.participantes[0].participante_nombre || 'Sin nombre',
+        email: sesion.participantes[0].participante_email || '',
+        tipo: 'externo' as const
+      } : null,
+      investigacion_nombre: sesion.investigacion_nombre,
+      created_at: sesion.created_at,
+      updated_at: sesion.updated_at,
+      tipo_sesion: sesion.tipo_sesion || 'virtual',
+      grabacion_permitida: sesion.grabacion_permitida || false
+    };
+    onSesionDelete?.(sesionData);
+  }, [onSesionDelete]);
+
+  const handleSideModalViewMore = useCallback((sesion: SesionEvent) => {
+    setShowSideModal(false);
+    
+    // Obtener el ID del participante desde los datos de la sesión
+    const participanteId = sesion.participante?.id;
+    
+    if (!participanteId) {
+      console.error('❌ No se encontró ID del participante en la sesión:', sesion);
+      return;
+    }
+    
+    // Construir la URL con el ID del participante y parámetro de retorno
+    const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+    const participacionUrl = `/participacion/${participanteId}?returnUrl=${returnUrl}`;
+    
+    console.log('🚀 Navegando a participación desde modal lateral:', participacionUrl);
+    router.push(participacionUrl);
+  }, [router]);
+
+  const handleSideModalDuplicate = useCallback((sesion: SesionEvent) => {
+    console.log('Duplicar sesión:', sesion.id);
+    // Aquí puedes implementar la lógica de duplicación
   }, []);
 
-  // Estadísticas para mostrar
-  const statsDisplay = useMemo(() => {
-    if (!stats) return null;
-    
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card variant="elevated" padding="md">
-          <div className="text-center">
-            <Typography variant="h3" weight="bold" className="text-primary">
-              {stats.total}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              Total Sesiones
-            </Typography>
-          </div>
-        </Card>
-        
-        <Card variant="elevated" padding="md">
-          <div className="text-center">
-            <Typography variant="h3" weight="bold" className="text-warning">
-              {stats.programadas}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              Programadas
-            </Typography>
-          </div>
-        </Card>
-        
-        <Card variant="elevated" padding="md">
-          <div className="text-center">
-            <Typography variant="h3" weight="bold" className="text-success">
-              {stats.completadas}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              Completadas
-            </Typography>
-          </div>
-        </Card>
-        
-        <Card variant="elevated" padding="md">
-          <div className="text-center">
-            <Typography variant="h3" weight="bold" className="text-info">
-              {stats.esta_semana}
-            </Typography>
-            <Typography variant="caption" color="secondary">
-              Esta Semana
-            </Typography>
-          </div>
-        </Card>
-      </div>
-    );
-  }, [stats]);
+  const handleSideModalShare = useCallback((sesion: SesionEvent) => {
+    console.log('Compartir sesión:', sesion.id);
+    // Aquí puedes implementar la lógica de compartir
+  }, []);
+
+  const handleSideModalExport = useCallback((sesion: SesionEvent) => {
+    console.log('Exportar sesión:', sesion.id);
+    // Aquí puedes implementar la lógica de exportación
+  }, []);
+
+  const handleSideModalIniciar = useCallback((sesion: SesionEvent) => {
+    console.log('Iniciar sesión:', sesion.id);
+    // Aquí puedes implementar la lógica de iniciar sesión
+    // Por ejemplo, cambiar el estado a "en_curso" o abrir la sesión
+  }, []);
+
+
 
   if (error) {
     return (
       <div className="text-center py-8">
-        <Typography variant="h3" color="error" className="mb-2">
+        <Typography variant="h3" color="danger" className="mb-2">
           Error al cargar sesiones
         </Typography>
         <Typography variant="body2" color="secondary" className="mb-4">
@@ -257,159 +321,10 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
   }
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Header con estadísticas */}
-      {statsDisplay}
-
-      {/* Header del calendario */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-primary" />
-            <Typography variant="h2" weight="semibold">
-              Calendario de Sesiones
-            </Typography>
-          </div>
-          
-          {/* Navegación */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goToPrevious}
-              disabled={loading}
-            >
-              <ChevronLeftIcon className="w-4 h-4" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goToToday}
-              disabled={loading}
-            >
-              Hoy
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goToNext}
-              disabled={loading}
-            >
-              <ChevronRightIcon className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          <Typography variant="h3" weight="medium">
-            {formatDate(currentDate, view === 'month' ? 'month' : 'long')}
-          </Typography>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Selector de vista */}
-          <div className="flex rounded-lg border border-border">
-            {(['month', 'week', 'day', 'agenda'] as const).map((viewOption) => (
-              <button
-                key={viewOption}
-                className={`
-                  px-3 py-1 text-sm font-medium transition-colors
-                  ${view === viewOption 
-                    ? 'bg-primary text-white' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }
-                  ${viewOption === 'month' ? 'rounded-l-lg' : ''}
-                  ${viewOption === 'agenda' ? 'rounded-r-lg' : ''}
-                `}
-                onClick={() => handleViewChange(viewOption)}
-                disabled={loading}
-              >
-                {viewOption === 'month' && 'Mes'}
-                {viewOption === 'week' && 'Semana'}
-                {viewOption === 'day' && 'Día'}
-                {viewOption === 'agenda' && 'Agenda'}
-              </button>
-            ))}
-          </div>
-          
-          {/* Botón de filtros */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowFilters(!showFilters)}
-            disabled={loading}
-          >
-            <FilterIcon className="w-4 h-4 mr-2" />
-            Filtros
-          </Button>
-          
-          {/* Botón de refrescar */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={loadSesiones}
-            disabled={loading}
-          >
-            <RefreshIcon className="w-4 h-4" />
-          </Button>
-          
-          {/* Botón de nueva sesión */}
-          <Button onClick={handleAddEvent} disabled={loading}>
-            <PlusIcon className="w-4 h-4 mr-2" />
-            Nueva Sesión
-          </Button>
-        </div>
-      </div>
-
-      {/* Filtros */}
-      {showFilters && (
-        <Card variant="elevated" padding="md">
-          <Typography variant="h4" className="mb-4">
-            Filtros
-          </Typography>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Aquí se pueden agregar filtros específicos */}
-            <div>
-              <Typography variant="body2" color="secondary" className="mb-2">
-                Estado
-              </Typography>
-              <div className="flex flex-wrap gap-2">
-                {['programada', 'en_curso', 'completada', 'cancelada'].map(estado => (
-                  <Badge key={estado} variant="secondary" className="cursor-pointer">
-                    {estado}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <Typography variant="body2" color="secondary" className="mb-2">
-                Tipo de Sesión
-              </Typography>
-              <div className="flex flex-wrap gap-2">
-                {['virtual', 'presencial', 'hibrida'].map(tipo => (
-                  <Badge key={tipo} variant="secondary" className="cursor-pointer">
-                    {tipo}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <Typography variant="body2" color="secondary" className="mb-2">
-                Investigación
-              </Typography>
-              <Typography variant="caption" color="secondary">
-                {investigacionId ? 'Filtrado por investigación actual' : 'Todas las investigaciones'}
-              </Typography>
-            </div>
-          </div>
-        </Card>
-      )}
-
+    <div className={`${className}`}>
       {/* Calendario */}
-      <Calendar
-        events={sesionesEventos}
+      <GoogleCalendar
+        events={sesionesEventos as any}
         initialDate={currentDate}
         view={view}
         onEventClick={handleEventClick}
@@ -417,8 +332,11 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
         onAddEvent={handleAddEvent}
         onViewChange={handleViewChange}
         onDateChange={handleDateChange}
+        onEventMove={handleMoveSesion}
+        onEventResize={handleResizeSesion}
         showAddButton={false}
-        showNavigation={false}
+        showNavigation={true}
+        enableDragDrop={true}
         className="min-h-[600px]"
       />
 
@@ -433,6 +351,20 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
           </div>
         </div>
       )}
+
+      {/* Side Modal de sesión */}
+      <SesionSideModal
+        isOpen={showSideModal}
+        onClose={() => setShowSideModal(false)}
+        sesion={selectedSesion}
+        onIniciar={handleSideModalIniciar}
+        onEdit={handleSideModalEdit}
+        onDelete={handleSideModalDelete}
+        onViewMore={handleSideModalViewMore}
+        onDuplicate={handleSideModalDuplicate}
+        onShare={handleSideModalShare}
+        onExport={handleSideModalExport}
+      />
 
       {/* Modal de sesión expandida */}
       {expandedSesion && (
@@ -456,22 +388,10 @@ const SesionesCalendar: React.FC<SesionesCalendarProps> = ({
         />
       )}
 
-      {/* Modal de crear/editar sesión */}
-      <SesionModal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-          setModalSesion(null);
-          setModalDate(undefined);
-        }}
-        onSave={handleSaveSesion}
-        sesion={modalSesion}
-        investigacionId={investigacionId}
-        fechaPredefinida={modalDate}
-        loading={loading}
-      />
     </div>
   );
-};
+});
+
+SesionesCalendar.displayName = 'SesionesCalendar';
 
 export default SesionesCalendar;

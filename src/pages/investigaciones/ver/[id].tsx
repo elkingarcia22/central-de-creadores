@@ -1104,18 +1104,6 @@ const VerInvestigacion: NextPage = () => {
                   Crear Seguimiento
                 </Button>
                 
-                {/* Botón de test para recargar investigaciones */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={async () => {
-                    console.log('🔍 [VerInvestigacion] Recargando investigaciones manualmente...');
-                    await cargarTodasLasInvestigaciones();
-                    console.log('🔍 [VerInvestigacion] Investigaciones recargadas:', todasLasInvestigaciones.length);
-                  }}
-                >
-                  🔄 Recargar
-                </Button>
               </>
             )}
 

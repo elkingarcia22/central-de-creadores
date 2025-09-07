@@ -31,7 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = "rounded-md font-medium transition-colors flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"; 
   
   const variantClasses = { 
-    primary: "bg-primary text-primary-foreground hover:bg-primary/90", 
+    primary: "bg-blue-600 text-white hover:bg-blue-700", 
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80", 
     outline: "border border-border bg-card text-card-foreground hover:bg-accent",
     ghost: "bg-transparent text-foreground hover:bg-accent",

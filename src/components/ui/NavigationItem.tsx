@@ -78,7 +78,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
 
   if (subMenu && subMenu.length > 0) {
     return (
-      <div className={`${isCollapsed ? 'relative' : ''}`} ref={submenuRef}>
+      <div className={`${isCollapsed ? 'relative z-50' : ''}`} ref={submenuRef}>
         <button
           className={`${baseClasses} ${activeClasses} w-full focus:outline-none`}
           onClick={handleClick}
@@ -93,7 +93,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         
         {/* Submenú cuando está abierto (expandido o contraído) */}
         {open && subMenu && (
-          <div className={`${isCollapsed ? 'absolute left-full top-0 ml-2 bg-card border border-slate-100 dark:border-zinc-700 rounded-md  z-50 min-w-48' : 'ml-8 mt-1'} space-y-1`}>
+          <div className={`${isCollapsed ? 'absolute left-full top-0 ml-2 bg-card border border-slate-100 dark:border-zinc-700 rounded-md shadow-lg z-[9999] min-w-48' : 'ml-8 mt-1'} space-y-1`}>
             {subMenu.map((subItem, index) => (
               <NavigationItem
                 key={subItem.href}

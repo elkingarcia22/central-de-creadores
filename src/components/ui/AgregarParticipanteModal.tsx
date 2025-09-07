@@ -24,8 +24,10 @@ interface AgregarParticipanteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (data?: any) => void;
-  reclutamiento: any; // Datos del reclutamiento con responsable pre-cargado
+  reclutamiento?: any; // Datos del reclutamiento con responsable pre-cargado
   esDesdeAgendamientoPendiente?: boolean; // Nueva prop para identificar el origen
+  showInvestigacionSelector?: boolean; // Nueva prop para mostrar selector de investigación
+  fechaPredefinida?: Date; // Nueva prop para fecha predefinida desde el calendario
 }
 
 interface Participante {
@@ -65,7 +67,9 @@ export default function AgregarParticipanteModal({
   onClose,
   onSuccess,
   reclutamiento,
-  esDesdeAgendamientoPendiente = false
+  fechaPredefinida,
+  esDesdeAgendamientoPendiente = false,
+  showInvestigacionSelector = false
 }: AgregarParticipanteModalProps) {
   const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
@@ -74,14 +78,26 @@ export default function AgregarParticipanteModal({
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<Participante[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<Participante[]>([]);
+  const [investigaciones, setInvestigaciones] = useState<any[]>([]);
 
   // Estados controlados del formulario
   const [responsableId, setResponsableId] = useState('');
-  const [fechaSesion, setFechaSesion] = useState('');
-  const [horaSesion, setHoraSesion] = useState('');
+  const [fechaSesion, setFechaSesion] = useState(() => {
+    if (fechaPredefinida) {
+      return fechaPredefinida.toISOString().split('T')[0];
+    }
+    return '';
+  });
+  const [horaSesion, setHoraSesion] = useState(() => {
+    if (fechaPredefinida) {
+      return fechaPredefinida.toTimeString().slice(0, 5);
+    }
+    return '';
+  });
   const [duracionSesion, setDuracionSesion] = useState('60');
   const [tipoParticipante, setTipoParticipante] = useState<'externo' | 'interno' | 'friend_family'>('externo');
   const [participanteId, setParticipanteId] = useState('');
+  const [investigacionId, setInvestigacionId] = useState('');
 
   // Estados para modales de crear participantes
   const [mostrarModalExterno, setMostrarModalExterno] = useState(false);
@@ -232,6 +248,32 @@ export default function AgregarParticipanteModal({
         console.error('❌ Error en fetch responsables:', error);
         setError('Error de conexión al cargar responsables');
       }
+
+      // Investigaciones (solo si se requiere el selector)
+      if (showInvestigacionSelector) {
+        console.log('🔬 Cargando investigaciones...');
+        try {
+          const resp = await fetch('/api/investigaciones');
+          console.log('📡 Respuesta API investigaciones:', resp.status, resp.statusText);
+          
+          if (resp.ok) {
+            const data = await resp.json();
+            console.log('✅ Investigaciones cargadas:', data);
+            console.log('📊 Total investigaciones:', data?.length || 0);
+            console.log('🔍 Primera investigación:', data?.[0]);
+            // La API devuelve un array directamente, no un objeto con propiedad investigaciones
+            setInvestigaciones(Array.isArray(data) ? data : []);
+          } else {
+            console.error('❌ Error cargando investigaciones:', resp.status);
+            const errorText = await resp.text();
+            console.error('❌ Error detallado:', errorText);
+            setError(`Error cargando investigaciones: ${resp.status}`);
+          }
+        } catch (error) {
+          console.error('❌ Error en fetch investigaciones:', error);
+          setError('Error de conexión al cargar investigaciones');
+        }
+      }
       
       // Participantes externos
       console.log('👤 Cargando participantes externos...');
@@ -314,8 +356,25 @@ export default function AgregarParticipanteModal({
     e.preventDefault();
     console.log('🚀 INICIANDO handleSubmit...');
     
-    if (!reclutamiento || !fechaSesion || !horaSesion || !participanteId || !responsableId) {
-      console.log('❌ Validación fallida:', { reclutamiento: !!reclutamiento, fechaSesion, horaSesion, participanteId, responsableId });
+    // Validación básica
+    const camposRequeridos = { fechaSesion, horaSesion, participanteId, responsableId };
+    
+    // Si se requiere selector de investigación, validar que esté seleccionada
+    if (showInvestigacionSelector && !investigacionId) {
+      console.log('❌ Validación fallida: investigación no seleccionada');
+      showError('Por favor selecciona una investigación.');
+      return;
+    }
+    
+    // Si no se requiere selector de investigación, validar que haya reclutamiento
+    if (!showInvestigacionSelector && !reclutamiento) {
+      console.log('❌ Validación fallida: reclutamiento requerido');
+      showError('Por favor completa todos los campos requeridos, incluyendo el responsable del agendamiento.');
+      return;
+    }
+    
+    if (!fechaSesion || !horaSesion || !participanteId || !responsableId) {
+      console.log('❌ Validación fallida:', camposRequeridos);
       showError('Por favor completa todos los campos requeridos, incluyendo el responsable del agendamiento.');
       return;
     }
@@ -418,11 +477,13 @@ export default function AgregarParticipanteModal({
         }
         
         // TERCERO: Crear el nuevo reclutamiento
-        // Obtener investigacion_id del reclutamiento o del router
-        const investigacionId = reclutamiento?.investigacion_id || window.location.pathname.split('/').pop();
+        // Obtener investigacion_id del selector o del reclutamiento existente
+        const investigacionIdParaEnviar = showInvestigacionSelector 
+          ? investigacionId 
+          : (reclutamiento?.investigacion_id || window.location.pathname.split('/').pop());
         
         const datosParaEnviar = {
-          investigacion_id: investigacionId,
+          investigacion_id: investigacionIdParaEnviar,
           reclutador_id: responsableId,
           fecha_sesion: fechaHoraCompleta,
           hora_sesion: horaSesion, // Agregar hora_sesion explícitamente
@@ -572,6 +633,29 @@ export default function AgregarParticipanteModal({
               required
             />
           </div>
+
+          {/* Selector de Investigación (solo si se requiere) */}
+          {showInvestigacionSelector && (
+            <div className="space-y-2">
+              <FilterLabel>Investigación *</FilterLabel>
+              <Select
+                value={investigacionId}
+                onChange={setInvestigacionId}
+                placeholder="Seleccionar investigación"
+                disabled={loading}
+                required
+                className="w-full"
+                options={(() => {
+                  const options = investigaciones.map((investigacion) => ({
+                    value: investigacion.id,
+                    label: investigacion.nombre
+                  }));
+                  console.log('🔍 Opciones del selector de investigación:', options);
+                  return options;
+                })()}
+              />
+            </div>
+          )}
         </div>
 
         {/* Información de la sesión */}

@@ -74,10 +74,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .in('id', Array.from(participanteIds));
 
     // Obtener reclutadores
+    console.log('🔍 Reclutador IDs a buscar:', Array.from(reclutadorIds));
     const { data: reclutadores } = await supabaseServer
       .from('usuarios')
       .select('id, full_name, email')
       .in('id', Array.from(reclutadorIds));
+    
+    console.log('🔍 Reclutadores encontrados:', reclutadores?.length || 0);
+    console.log('🔍 Primer reclutador:', reclutadores?.[0]);
 
     // Crear mapas para acceso rápido
     const participantesMap = new Map();
@@ -87,6 +91,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     const reclutadoresMap = new Map();
     reclutadores?.forEach(r => reclutadoresMap.set(r.id, r));
+    
+    console.log('🔍 Mapa de reclutadores creado con', reclutadoresMap.size, 'entradas');
 
     const investigacionesMap = new Map();
     investigaciones?.forEach(i => investigacionesMap.set(i.id, i));
@@ -143,6 +149,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         participante: participante,
         tipo_participante: tipoParticipante,
         reclutador: reclutadoresMap.get(reclutamiento.reclutador_id),
+        reclutador_id: reclutamiento.reclutador_id, // Agregar reclutador_id explícitamente
         estado_agendamiento: reclutamiento.estado_agendamiento_cat?.nombre,
         estado_agendamiento_color: null, // Color no disponible en la tabla
         hora_sesion: reclutamiento.hora_sesion,

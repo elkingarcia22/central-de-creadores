@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (isHovered) {
       timeoutId = setTimeout(() => {
         setIsExpanded(true);
-      }, 300); // 300ms de delay antes de expandir
+      }, 200); // Reducido a 200ms para respuesta más rápida
     } else {
       setIsExpanded(false); // Colapsar inmediatamente al quitar el hover
     }
@@ -73,14 +73,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-500 ease-in-out ${isExpanded ? 'w-64' : 'w-16'} ${className}`}
+      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-500 ease-in-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ease-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
-          <div className="transition-transform duration-500 ease-in-out">
+          <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
             <SimpleAvatar
               src={user?.avatar}
               fallbackText={displayName}
@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Selector de rol siempre visible */}
         {user && (
-          <div className={`text-center w-full flex flex-col items-center transition-all duration-500 ease-in-out ${isExpanded ? 'mt-3' : 'mt-2'}`}>
-            <div className={`transition-all duration-500 ease-in-out ${isExpanded ? 'opacity-100 max-h-6' : 'opacity-0 max-h-0 overflow-hidden'}`}>
+          <div className={`text-center w-full flex flex-col items-center transition-all duration-300 ease-out ${isExpanded ? 'mt-3 delay-150' : 'mt-2 delay-0'}`}>
+            <div className={`transition-all duration-300 ease-out ${isExpanded ? 'opacity-100 max-h-6 delay-200' : 'opacity-0 max-h-0 overflow-hidden delay-0'}`}>
               <Typography variant="body2" weight="medium" className="text-foreground truncate">
                 {displayName}
               </Typography>
@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <nav className={`flex-1 py-4 space-y-2 transition-all duration-500 ease-in-out ${isExpanded ? 'px-2' : 'px-1'}`}>
+      <nav className={`flex-1 py-4 space-y-2 transition-all duration-300 ease-out overflow-visible ${isExpanded ? 'px-2 delay-100' : 'px-1 delay-0'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-500 ease-in-out ${isExpanded ? 'px-2' : 'px-1'}`}>
+      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-300 ease-out overflow-visible ${isExpanded ? 'px-2 delay-100' : 'px-1 delay-0'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
