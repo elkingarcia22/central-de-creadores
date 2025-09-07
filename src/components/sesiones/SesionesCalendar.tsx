@@ -280,11 +280,12 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
       return;
     }
     
-    // Construir la URL con el ID del participante y parámetro de retorno
-    const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-    const participacionUrl = `/participacion/${participanteId}?returnUrl=${returnUrl}`;
+    // Construir la URL con el ID del participante y reclutamiento_id
+    const participacionUrl = `/participacion/${participanteId}?reclutamiento_id=${sesion.id}`;
     
-    console.log('🚀 Navegando a participación desde modal lateral:', participacionUrl);
+    console.log('🚀 Navegando a vista de sesión desde modal lateral:', participacionUrl);
+    console.log('🚀 ID del participante:', participanteId);
+    console.log('🚀 ID de reclutamiento:', sesion.id);
     router.push(participacionUrl);
   }, [router]);
 

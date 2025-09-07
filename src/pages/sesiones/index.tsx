@@ -232,15 +232,30 @@ const SesionesPage: NextPage = () => {
     return getSesionesPorEstado(estado).length;
   };
 
-  // Función para manejar "Ver más" - mostrar modal de sesión
+  // Función para manejar "Ver más" - navegar a vista específica de la sesión
   const handleVerMas = (sesion: Sesion) => {
     console.log('🚀 [CORRECCIÓN APLICADA] handleVerMas ejecutándose');
     console.log('🚀 [CORRECCIÓN APLICADA] Sesión recibida:', sesion);
     
-    // Mostrar el modal de detalles de la sesión
-    setSelectedSesion(sesion);
-    setShowModal(true);
-    setModalActiveTab('reclutamiento');
+    // Obtener el ID del participante desde los datos de la sesión
+    const participanteId = sesion.participante?.id;
+    
+    console.log('🚀 [CORRECCIÓN APLICADA] ID del participante extraído:', participanteId);
+    console.log('🚀 [CORRECCIÓN APLICADA] ID de reclutamiento:', sesion.id);
+    
+    if (!participanteId) {
+      console.error('❌ No se encontró ID del participante en la sesión:', sesion);
+      showError('Error: No se pudo obtener la información del participante');
+      return;
+    }
+    
+    // Construir la URL con el ID del participante y reclutamiento_id
+    const participacionUrl = `/participacion/${participanteId}?reclutamiento_id=${sesion.id}`;
+    
+    console.log('🚀 [CORRECCIÓN APLICADA] Navegando a vista de sesión:', participacionUrl);
+    console.log('🚀 [CORRECCIÓN APLICADA] ID del participante:', participanteId);
+    console.log('🚀 [CORRECCIÓN APLICADA] ID de reclutamiento:', sesion.id);
+    router.push(participacionUrl);
   };
 
   // Función para manejar edición de sesión
