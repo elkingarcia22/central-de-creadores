@@ -141,7 +141,13 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   // Manejar mover sesión
   const handleMoveSesion = useCallback(async (eventId: string, newDate: Date, newTimeSlot?: number) => {
-    console.log('🔄 [MOVE] handleMoveSesion called:', { eventId, newDate, newTimeSlot });
+    console.log('🔄 [MOVE] handleMoveSesion called:', { 
+      eventId, 
+      newDate, 
+      newTimeSlot,
+      newDateString: newDate.toDateString(),
+      isPastDate: newDate < new Date()
+    });
     try {
       const sesion = sesionesEventos.find(s => s.id === eventId);
       console.log('🔍 [MOVE] Sesión encontrada:', sesion ? 'SÍ' : 'NO');

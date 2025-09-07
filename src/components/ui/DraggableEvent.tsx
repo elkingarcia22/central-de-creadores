@@ -115,7 +115,14 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const deltaY = upEvent.clientY - dragStart.y;
       const daysMoved = Math.round(deltaY / 30); // Reducir divisor para detectar movimiento más fácilmente
       
-      console.log('📅 [DRAG] Calculando nueva fecha', { deltaY, daysMoved, originalDate: event.start });
+      console.log('📅 [DRAG] Calculando nueva fecha', { 
+        deltaY, 
+        daysMoved, 
+        originalDate: event.start,
+        dragStartY: dragStart.y,
+        upEventY: upEvent.clientY,
+        isMovingBackwards: deltaY < 0
+      });
       
       if (daysMoved !== 0 && onEventMove) {
         const newDate = new Date(event.start);
