@@ -57,6 +57,45 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 
   if (!sesion) return null;
 
+  // Footer para el modal
+  const footer = (
+    <div className="flex justify-between items-center gap-3">
+      {/* Botón principal Iniciar */}
+      {onIniciar && (
+        <Button
+          variant="primary"
+          onClick={() => onIniciar(sesion)}
+          className="px-6 bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <PlayIcon className="w-4 h-4 mr-2" />
+          Iniciar
+        </Button>
+      )}
+      
+      {/* Menú de acciones (3 puntos) */}
+      <ActionsMenu
+        actions={[
+          ...(onViewMore ? [{
+            label: 'Ver más',
+            icon: <EyeIcon className="w-4 h-4" />,
+            onClick: () => onViewMore(sesion)
+          }] : []),
+          ...(onEdit ? [{
+            label: 'Editar',
+            icon: <EditIcon className="w-4 h-4" />,
+            onClick: () => onEdit(sesion)
+          }] : []),
+          ...(onDelete ? [{
+            label: 'Eliminar',
+            icon: <TrashIcon className="w-4 h-4" />,
+            onClick: () => onDelete(sesion),
+            className: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20'
+          }] : [])
+        ]}
+      />
+    </div>
+  );
+
   // Formatear fecha y hora
   const formatDateTime = (date: Date) => {
     return date.toLocaleString('es-ES', {
@@ -166,21 +205,24 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       width="lg"
+      footer={footer}
       className={className}
       showCloseButton={false}
     >
-      <div className="space-y-6">
+      <div className="flex flex-col h-full -m-6">
         {/* Header */}
         <PageHeader
           title="Ver Sesión"
           variant="title-only"
           color="gray"
-          className="mb-0 -mx-6 -mt-6"
+          className="mb-0"
           onClose={onClose}
           icon={<CalendarIcon className="w-5 h-5" />}
         />
 
-        {/* Participante Asociado */}
+        {/* Contenido del modal */}
+        <div className="flex-1 overflow-y-auto px-6">
+          {/* Participante Asociado */}
         <InfoContainer 
           title="Participante Asociado"
           icon={<UserIcon className="w-4 h-4" />}
@@ -253,42 +295,6 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
             </Typography>
           </div>
         </InfoContainer>
-
-        {/* Botones de acción */}
-        <div className="flex justify-between items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          {/* Botón principal Iniciar */}
-          {onIniciar && (
-            <Button
-              variant="primary"
-              onClick={() => onIniciar(sesion)}
-              className="px-6 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <PlayIcon className="w-4 h-4 mr-2" />
-              Iniciar
-            </Button>
-          )}
-          
-          {/* Menú de acciones (3 puntos) */}
-          <ActionsMenu
-            actions={[
-              ...(onViewMore ? [{
-                label: 'Ver más',
-                icon: <EyeIcon className="w-4 h-4" />,
-                onClick: () => onViewMore(sesion)
-              }] : []),
-              ...(onEdit ? [{
-                label: 'Editar',
-                icon: <EditIcon className="w-4 h-4" />,
-                onClick: () => onEdit(sesion)
-              }] : []),
-              ...(onDelete ? [{
-                label: 'Eliminar',
-                icon: <TrashIcon className="w-4 h-4" />,
-                onClick: () => onDelete(sesion),
-                className: 'text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20'
-              }] : [])
-            ]}
-          />
         </div>
       </div>
     </SideModal>
