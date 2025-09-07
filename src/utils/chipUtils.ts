@@ -100,6 +100,20 @@ export const SEVERIDADES = [
 export const getChipVariant = (value: string): string => {
   const valueLower = value?.toLowerCase()?.trim();
   
+  // Mapeo específico para estados de agendamiento
+  if (valueLower === 'finalizado') {
+    return 'terminada'; // Verde
+  }
+  if (valueLower === 'cancelado') {
+    return 'fallo'; // Rojo
+  }
+  if (valueLower === 'pendiente de agendamiento') {
+    return 'transitoria'; // Amarillo
+  }
+  if (valueLower === 'en progreso') {
+    return 'transitoria'; // Amarillo
+  }
+  
   // Estados pendientes (azul)
   if (ESTADOS_PENDIENTES.includes(valueLower)) {
     return 'pendiente';
