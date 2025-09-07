@@ -10,7 +10,8 @@ import {
   MoreVerticalIcon,
   SearchIcon,
   UserIcon,
-  TrashIcon
+  TrashIcon,
+  PlayIcon
 } from '../icons';
 import DraggableEvent from './DraggableEvent';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -696,8 +697,9 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                   onClick={() => {
                     console.log('Ingresar a sesión:', event.id);
                   }}
+                  icon={<PlayIcon className="w-4 h-4" />}
                 >
-                  Ingresar
+                  Iniciar
                 </Button>
                 
                 <ActionsMenu

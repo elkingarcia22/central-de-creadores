@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones } from '../../components/ui';
 import { getChipVariant } from '../../utils/chipUtils';
-import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid } from '../../components/icons';
+import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
 import { Sesion } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
@@ -474,8 +474,9 @@ const SesionesPage: NextPage = () => {
               variant="primary"
               size="sm"
               onClick={() => console.log('Ingresar a sesión:', sesion.id)}
+              icon={<PlayIcon className="w-4 h-4" />}
             >
-              Ingresar
+              Iniciar
             </Button>
             
             <ActionsMenu
