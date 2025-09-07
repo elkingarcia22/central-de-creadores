@@ -876,10 +876,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                 </button>
               ))}
             </div>
-            
-            <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-              <CalendarIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            </button>
           </div>
         </div>
       )}
