@@ -103,15 +103,18 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   // Estados para indicador de drop
   const [dragOverDate, setDragOverDate] = useState<Date | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [draggedEventTitle, setDraggedEventTitle] = useState<string>('');
   
   // Funciones para manejar drag over
-  const handleDragStart = () => {
+  const handleDragStart = (eventTitle?: string) => {
     setIsDragging(true);
+    setDraggedEventTitle(eventTitle || '');
   };
 
   const handleDragEnd = () => {
     setIsDragging(false);
     setDragOverDate(null);
+    setDraggedEventTitle('');
   };
 
   const handleDragOver = (date: Date) => {
@@ -329,7 +332,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                     ${isCurrentMonthDay ? 'bg-card text-card-foreground' : 'bg-gray-50 dark:bg-gray-800/50'}
                     ${isTodayDate ? 'ring-2 ring-gray-500 ring-opacity-50' : ''}
                     ${isSelected ? 'bg-gray-100 dark:bg-gray-700 border-gray-500' : ''}
-                    ${dragOverDate?.toDateString() === date.toDateString() ? 'bg-green-100 dark:bg-green-900/30 border-green-400 dark:border-green-500 ring-2 ring-green-300 dark:ring-green-600' : ''}
+                    ${dragOverDate?.toDateString() === date.toDateString() ? 'bg-green-200 dark:bg-green-800/50 border-green-500 dark:border-green-400 ring-4 ring-green-400 dark:ring-green-500 shadow-lg' : ''}
                   `}
                   onClick={() => {
                     setSelectedDate(date);
@@ -794,6 +797,25 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
 
   return (
     <div ref={calendarRef} className={`bg-card text-card-foreground border border-slate-100 dark:border-slate-800 rounded-lg shadow-sm ${className}`}>
+      {/* Indicador de drag and drop */}
+      {isDragging && (
+        <div className="p-3 bg-green-100 dark:bg-green-900/30 border-b border-green-300 dark:border-green-600">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <Typography variant="body2" className="text-green-800 dark:text-green-200">
+              Arrastrando: <strong>{draggedEventTitle}</strong>
+              {dragOverDate && (
+                <span> → {dragOverDate.toLocaleDateString('es-ES', { 
+                  weekday: 'short', 
+                  day: 'numeric', 
+                  month: 'short' 
+                })}</span>
+              )}
+            </Typography>
+          </div>
+        </div>
+      )}
+
       {/* Header del calendario */}
       {showNavigation && (
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">

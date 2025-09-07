@@ -86,7 +86,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     setIsDragging(true);
     setHasDragged(false); // Reset hasDragged al inicio
     setDragStart({ x: e.clientX, y: e.clientY });
-    onDragStart?.(); // Notificar al calendario
+    onDragStart?.(event.title); // Notificar al calendario con el título
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!isDragging || !eventRef.current) return;
@@ -95,15 +95,17 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const deltaY = moveEvent.clientY - dragStart.y;
       
       // Si hay movimiento significativo, marcar como dragged (solo una vez)
-      if ((Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) && !hasDragged) {
+      if ((Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) && !hasDragged) {
         setHasDragged(true);
         console.log('🎯 [DRAG] Marcando como dragged');
       }
       
       // Mover el elemento visualmente
       eventRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-      eventRef.current.style.opacity = '0.8';
+      eventRef.current.style.opacity = '0.9';
       eventRef.current.style.zIndex = '1000';
+      eventRef.current.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+      eventRef.current.style.border = '2px solid #10b981';
     };
     
     const handleMouseUp = (upEvent: MouseEvent) => {
@@ -114,6 +116,8 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       eventRef.current.style.transform = '';
       eventRef.current.style.opacity = '';
       eventRef.current.style.zIndex = '';
+      eventRef.current.style.boxShadow = '';
+      eventRef.current.style.border = '';
       
       // Usar la fecha de destino si está disponible, sino calcular basado en deltaY
       let newDate: Date;
@@ -226,7 +230,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         relative p-2 rounded text-xs cursor-pointer transition-all
         ${eventColors[event.color as keyof typeof eventColors] || eventColors.blue}
         hover:opacity-80 hover:shadow-sm
-        ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : ''}
+        ${enableDragDrop ? 'cursor-grab active:cursor-grabbing hover:scale-105' : ''}
         ${className}
       `}
       onClick={(e) => {
