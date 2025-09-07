@@ -72,6 +72,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       fecha_programada: sesion.fecha_programada,
       duracion_minutos: sesion.duracion_minutos,
       estado: sesion.estado,
+      estado_agendamiento: (sesion as any).estado_agendamiento,
       moderador_id: sesion.moderador_id,
       moderador_nombre: sesion.moderador_nombre,
       participante: sesion.participante,
@@ -99,9 +100,12 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
     console.log('🔄 Converted sesion to event:', {
       id: event.id,
       title: event.title,
+      estado: event.estado,
+      estado_agendamiento: event.estado_agendamiento,
       estado_real: event.estado_real,
       responsable_real: event.responsable_real,
-      implementador_real: event.implementador_real
+      implementador_real: event.implementador_real,
+      sesionOriginal: sesion
     });
     return event;
   })

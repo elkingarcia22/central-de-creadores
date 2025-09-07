@@ -570,7 +570,19 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
             estado_agendamiento: event.estado_agendamiento,
             estado: event.estado,
             color: event.color,
-            investigacion_nombre: event.investigacion_nombre
+            investigacion_nombre: event.investigacion_nombre,
+            // Log completo del evento
+            eventoCompleto: event
+          });
+          
+          // Debug: Log del chip que se va a mostrar
+          const estadoParaChip = event.estado_agendamiento || event.estado || 'Sin estado';
+          const varianteChip = getChipVariant(estadoParaChip);
+          console.log('🎨 Chip info:', {
+            estadoOriginal: event.estado_agendamiento,
+            estadoAlternativo: event.estado,
+            estadoFinal: estadoParaChip,
+            varianteChip: varianteChip
           });
           
           return (
