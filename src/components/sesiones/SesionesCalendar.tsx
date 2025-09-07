@@ -515,6 +515,8 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         console.log('🔍 [AGENDA EDIT] Datos que se envían al modal:', JSON.stringify(reclutamientoData, null, 2));
         console.log('🔍 [AGENDA EDIT] sesionToEdit original:', JSON.stringify(sesionToEdit, null, 2));
         console.log('🔍 [AGENDA EDIT] showEditModal:', showEditModal);
+        console.log('🔍 [AGENDA EDIT] Tipo de participante:', sesionToEdit.tipo_participante);
+        console.log('🔍 [AGENDA EDIT] Participante completo:', JSON.stringify(sesionToEdit.participante, null, 2));
         
         return (
           <EditarReclutamientoModal

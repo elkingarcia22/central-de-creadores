@@ -76,6 +76,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       moderador_id: sesion.moderador_id,
       moderador_nombre: sesion.moderador_nombre,
       participante: sesion.participante,
+      tipo_participante: (sesion as any).tipo_participante || (sesion.participante as any)?.tipo || 'externo',
       created_at: sesion.created_at,
       updated_at: sesion.updated_at,
       tipo_sesion: sesion.tipo_sesion,
