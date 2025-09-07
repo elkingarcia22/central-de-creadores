@@ -532,7 +532,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
         {sortedEvents.map((event) => (
           <div
             key={event.id}
-            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-card text-card-foreground hover:shadow-md dark:hover:shadow-gray-900/20 transition-shadow cursor-pointer"
+            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-card text-card-foreground transition-shadow cursor-pointer"
             onClick={() => onEventClick?.(event)}
           >
             <div className="flex items-start gap-4">

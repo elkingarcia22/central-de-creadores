@@ -447,7 +447,7 @@ const SesionesPage: NextPage = () => {
   const SesionCardSimple = ({ sesion }: { sesion: Sesion }) => {
 
     return (
-      <Card className="hover:shadow-lg transition-all duration-200" padding="lg">
+      <Card className="" padding="lg">
         {/* Header con acciones en la parte superior derecha */}
         <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
