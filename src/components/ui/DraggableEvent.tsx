@@ -55,19 +55,27 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!enableDragDrop) return;
+    console.log('🖱️ [DRAG] handleMouseDown ejecutándose', { enableDragDrop, eventId: event.id });
+    if (!enableDragDrop) {
+      console.log('❌ [DRAG] Drag and drop deshabilitado');
+      return;
+    }
     
     e.preventDefault();
     e.stopPropagation();
     
+    console.log('🚀 [DRAG] Iniciando drag', { x: e.clientX, y: e.clientY });
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
+      console.log('🔄 [DRAG] handleMouseMove', { isDragging, hasEventRef: !!eventRef.current });
       if (!isDragging || !eventRef.current) return;
       
       const deltaX = moveEvent.clientX - dragStart.x;
       const deltaY = moveEvent.clientY - dragStart.y;
+      
+      console.log('📐 [DRAG] Delta calculado', { deltaX, deltaY });
       
       // Mover el elemento visualmente
       eventRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -76,6 +84,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     };
     
     const handleMouseUp = (upEvent: MouseEvent) => {
+      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current });
       if (!isDragging || !eventRef.current) return;
       
       // Restaurar estilos
@@ -87,10 +96,15 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const deltaY = upEvent.clientY - dragStart.y;
       const daysMoved = Math.round(deltaY / 100);
       
+      console.log('📅 [DRAG] Calculando nueva fecha', { deltaY, daysMoved, originalDate: event.start });
+      
       if (daysMoved !== 0 && onEventMove) {
         const newDate = new Date(event.start);
         newDate.setDate(newDate.getDate() + daysMoved);
+        console.log('🚀 [DRAG] Llamando onEventMove', { eventId: event.id, newDate });
         onEventMove(event.id, newDate);
+      } else {
+        console.log('⚠️ [DRAG] No se movió o no hay onEventMove', { daysMoved, hasOnEventMove: !!onEventMove });
       }
       
       setIsDragging(false);

@@ -141,19 +141,21 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   // Manejar mover sesión
   const handleMoveSesion = useCallback(async (eventId: string, newDate: Date, newTimeSlot?: number) => {
-    // console.log('🔄 handleMoveSesion called:', { eventId, newDate, newTimeSlot });
+    console.log('🔄 [MOVE] handleMoveSesion called:', { eventId, newDate, newTimeSlot });
     try {
       const sesion = sesionesEventos.find(s => s.id === eventId);
+      console.log('🔍 [MOVE] Sesión encontrada:', sesion ? 'SÍ' : 'NO');
       if (sesion) {
         const updatedData = {
           fecha_programada: newDate,
           ...(newTimeSlot && { duracion_minutos: newTimeSlot * 30 })
         };
+        console.log('📝 [MOVE] Datos a actualizar:', updatedData);
         await updateSesion(eventId, updatedData);
-        // console.log('✅ Sesion moved successfully');
+        console.log('✅ [MOVE] Sesión movida exitosamente');
       }
     } catch (error) {
-      console.error('Error moviendo sesión:', error);
+      console.error('❌ [MOVE] Error moviendo sesión:', error);
     }
   }, [sesionesEventos, updateSesion]);
 
