@@ -100,11 +100,6 @@ export const SEVERIDADES = [
 export const getChipVariant = (value: string): string => {
   const valueLower = value?.toLowerCase()?.trim();
   
-  // Debug: Log para ver qué estado está llegando
-  if (value && value !== 'Sin estado') {
-    console.log('🔍 Estado recibido en getChipVariant:', value, '-> lowercase:', valueLower);
-  }
-  
   // Mapeo específico para estados de agendamiento
   if (valueLower === 'finalizado') {
     return 'terminada'; // Verde
