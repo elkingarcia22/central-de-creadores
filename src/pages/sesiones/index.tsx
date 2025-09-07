@@ -472,10 +472,10 @@ const SesionesPage: NextPage = () => {
             {sesion.investigacion_nombre || 'Sin investigación'}
           </h3>
               <Chip 
-                variant={getChipVariant(sesion.estado_agendamiento || sesion.estado || 'Sin estado')}
+                variant={getChipVariant(sesion.estado_agendamiento || 'Sin estado')}
                 size="sm"
               >
-                {sesion.estado_agendamiento || sesion.estado || 'Sin estado'}
+                {sesion.estado_agendamiento || 'Sin estado'}
               </Chip>
             </div>
             
