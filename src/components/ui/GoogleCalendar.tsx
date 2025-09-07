@@ -100,6 +100,26 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   // Estados para búsqueda
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   
+  // Estados para indicador de drop
+  const [dragOverDate, setDragOverDate] = useState<Date | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  
+  // Funciones para manejar drag over
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDragOverDate(null);
+  };
+
+  const handleDragOver = (date: Date) => {
+    if (isDragging) {
+      setDragOverDate(date);
+    }
+  };
+
   // Funciones para manejar búsqueda
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -309,11 +329,13 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                     ${isCurrentMonthDay ? 'bg-card text-card-foreground' : 'bg-gray-50 dark:bg-gray-800/50'}
                     ${isTodayDate ? 'ring-2 ring-gray-500 ring-opacity-50' : ''}
                     ${isSelected ? 'bg-gray-100 dark:bg-gray-700 border-gray-500' : ''}
+                    ${dragOverDate?.toDateString() === date.toDateString() ? 'bg-green-100 dark:bg-green-900/30 border-green-400 dark:border-green-500 ring-2 ring-green-300 dark:ring-green-600' : ''}
                   `}
                   onClick={() => {
                     setSelectedDate(date);
                     onDateClick?.(date);
                   }}
+                  onMouseMove={() => handleDragOver(date)}
                 >
                   {/* Número del día */}
                   <div className="flex justify-between items-start mb-1">
@@ -348,6 +370,8 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                         enableDragDrop={enableDragDrop}
                         onEventClick={onEventClick}
                         onEventMove={onEventMove}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
                         onEventResize={onEventResize}
                       />
                     ))}

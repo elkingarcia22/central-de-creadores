@@ -13,6 +13,8 @@ interface DraggableEventProps {
   onEventClick?: (event: any) => void;
   onEventMove?: (eventId: string, newDate: Date) => void;
   onEventResize?: (eventId: string, newDuration: number) => void;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
   className?: string;
 }
 
@@ -22,6 +24,8 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   onEventClick,
   onEventMove,
   onEventResize,
+  onDragStart,
+  onDragEnd,
   className = ''
 }) => {
   const eventRef = useRef<HTMLDivElement>(null);
@@ -37,7 +41,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const timer = setTimeout(() => {
         setHasDragged(false);
         console.log('🔄 [DRAG] Reseteando hasDragged');
-      }, 100);
+      }, 300); // Aumentar tiempo para evitar clicks accidentales
       return () => clearTimeout(timer);
     }
   }, [hasDragged]);
@@ -80,6 +84,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     setIsDragging(true);
     setHasDragged(false); // Reset hasDragged al inicio
     setDragStart({ x: e.clientX, y: e.clientY });
+    onDragStart?.(); // Notificar al calendario
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!isDragging || !eventRef.current) return;
@@ -131,6 +136,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       }
       
       setIsDragging(false);
+      onDragEnd?.(); // Notificar al calendario
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
