@@ -154,11 +154,16 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         const sesionActualizada = await updateSesion(eventId, updatedData);
         console.log('✅ [MOVE] Sesión movida exitosamente:', sesionActualizada);
         console.log('🔄 [MOVE] Estado actualizado, sesionesEventos debería reflejar el cambio');
+        
+        // Forzar recarga de sesiones para asegurar que el calendario se actualice
+        console.log('🔄 [MOVE] Forzando recarga de sesiones...');
+        await loadSesiones();
+        console.log('✅ [MOVE] Recarga de sesiones completada');
       }
     } catch (error) {
       console.error('❌ [MOVE] Error moviendo sesión:', error);
     }
-  }, [sesionesEventos, updateSesion]);
+  }, [sesionesEventos, updateSesion, loadSesiones]);
 
   // Manejar redimensionar sesión
   const handleResizeSesion = useCallback(async (eventId: string, newDuration: number) => {
