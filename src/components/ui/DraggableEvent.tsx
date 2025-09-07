@@ -91,7 +91,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       console.log('📐 [DRAG] Delta calculado', { deltaX, deltaY });
       
       // Si hay movimiento significativo, marcar como dragged
-      if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
         setHasDragged(true);
         console.log('🎯 [DRAG] Marcando como dragged');
       }
@@ -113,7 +113,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       
       // Calcular nueva fecha
       const deltaY = upEvent.clientY - dragStart.y;
-      const daysMoved = Math.round(deltaY / 100);
+      const daysMoved = Math.round(deltaY / 30); // Reducir divisor para detectar movimiento más fácilmente
       
       console.log('📅 [DRAG] Calculando nueva fecha', { deltaY, daysMoved, originalDate: event.start });
       
