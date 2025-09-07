@@ -84,6 +84,13 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       estado_real: (sesion as any).estado_real,
       responsable_real: (sesion as any).responsable_real,
       implementador_real: (sesion as any).implementador_real,
+      // Mapear reclutador para el modal de edición
+      reclutador: (sesion as any).reclutador || (sesion as any).responsable_real ? {
+        id: (sesion as any).reclutador_id || 'unknown',
+        full_name: (sesion as any).responsable_real || (sesion as any).moderador_nombre || 'Sin responsable',
+        email: (sesion as any).reclutador?.email || '',
+        avatar_url: (sesion as any).reclutador?.avatar_url || ''
+      } : null,
       // Propiedades adicionales de SesionEvent
       start,
       end,
