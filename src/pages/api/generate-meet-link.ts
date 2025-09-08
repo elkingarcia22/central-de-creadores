@@ -38,32 +38,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 function generateMeetLink(fechaSesion: string, duracionSesion: number, titulo?: string): string {
-  // Generar un ID único para la reunión
-  const meetingId = generateMeetingId();
-  
-  // Crear enlace de Google Meet
-  const baseUrl = 'https://meet.google.com';
-  const meetLink = `${baseUrl}/${meetingId}`;
-  
-  return meetLink;
-}
-
-function generateMeetingId(): string {
   try {
-    // Generar un ID de 10 caracteres para la reunión
-    // Google Meet IDs suelen ser de 10-11 caracteres con letras minúsculas y números
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
+    // Crear un ID único para la sesión basado en fecha y timestamp
+    const fecha = new Date(fechaSesion);
+    const fechaStr = fecha.toISOString().slice(0, 10).replace(/-/g, '');
+    const timestamp = Date.now().toString(36);
     
-    for (let i = 0; i < 10; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    // Crear un ID de reunión único pero válido
+    const meetingId = `${fechaStr}-${timestamp}`.substring(0, 15);
     
-    console.log('🔗 ID de Meet generado:', result);
-    return result;
+    // Usar el enlace de Google Meet que funciona para crear reuniones
+    const meetLink = `https://meet.google.com/new?meetingId=${meetingId}`;
+    
+    console.log('🔗 Enlace generado:', meetLink);
+    return meetLink;
   } catch (error) {
-    console.error('❌ Error generando ID de Meet:', error);
-    // Fallback: generar ID simple
-    return Math.random().toString(36).substring(2, 12);
+    console.error('❌ Error generando enlace de Meet:', error);
+    // Fallback: usar enlace simple de nueva reunión
+    return 'https://meet.google.com/new';
   }
 }
+
