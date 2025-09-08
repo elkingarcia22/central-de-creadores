@@ -91,7 +91,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   onSearchChange,
   showSearch = true
 }) => {
-  console.log('🔧 GoogleCalendar props:', { enableDragDrop, eventsCount: events.length });
+  // console.log('🔧 GoogleCalendar props:', { enableDragDrop, eventsCount: events.length });
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   // Estados para drag and drop - ahora manejados por DraggableEvent
@@ -117,16 +117,19 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     setDraggedEventTitle('');
   };
 
-  const handleDragOver = (date: Date) => {
+  const handleDragOver = useCallback((date: Date) => {
     if (isDragging) {
-      console.log('🎯 [DRAG] handleDragOver:', { 
-        date: date.toDateString(), 
-        isDragging,
-        currentDragOverDate: dragOverDate?.toDateString() 
-      });
-      setDragOverDate(date);
+      // Solo actualizar si la fecha es diferente a la actual
+      if (!dragOverDate || dragOverDate.toDateString() !== date.toDateString()) {
+        console.log('🎯 [DRAG] handleDragOver:', { 
+          date: date.toDateString(), 
+          isDragging,
+          currentDragOverDate: dragOverDate?.toDateString() 
+        });
+        setDragOverDate(date);
+      }
     }
-  };
+  }, [isDragging, dragOverDate]);
 
   // Funciones para manejar búsqueda
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -344,7 +347,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                     onDateClick?.(date);
                   }}
                   onMouseEnter={() => handleDragOver(date)}
-                  onMouseOver={() => handleDragOver(date)}
                 >
                   {/* Número del día */}
                   <div className="flex justify-between items-start mb-1">
