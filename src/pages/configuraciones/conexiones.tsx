@@ -139,17 +139,47 @@ const ConexionesPage: NextPage = () => {
   const handleSync = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {
       try {
-        const response = await fetch('/api/google-calendar/sync', {
+        showSuccess('Google Calendar', 'Iniciando sincronización...');
+        
+        const response = await fetch('/api/google-calendar/sync-reclutamientos-with-meet-fixed', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, action: 'sync_from_google' })
+          body: JSON.stringify({ userId })
         });
+
+        const result = await response.json();
         
-        if (response.ok) {
-          showSuccess('Sincronización exitosa', 'Eventos sincronizados desde Google Calendar');
+        if (result.success) {
+          showSuccess('Google Calendar', `Sincronización completada: ${result.synced} sesiones sincronizadas`);
+        } else {
+          showError('Google Calendar', result.error || 'Error en la sincronización');
         }
       } catch (error) {
         showError('Error', 'No se pudo sincronizar con Google Calendar');
+      }
+    }
+  };
+
+  const handleCleanDuplicates = async (connectionId: string) => {
+    if (connectionId === 'google-calendar') {
+      try {
+        showSuccess('Google Calendar', 'Limpiando eventos duplicados...');
+        
+        const response = await fetch('/api/google-calendar/clean-duplicates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          showSuccess('Google Calendar', `Limpieza completada: ${result.deleted} eventos duplicados eliminados`);
+        } else {
+          showError('Google Calendar', result.error || 'Error en la limpieza');
+        }
+      } catch (error) {
+        showError('Error', 'No se pudo limpiar eventos duplicados');
       }
     }
   };
@@ -210,6 +240,13 @@ const ConexionesPage: NextPage = () => {
                       onClick={() => handleSync(connection.id)}
                     >
                       Sincronizar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCleanDuplicates(connection.id)}
+                    >
+                      Limpiar Duplicados
                     </Button>
                     <Button
                       variant="danger"
@@ -299,4 +336,4 @@ const ConexionesPage: NextPage = () => {
   );
 };
 
-export default SesionesPage;
+export default ConexionesPage;

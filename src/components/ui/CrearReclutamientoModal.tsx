@@ -107,6 +107,7 @@ export default function CrearReclutamientoModal({
   const [duracionSesion, setDuracionSesion] = useState('60'); // duración en minutos
   const [tipoParticipante, setTipoParticipante] = useState<'externo' | 'interno' | 'friend_family'>('externo');
   const [participanteSeleccionado, setParticipanteSeleccionado] = useState<Participante | null>(null);
+  const [meetLink, setMeetLink] = useState('');
 
   // Estados para datos de catálogo
   const [responsables, setResponsables] = useState<Usuario[]>([]);
@@ -424,7 +425,8 @@ export default function CrearReclutamientoModal({
         duracion_sesion: parseInt(duracionSesion),
         reclutador_id: responsableId,
         creado_por: responsableId,
-        tipo_participante: tipoParticipante
+        tipo_participante: tipoParticipante,
+        meet_link: meetLink || null // Agregar enlace de Meet
       };
 
       // Agregar el participante correcto según el tipo
@@ -629,6 +631,22 @@ export default function CrearReclutamientoModal({
             />
             <Typography variant="caption" color="secondary" className="mt-1">
               Duración en minutos (mínimo 15, máximo 8 horas)
+            </Typography>
+          </div>
+
+          {/* Enlace de Google Meet */}
+          <div>
+            <FilterLabel>Enlace de Google Meet</FilterLabel>
+            <Input
+              type="url"
+              value={meetLink}
+              onChange={(e) => setMeetLink(e.target.value)}
+              placeholder="https://meet.google.com/abc-defg-hij"
+              disabled={loading}
+              fullWidth
+            />
+            <Typography variant="caption" color="secondary" className="mt-1">
+              Enlace opcional para sesiones virtuales
             </Typography>
           </div>
 

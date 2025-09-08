@@ -86,6 +86,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       estado_real: (sesion as any).estado_real,
       responsable_real: (sesion as any).responsable_real,
       implementador_real: (sesion as any).implementador_real,
+      meet_link: (sesion as any).meet_link,
       // Mapear reclutador para el modal de edición
       reclutador: (sesion as any).reclutador || (sesion as any).responsable_real ? {
         id: (sesion as any).reclutador_id || 'unknown',
@@ -112,6 +113,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       estado: event.estado,
       estado_agendamiento: event.estado_agendamiento,
       estado_real: event.estado_real,
+      meet_link: event.meet_link,
       responsable_real: event.responsable_real,
       implementador_real: event.implementador_real,
       sesionOriginal: sesion

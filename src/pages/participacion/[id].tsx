@@ -1677,7 +1677,7 @@ export default function VistaParticipacion() {
     );
   };
 
-  // Componente para el contenido del tab de Información de Reclutamiento
+  // Componente para el contenido del tab de Información de la Sesión
   const ReclutamientoContent: React.FC<{ reclutamiento: any; participante: Participante }> = ({ reclutamiento, participante }) => {
     // Función para obtener el nombre del usuario por ID
     const getNombreUsuario = (userId: string) => {
@@ -1805,6 +1805,33 @@ export default function VistaParticipacion() {
               </Chip>
             }
           />
+          {reclutamiento.meet_link && (
+            <InfoItem 
+              label="Enlace de Google Meet"
+              value={
+                <div className="flex items-center gap-2">
+                  <a 
+                    href={reclutamiento.meet_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                  >
+                    {reclutamiento.meet_link}
+                  </a>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigator.clipboard.writeText(reclutamiento.meet_link)}
+                    className="p-1 h-auto"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
+                </div>
+              }
+            />
+          )}
           <InfoItem 
             label="Última Actualización"
             value={reclutamiento.updated_at ? 
@@ -1929,7 +1956,7 @@ export default function VistaParticipacion() {
             },
             {
               id: 'reclutamiento',
-              label: 'Información de Reclutamiento',
+              label: 'Información de la Sesión',
               content: <ReclutamientoContent reclutamiento={reclutamientoActual} participante={participante} />
             },
             {

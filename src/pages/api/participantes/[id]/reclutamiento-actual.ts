@@ -374,11 +374,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       reclutador_id: reclutamiento.reclutador_id,
       creado_por: reclutamiento.creado_por,
       hora_sesion: reclutamiento.hora_sesion, // Asegurarse de que se incluya
+      meet_link: reclutamiento.meet_link, // Agregar enlace de Google Meet
     };
     
     // Debug: Log para verificar qué campos están llegando
     console.log('🔍 API: reclutamiento.hora_sesion:', reclutamiento.hora_sesion);
+    console.log('🔍 API: reclutamiento.meet_link:', reclutamiento.meet_link);
     console.log('🔍 API: reclutamientoFormateado.hora_sesion:', reclutamientoFormateado.hora_sesion);
+    console.log('🔍 API: reclutamientoFormateado.meet_link:', reclutamientoFormateado.meet_link);
     console.log('🔍 API: Campos del reclutamiento original:', Object.keys(reclutamiento));
 
     console.log('✅ Respuesta final formateada:', reclutamientoFormateado);

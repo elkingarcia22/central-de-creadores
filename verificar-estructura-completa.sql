@@ -1,57 +1,51 @@
--- Verificar si las tablas relacionadas existen y tienen la estructura correcta
+-- Verificar estructura completa de tablas relacionadas con reclutamientos
 
--- 1. Verificar tabla investigaciones
+-- 1. Verificar tabla reclutamientos
+SELECT 'RECLUTAMIENTOS' as tabla, column_name, data_type
+FROM information_schema.columns
+WHERE table_schema = 'public' AND table_name = 'reclutamientos'
+ORDER BY ordinal_position;
+
+-- 2. Verificar tabla investigaciones
 SELECT 'INVESTIGACIONES' as tabla, column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'investigaciones'
 ORDER BY ordinal_position;
 
--- 2. Verificar tabla participantes
+-- 3. Verificar tabla participantes
 SELECT 'PARTICIPANTES' as tabla, column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'participantes'
 ORDER BY ordinal_position;
 
--- 3. Verificar tabla participantes_internos
+-- 4. Verificar tabla participantes_internos
 SELECT 'PARTICIPANTES_INTERNOS' as tabla, column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'participantes_internos'
 ORDER BY ordinal_position;
 
--- 4. Verificar tabla participantes_friend_family
+-- 5. Verificar tabla participantes_friend_family
 SELECT 'PARTICIPANTES_FRIEND_FAMILY' as tabla, column_name, data_type
 FROM information_schema.columns
 WHERE table_schema = 'public' AND table_name = 'participantes_friend_family'
 ORDER BY ordinal_position;
 
--- 5. Verificar si existen registros en cada tabla
+-- 6. Verificar si existen registros en cada tabla
+SELECT 'CONTEO_RECLUTAMIENTOS' as tabla, COUNT(*) as total FROM public.reclutamientos;
 SELECT 'CONTEO_INVESTIGACIONES' as tabla, COUNT(*) as total FROM public.investigaciones;
 SELECT 'CONTEO_PARTICIPANTES' as tabla, COUNT(*) as total FROM public.participantes;
 SELECT 'CONTEO_PARTICIPANTES_INTERNOS' as tabla, COUNT(*) as total FROM public.participantes_internos;
 SELECT 'CONTEO_PARTICIPANTES_FRIEND_FAMILY' as tabla, COUNT(*) as total FROM public.participantes_friend_family;
 
--- 6. Verificar IDs específicos de los reclutamientos
+-- 7. Verificar relaciones entre tablas
 SELECT 
-  'INVESTIGACION_1' as tipo,
-  id, nombre, descripcion
-FROM public.investigaciones 
-WHERE id = '8d1e27d6-d510-4ae7-9938-86527a3267ab';
-
-SELECT 
-  'INVESTIGACION_2' as tipo,
-  id, nombre, descripcion
-FROM public.investigaciones 
-WHERE id = '5a832297-4cca-4bad-abe6-3aad99b8b5f3';
-
--- 7. Verificar participantes específicos
-SELECT 
-  'PARTICIPANTE_1' as tipo,
-  id, nombre, apellido, email
-FROM public.participantes 
-WHERE id = '30803140-e7ee-46ab-a511-4dba02c61566';
-
-SELECT 
-  'PARTICIPANTE_FRIEND_FAMILY_1' as tipo,
-  id, nombre, apellido, email
-FROM public.participantes_friend_family 
-WHERE id = 'a0c3872b-ecd2-4479-9320-41d73b1c98ca';
+  r.id,
+  r.investigacion_id,
+  r.participantes_id,
+  r.participantes_internos_id,
+  r.participantes_friend_family_id,
+  r.fecha_sesion,
+  r.duracion_sesion,
+  r.reclutador_id
+FROM public.reclutamientos r
+LIMIT 3;

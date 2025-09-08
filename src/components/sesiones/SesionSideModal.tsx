@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SesionEvent } from '../../types/sesiones';
 import { Card, Typography, Button, Chip, Badge, Avatar, SideModal, PageHeader, Tabs, InfoContainer, InfoItem, ActionsMenu } from '../ui';
+import { getChipVariant } from '../../utils/chipUtils';
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -132,28 +133,11 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
     }
   };
 
-  // Obtener color del estado
+  // Obtener color del estado usando el sistema de diseño
   const getEstadoColor = () => {
     // Priorizar estado real del reclutamiento
-    if (sesion.estado_real) {
-      switch (sesion.estado_real) {
-        case 'Finalizado': return 'success';
-        case 'Cancelado': return 'error';
-        case 'Pendiente de agendamiento': return 'warning';
-        case 'En proceso': return 'info';
-        default: return 'secondary';
-      }
-    }
-    
-    // Fallback al estado de sesión
-    switch (sesion.estado) {
-      case 'programada': return 'primary';
-      case 'en_curso': return 'warning';
-      case 'completada': return 'success';
-      case 'cancelada': return 'error';
-      case 'reprogramada': return 'info';
-      default: return 'secondary';
-    }
+    const estado = sesion.estado_real || sesion.estado || 'default';
+    return getChipVariant(estado);
   };
 
   // Obtener texto del estado
@@ -162,7 +146,8 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
       estado_real: sesion.estado_real,
       estado: sesion.estado,
       responsable_real: sesion.responsable_real,
-      implementador_real: sesion.implementador_real
+      implementador_real: sesion.implementador_real,
+      meet_link: sesion.meet_link
     });
     
     // Priorizar estado real del reclutamiento
@@ -283,6 +268,41 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
             value={formatDate(new Date(sesion.created_at))}
           />
         </InfoContainer>
+
+        {/* Enlace de Google Meet */}
+        {sesion.meet_link && (
+          <InfoContainer 
+            title="Enlace de Google Meet"
+            icon={
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+            }
+          >
+            <div className="col-span-full">
+              <div className="flex items-center gap-2">
+                <a 
+                  href={sesion.meet_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                >
+                  {sesion.meet_link}
+                </a>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigator.clipboard.writeText(sesion.meet_link)}
+                  className="p-1 h-auto"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+          </InfoContainer>
+        )}
 
         {/* Notas de la Sesión */}
         <InfoContainer 

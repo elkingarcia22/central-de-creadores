@@ -22,10 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         participantes_friend_family_id,
         fecha_sesion,
         hora_sesion,
+        duracion_sesion,
         estado_agendamiento,
         estado_agendamiento_cat!inner(nombre),
         fecha_asignado,
-        reclutador_id
+        reclutador_id,
+        meet_link
       `)
       .order('fecha_sesion', { ascending: false });
 
@@ -153,7 +155,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_agendamiento: reclutamiento.estado_agendamiento_cat?.nombre,
         estado_agendamiento_color: null, // Color no disponible en la tabla
         hora_sesion: reclutamiento.hora_sesion,
-        fecha_asignado: reclutamiento.fecha_asignado
+        fecha_asignado: reclutamiento.fecha_asignado,
+        meet_link: reclutamiento.meet_link // Agregar enlace de Google Meet
       };
     }).filter(sesion => sesion.fecha_programada); // Solo sesiones con fecha programada
 

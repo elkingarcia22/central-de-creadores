@@ -97,6 +97,7 @@ export default function AgregarParticipanteModal({
   const [duracionSesion, setDuracionSesion] = useState('60');
   const [tipoParticipante, setTipoParticipante] = useState<'externo' | 'interno' | 'friend_family'>('externo');
   const [participanteId, setParticipanteId] = useState('');
+  const [meetLink, setMeetLink] = useState('');
   const [investigacionId, setInvestigacionId] = useState('');
 
   // Estados para modales de crear participantes
@@ -352,6 +353,31 @@ export default function AgregarParticipanteModal({
     handleSubmit(syntheticEvent);
   };
 
+  const handleGenerateMeetLink = async () => {
+    try {
+      const response = await fetch('/api/generate-meet-link-auto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fechaSesion,
+          duracionSesion,
+          titulo: 'Sesión de Reclutamiento'
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setMeetLink(data.meetLink);
+        showSuccess('Enlace de Meet generado automáticamente');
+      } else {
+        showError('Error generando enlace de Meet');
+      }
+    } catch (error) {
+      console.error('Error generando enlace de Meet:', error);
+      showError('Error generando enlace de Meet');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('🚀 INICIANDO handleSubmit...');
@@ -493,6 +519,7 @@ export default function AgregarParticipanteModal({
           participantes_friend_family_id: tipoParticipante === 'friend_family' ? participanteId : undefined,
           tipo_participante: tipoParticipante,
           estado_agendamiento: '0b8723e0-4f43-455d-bd95-a9576b7beb9d', // UUID de "Pendiente"
+          meet_link: meetLink || null, // Agregar enlace de Meet
         };
         console.log('📤 Datos a enviar:', datosParaEnviar);
         
@@ -538,6 +565,7 @@ export default function AgregarParticipanteModal({
           participantes_friend_family_id: tipoParticipante === 'friend_family' ? participanteId : undefined,
           tipo_participante: tipoParticipante,
           estado_agendamiento: '0b8723e0-4f43-455d-bd95-a9576b7beb9d', // UUID de "Pendiente"
+          meet_link: meetLink || null, // Agregar enlace de Meet
         }),
       });
 
@@ -701,6 +729,32 @@ export default function AgregarParticipanteModal({
             />
             <Typography variant="caption" color="secondary" className="mt-1 block">
               Duración en minutos (mínimo 15, máximo 8 horas)
+            </Typography>
+          </div>
+
+          <div>
+            <FilterLabel>Enlace de Google Meet</FilterLabel>
+            <div className="flex space-x-2">
+              <Input
+                type="url"
+                value={meetLink}
+                onChange={(e) => setMeetLink(e.target.value)}
+                placeholder="https://meet.google.com/abc-defg-hij"
+                disabled={loading}
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleGenerateMeetLink}
+                disabled={loading}
+                className="whitespace-nowrap"
+              >
+                Generar
+              </Button>
+            </div>
+            <Typography variant="caption" color="secondary" className="mt-1 block">
+              Enlace opcional para sesiones virtuales
             </Typography>
           </div>
         </div>

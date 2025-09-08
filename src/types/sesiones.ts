@@ -96,6 +96,8 @@ export interface SesionEvent extends Sesion {
   estado_real?: string;
   responsable_real?: string;
   implementador_real?: string;
+  // Enlace de Google Meet
+  meet_link?: string;
 }
 
 export interface GoogleCalendarEvent {
