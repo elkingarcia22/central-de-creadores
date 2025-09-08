@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon, SearchIcon, CheckIcon } from '../icons';
+import { useSmartPositioning } from '../../hooks/useSmartPositioning';
 
 // Función cn para combinar clases CSS
 const cn = (...classes: (string | undefined | null | false)[]) => {
@@ -56,6 +57,7 @@ const Select: React.FC<SelectProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { calculatePosition } = useSmartPositioning();
 
   // Filtrar opciones basado en el término de búsqueda
   const filteredOptions = (options || []).filter(option =>
@@ -70,8 +72,17 @@ const Select: React.FC<SelectProps> = ({
   // Obtener la opción seleccionada
   const selectedOption = (options || []).find(option => option.value === value);
 
-  // Función simplificada para posicionamiento (ya no se usa)
-  const getDropdownPosition = useCallback(() => ({}), []);
+  // Calcular posición inteligente del dropdown
+  const getDropdownPosition = useCallback(() => {
+    if (!isOpen || !containerRef.current) return {};
+    
+    return calculatePosition({
+      elementRef: containerRef,
+      dropdownHeight: 240, // max-h-60 = 240px
+      dropdownWidth: containerRef.current.offsetWidth,
+      padding: 8
+    });
+  }, [isOpen, calculatePosition]);
 
   // Manejar clic fuera del dropdown
   useEffect(() => {
@@ -241,21 +252,16 @@ const Select: React.FC<SelectProps> = ({
       </button>
 
       {/* Dropdown */}
-      {isOpen && (
+      {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-md overflow-hidden z-[999999] shadow-lg"
+          className="bg-white border border-gray-300 rounded-md overflow-hidden shadow-lg"
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: '0',
-            width: '100%',
-            marginTop: '4px',
+            ...getDropdownPosition(),
             backgroundColor: 'white',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            zIndex: 999999
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
           }}
         >
           {/* Search input */}
@@ -327,7 +333,8 @@ const Select: React.FC<SelectProps> = ({
               })
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
