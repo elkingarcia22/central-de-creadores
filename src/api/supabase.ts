@@ -12,7 +12,10 @@ const FORCE_MOCK = false; // Cambiado a false para usar Supabase real
 // Crear cliente según disponibilidad de credenciales
 let supabase: any;
 
-if (FORCE_MOCK || shouldUseMock()) {
+// Verificar si estamos en un entorno de build (Netlify)
+const isBuildTime = typeof window === 'undefined' && process.env.NODE_ENV === 'production';
+
+if (FORCE_MOCK || (!isBuildTime && shouldUseMock())) {
   if (FORCE_MOCK) {
     console.warn('🚨 FORZANDO USO DE MOCK - Error 500 en Supabase detectado');
   } else {
