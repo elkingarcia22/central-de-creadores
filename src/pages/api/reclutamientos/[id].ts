@@ -68,6 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Agregar campos opcionales solo si están presentes
       if (req.body.hora_sesion !== undefined) datosLimpios.hora_sesion = req.body.hora_sesion;
       if (req.body.duracion_sesion !== undefined) datosLimpios.duracion_sesion = req.body.duracion_sesion;
+      if (req.body.meet_link !== undefined) datosLimpios.meet_link = req.body.meet_link;
 
       // Agregar campos de participante según el tipo
       if (req.body.participantes_id) datosLimpios.participantes_id = req.body.participantes_id;

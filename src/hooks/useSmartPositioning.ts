@@ -23,7 +23,7 @@ export const useSmartPositioning = () => {
     elementRef,
     dropdownHeight = 300,
     dropdownWidth = 280,
-    padding = 2,
+    padding = 8,
     minWidth = 200,
     maxWidth = 400
   }: SmartPositioningOptions): Position => {
@@ -47,33 +47,58 @@ export const useSmartPositioning = () => {
       Math.min(maxWidth, Math.max(dropdownWidth, rect.width))
     );
     
-    // Calcular espacio disponible
-    const spaceBelow = viewportHeight - rect.bottom - 2;
-    const spaceAbove = rect.top - 2;
+    // Calcular espacio disponible con márgenes más generosos
+    const spaceBelow = viewportHeight - rect.bottom - padding;
+    const spaceAbove = rect.top - padding;
     
-    // Determinar posición vertical
-    const showAbove = spaceBelow < finalDropdownHeight && spaceAbove > spaceBelow;
+    // Determinar posición vertical - preferir abajo si hay espacio suficiente
+    const minSpaceRequired = Math.min(finalDropdownHeight, 200); // Mínimo 200px o la altura del dropdown
+    const showAbove = spaceBelow < minSpaceRequired && spaceAbove > spaceBelow;
     
-    // Determinar posición horizontal
+    // Calcular posición horizontal - mantener alineado con el elemento
     let left = rect.left;
-    if (left + finalDropdownWidth > viewportWidth) {
+    
+    // Ajustar si se sale por la derecha
+    if (left + finalDropdownWidth > viewportWidth - padding) {
       left = viewportWidth - finalDropdownWidth - padding;
     }
+    
+    // Ajustar si se sale por la izquierda
     if (left < padding) {
       left = padding;
+    }
+    
+    // Calcular posición vertical con márgenes apropiados
+    let top: number;
+    let maxHeight: number;
+    
+    if (showAbove) {
+      // Posicionar arriba
+      top = rect.top - finalDropdownHeight - 4; // 4px de separación
+      maxHeight = Math.min(finalDropdownHeight, spaceAbove - 4);
+      
+      // Asegurar que no se salga por arriba
+      if (top < padding) {
+        top = padding;
+        maxHeight = Math.min(finalDropdownHeight, rect.top - padding - 4);
+      }
+    } else {
+      // Posicionar abajo
+      top = rect.bottom + 4; // 4px de separación
+      maxHeight = Math.min(finalDropdownHeight, spaceBelow - 4);
+      
+      // Asegurar que no se salga por abajo
+      if (top + maxHeight > viewportHeight - padding) {
+        maxHeight = viewportHeight - top - padding;
+      }
     }
 
     return {
       position: 'fixed',
-      top: showAbove 
-        ? `${rect.top - finalDropdownHeight - 2}px` 
-        : `${rect.bottom + 2}px`,
+      top: `${top}px`,
       left: `${left}px`,
       width: `${finalDropdownWidth}px`,
-      maxHeight: `${Math.min(
-        finalDropdownHeight, 
-        showAbove ? spaceAbove : spaceBelow
-      )}px`,
+      maxHeight: `${Math.max(maxHeight, 100)}px`, // Mínimo 100px de altura
       zIndex: 9999
     };
   }, []);

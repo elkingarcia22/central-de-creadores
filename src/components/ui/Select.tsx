@@ -55,6 +55,7 @@ const Select: React.FC<SelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dropdownPosition, setDropdownPosition] = useState({});
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { calculatePosition } = useSmartPositioning();
@@ -80,18 +81,39 @@ const Select: React.FC<SelectProps> = ({
       elementRef: containerRef,
       dropdownHeight: 240, // max-h-60 = 240px
       dropdownWidth: containerRef.current.offsetWidth,
-      padding: 8
+      padding: 12, // Más padding para mejor separación
+      minWidth: containerRef.current.offsetWidth, // Mínimo el ancho del input
+      maxWidth: Math.max(containerRef.current.offsetWidth, 300) // Máximo 300px o el ancho del input
     });
   }, [isOpen, calculatePosition]);
+
+  // Actualizar posición cuando se abre el dropdown
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const position = getDropdownPosition();
+      setDropdownPosition(position);
+    }
+  }, [isOpen, getDropdownPosition]);
 
   // Manejar clic fuera del dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
-        onBlur?.();
+      const target = event.target as Node;
+      
+      // Verificar si el clic es dentro del contenedor del select
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return; // No cerrar si es dentro del contenedor
       }
+      
+      // Verificar si el clic es dentro del dropdown (portal)
+      if (dropdownRef.current && dropdownRef.current.contains(target)) {
+        return; // No cerrar si es dentro del dropdown
+      }
+      
+      // Si no es dentro de ninguno de los dos, cerrar
+      setIsOpen(false);
+      setSearchTerm('');
+      onBlur?.();
     };
 
     const handleScroll = (event: Event) => {
@@ -166,13 +188,6 @@ const Select: React.FC<SelectProps> = ({
     }
   };
 
-  // Manejar clic en opción con prevención de eventos
-  const handleOptionClickWithPrevention = (e: React.MouseEvent, optionValue: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('🔍 handleOptionClickWithPrevention called with:', optionValue);
-    handleOptionClick(optionValue);
-  };
 
   // Clases CSS
   const sizeClasses = {
@@ -257,11 +272,15 @@ const Select: React.FC<SelectProps> = ({
           ref={dropdownRef}
           className="bg-white border border-gray-300 rounded-md overflow-hidden shadow-lg"
           style={{
-            ...getDropdownPosition(),
+            ...dropdownPosition,
             backgroundColor: 'white',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+          }}
+          onClick={(e) => {
+            // Asegurar que los clics dentro del dropdown no se propaguen
+            e.stopPropagation();
           }}
         >
           {/* Search input */}
@@ -301,17 +320,10 @@ const Select: React.FC<SelectProps> = ({
                   )}
                   onClick={(e) => {
                     console.log('🔍 Select - Option button clicked:', option.value);
-                    console.log('🔍 Select - Event target:', e.target);
-                    console.log('🔍 Select - Event currentTarget:', e.currentTarget);
                     if (!option.disabled) {
-                      handleOptionClickWithPrevention(e, option.value);
+                      e.stopPropagation();
+                      handleOptionClick(option.value);
                     }
-                  }}
-                  onMouseDown={(e) => {
-                    console.log('🔍 Select - Option button mousedown:', option.value);
-                  }}
-                  onMouseUp={(e) => {
-                    console.log('🔍 Select - Option button mouseup:', option.value);
                   }}
                   disabled={option.disabled}
                   style={{ 
