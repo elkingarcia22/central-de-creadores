@@ -36,6 +36,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ y: 0, duration: 0 });
   const [hasDragged, setHasDragged] = useState(false);
+  const [dragStartTime, setDragStartTime] = useState(0);
 
   // Función para limpiar completamente todos los estilos inline
   const clearAllInlineStyles = () => {
@@ -99,6 +100,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     setIsDragging(true);
     setHasDragged(false); // Reset hasDragged al inicio
     setDragStart({ x: e.clientX, y: e.clientY });
+    setDragStartTime(Date.now()); // Establecer tiempo de inicio
     onDragStart?.(event.title); // Notificar al calendario con el título
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
@@ -125,7 +127,15 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString() });
       if (!isDragging || !eventRef.current) return;
       
-      // Prevenir múltiples ejecuciones
+      // Agregar un pequeño delay para permitir que se detecte el movimiento
+      const timeSinceStart = Date.now() - dragStartTime;
+      if (timeSinceStart < 100) { // Menos de 100ms desde el inicio
+        console.log('⏱️ [DRAG] Muy rápido, esperando...', { timeSinceStart });
+        setTimeout(() => handleMouseUp(upEvent), 50);
+        return;
+      }
+      
+      // Prevenir múltiples ejecuciones - solo si realmente no se movió
       if (hasDragged === false) {
         console.log('⏭️ [DRAG] No se movió lo suficiente, ignorando');
         clearAllInlineStyles(); // Limpiar estilos antes de salir
