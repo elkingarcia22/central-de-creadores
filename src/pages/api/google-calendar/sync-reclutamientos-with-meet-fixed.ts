@@ -45,18 +45,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Crear cliente de Google Calendar
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    // Obtener reclutamientos del usuario
+    // Obtener reclutamientos del usuario (como reclutador, responsable o implementador)
     console.log('🔍 Buscando reclutamientos para usuario:', userId);
+    
+    // Primero intentar como reclutador
     let { data: reclutamientos, error: reclutamientosError } = await supabase
       .from('reclutamientos')
-      .select('*')
-      .eq('reclutador_id', userId)
+      .select(`
+        *,
+        investigaciones!inner(
+          responsable_id,
+          implementador_id
+        )
+      `)
+      .or(`reclutador_id.eq.${userId},investigaciones.responsable_id.eq.${userId},investigaciones.implementador_id.eq.${userId}`)
       .order('fecha_sesion', { ascending: true });
 
     console.log('📊 Resultado de reclutamientos:', {
       count: reclutamientos?.length || 0,
       error: reclutamientosError,
-      userId: userId
+      userId: userId,
+      reclutamientos: reclutamientos?.map(r => ({
+        id: r.id,
+        fecha_sesion: r.fecha_sesion,
+        reclutador_id: r.reclutador_id,
+        investigacion_responsable: r.investigaciones?.responsable_id,
+        investigacion_implementador: r.investigaciones?.implementador_id
+      }))
     });
 
     if (reclutamientosError) {
