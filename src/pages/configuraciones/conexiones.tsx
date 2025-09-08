@@ -61,11 +61,23 @@ const SesionesPage: NextPage = () => {
   const handleConnect = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {
       try {
-        // Redirigir a Google OAuth con el userId
-        const authUrl = `/api/auth/google?userId=${userId}`;
-        window.location.href = authUrl;
+        // Probar conexión con Google Calendar
+        const response = await fetch('/api/google-calendar/test');
+        const result = await response.json();
+        
+        if (result.success) {
+          showSuccess('Google Calendar', 'Conexión exitosa con Google Calendar');
+          // Actualizar estado de conexión
+          setConnections(prev => prev.map(conn => 
+            conn.id === 'google-calendar' 
+              ? { ...conn, connected: true, connected_at: new Date().toISOString() }
+              : conn
+          ));
+        } else {
+          showError('Google Calendar', result.error || 'No se pudo conectar con Google Calendar');
+        }
       } catch (error) {
-        showError('Error', 'No se pudo conectar con Google Calendar');
+        showError('Error', 'No se pudo conectar con Google Calendar. Verifica la configuración.');
       }
     } else if (connectionId === 'hubspot') {
       showError('HubSpot', 'Integración con HubSpot próximamente disponible');
