@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { google } from 'googleapis';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const supabase = supabaseUrl && supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
 interface AutoSyncOptions {
   userId: string;
@@ -18,6 +20,11 @@ interface AutoSyncOptions {
 export async function autoSyncCalendar({ userId, reclutamientoId, action }: AutoSyncOptions) {
   try {
     console.log(`🔄 Auto-sync: ${action} reclutamiento ${reclutamientoId} para usuario ${userId}`);
+    
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible para auto-sync');
+      return { success: false, error: 'Cliente de Supabase no configurado' };
+    }
 
     // TEMPORAL: Saltar verificación de sincronización manual debido a problemas de foreign key
     console.log('⚠️ Saltando verificación de sincronización manual (problema de foreign key)');
