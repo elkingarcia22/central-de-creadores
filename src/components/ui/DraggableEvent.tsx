@@ -122,24 +122,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         return;
       }
       
-      // Restaurar estilos inmediatamente
-      eventRef.current.style.transform = '';
-      eventRef.current.style.opacity = '';
-      eventRef.current.style.zIndex = '';
-      eventRef.current.style.boxShadow = '';
-      eventRef.current.style.border = '';
-      
-      // Asegurar que los estilos se restauren después de un breve delay
-      setTimeout(() => {
-        if (eventRef.current) {
-          eventRef.current.style.transform = '';
-          eventRef.current.style.opacity = '';
-          eventRef.current.style.zIndex = '';
-          eventRef.current.style.boxShadow = '';
-          eventRef.current.style.border = '';
-          console.log('🔄 [DRAG] Estilos restaurados después del delay');
-        }
-      }, 100);
+      // NO restaurar estilos inmediatamente - esperar a que se complete la actualización
       
       // Determinar la nueva fecha
       let newDate: Date;
@@ -179,21 +162,43 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       if (isDateChanged && onEventMove) {
         console.log('🚀 [DRAG] Llamando onEventMove', { eventId: event.id, newDate });
         onEventMove(event.id, newDate);
+        
+        // Restaurar estilos después de que se complete la actualización
+        setTimeout(() => {
+          if (eventRef.current) {
+            eventRef.current.style.transform = '';
+            eventRef.current.style.opacity = '';
+            eventRef.current.style.zIndex = '';
+            eventRef.current.style.boxShadow = '';
+            eventRef.current.style.border = '';
+            console.log('🔄 [DRAG] Estilos restaurados después de actualización');
+          }
+        }, 200); // Delay más largo para asegurar que se complete la actualización
       } else if (!isDateChanged) {
         console.log('⏭️ [DRAG] No se mueve porque la fecha no cambió');
+        
+        // Restaurar estilos inmediatamente si no hay cambio
+        if (eventRef.current) {
+          eventRef.current.style.transform = '';
+          eventRef.current.style.opacity = '';
+          eventRef.current.style.zIndex = '';
+          eventRef.current.style.boxShadow = '';
+          eventRef.current.style.border = '';
+          console.log('🔄 [DRAG] Estilos restaurados (sin cambio de fecha)');
+        }
       } else {
         console.log('⚠️ [DRAG] No hay onEventMove disponible');
-      }
-      
-      // Forzar re-render del componente
-      setTimeout(() => {
+        
+        // Restaurar estilos si no hay función de movimiento
         if (eventRef.current) {
-          eventRef.current.style.display = 'none';
-          eventRef.current.offsetHeight; // Trigger reflow
-          eventRef.current.style.display = '';
-          console.log('🔄 [DRAG] Forzando re-render del evento');
+          eventRef.current.style.transform = '';
+          eventRef.current.style.opacity = '';
+          eventRef.current.style.zIndex = '';
+          eventRef.current.style.boxShadow = '';
+          eventRef.current.style.border = '';
+          console.log('🔄 [DRAG] Estilos restaurados (sin onEventMove)');
         }
-      }, 50);
+      }
       
       setIsDragging(false);
       onDragEnd?.(); // Notificar al calendario
