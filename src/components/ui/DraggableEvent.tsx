@@ -122,12 +122,24 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         return;
       }
       
-      // Restaurar estilos
+      // Restaurar estilos inmediatamente
       eventRef.current.style.transform = '';
       eventRef.current.style.opacity = '';
       eventRef.current.style.zIndex = '';
       eventRef.current.style.boxShadow = '';
       eventRef.current.style.border = '';
+      
+      // Asegurar que los estilos se restauren después de un breve delay
+      setTimeout(() => {
+        if (eventRef.current) {
+          eventRef.current.style.transform = '';
+          eventRef.current.style.opacity = '';
+          eventRef.current.style.zIndex = '';
+          eventRef.current.style.boxShadow = '';
+          eventRef.current.style.border = '';
+          console.log('🔄 [DRAG] Estilos restaurados después del delay');
+        }
+      }, 100);
       
       // Determinar la nueva fecha
       let newDate: Date;
@@ -172,6 +184,16 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       } else {
         console.log('⚠️ [DRAG] No hay onEventMove disponible');
       }
+      
+      // Forzar re-render del componente
+      setTimeout(() => {
+        if (eventRef.current) {
+          eventRef.current.style.display = 'none';
+          eventRef.current.offsetHeight; // Trigger reflow
+          eventRef.current.style.display = '';
+          console.log('🔄 [DRAG] Forzando re-render del evento');
+        }
+      }, 50);
       
       setIsDragging(false);
       onDragEnd?.(); // Notificar al calendario
