@@ -19,25 +19,8 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
   try {
     console.log(`🔄 Auto-sync: ${action} reclutamiento ${reclutamientoId} para usuario ${userId}`);
 
-    // Verificar si ya hay una sincronización manual en progreso para evitar duplicados
-    const { data: manualSync } = await supabase
-      .from('google_calendar_events')
-      .select('last_sync_at')
-      .eq('sesion_id', reclutamientoId)
-      .eq('user_id', userId)
-      .single();
-
-    // Si la última sincronización fue hace menos de 30 segundos, saltar auto-sync
-    if (manualSync?.last_sync_at) {
-      const lastSync = new Date(manualSync.last_sync_at);
-      const now = new Date();
-      const diffSeconds = (now.getTime() - lastSync.getTime()) / 1000;
-      
-      if (diffSeconds < 30) {
-        console.log('⚠️ Saltando auto-sync: sincronización manual reciente detectada');
-        return { success: false, reason: 'Recent manual sync detected' };
-      }
-    }
+    // TEMPORAL: Saltar verificación de sincronización manual debido a problemas de foreign key
+    console.log('⚠️ Saltando verificación de sincronización manual (problema de foreign key)');
 
     // Verificar si el usuario tiene Google Calendar conectado
     const { data: tokens, error: tokensError } = await supabase
@@ -49,6 +32,12 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
     if (tokensError || !tokens) {
       console.log('⚠️ Usuario no tiene Google Calendar conectado, saltando auto-sync');
       return { success: false, reason: 'No Google Calendar connected' };
+    }
+
+    // Verificar si los tokens son válidos (no son tokens de prueba)
+    if (tokens.access_token?.startsWith('test_access_token_')) {
+      console.log('⚠️ Tokens de prueba detectados, saltando auto-sync');
+      return { success: false, reason: 'Test tokens detected' };
     }
 
     // Configurar cliente OAuth2
@@ -162,59 +151,24 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
         participanteFriendFamily
       });
 
-      // Verificar si ya existe en Google Calendar
-      const { data: existingEvent, error: existingError } = await supabase
-        .from('google_calendar_events')
-        .select('google_event_id')
-        .eq('sesion_id', reclutamientoId)
-        .eq('user_id', userId)
-        .single();
-
-      if (existingEvent && !existingError) {
-        // Actualizar evento existente
-        try {
-          await calendar.events.update({
-            calendarId: 'primary',
-            eventId: existingEvent.google_event_id,
-            requestBody: googleEvent,
-          });
-
-          // Actualizar referencia en la base de datos
-          await supabase
-            .from('google_calendar_events')
-            .update({
-              sync_status: 'synced',
-              last_sync_at: new Date().toISOString()
-            })
-            .eq('sesion_id', reclutamientoId)
-            .eq('user_id', userId);
-
-          console.log(`✅ Evento actualizado en Google Calendar: ${existingEvent.google_event_id}`);
-        } catch (updateError) {
-          console.error('Error actualizando evento en Google Calendar:', updateError);
-          // Si falla la actualización, intentar crear uno nuevo
-          throw updateError;
-        }
-      } else {
+      // TEMPORAL: Crear evento directamente sin verificar existencia debido a problemas de foreign key
+      console.log('⚠️ Creando evento directamente (sin verificar existencia debido a problemas de foreign key)');
+      
+      try {
         // Crear nuevo evento
         const createdEvent = await calendar.events.insert({
           calendarId: 'primary',
           requestBody: googleEvent,
         });
 
-        // Guardar referencia en la base de datos
-        await supabase
-          .from('google_calendar_events')
-          .insert({
-            user_id: userId,
-            sesion_id: reclutamientoId,
-            google_event_id: createdEvent.data.id,
-            google_calendar_id: 'primary',
-            sync_status: 'synced',
-            last_sync_at: new Date().toISOString()
-          });
-
         console.log(`✅ Evento creado en Google Calendar: ${createdEvent.data.id}`);
+        
+        // TEMPORAL: No guardar referencia en google_calendar_events debido a problemas de foreign key
+        console.log('⚠️ No guardando referencia en google_calendar_events (problema de foreign key)');
+        
+      } catch (createError) {
+        console.error('Error creando evento en Google Calendar:', createError);
+        throw createError;
       }
     }
 

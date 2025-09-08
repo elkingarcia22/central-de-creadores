@@ -1,51 +1,67 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../api/supabase';
+import { supabaseServer as supabase } from '../../../api/supabase-server';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: 'ID de usuario requerido' });
-  }
-
   try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'ID de usuario requerido' });
+    }
+
+    console.log('🔌 Desconectando Google Calendar para usuario:', userId);
+
     // Eliminar tokens de Google Calendar
-    const { error: deleteError } = await supabase
+    const { data: deletedTokens, error: deleteError } = await supabase
       .from('google_calendar_tokens')
       .delete()
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .select();
 
     if (deleteError) {
-      console.error('Error eliminando tokens:', deleteError);
-      return res.status(500).json({ error: 'Error desconectando Google Calendar' });
+      console.error('❌ Error eliminando tokens:', deleteError);
+      return res.status(500).json({ 
+        error: 'Error eliminando tokens',
+        details: deleteError.message 
+      });
     }
 
-    // Opcional: Limpiar referencias de Google Calendar en sesiones
-    const { error: updateError } = await supabase
-      .from('sesiones')
-      .update({
-        google_calendar_id: null,
-        google_event_id: null,
-        updated_at: new Date().toISOString()
-      })
-      .eq('moderador_id', userId); // Asumiendo que el moderador es el usuario
+    // Eliminar referencias de eventos de Google Calendar (si es posible)
+    try {
+      const { data: deletedEvents, error: eventsError } = await supabase
+        .from('google_calendar_events')
+        .delete()
+        .eq('user_id', userId)
+        .select();
 
-    if (updateError) {
-      console.error('Error limpiando referencias:', updateError);
-      // No fallar la desconexión por esto
+      if (eventsError) {
+        console.log('⚠️ No se pudieron eliminar referencias de eventos (problema de foreign key):', eventsError.message);
+      } else {
+        console.log('✅ Referencias de eventos eliminadas:', deletedEvents?.length || 0);
+      }
+    } catch (eventsError) {
+      console.log('⚠️ Error eliminando referencias de eventos:', eventsError);
     }
+
+    console.log('✅ Google Calendar desconectado exitosamente');
 
     return res.status(200).json({
       success: true,
-      message: 'Google Calendar desconectado exitosamente'
+      message: 'Google Calendar desconectado exitosamente',
+      user_id: userId,
+      tokens_deleted: deletedTokens?.length || 0,
+      events_deleted: 'N/A (problema de foreign key)'
     });
 
   } catch (error) {
-    console.error('Error desconectando Google Calendar:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('❌ Error desconectando Google Calendar:', error);
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 }
