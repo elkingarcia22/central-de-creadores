@@ -20,12 +20,13 @@ export const SCOPES = [
 ];
 
 // Generar URL de autorización
-export function getAuthUrl(): string {
+export function getAuthUrl(state?: string): string {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
     prompt: 'consent', // Forzar consentimiento para obtener refresh token
-    redirect_uri: GOOGLE_REDIRECT_URI // Incluir redirect_uri explícitamente
+    redirect_uri: GOOGLE_REDIRECT_URI, // Incluir redirect_uri explícitamente
+    state: state // Incluir state para identificar al usuario
   });
 }
 

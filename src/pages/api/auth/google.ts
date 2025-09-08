@@ -13,8 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Generar URL de autorización
-    const authUrl = getAuthUrl();
+    // Generar URL de autorización con el userId en el state
+    const authUrl = getAuthUrl(userId as string);
     
     // Redirigir a Google OAuth
     res.redirect(authUrl);

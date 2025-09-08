@@ -1,62 +1,68 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getTokens } from '../../../../lib/google-calendar';
-import { supabase } from '../../../../api/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { code, state } = req.query;
+  const { code, state, error } = req.query;
 
+  // Verificar si hay error en la autorización
+  if (error) {
+    console.error('Error en autorización de Google:', error);
+    return res.redirect('/configuraciones/conexiones?error=authorization_denied');
+  }
+
+  // Verificar que tenemos el código de autorización
   if (!code) {
-    return res.status(400).json({ error: 'Código de autorización no proporcionado' });
+    console.error('No se recibió código de autorización');
+    return res.redirect('/configuraciones/conexiones?error=no_code');
   }
 
   try {
     // Intercambiar código por tokens
     const tokens = await getTokens(code as string);
     
-    // Obtener información del usuario autenticado
-    const { google } = require('googleapis');
-    const oauth2 = google.oauth2({ version: 'v2', auth: tokens.access_token });
-    const userInfo = await oauth2.userinfo.get();
+    // Obtener información del usuario desde el state (si se proporciona)
+    const userId = state as string;
     
-    // Guardar tokens en la base de datos
-    const { data: user, error: userError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', userInfo.data.email)
-      .single();
-
-    if (userError || !user) {
-      return res.status(404).json({ error: 'Usuario no encontrado en la plataforma' });
+    if (!userId) {
+      console.error('No se proporcionó userId en el state');
+      return res.redirect('/configuraciones/conexiones?error=no_user_id');
     }
 
-    // Guardar tokens de Google Calendar
-    const { error: tokenError } = await supabase
+    // Almacenar tokens en la base de datos
+    const { error: dbError } = await supabase
       .from('google_calendar_tokens')
       .upsert({
-        user_id: user.id,
+        user_id: userId,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
-        token_type: tokens.token_type,
-        expiry_date: tokens.expiry_date,
+        token_type: tokens.token_type || 'Bearer',
+        expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : null,
         scope: tokens.scope,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id'
       });
 
-    if (tokenError) {
-      console.error('Error guardando tokens:', tokenError);
-      return res.status(500).json({ error: 'Error guardando tokens de Google Calendar' });
+    if (dbError) {
+      console.error('Error almacenando tokens:', dbError);
+      return res.redirect('/configuraciones/conexiones?error=database_error');
     }
 
-    // Redirigir a la página de sesiones con mensaje de éxito
-    res.redirect('/sesiones?google_calendar_connected=true');
-    
+    // Redirigir de vuelta a la página de conexiones con éxito
+    return res.redirect('/configuraciones/conexiones?success=google_calendar_connected');
+
   } catch (error) {
-    console.error('Error en callback de Google:', error);
-    res.redirect('/sesiones?google_calendar_error=true');
+    console.error('Error en callback de Google OAuth:', error);
+    return res.redirect('/configuraciones/conexiones?error=callback_error');
   }
 }

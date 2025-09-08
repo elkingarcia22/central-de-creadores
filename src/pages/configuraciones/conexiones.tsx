@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import { Layout, PageHeader, Card, Typography, Button, Badge } from '../../components/ui';
 import { useFastUser } from '../../contexts/FastUserContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -15,11 +16,49 @@ interface ConnectionStatus {
   color: string;
 }
 
-const SesionesPage: NextPage = () => {
+const ConexionesPage: NextPage = () => {
   const { userId, isAuthenticated } = useFastUser();
   const { showSuccess, showError } = useToast();
+  const router = useRouter();
   const [connections, setConnections] = useState<ConnectionStatus[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Manejar mensajes de éxito y error de la URL
+  useEffect(() => {
+    const { success, error } = router.query;
+    
+    if (success === 'google_calendar_connected') {
+      showSuccess('Google Calendar', '¡Google Calendar conectado exitosamente!');
+      // Actualizar estado de conexión
+      setConnections(prev => prev.map(conn => 
+        conn.id === 'google-calendar' 
+          ? { ...conn, connected: true, connected_at: new Date().toISOString() }
+          : conn
+      ));
+    }
+    
+    if (error) {
+      let errorMessage = 'Error desconocido';
+      switch (error) {
+        case 'authorization_denied':
+          errorMessage = 'Autorización denegada por el usuario';
+          break;
+        case 'no_code':
+          errorMessage = 'No se recibió código de autorización';
+          break;
+        case 'no_user_id':
+          errorMessage = 'Error de identificación de usuario';
+          break;
+        case 'database_error':
+          errorMessage = 'Error al guardar la configuración';
+          break;
+        case 'callback_error':
+          errorMessage = 'Error en el proceso de autorización';
+          break;
+      }
+      showError('Google Calendar', errorMessage);
+    }
+  }, [router.query, showSuccess, showError]);
 
   // Estado inicial de conexiones
   useEffect(() => {
@@ -61,23 +100,11 @@ const SesionesPage: NextPage = () => {
   const handleConnect = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {
       try {
-        // Probar conexión con Google Calendar
-        const response = await fetch('/api/google-calendar/test');
-        const result = await response.json();
-        
-        if (result.success) {
-          showSuccess('Google Calendar', 'Conexión exitosa con Google Calendar');
-          // Actualizar estado de conexión
-          setConnections(prev => prev.map(conn => 
-            conn.id === 'google-calendar' 
-              ? { ...conn, connected: true, connected_at: new Date().toISOString() }
-              : conn
-          ));
-        } else {
-          showError('Google Calendar', result.error || 'No se pudo conectar con Google Calendar');
-        }
+        // Redirigir a Google OAuth con el userId en el state
+        const authUrl = `/api/auth/google?userId=${userId}&state=${userId}`;
+        window.location.href = authUrl;
       } catch (error) {
-        showError('Error', 'No se pudo conectar con Google Calendar. Verifica la configuración.');
+        showError('Error', 'No se pudo conectar con Google Calendar');
       }
     } else if (connectionId === 'hubspot') {
       showError('HubSpot', 'Integración con HubSpot próximamente disponible');
