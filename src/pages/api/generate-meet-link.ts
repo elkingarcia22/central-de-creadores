@@ -49,13 +49,21 @@ function generateMeetLink(fechaSesion: string, duracionSesion: number, titulo?: 
 }
 
 function generateMeetingId(): string {
-  // Generar un ID de 10 caracteres para la reunión
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  
-  for (let i = 0; i < 10; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  try {
+    // Generar un ID de 10 caracteres para la reunión
+    // Google Meet IDs suelen ser de 10-11 caracteres con letras minúsculas y números
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    
+    for (let i = 0; i < 10; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    console.log('🔗 ID de Meet generado:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error generando ID de Meet:', error);
+    // Fallback: generar ID simple
+    return Math.random().toString(36).substring(2, 12);
   }
-  
-  return result;
 }

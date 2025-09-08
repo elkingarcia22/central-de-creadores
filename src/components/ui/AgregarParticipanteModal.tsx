@@ -355,6 +355,12 @@ export default function AgregarParticipanteModal({
 
   const handleGenerateMeetLink = async () => {
     try {
+      console.log('🔍 Generando enlace de Meet con datos:', {
+        fechaSesion,
+        duracionSesion,
+        titulo: 'Sesión de Reclutamiento'
+      });
+
       const response = await fetch('/api/generate-meet-link-auto', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -365,16 +371,28 @@ export default function AgregarParticipanteModal({
         })
       });
 
+      console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ Error del servidor:', errorData);
+        showError(`Error del servidor: ${errorData.error || 'Error desconocido'}`);
+        return;
+      }
+
       const data = await response.json();
-      if (data.success) {
+      console.log('📦 Datos recibidos:', data);
+
+      if (data.success && data.meetLink) {
         setMeetLink(data.meetLink);
         showSuccess('Enlace de Meet generado automáticamente');
       } else {
-        showError('Error generando enlace de Meet');
+        console.error('❌ Respuesta sin éxito:', data);
+        showError(data.error || 'Error generando enlace de Meet');
       }
     } catch (error) {
-      console.error('Error generando enlace de Meet:', error);
-      showError('Error generando enlace de Meet');
+      console.error('❌ Error en la petición:', error);
+      showError(`Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
 
