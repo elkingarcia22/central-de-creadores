@@ -8,10 +8,12 @@ import type {
 } from '../types/seguimientos';
 
 // Crear cliente con service_role para bypass RLS temporalmente
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabaseAdmin = supabaseUrl && supabaseKey 
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 // Obtener seguimientos de una investigación
 export async function obtenerSeguimientosPorInvestigacion(investigacionId: string) {
@@ -53,6 +55,11 @@ export async function obtenerSeguimientosPorInvestigacion(investigacionId: strin
 export async function obtenerSeguimientoPorId(seguimientoId: string) {
   try {
     console.log('🔍 Obteniendo seguimiento por ID:', seguimientoId);
+    
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
     
     // Verificar autenticación del usuario
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -193,6 +200,11 @@ export async function restaurarSeguimientoDesdeInvestigacion(investigacionId: st
   try {
     console.log('🔄 Restaurando seguimientos para investigación eliminada:', investigacionId);
     
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
+
     // Verificar autenticación del usuario
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -282,6 +294,11 @@ export async function crearInvestigacionDesdeSeguimiento(seguimientoId: string, 
       return { data: null, error: 'No se pudo obtener el seguimiento' };
     }
 
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
+
     // Obtener usuario actual
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -358,6 +375,11 @@ export async function actualizarSeguimientoPorInvestigacionCompletada(investigac
   try {
     console.log('✅ Actualizando seguimiento por investigación completada:', investigacionId);
     
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
+    
     // Verificar autenticación del usuario
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -421,6 +443,11 @@ export async function actualizarSeguimientoPorInvestigacionCompletada(investigac
 export async function obtenerTrazabilidadCompleta(investigacionId: string) {
   try {
     console.log('🔍 Obteniendo trazabilidad completa para investigación:', investigacionId);
+    
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
     
     // Verificar autenticación del usuario
     const { data: { user }, error: authError } = await supabase.auth.getUser();

@@ -1,9 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Tipos para reclutamientos
 export interface Reclutamiento {
@@ -81,6 +83,11 @@ export interface ReclutamientoFormData {
 export const obtenerReclutamientos = async () => {
   try {
     console.log('🔍 Obteniendo reclutamientos desde la base de datos...');
+    
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return { data: null, error: 'Cliente de Supabase no configurado' };
+    }
     
     // Intentar obtener desde la vista si existe
     let { data, error } = await supabase
