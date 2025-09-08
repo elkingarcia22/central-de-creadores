@@ -13,7 +13,7 @@ interface DraggableEventProps {
   onEventClick?: (event: any) => void;
   onEventMove?: (eventId: string, newDate: Date) => void;
   onEventResize?: (eventId: string, newDuration: number) => void;
-  onDragStart?: () => void;
+  onDragStart?: (eventTitle?: string) => void;
   onDragEnd?: () => void;
   dropTargetDate?: Date | null;
   className?: string;
@@ -109,7 +109,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     };
     
     const handleMouseUp = (upEvent: MouseEvent) => {
-      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current });
+      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString() });
       if (!isDragging || !eventRef.current) return;
       
       // Restaurar estilos
@@ -119,7 +119,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       eventRef.current.style.boxShadow = '';
       eventRef.current.style.border = '';
       
-      // Usar la fecha de destino si está disponible, sino calcular basado en deltaY
+      // Determinar la nueva fecha
       let newDate: Date;
       
       if (dropTargetDate) {
@@ -133,22 +133,32 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
           originalTime: event.start.toTimeString()
         });
       } else {
-        // Fallback al cálculo anterior si no hay fecha de destino
+        // Si no hay dropTargetDate, calcular basado en la posición del mouse
         const deltaY = upEvent.clientY - dragStart.y;
         const daysMoved = Math.round(deltaY / 30);
         newDate = new Date(event.start);
         newDate.setDate(newDate.getDate() + daysMoved);
-        console.log('📅 [DRAG] Calculando fecha con deltaY:', { 
+        console.log('📅 [DRAG] Calculando fecha con deltaY (sin dropTargetDate):', { 
           deltaY, 
           daysMoved, 
-          originalDate: event.start,
+          originalDate: event.start.toDateString(),
           newDate: newDate.toDateString()
         });
       }
       
-      if (onEventMove) {
+      // Solo mover si la fecha es diferente a la original
+      const isDateChanged = newDate.toDateString() !== event.start.toDateString();
+      console.log('🔍 [DRAG] Verificando si la fecha cambió:', { 
+        isDateChanged, 
+        originalDate: event.start.toDateString(), 
+        newDate: newDate.toDateString() 
+      });
+      
+      if (isDateChanged && onEventMove) {
         console.log('🚀 [DRAG] Llamando onEventMove', { eventId: event.id, newDate });
         onEventMove(event.id, newDate);
+      } else if (!isDateChanged) {
+        console.log('⏭️ [DRAG] No se mueve porque la fecha no cambió');
       } else {
         console.log('⚠️ [DRAG] No hay onEventMove disponible');
       }
