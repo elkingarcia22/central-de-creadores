@@ -88,21 +88,16 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    console.log('🖱️ [DRAG] handleMouseDown ejecutándose', { enableDragDrop, eventId: event.id });
-    if (!enableDragDrop) {
-      console.log('❌ [DRAG] Drag and drop deshabilitado');
-      return;
-    }
+    if (!enableDragDrop) return;
     
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('🚀 [DRAG] Iniciando drag', { x: e.clientX, y: e.clientY });
+    console.log('🚀 [DRAG] Iniciando drag', { eventId: event.id });
     setIsDragging(true);
-    setHasDragged(false); // Reset hasDragged al inicio
+    setHasDragged(false);
     setDragStart({ x: e.clientX, y: e.clientY });
-    setDragStartTime(Date.now()); // Establecer tiempo de inicio
-    onDragStart?.(event.title); // Notificar al calendario con el título
+    onDragStart?.(event.title);
     
     const handleMouseMove = (moveEvent: MouseEvent) => {
       if (!isDragging || !eventRef.current) return;
@@ -110,10 +105,9 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       const deltaX = moveEvent.clientX - dragStart.x;
       const deltaY = moveEvent.clientY - dragStart.y;
       
-      // Si hay movimiento significativo, marcar como dragged (solo una vez)
-      if ((Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) && !hasDragged) {
+      // Marcar como dragged si hay movimiento
+      if ((Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) && !hasDragged) {
         setHasDragged(true);
-        // console.log('🎯 [DRAG] Marcando como dragged'); // Comentado para reducir logs
       }
       
       // Mover el elemento visualmente
@@ -125,36 +119,11 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     };
     
     const handleMouseUp = (upEvent: MouseEvent) => {
-      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString(), isProcessingMouseUp });
-      if (!isDragging || !eventRef.current || isProcessingMouseUp) return;
+      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString(), hasDragged });
+      if (!isDragging || !eventRef.current) return;
       
-      // Prevenir múltiples ejecuciones
-      setIsProcessingMouseUp(true);
-      
-      // Agregar un pequeño delay para permitir que se detecte el movimiento
-      const timeSinceStart = Date.now() - dragStartTime;
-      if (timeSinceStart < 150) { // Aumentar a 150ms
-        console.log('⏱️ [DRAG] Muy rápido, esperando...', { timeSinceStart });
-        setTimeout(() => {
-          setIsProcessingMouseUp(false);
-          handleMouseUp(upEvent);
-        }, 100); // Aumentar delay
-        return;
-      }
-      
-      // Prevenir múltiples ejecuciones - solo si realmente no se movió
-      if (hasDragged === false) {
-        console.log('⏭️ [DRAG] No se movió lo suficiente, ignorando');
-        clearAllInlineStyles(); // Limpiar estilos antes de salir
-        setIsDragging(false);
-        setIsProcessingMouseUp(false); // Resetear flag
-        onDragEnd?.();
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        return;
-      }
-      
-      // NO restaurar estilos inmediatamente - esperar a que se complete la actualización
+      // Limpiar estilos inmediatamente
+      clearAllInlineStyles();
       
       // Determinar la nueva fecha
       let newDate: Date;
@@ -164,74 +133,34 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         newDate = new Date(dropTargetDate);
         // Mantener la hora original del evento
         newDate.setHours(event.start.getHours(), event.start.getMinutes(), event.start.getSeconds());
-        console.log('🎯 [DRAG] Usando fecha de destino:', { 
-          dropTargetDate: dropTargetDate.toDateString(),
-          newDate: newDate.toDateString(),
-          originalTime: event.start.toTimeString()
-        });
+        console.log('🎯 [DRAG] Usando fecha de destino:', dropTargetDate.toDateString());
       } else {
         // Si no hay dropTargetDate, calcular basado en la posición del mouse
         const deltaY = upEvent.clientY - dragStart.y;
-        const daysMoved = Math.round(deltaY / 60); // Más grande para ser menos sensible
+        const daysMoved = Math.round(deltaY / 60);
         newDate = new Date(event.start);
         newDate.setDate(newDate.getDate() + daysMoved);
-        console.log('📅 [DRAG] Calculando fecha con deltaY (sin dropTargetDate):', { 
-          deltaY, 
-          daysMoved, 
-          originalDate: event.start.toDateString(),
-          newDate: newDate.toDateString()
-        });
+        console.log('📅 [DRAG] Calculando fecha con deltaY:', { deltaY, daysMoved, newDate: newDate.toDateString() });
       }
       
       // Solo mover si la fecha es diferente a la original
       const isDateChanged = newDate.toDateString() !== event.start.toDateString();
-      console.log('🔍 [DRAG] Verificando si la fecha cambió:', { 
-        isDateChanged, 
-        originalDate: event.start.toDateString(), 
-        newDate: newDate.toDateString() 
-      });
+      console.log('🔍 [DRAG] Fecha cambió:', { isDateChanged, original: event.start.toDateString(), new: newDate.toDateString() });
       
       if (isDateChanged && onEventMove) {
-        console.log('🚀 [DRAG] Llamando onEventMove', { eventId: event.id, newDate });
+        console.log('🚀 [DRAG] Moviendo evento');
         onEventMove(event.id, newDate);
-        
-        // Limpiar estilos inmediatamente y forzar re-render
-        clearAllInlineStyles();
-        
-        // Forzar re-render completo
-        if (eventRef.current) {
-          eventRef.current.style.display = 'none';
-          eventRef.current.offsetHeight; // Trigger reflow
-          eventRef.current.style.display = '';
-          console.log('🔄 [DRAG] Re-render forzado');
-        }
-        
-        // Limpiar estilos nuevamente después de un delay para asegurar
-        setTimeout(() => {
-          clearAllInlineStyles();
-        }, 300);
-      } else if (!isDateChanged) {
-        console.log('⏭️ [DRAG] No se mueve porque la fecha no cambió');
-        
-        // Limpiar estilos inmediatamente si no hay cambio
-        clearAllInlineStyles();
-      } else {
-        console.log('⚠️ [DRAG] No hay onEventMove disponible');
-        
-        // Limpiar estilos si no hay función de movimiento
-        clearAllInlineStyles();
       }
       
       setIsDragging(false);
-      setIsProcessingMouseUp(false); // Resetear flag
-      onDragEnd?.(); // Notificar al calendario
+      onDragEnd?.();
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
     
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [enableDragDrop, isDragging, dragStart, event.id, event.start, onEventMove]);
+  }, [enableDragDrop, isDragging, dragStart, event.id, event.start, onEventMove, dropTargetDate, hasDragged]);
 
   const handleResizeStart = useCallback((e: React.MouseEvent, direction: 'start' | 'end') => {
     if (!enableDragDrop) return;
