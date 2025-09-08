@@ -57,28 +57,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .order('fecha_sesion', { ascending: true });
 
     console.log('🔍 Buscando reclutamientos como responsable...');
-    const { data: reclutamientosComoResponsable, error: errorResponsable } = await supabase
-      .from('reclutamientos')
-      .select(`
-        *,
-        investigaciones!inner(
-          responsable_id
-        )
-      `)
-      .eq('investigaciones.responsable_id', userId)
-      .order('fecha_sesion', { ascending: true });
+    // Primero obtener investigaciones donde el usuario es responsable
+    const { data: investigacionesComoResponsable, error: errorInvestigacionesResponsable } = await supabase
+      .from('investigaciones')
+      .select('id')
+      .eq('responsable_id', userId);
+
+    let reclutamientosComoResponsable = [];
+    if (investigacionesComoResponsable && investigacionesComoResponsable.length > 0) {
+      const investigacionIds = investigacionesComoResponsable.map(i => i.id);
+      const { data, error } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .in('investigacion_id', investigacionIds)
+        .order('fecha_sesion', { ascending: true });
+      reclutamientosComoResponsable = data || [];
+    }
 
     console.log('🔍 Buscando reclutamientos como implementador...');
-    const { data: reclutamientosComoImplementador, error: errorImplementador } = await supabase
-      .from('reclutamientos')
-      .select(`
-        *,
-        investigaciones!inner(
-          implementador_id
-        )
-      `)
-      .eq('investigaciones.implementador_id', userId)
-      .order('fecha_sesion', { ascending: true });
+    // Primero obtener investigaciones donde el usuario es implementador
+    const { data: investigacionesComoImplementador, error: errorInvestigacionesImplementador } = await supabase
+      .from('investigaciones')
+      .select('id')
+      .eq('implementador_id', userId);
+
+    let reclutamientosComoImplementador = [];
+    if (investigacionesComoImplementador && investigacionesComoImplementador.length > 0) {
+      const investigacionIds = investigacionesComoImplementador.map(i => i.id);
+      const { data, error } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .in('investigacion_id', investigacionIds)
+        .order('fecha_sesion', { ascending: true });
+      reclutamientosComoImplementador = data || [];
+    }
 
     // Combinar todos los reclutamientos y eliminar duplicados
     const allReclutamientos = [
@@ -92,7 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       index === self.findIndex(r => r.id === reclutamiento.id)
     );
 
-    const reclutamientosError = errorReclutador || errorResponsable || errorImplementador;
+    const reclutamientosError = errorReclutador || errorInvestigacionesResponsable || errorInvestigacionesImplementador;
 
     console.log('📊 Resultado de reclutamientos:', {
       count: reclutamientos?.length || 0,
@@ -101,12 +113,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       comoReclutador: reclutamientosComoReclutador?.length || 0,
       comoResponsable: reclutamientosComoResponsable?.length || 0,
       comoImplementador: reclutamientosComoImplementador?.length || 0,
+      investigacionesComoResponsable: investigacionesComoResponsable?.length || 0,
+      investigacionesComoImplementador: investigacionesComoImplementador?.length || 0,
       reclutamientos: reclutamientos?.map(r => ({
         id: r.id,
         fecha_sesion: r.fecha_sesion,
         reclutador_id: r.reclutador_id,
-        investigacion_responsable: r.investigaciones?.responsable_id,
-        investigacion_implementador: r.investigaciones?.implementador_id
+        investigacion_id: r.investigacion_id
       }))
     });
 
