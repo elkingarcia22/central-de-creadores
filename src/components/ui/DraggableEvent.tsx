@@ -37,6 +37,19 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   const [resizeStart, setResizeStart] = useState({ y: 0, duration: 0 });
   const [hasDragged, setHasDragged] = useState(false);
 
+  // Función para limpiar completamente todos los estilos inline
+  const clearAllInlineStyles = () => {
+    if (eventRef.current) {
+      eventRef.current.style.removeProperty('transform');
+      eventRef.current.style.removeProperty('opacity');
+      eventRef.current.style.removeProperty('z-index');
+      eventRef.current.style.removeProperty('box-shadow');
+      eventRef.current.style.removeProperty('border');
+      eventRef.current.style.removeProperty('display');
+      console.log('🧹 [DRAG] Todos los estilos inline removidos');
+    }
+  };
+
   // Reset hasDragged después de un tiempo para permitir clicks futuros
   useEffect(() => {
     if (hasDragged) {
@@ -115,6 +128,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       // Prevenir múltiples ejecuciones
       if (hasDragged === false) {
         console.log('⏭️ [DRAG] No se movió lo suficiente, ignorando');
+        clearAllInlineStyles(); // Limpiar estilos antes de salir
         setIsDragging(false);
         onDragEnd?.();
         document.removeEventListener('mousemove', handleMouseMove);
@@ -163,41 +177,31 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         console.log('🚀 [DRAG] Llamando onEventMove', { eventId: event.id, newDate });
         onEventMove(event.id, newDate);
         
-        // Restaurar estilos después de que se complete la actualización
+        // Limpiar estilos inmediatamente y forzar re-render
+        clearAllInlineStyles();
+        
+        // Forzar re-render completo
+        if (eventRef.current) {
+          eventRef.current.style.display = 'none';
+          eventRef.current.offsetHeight; // Trigger reflow
+          eventRef.current.style.display = '';
+          console.log('🔄 [DRAG] Re-render forzado');
+        }
+        
+        // Limpiar estilos nuevamente después de un delay para asegurar
         setTimeout(() => {
-          if (eventRef.current) {
-            eventRef.current.style.transform = '';
-            eventRef.current.style.opacity = '';
-            eventRef.current.style.zIndex = '';
-            eventRef.current.style.boxShadow = '';
-            eventRef.current.style.border = '';
-            console.log('🔄 [DRAG] Estilos restaurados después de actualización');
-          }
-        }, 200); // Delay más largo para asegurar que se complete la actualización
+          clearAllInlineStyles();
+        }, 300);
       } else if (!isDateChanged) {
         console.log('⏭️ [DRAG] No se mueve porque la fecha no cambió');
         
-        // Restaurar estilos inmediatamente si no hay cambio
-        if (eventRef.current) {
-          eventRef.current.style.transform = '';
-          eventRef.current.style.opacity = '';
-          eventRef.current.style.zIndex = '';
-          eventRef.current.style.boxShadow = '';
-          eventRef.current.style.border = '';
-          console.log('🔄 [DRAG] Estilos restaurados (sin cambio de fecha)');
-        }
+        // Limpiar estilos inmediatamente si no hay cambio
+        clearAllInlineStyles();
       } else {
         console.log('⚠️ [DRAG] No hay onEventMove disponible');
         
-        // Restaurar estilos si no hay función de movimiento
-        if (eventRef.current) {
-          eventRef.current.style.transform = '';
-          eventRef.current.style.opacity = '';
-          eventRef.current.style.zIndex = '';
-          eventRef.current.style.boxShadow = '';
-          eventRef.current.style.border = '';
-          console.log('🔄 [DRAG] Estilos restaurados (sin onEventMove)');
-        }
+        // Limpiar estilos si no hay función de movimiento
+        clearAllInlineStyles();
       }
       
       setIsDragging(false);
