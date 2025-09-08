@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ];
 
     // Eliminar duplicados por ID
-    const reclutamientos = allReclutamientos.filter((reclutamiento, index, self) => 
+    let reclutamientos = allReclutamientos.filter((reclutamiento, index, self) => 
       index === self.findIndex(r => r.id === reclutamiento.id)
     );
 
