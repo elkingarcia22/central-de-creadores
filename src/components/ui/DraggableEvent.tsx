@@ -112,6 +112,16 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString() });
       if (!isDragging || !eventRef.current) return;
       
+      // Prevenir múltiples ejecuciones
+      if (hasDragged === false) {
+        console.log('⏭️ [DRAG] No se movió lo suficiente, ignorando');
+        setIsDragging(false);
+        onDragEnd?.();
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        return;
+      }
+      
       // Restaurar estilos
       eventRef.current.style.transform = '';
       eventRef.current.style.opacity = '';
@@ -135,7 +145,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       } else {
         // Si no hay dropTargetDate, calcular basado en la posición del mouse
         const deltaY = upEvent.clientY - dragStart.y;
-        const daysMoved = Math.round(deltaY / 30);
+        const daysMoved = Math.round(deltaY / 60); // Más grande para ser menos sensible
         newDate = new Date(event.start);
         newDate.setDate(newDate.getDate() + daysMoved);
         console.log('📅 [DRAG] Calculando fecha con deltaY (sin dropTargetDate):', { 

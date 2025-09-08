@@ -346,7 +346,12 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                     setSelectedDate(date);
                     onDateClick?.(date);
                   }}
-                  onMouseEnter={() => handleDragOver(date)}
+                  onMouseEnter={() => {
+                    if (isDragging) {
+                      console.log('🎯 [DRAG] Mouse enter en celda:', date.toDateString());
+                      handleDragOver(date);
+                    }
+                  }}
                 >
                   {/* Número del día */}
                   <div className="flex justify-between items-start mb-1">
