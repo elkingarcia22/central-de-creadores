@@ -70,6 +70,7 @@ export { ConvertirSeguimientoModal } from "./ConvertirSeguimientoModal";
 // Avatares
 export { default as SimpleAvatar } from './SimpleAvatar';
 export { default as UserAvatar, RobustAvatar } from './UserAvatar';
+export { default as Avatar } from './UserAvatar'; // Alias para compatibilidad
 
 // Componente de tooltip
 export { default as Tooltip } from './Tooltip';
@@ -124,6 +125,8 @@ export { default as CompanyParticipantCard, type CompanyParticipant, type Compan
 // Componentes de inputs básicos
 export { default as Checkbox, CheckboxGroup } from './Checkbox';
 export { default as RadioButton, RadioGroup } from './RadioButton';
+export { default as Option } from './Option';
+export { default as TextField } from './TextField';
 
 // Componentes de navegación y organización
 export { default as Accordion } from './Accordion';

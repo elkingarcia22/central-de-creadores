@@ -175,4 +175,5 @@ const SideModal: React.FC<SideModalProps> = ({
   return createPortal(modalContent, document.body);
 };
 
-export default SideModal; 
+export default SideModal;
+export { SideModal }; 

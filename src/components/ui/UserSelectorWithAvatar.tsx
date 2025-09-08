@@ -360,3 +360,4 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
 };
 
 export default UserSelectorWithAvatar;
+export { UserSelectorWithAvatar };
