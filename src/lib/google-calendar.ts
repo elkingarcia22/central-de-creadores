@@ -24,7 +24,8 @@ export function getAuthUrl(): string {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
-    prompt: 'consent' // Forzar consentimiento para obtener refresh token
+    prompt: 'consent', // Forzar consentimiento para obtener refresh token
+    redirect_uri: GOOGLE_REDIRECT_URI // Incluir redirect_uri explícitamente
   });
 }
 
