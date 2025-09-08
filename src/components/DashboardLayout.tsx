@@ -122,10 +122,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, rol }) => {
     return router.pathname === href || router.asPath === href;
   };
 
-  const supabaseService = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  const supabaseService = supabaseUrl && supabaseAnonKey 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
   // Función para renderizar el icono correcto según el tipo
   const renderIcon = (iconType: string) => {

@@ -23,13 +23,18 @@ if (FORCE_MOCK || (!isBuildTime && shouldUseMock())) {
   }
   supabase = supabaseMock;
 } else {
-  console.log('✅ Usando Supabase real');
-  supabase = createClient(supabaseUrl!, supabaseAnonKey!);
+  if (supabaseUrl && supabaseAnonKey) {
+    console.log('✅ Usando Supabase real');
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+  } else {
+    console.warn('⚠️ Variables de entorno de Supabase no disponibles, usando mock');
+    supabase = supabaseMock;
+  }
 }
 
 // Cliente de servidor con permisos completos
-const supabaseServer = supabaseServiceKey 
-  ? createClient(supabaseUrl!, supabaseServiceKey)
+const supabaseServer = (supabaseServiceKey && supabaseUrl) 
+  ? createClient(supabaseUrl, supabaseServiceKey)
   : supabase;
 
 export { supabase, supabaseServer };
