@@ -19,6 +19,26 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
   try {
     console.log(`🔄 Auto-sync: ${action} reclutamiento ${reclutamientoId} para usuario ${userId}`);
 
+    // Verificar si ya hay una sincronización manual en progreso para evitar duplicados
+    const { data: manualSync } = await supabase
+      .from('google_calendar_events')
+      .select('last_sync_at')
+      .eq('sesion_id', reclutamientoId)
+      .eq('user_id', userId)
+      .single();
+
+    // Si la última sincronización fue hace menos de 30 segundos, saltar auto-sync
+    if (manualSync?.last_sync_at) {
+      const lastSync = new Date(manualSync.last_sync_at);
+      const now = new Date();
+      const diffSeconds = (now.getTime() - lastSync.getTime()) / 1000;
+      
+      if (diffSeconds < 30) {
+        console.log('⚠️ Saltando auto-sync: sincronización manual reciente detectada');
+        return { success: false, reason: 'Recent manual sync detected' };
+      }
+    }
+
     // Verificar si el usuario tiene Google Calendar conectado
     const { data: tokens, error: tokensError } = await supabase
       .from('google_calendar_tokens')
@@ -143,33 +163,38 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
       });
 
       // Verificar si ya existe en Google Calendar
-      const { data: existingEvent } = await supabase
+      const { data: existingEvent, error: existingError } = await supabase
         .from('google_calendar_events')
         .select('google_event_id')
         .eq('sesion_id', reclutamientoId)
         .eq('user_id', userId)
         .single();
 
-      if (existingEvent) {
+      if (existingEvent && !existingError) {
         // Actualizar evento existente
-        await calendar.events.update({
-          calendarId: 'primary',
-          eventId: existingEvent.google_event_id,
-          requestBody: googleEvent,
-        });
+        try {
+          await calendar.events.update({
+            calendarId: 'primary',
+            eventId: existingEvent.google_event_id,
+            requestBody: googleEvent,
+          });
 
-        // Actualizar referencia en la base de datos
-        await supabase
-          .from('google_calendar_events')
-          .update({
-            google_event_id: googleEvent.id,
-            sync_status: 'synced',
-            last_sync_at: new Date().toISOString()
-          })
-          .eq('sesion_id', reclutamientoId)
-          .eq('user_id', userId);
+          // Actualizar referencia en la base de datos
+          await supabase
+            .from('google_calendar_events')
+            .update({
+              sync_status: 'synced',
+              last_sync_at: new Date().toISOString()
+            })
+            .eq('sesion_id', reclutamientoId)
+            .eq('user_id', userId);
 
-        console.log(`✅ Evento actualizado en Google Calendar: ${googleEvent.id}`);
+          console.log(`✅ Evento actualizado en Google Calendar: ${existingEvent.google_event_id}`);
+        } catch (updateError) {
+          console.error('Error actualizando evento en Google Calendar:', updateError);
+          // Si falla la actualización, intentar crear uno nuevo
+          throw updateError;
+        }
       } else {
         // Crear nuevo evento
         const createdEvent = await calendar.events.insert({

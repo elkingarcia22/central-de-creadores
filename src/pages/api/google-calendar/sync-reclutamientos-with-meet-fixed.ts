@@ -254,6 +254,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (existingEvent && !existingError) {
           // Actualizar evento existente
           await updateGoogleCalendarEvent(calendar, existingEvent.google_event_id, reclutamiento);
+          
+          // Actualizar timestamp de sincronización
+          await supabase
+            .from('google_calendar_events')
+            .update({
+              sync_status: 'synced',
+              last_sync_at: new Date().toISOString()
+            })
+            .eq('user_id', userId)
+            .eq('sesion_id', reclutamiento.id);
+            
           console.log(`✅ Evento actualizado: ${reclutamiento.id}`);
         } else {
           // Crear nuevo evento
@@ -268,7 +279,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               google_event_id: googleEvent.id,
               google_calendar_id: 'primary',
               sync_status: 'synced',
-              created_at: new Date().toISOString()
+              last_sync_at: new Date().toISOString()
             });
           
           console.log(`✅ Evento creado: ${reclutamiento.id}`);
