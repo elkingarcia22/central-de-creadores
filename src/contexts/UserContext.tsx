@@ -287,6 +287,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   // Escuchar cambios de autenticación con debounce para evitar múltiples cargas
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Verificar si Supabase está disponible
+    if (!supabase) {
+      console.warn('⚠️ Supabase no disponible en UserContext');
+      return;
+    }
 
     let debounceTimeout: NodeJS.Timeout;
 
