@@ -47,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Obtener reclutamientos del usuario
     console.log('🔍 Buscando reclutamientos para usuario:', userId);
-    const { data: reclutamientos, error: reclutamientosError } = await supabase
+    let { data: reclutamientos, error: reclutamientosError } = await supabase
       .from('reclutamientos')
       .select('*')
       .eq('reclutador_id', userId)
