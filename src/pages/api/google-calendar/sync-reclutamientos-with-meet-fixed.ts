@@ -48,23 +48,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Obtener reclutamientos del usuario (como reclutador, responsable o implementador)
     console.log('🔍 Buscando reclutamientos para usuario:', userId);
     
-    // Primero intentar como reclutador
-    let { data: reclutamientos, error: reclutamientosError } = await supabase
+    // Buscar reclutamientos donde el usuario sea reclutador, responsable o implementador
+    console.log('🔍 Buscando reclutamientos como reclutador...');
+    const { data: reclutamientosComoReclutador, error: errorReclutador } = await supabase
+      .from('reclutamientos')
+      .select('*')
+      .eq('reclutador_id', userId)
+      .order('fecha_sesion', { ascending: true });
+
+    console.log('🔍 Buscando reclutamientos como responsable...');
+    const { data: reclutamientosComoResponsable, error: errorResponsable } = await supabase
       .from('reclutamientos')
       .select(`
         *,
         investigaciones!inner(
-          responsable_id,
+          responsable_id
+        )
+      `)
+      .eq('investigaciones.responsable_id', userId)
+      .order('fecha_sesion', { ascending: true });
+
+    console.log('🔍 Buscando reclutamientos como implementador...');
+    const { data: reclutamientosComoImplementador, error: errorImplementador } = await supabase
+      .from('reclutamientos')
+      .select(`
+        *,
+        investigaciones!inner(
           implementador_id
         )
       `)
-      .or(`reclutador_id.eq.${userId},investigaciones.responsable_id.eq.${userId},investigaciones.implementador_id.eq.${userId}`)
+      .eq('investigaciones.implementador_id', userId)
       .order('fecha_sesion', { ascending: true });
+
+    // Combinar todos los reclutamientos y eliminar duplicados
+    const allReclutamientos = [
+      ...(reclutamientosComoReclutador || []),
+      ...(reclutamientosComoResponsable || []),
+      ...(reclutamientosComoImplementador || [])
+    ];
+
+    // Eliminar duplicados por ID
+    const reclutamientos = allReclutamientos.filter((reclutamiento, index, self) => 
+      index === self.findIndex(r => r.id === reclutamiento.id)
+    );
+
+    const reclutamientosError = errorReclutador || errorResponsable || errorImplementador;
 
     console.log('📊 Resultado de reclutamientos:', {
       count: reclutamientos?.length || 0,
       error: reclutamientosError,
       userId: userId,
+      comoReclutador: reclutamientosComoReclutador?.length || 0,
+      comoResponsable: reclutamientosComoResponsable?.length || 0,
+      comoImplementador: reclutamientosComoImplementador?.length || 0,
       reclutamientos: reclutamientos?.map(r => ({
         id: r.id,
         fecha_sesion: r.fecha_sesion,
