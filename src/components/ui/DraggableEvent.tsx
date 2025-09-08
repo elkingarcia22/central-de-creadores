@@ -42,7 +42,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     if (hasDragged) {
       const timer = setTimeout(() => {
         setHasDragged(false);
-        console.log('🔄 [DRAG] Reseteando hasDragged');
+        // console.log('🔄 [DRAG] Reseteando hasDragged'); // Comentado para reducir logs
       }, 300); // Aumentar tiempo para evitar clicks accidentales
       return () => clearTimeout(timer);
     }
@@ -97,7 +97,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       // Si hay movimiento significativo, marcar como dragged (solo una vez)
       if ((Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) && !hasDragged) {
         setHasDragged(true);
-        console.log('🎯 [DRAG] Marcando como dragged');
+        // console.log('🎯 [DRAG] Marcando como dragged'); // Comentado para reducir logs
       }
       
       // Mover el elemento visualmente

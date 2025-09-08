@@ -121,11 +121,11 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     if (isDragging) {
       // Solo actualizar si la fecha es diferente a la actual
       if (!dragOverDate || dragOverDate.toDateString() !== date.toDateString()) {
-        console.log('🎯 [DRAG] handleDragOver:', { 
-          date: date.toDateString(), 
-          isDragging,
-          currentDragOverDate: dragOverDate?.toDateString() 
-        });
+        // console.log('🎯 [DRAG] handleDragOver:', { 
+        //   date: date.toDateString(), 
+        //   isDragging,
+        //   currentDragOverDate: dragOverDate?.toDateString() 
+        // }); // Comentado para reducir logs
         setDragOverDate(date);
       }
     }
@@ -348,7 +348,7 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                   }}
                   onMouseEnter={() => {
                     if (isDragging) {
-                      console.log('🎯 [DRAG] Mouse enter en celda:', date.toDateString());
+                      // console.log('🎯 [DRAG] Mouse enter en celda:', date.toDateString()); // Comentado para reducir logs
                       handleDragOver(date);
                     }
                   }}
