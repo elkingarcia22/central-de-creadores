@@ -181,3 +181,4 @@ export const Button: React.FC<Omit<TypographyProps, 'variant'>> = (props) => (
 );
 
 export default Typography;
+export { Typography };

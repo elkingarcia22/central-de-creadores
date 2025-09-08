@@ -54,4 +54,5 @@ const Card: React.FC<CardProps> = ({
 };
 
 export default Card;
+export { Card };
 export type { CardProps };
