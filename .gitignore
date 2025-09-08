@@ -1,9 +1,8 @@
-# Dependencias
+# Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
 # Next.js
 .next/
@@ -11,95 +10,61 @@ out/
 build/
 dist/
 
-# Archivos de entorno (IMPORTANTE: NO subir claves)
+# Environment variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 logs
 *.log
 
-# Cache de npm
-.npm
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Cache de Yarn
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-
-# MacOS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Editor directorios y archivos
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Archivos temporales
-*.tmp
-*.temp
-.temp/
-.tmp/
-
-# Archivos de base de datos locales
-*.db
-*.sqlite
-*.sqlite3
-
-# Certificados
-*.pem
-
-# Archivos de compilación
-*.tsbuildinfo
-
-# Vercel
-.vercel
-
-# Archivos de respaldo temporales
-backup_before_restore_*/
-.last_backup_dir
-server.log
-build.log
-.server_pid
-
-# Archivos de configuración específicos del entorno
-config.local.js
-config.local.json
-
-# Coverage directory usado por herramientas como istanbul
+# Coverage directory used by tools like istanbul
 coverage/
 *.lcov
 
 # nyc test coverage
 .nyc_output
 
-# Stores de Jest
-.cache/
+# Dependency directories
+jspm_packages/
 
-# Archivos de Cypress
-cypress/videos/
-cypress/screenshots/
+# Optional npm cache directory
+.npm
 
-# Storybook build outputs
-.out
-.storybook-out
+# Optional eslint cache
+.eslintcache
 
-# Archivos de TypeScript
-*.tsbuildinfo
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -110,22 +75,32 @@ cypress/screenshots/
 # Yarn Integrity file
 .yarn-integrity
 
-# Archivos específicos del proyecto
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
 
-# MANTENER: Archivos de backup críticos (SÍ se suben a GitHub)
-# BACKUP_*.md
-# BACKUP_*.tsx  
-# BACKUP_*.ts
-# restore_backup.sh
-
-# Scripts SQL temporales de desarrollo (evaluar caso por caso)
-debug-*.sql
-test-*.sql
-temp-*.sql
-
-# Archivos de configuración local de Supabase
-supabase/.env*
-supabase/config.toml.local
-*storybook.log
+# Storybook build outputs
 storybook-static
-mcp-system/mcp-maestro/storage/auto-init-status.json
+
+# Temporary folders
+tmp/
+temp/
+
+# Backup files
+*.backup
+*.backup2
+backups/
+
+# SQL files (opcional - puedes comentar esta línea si quieres incluir los archivos SQL)
+*.sql
+
+# Test files
+test-*.html
+test-*.js
+test-*.tsx
+
+# MCP system files (sistema interno)
+mcp-system/
+
+# Scripts de desarrollo
+*.sh

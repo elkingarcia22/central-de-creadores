@@ -249,4 +249,5 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   );
 }; 
 
-export { Layout }; 
+export { Layout };
+export default Layout; 
