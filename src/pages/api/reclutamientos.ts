@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '../../api/supabase';
+import { autoSyncCalendar } from '../../lib/auto-sync-calendar';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -157,6 +158,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       } catch (error) {
         console.error('❌ Error en lógica de actualización automática:', error);
+        // No fallar la respuesta principal por este error
+      }
+
+      // Sincronización automática con Google Calendar
+      console.log('🔄 Iniciando sincronización automática con Google Calendar...');
+      try {
+        // Obtener el usuario que está creando el reclutamiento
+        // Por ahora usamos el reclutador_id, pero podríamos obtenerlo del token de autenticación
+        const userId = reclutador_id;
+        
+        if (userId) {
+          const syncResult = await autoSyncCalendar({
+            userId,
+            reclutamientoId: data.id,
+            action: 'create'
+          });
+          
+          if (syncResult.success) {
+            console.log('✅ Sincronización automática exitosa');
+          } else {
+            console.log('⚠️ Sincronización automática falló:', syncResult.reason);
+          }
+        } else {
+          console.log('⚠️ No se pudo determinar el usuario para sincronización automática');
+        }
+      } catch (error) {
+        console.error('❌ Error en sincronización automática:', error);
         // No fallar la respuesta principal por este error
       }
 

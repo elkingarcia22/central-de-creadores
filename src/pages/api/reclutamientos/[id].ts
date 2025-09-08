@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer as supabase } from '../../../api/supabase-server';
+import { autoSyncCalendar } from '../../../lib/auto-sync-calendar';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -100,6 +101,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       console.log('✅ Reclutamiento actualizado exitosamente:', data[0]);
+
+      // Sincronización automática con Google Calendar
+      console.log('🔄 Iniciando sincronización automática con Google Calendar...');
+      try {
+        // Obtener el usuario que está actualizando el reclutamiento
+        const userId = req.body.reclutador_id;
+        
+        if (userId) {
+          const syncResult = await autoSyncCalendar({
+            userId,
+            reclutamientoId: id as string,
+            action: 'update'
+          });
+          
+          if (syncResult.success) {
+            console.log('✅ Sincronización automática exitosa');
+          } else {
+            console.log('⚠️ Sincronización automática falló:', syncResult.reason);
+          }
+        } else {
+          console.log('⚠️ No se pudo determinar el usuario para sincronización automática');
+        }
+      } catch (error) {
+        console.error('❌ Error en sincronización automática:', error);
+        // No fallar la respuesta principal por este error
+      }
+
       return res.status(200).json(data[0]);
     } catch (error) {
       console.error('❌ Error en la API:', error);
@@ -126,6 +154,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       console.log('✅ Reclutamiento eliminado exitosamente:', data[0]);
+
+      // Sincronización automática con Google Calendar
+      console.log('🔄 Iniciando sincronización automática con Google Calendar...');
+      try {
+        // Obtener el reclutador del reclutamiento eliminado para sincronizar
+        const reclutadorId = data[0].reclutador_id;
+        
+        if (reclutadorId) {
+          const syncResult = await autoSyncCalendar({
+            userId: reclutadorId,
+            reclutamientoId: id as string,
+            action: 'delete'
+          });
+          
+          if (syncResult.success) {
+            console.log('✅ Sincronización automática exitosa');
+          } else {
+            console.log('⚠️ Sincronización automática falló:', syncResult.reason);
+          }
+        } else {
+          console.log('⚠️ No se pudo determinar el usuario para sincronización automática');
+        }
+      } catch (error) {
+        console.error('❌ Error en sincronización automática:', error);
+        // No fallar la respuesta principal por este error
+      }
+
       return res.status(200).json({ message: 'Reclutamiento eliminado exitosamente', data: data[0] });
     } catch (error) {
       console.error('Error en la API:', error);
