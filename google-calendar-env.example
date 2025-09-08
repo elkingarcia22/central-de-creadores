@@ -1,0 +1,14 @@
+# Google Calendar API Configuration
+# Obtén estas credenciales desde Google Cloud Console
+
+# Client ID de Google OAuth2
+GOOGLE_CLIENT_ID=tu_google_client_id_aqui
+
+# Client Secret de Google OAuth2
+GOOGLE_CLIENT_SECRET=tu_google_client_secret_aqui
+
+# URL de redirección (debe coincidir con la configurada en Google Cloud Console)
+GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback
+
+# Para producción, cambia la URL a tu dominio:
+# GOOGLE_REDIRECT_URI=https://tu-dominio.com/api/auth/google/callback

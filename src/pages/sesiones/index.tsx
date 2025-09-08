@@ -8,6 +8,7 @@ import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
 import { Sesion } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
+import { GoogleCalendarSync } from '../../components/google-calendar/GoogleCalendarSync';
 
 const SesionesPage: NextPage = () => {
   const router = useRouter();
@@ -551,6 +552,11 @@ const SesionesPage: NextPage = () => {
             className: "bg-blue-600 hover:bg-blue-700 text-white"
           }}
         />
+
+        {/* Google Calendar Sync */}
+        <div className="mb-6">
+          <GoogleCalendarSync />
+        </div>
 
         {/* Estadísticas del Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
