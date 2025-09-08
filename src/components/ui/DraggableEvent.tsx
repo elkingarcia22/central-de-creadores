@@ -37,6 +37,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
   const [resizeStart, setResizeStart] = useState({ y: 0, duration: 0 });
   const [hasDragged, setHasDragged] = useState(false);
   const [dragStartTime, setDragStartTime] = useState(0);
+  const [isProcessingMouseUp, setIsProcessingMouseUp] = useState(false);
 
   // Función para limpiar completamente todos los estilos inline
   const clearAllInlineStyles = () => {
@@ -124,14 +125,20 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
     };
     
     const handleMouseUp = (upEvent: MouseEvent) => {
-      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString() });
-      if (!isDragging || !eventRef.current) return;
+      console.log('🖱️ [DRAG] handleMouseUp', { isDragging, hasEventRef: !!eventRef.current, dropTargetDate: dropTargetDate?.toDateString(), isProcessingMouseUp });
+      if (!isDragging || !eventRef.current || isProcessingMouseUp) return;
+      
+      // Prevenir múltiples ejecuciones
+      setIsProcessingMouseUp(true);
       
       // Agregar un pequeño delay para permitir que se detecte el movimiento
       const timeSinceStart = Date.now() - dragStartTime;
-      if (timeSinceStart < 100) { // Menos de 100ms desde el inicio
+      if (timeSinceStart < 150) { // Aumentar a 150ms
         console.log('⏱️ [DRAG] Muy rápido, esperando...', { timeSinceStart });
-        setTimeout(() => handleMouseUp(upEvent), 50);
+        setTimeout(() => {
+          setIsProcessingMouseUp(false);
+          handleMouseUp(upEvent);
+        }, 100); // Aumentar delay
         return;
       }
       
@@ -140,6 +147,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
         console.log('⏭️ [DRAG] No se movió lo suficiente, ignorando');
         clearAllInlineStyles(); // Limpiar estilos antes de salir
         setIsDragging(false);
+        setIsProcessingMouseUp(false); // Resetear flag
         onDragEnd?.();
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -215,6 +223,7 @@ const DraggableEvent: React.FC<DraggableEventProps> = ({
       }
       
       setIsDragging(false);
+      setIsProcessingMouseUp(false); // Resetear flag
       onDragEnd?.(); // Notificar al calendario
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
