@@ -46,11 +46,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
     // Obtener reclutamientos del usuario
+    console.log('🔍 Buscando reclutamientos para usuario:', userId);
     const { data: reclutamientos, error: reclutamientosError } = await supabase
       .from('reclutamientos')
       .select('*')
       .eq('reclutador_id', userId)
       .order('fecha_sesion', { ascending: true });
+
+    console.log('📊 Resultado de reclutamientos:', {
+      count: reclutamientos?.length || 0,
+      error: reclutamientosError,
+      userId: userId
+    });
 
     if (reclutamientosError) {
       console.error('Error obteniendo reclutamientos:', reclutamientosError);
@@ -61,12 +68,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (!reclutamientos || reclutamientos.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: 'No hay reclutamientos para sincronizar',
-        synced: 0,
-        errors: 0
+      console.log('⚠️ No se encontraron reclutamientos con reclutador_id, intentando obtener todos...');
+      
+      // Intentar obtener todos los reclutamientos como fallback
+      const { data: allReclutamientos, error: allReclutamientosError } = await supabase
+        .from('reclutamientos')
+        .select('*')
+        .order('fecha_sesion', { ascending: true })
+        .limit(10); // Limitar a 10 para prueba
+
+      console.log('📊 Resultado de todos los reclutamientos:', {
+        count: allReclutamientos?.length || 0,
+        error: allReclutamientosError
       });
+
+      if (!allReclutamientos || allReclutamientos.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'No hay reclutamientos para sincronizar',
+          synced: 0,
+          errors: 0,
+          debug: {
+            userId,
+            reclutadorFilter: 'No se encontraron reclutamientos con reclutador_id',
+            allReclutamientos: 'No se encontraron reclutamientos en la tabla'
+          }
+        });
+      }
+
+      // Usar todos los reclutamientos como fallback
+      reclutamientos = allReclutamientos;
     }
 
     // Obtener datos relacionados por separado
@@ -142,8 +173,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let syncedCount = 0;
     let errorCount = 0;
 
+    console.log('🚀 Iniciando sincronización de', reclutamientosCompletos.length, 'reclutamientos');
+
     // Sincronizar cada reclutamiento
     for (const reclutamiento of reclutamientosCompletos) {
+      console.log('🔄 Procesando reclutamiento:', reclutamiento.id, 'fecha:', reclutamiento.fecha_sesion);
       try {
         // Verificar si ya existe en Google Calendar
         const { data: existingEvent, error: existingError } = await supabase
