@@ -1,10 +1,5 @@
 import React from 'react';
-import { useGoogleCalendar } from '../../hooks/useGoogleCalendar';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { Typography } from '../ui/Typography';
-import { Badge } from '../ui/Badge';
-import { useToast } from '../../contexts/ToastContext';
+import { Button, Card, Typography, Badge } from '../ui';
 
 interface GoogleCalendarSyncProps {
   sesionId?: string;
@@ -12,43 +7,25 @@ interface GoogleCalendarSyncProps {
 }
 
 export function GoogleCalendarSync({ sesionId, onSyncComplete }: GoogleCalendarSyncProps) {
-  const { status, loading, error, connect, disconnect, syncToGoogle, syncFromGoogle } = useGoogleCalendar();
-  const { showToast } = useToast();
+  // Temporalmente deshabilitado para debugging
+  const status = { connected: false, message: 'Google Calendar no conectado' };
+  const loading = false;
+  const error = null;
 
   const handleConnect = () => {
-    connect();
+    console.log('Conectar con Google Calendar');
   };
 
   const handleDisconnect = async () => {
-    const result = await disconnect();
-    if (result) {
-      showToast('Google Calendar desconectado exitosamente', 'success');
-    }
+    console.log('Desconectar Google Calendar');
   };
 
   const handleSyncToGoogle = async () => {
-    if (!sesionId) {
-      showToast('No hay sesión seleccionada para sincronizar', 'error');
-      return;
-    }
-
-    const result = await syncToGoogle(sesionId);
-    if (result.success) {
-      showToast('Sesión sincronizada con Google Calendar', 'success');
-      onSyncComplete?.(result);
-    } else {
-      showToast(result.message, 'error');
-    }
+    console.log('Sincronizar a Google Calendar');
   };
 
   const handleSyncFromGoogle = async () => {
-    const result = await syncFromGoogle();
-    if (result.success) {
-      showToast(`Sincronizados ${result.synced_events?.length || 0} eventos de Google Calendar`, 'success');
-      onSyncComplete?.(result);
-    } else {
-      showToast(result.message, 'error');
-    }
+    console.log('Sincronizar desde Google Calendar');
   };
 
   if (error) {
