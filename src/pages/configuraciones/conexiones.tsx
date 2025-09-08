@@ -60,8 +60,13 @@ const SesionesPage: NextPage = () => {
 
   const handleConnect = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {
-      // Redirigir a Google OAuth
-      window.location.href = '/api/auth/google';
+      try {
+        // Redirigir a Google OAuth con el userId
+        const authUrl = `/api/auth/google?userId=${userId}`;
+        window.location.href = authUrl;
+      } catch (error) {
+        showError('Error', 'No se pudo conectar con Google Calendar');
+      }
     } else if (connectionId === 'hubspot') {
       showError('HubSpot', 'Integración con HubSpot próximamente disponible');
     }
@@ -121,7 +126,7 @@ const SesionesPage: NextPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {connections.map((connection) => (
-            <Card key={connection.id} className="p-6">
+            <Card key={connection.id} variant="elevated" padding="lg">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
@@ -130,10 +135,10 @@ const SesionesPage: NextPage = () => {
                     {connection.icon}
                   </div>
                   <div>
-                    <Typography variant="h6" className="text-gray-900">
+                    <Typography variant="h6" className="text-foreground">
                       {connection.name}
                     </Typography>
-                    <Typography variant="body2" className="text-gray-600">
+                    <Typography variant="body2" className="text-muted-foreground">
                       {connection.description}
                     </Typography>
                   </div>
@@ -145,12 +150,12 @@ const SesionesPage: NextPage = () => {
               </div>
 
               {connection.connected && (
-                <div className="mb-4 p-3 bg-green-50 rounded-lg">
-                  <Typography variant="body2" className="text-green-800">
+                <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <Typography variant="body2" className="text-green-800 dark:text-green-200">
                     <strong>Conectado desde:</strong> {new Date(connection.connected_at || '').toLocaleDateString()}
                   </Typography>
                   {connection.last_sync && (
-                    <Typography variant="body2" className="text-green-800">
+                    <Typography variant="body2" className="text-green-800 dark:text-green-200">
                       <strong>Última sincronización:</strong> {new Date(connection.last_sync).toLocaleDateString()}
                     </Typography>
                   )}
@@ -191,58 +196,58 @@ const SesionesPage: NextPage = () => {
 
         {/* Próximas integraciones */}
         <div className="mt-8">
-          <Typography variant="h5" className="text-gray-900 mb-4">
+          <Typography variant="h5" className="text-foreground mb-4">
             Próximas Integraciones
           </Typography>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-4 opacity-60">
+            <Card variant="elevated" padding="md" className="opacity-60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
                   </svg>
                 </div>
                 <div>
-                  <Typography variant="body1" className="text-gray-500">
+                  <Typography variant="body1" className="text-muted-foreground">
                     Slack
                   </Typography>
-                  <Typography variant="body2" className="text-gray-400">
+                  <Typography variant="body2" className="text-muted-foreground/70">
                     Notificaciones
                   </Typography>
                 </div>
               </div>
             </Card>
             
-            <Card className="p-4 opacity-60">
+            <Card variant="elevated" padding="md" className="opacity-60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
                   </svg>
                 </div>
                 <div>
-                  <Typography variant="body1" className="text-gray-500">
+                  <Typography variant="body1" className="text-muted-foreground">
                     Zoom
                   </Typography>
-                  <Typography variant="body2" className="text-gray-400">
+                  <Typography variant="body2" className="text-muted-foreground/70">
                     Videollamadas
                   </Typography>
                 </div>
               </div>
             </Card>
             
-            <Card className="p-4 opacity-60">
+            <Card variant="elevated" padding="md" className="opacity-60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
                   </svg>
                 </div>
                 <div>
-                  <Typography variant="body1" className="text-gray-500">
+                  <Typography variant="body1" className="text-muted-foreground">
                     Mailchimp
                   </Typography>
-                  <Typography variant="body2" className="text-gray-400">
+                  <Typography variant="body2" className="text-muted-foreground/70">
                     Email Marketing
                   </Typography>
                 </div>
