@@ -13,7 +13,6 @@ import {
   TrashIcon,
   PlayIcon
 } from '../icons';
-import DraggableEvent from './DraggableEvent';
 import { getChipVariant } from '../../utils/chipUtils';
 
 export interface CalendarEvent {
@@ -49,8 +48,6 @@ export interface GoogleCalendarProps {
   onAddEvent?: (date?: Date) => void;
   onViewChange?: (view: GoogleCalendarProps['view']) => void;
   onDateChange?: (date: Date) => void;
-  onEventMove?: (eventId: string, newDate: Date, newTimeSlot?: number) => Promise<void>;
-  onEventResize?: (eventId: string, newDuration: number) => Promise<void>;
   // Props para acciones específicas
   onEventEdit?: (event: CalendarEvent) => void;
   onEventDelete?: (event: CalendarEvent) => void;
@@ -58,7 +55,6 @@ export interface GoogleCalendarProps {
   onEventIniciar?: (event: CalendarEvent) => void;
   showAddButton?: boolean;
   showNavigation?: boolean;
-  enableDragDrop?: boolean;
   className?: string;
   // Props para búsqueda
   searchTerm?: string;
@@ -75,8 +71,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   onAddEvent,
   onViewChange,
   onDateChange,
-  onEventMove,
-  onEventResize,
   // Props para acciones específicas
   onEventEdit,
   onEventDelete,
@@ -84,52 +78,21 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
   onEventIniciar,
   showAddButton = true,
   showNavigation = true,
-  enableDragDrop = false,
   className = '',
   // Props de búsqueda
   searchTerm = '',
   onSearchChange,
   showSearch = true
 }) => {
-  // console.log('🔧 GoogleCalendar props:', { enableDragDrop, eventsCount: events.length });
+  // console.log('🔧 GoogleCalendar props:', { eventsCount: events.length });
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  // Estados para drag and drop - ahora manejados por DraggableEvent
   const calendarRef = useRef<HTMLDivElement>(null);
   
   // Estados para búsqueda
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   
-  // Estados para indicador de drop
-  const [dragOverDate, setDragOverDate] = useState<Date | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [draggedEventTitle, setDraggedEventTitle] = useState<string>('');
-  
-  // Funciones para manejar drag over
-  const handleDragStart = (eventTitle?: string) => {
-    setIsDragging(true);
-    setDraggedEventTitle(eventTitle || '');
-  };
 
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setDragOverDate(null);
-    setDraggedEventTitle('');
-  };
-
-  const handleDragOver = useCallback((date: Date) => {
-    if (isDragging) {
-      // Solo actualizar si la fecha es diferente a la actual
-      if (!dragOverDate || dragOverDate.toDateString() !== date.toDateString()) {
-        // console.log('🎯 [DRAG] handleDragOver:', { 
-        //   date: date.toDateString(), 
-        //   isDragging,
-        //   currentDragOverDate: dragOverDate?.toDateString() 
-        // }); // Comentado para reducir logs
-        setDragOverDate(date);
-      }
-    }
-  }, [isDragging, dragOverDate]);
 
   // Funciones para manejar búsqueda
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -293,15 +256,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     return days;
   }, []);
 
-  // Drag and Drop handlers - ahora manejados por DraggableEvent
-
-  // Funciones de drag and drop - ahora manejadas por DraggableEvent
-
-  // Resize handlers - ahora manejados por DraggableEvent
-
-  // Funciones de resize - ahora manejadas por DraggableEvent
-
-  // Event listeners - ahora manejados por DraggableEvent
 
   // Renderizar vista de mes
   const renderMonthView = () => {
@@ -340,17 +294,10 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                     ${isCurrentMonthDay ? 'bg-card text-card-foreground' : 'bg-gray-50 dark:bg-gray-800/50'}
                     ${isTodayDate ? 'ring-2 ring-gray-500 ring-opacity-50' : ''}
                     ${isSelected ? 'bg-gray-100 dark:bg-gray-700 border-gray-500' : ''}
-                    ${dragOverDate?.toDateString() === date.toDateString() ? 'bg-green-200 dark:bg-green-800/50 border-green-500 dark:border-green-400 ring-4 ring-green-400 dark:ring-green-500 shadow-lg' : ''}
                   `}
                   onClick={() => {
                     setSelectedDate(date);
                     onDateClick?.(date);
-                  }}
-                  onMouseEnter={() => {
-                    if (isDragging) {
-                      // console.log('🎯 [DRAG] Mouse enter en celda:', date.toDateString()); // Comentado para reducir logs
-                      handleDragOver(date);
-                    }
                   }}
                 >
                   {/* Número del día */}
@@ -380,17 +327,21 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                   {/* Eventos del día */}
                   <div className="space-y-1.5">
                     {dayEvents.slice(0, 3).map((event) => (
-                      <DraggableEvent
+                      <div
                         key={event.id}
-                        event={event}
-                        enableDragDrop={enableDragDrop}
-                        onEventClick={onEventClick}
-                        onEventMove={onEventMove}
-                        onDragStart={handleDragStart}
-                        onDragEnd={handleDragEnd}
-                        onEventResize={onEventResize}
-                        dropTargetDate={dragOverDate}
-                      />
+                        className={`
+                          p-1 rounded text-xs cursor-pointer transition-all
+                          ${eventColors[event.color || 'blue']}
+                          hover:opacity-80 hover:shadow-sm
+                        `}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventClick?.(event);
+                        }}
+                        title={event.title}
+                      >
+                        {event.title}
+                      </div>
                     ))}
                     
                     {dayEvents.length > 3 && (
@@ -500,7 +451,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                             p-1 rounded text-xs cursor-pointer transition-all
                             ${eventColors[event.color || 'blue']}
                             hover:opacity-80 hover:shadow-sm
-                            ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : ''}
                           `}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -575,7 +525,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                         p-2 rounded text-sm cursor-pointer transition-all
                         ${eventColors[event.color || 'blue']}
                         hover:opacity-80 hover:shadow-sm
-                        ${enableDragDrop ? 'cursor-grab active:cursor-grabbing' : ''}
                       `}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -810,24 +759,6 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
 
   return (
     <div ref={calendarRef} className={`bg-card text-card-foreground border border-slate-100 dark:border-slate-800 rounded-lg shadow-sm ${className}`}>
-      {/* Indicador de drag and drop */}
-      {isDragging && (
-        <div className="p-3 bg-green-100 dark:bg-green-900/30 border-b border-green-300 dark:border-green-600">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <Typography variant="body2" className="text-green-800 dark:text-green-200">
-              Arrastrando: <strong>{draggedEventTitle}</strong>
-              {dragOverDate && (
-                <span> → {dragOverDate.toLocaleDateString('es-ES', { 
-                  weekday: 'short', 
-                  day: 'numeric', 
-                  month: 'short' 
-                })}</span>
-              )}
-            </Typography>
-          </div>
-        </div>
-      )}
 
       {/* Header del calendario */}
       {showNavigation && (

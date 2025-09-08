@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SesionEvent as SesionEventType } from '../../types/sesiones';
 import { Typography, Chip, Tooltip } from '../ui';
-import { useCalendarDragDrop } from '../../hooks/useCalendarDragDrop';
 import { 
   ClockIcon, 
   UserIcon, 
@@ -10,7 +9,6 @@ import {
   BuildingIcon,
   UsersIcon,
   MoreVerticalIcon,
-  GripVerticalIcon
 } from '../icons';
 
 interface SesionEventDraggableProps {
@@ -18,12 +16,8 @@ interface SesionEventDraggableProps {
   onClick?: (sesion: SesionEventType) => void;
   onEdit?: (sesion: SesionEventType) => void;
   onDelete?: (sesion: SesionEventType) => void;
-  onMove?: (eventId: string, newDate: Date, newTimeSlot?: number) => Promise<void>;
-  onResize?: (eventId: string, newDuration: number) => Promise<void>;
   compact?: boolean;
   showActions?: boolean;
-  draggable?: boolean;
-  resizable?: boolean;
   className?: string;
 }
 
@@ -32,33 +26,13 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
   onClick,
   onEdit,
   onDelete,
-  onMove,
-  onResize,
   compact = false,
   showActions = true,
-  draggable = true,
-  resizable = true,
   className = ''
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  // Hook de drag & drop
-  const {
-    dragState,
-    dragRef,
-    resizeRef,
-    startDrag,
-    startResize,
-    getDragStyles,
-    getDropTargetStyles
-  } = useCalendarDragDrop({
-    onEventMove: onMove,
-    onEventResize: onResize,
-    timeSlotDuration: 30,
-    minEventDuration: 15,
-    maxEventDuration: 480
-  });
 
   // Formatear hora
   const formatTime = (date: Date) => {
@@ -118,21 +92,7 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
 
   // Manejar click en el evento
   const handleClick = (e: React.MouseEvent) => {
-    if (dragState.isDragging) return;
     onClick?.(sesion);
-  };
-
-  // Manejar inicio de drag
-  const handleDragStart = (e: React.MouseEvent) => {
-    if (!draggable) return;
-    startDrag(e, sesion);
-  };
-
-  // Manejar inicio de resize
-  const handleResizeStart = (e: React.MouseEvent, direction: 'start' | 'end') => {
-    if (!resizable) return;
-    e.stopPropagation();
-    startResize(e, sesion, direction);
   };
 
   // Contenido del tooltip
@@ -185,29 +145,16 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
     return (
       <Tooltip content={tooltipContent} position="top" delay={200}>
         <div
-          ref={dragRef}
           className={`
             relative p-2 rounded-md cursor-pointer transition-all duration-200 group
             bg-${sesion.color}-100 border border-${sesion.color}-200
             hover:bg-${sesion.color}-200 hover:shadow-sm
-            ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}
-            ${dragState.isDragging ? 'opacity-50' : ''}
             ${className}
           `}
           onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          style={dragState.draggedEvent?.id === sesion.id ? getDragStyles() : {}}
         >
-          {/* Handle de drag */}
-          {draggable && isHovered && (
-            <div
-              className="absolute left-1 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-              onMouseDown={handleDragStart}
-            >
-              <GripVerticalIcon className="w-3 h-3 text-gray-400" />
-            </div>
-          )}
 
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0 ml-2">
@@ -242,19 +189,6 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
             )}
           </div>
 
-          {/* Handles de resize */}
-          {resizable && isHovered && (
-            <>
-              <div
-                className="absolute top-0 left-0 right-0 h-1 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity"
-                onMouseDown={(e) => handleResizeStart(e, 'start')}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 h-1 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity"
-                onMouseDown={(e) => handleResizeStart(e, 'end')}
-              />
-            </>
-          )}
 
           {/* Menu de acciones */}
           {showMenu && (
@@ -288,33 +222,20 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
 
   return (
     <div
-      ref={dragRef}
       className={`
         relative p-4 rounded-lg border cursor-pointer transition-all duration-200 group
         bg-${sesion.color}-50 border-${sesion.color}-200
         hover:bg-${sesion.color}-100 hover:shadow-md
-        ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}
-        ${dragState.isDragging ? 'opacity-50' : ''}
         ${className}
       `}
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={dragState.draggedEvent?.id === sesion.id ? getDragStyles() : {}}
     >
-      {/* Handle de drag */}
-      {draggable && isHovered && (
-        <div
-          className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-          onMouseDown={handleDragStart}
-        >
-          <GripVerticalIcon className="w-4 h-4 text-gray-400" />
-        </div>
-      )}
 
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0 ml-6">
+        <div className="flex-1 min-w-0">
           <Typography variant="body1" weight="semibold" className="mb-1">
             {sesion.titulo}
           </Typography>
@@ -381,19 +302,6 @@ const SesionEventDraggable: React.FC<SesionEventDraggableProps> = ({
         )}
       </div>
 
-      {/* Handles de resize */}
-      {resizable && isHovered && (
-        <>
-          <div
-            className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity"
-            onMouseDown={(e) => handleResizeStart(e, 'start')}
-          />
-          <div
-            className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity"
-            onMouseDown={(e) => handleResizeStart(e, 'end')}
-          />
-        </>
-      )}
 
       {/* Acciones */}
       {showActions && (

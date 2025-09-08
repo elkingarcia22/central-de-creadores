@@ -5,7 +5,6 @@ import GoogleCalendar from '../ui/GoogleCalendar';
 import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useSesionesCalendar } from '../../hooks/useSesionesCalendar';
 import SesionEventComponent from './SesionEvent';
-import SesionEventDraggable from './SesionEventDraggable';
 import SesionExpanded from './SesionExpanded';
 import SesionSideModal from './SesionSideModal';
 import { 
@@ -139,46 +138,6 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     }
   }, [deleteSesion, onSesionDelete]);
 
-  // Manejar mover sesión
-  const handleMoveSesion = useCallback(async (eventId: string, newDate: Date, newTimeSlot?: number) => {
-    console.log('🔄 [MOVE] handleMoveSesion called:', { 
-      eventId, 
-      newDate, 
-      newTimeSlot,
-      newDateString: newDate.toDateString(),
-      isPastDate: newDate < new Date()
-    });
-    try {
-      const sesion = sesionesEventos.find(s => s.id === eventId);
-      console.log('🔍 [MOVE] Sesión encontrada:', sesion ? 'SÍ' : 'NO');
-      if (sesion) {
-        const updatedData = {
-          fecha_programada: newDate,
-          ...(newTimeSlot && { duracion_minutos: newTimeSlot * 30 })
-        };
-        console.log('📝 [MOVE] Datos a actualizar:', updatedData);
-        const sesionActualizada = await updateSesion(eventId, updatedData);
-        console.log('✅ [MOVE] Sesión movida exitosamente:', sesionActualizada);
-        console.log('🔄 [MOVE] Estado actualizado, sesionesEventos debería reflejar el cambio');
-        
-        // Forzar recarga de sesiones para asegurar que el calendario se actualice
-        console.log('🔄 [MOVE] Forzando recarga de sesiones...');
-        await loadSesiones();
-        console.log('✅ [MOVE] Recarga de sesiones completada');
-      }
-    } catch (error) {
-      console.error('❌ [MOVE] Error moviendo sesión:', error);
-    }
-  }, [sesionesEventos, updateSesion, loadSesiones]);
-
-  // Manejar redimensionar sesión
-  const handleResizeSesion = useCallback(async (eventId: string, newDuration: number) => {
-    try {
-      await updateSesion(eventId, { duracion_minutos: newDuration });
-    } catch (error) {
-      console.error('Error redimensionando sesión:', error);
-    }
-  }, [updateSesion]);
 
 
   // Manejar cambio de vista
@@ -391,8 +350,6 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         onAddEvent={handleAddEvent}
         onViewChange={handleViewChange}
         onDateChange={handleDateChange}
-        onEventMove={handleMoveSesion}
-        onEventResize={handleResizeSesion}
         // Props para acciones específicas
         onEventEdit={handleCalendarEventEdit}
         onEventDelete={handleCalendarEventDelete}
@@ -400,7 +357,6 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         onEventIniciar={handleCalendarEventIniciar}
         showAddButton={false}
         showNavigation={true}
-        enableDragDrop={true}
         className="min-h-[600px]"
         // Props de búsqueda
         searchTerm={searchTerm}

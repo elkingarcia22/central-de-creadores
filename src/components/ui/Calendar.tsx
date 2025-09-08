@@ -4,7 +4,6 @@ import Button from './Button';
 import Card from './Card';
 import Badge from './Badge';
 import Tooltip from './Tooltip';
-import SesionEventDraggable from '../sesiones/SesionEventDraggable';
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon, 
@@ -47,18 +46,12 @@ export interface CalendarProps {
   onViewChange?: (view: CalendarProps['view']) => void;
   /** Callback cuando se cambia la fecha */
   onDateChange?: (date: Date) => void;
-  /** Callback cuando se mueve un evento */
-  onEventMove?: (eventId: string, newDate: Date, newTimeSlot?: number) => Promise<void>;
-  /** Callback cuando se redimensiona un evento */
-  onEventResize?: (eventId: string, newDuration: number) => Promise<void>;
   /** Mostrar botón de agregar evento */
   showAddButton?: boolean;
   /** Mostrar navegación */
   showNavigation?: boolean;
   /** Mostrar mini calendario */
   showMiniCalendar?: boolean;
-  /** Habilitar drag and drop */
-  enableDragDrop?: boolean;
   /** Clases CSS adicionales */
   className?: string;
 }
@@ -72,12 +65,9 @@ const Calendar: React.FC<CalendarProps> = ({
   onAddEvent,
   onViewChange,
   onDateChange,
-  onEventMove,
-  onEventResize,
   showAddButton = true,
   showNavigation = true,
   showMiniCalendar = true,
-  enableDragDrop = false,
   className = ''
 }) => {
   const [currentDate, setCurrentDate] = useState(initialDate);
@@ -278,63 +268,23 @@ const Calendar: React.FC<CalendarProps> = ({
                   
                   {/* Eventos del día */}
                   <div className="space-y-1">
-                    {dayEvents.slice(0, 2).map((event) => {
-                      // Verificar si es un evento de sesión con drag and drop habilitado
-                      const isSesionEvent = enableDragDrop && (
-                        'titulo' in event || 
-                        'estado' in event || 
-                        'tipo_sesion' in event ||
-                        'duracion_minutos' in event
-                      );
-                      
-                      // Debug log
-                      if (enableDragDrop) {
-                        console.log('🔍 Evento en calendario:', {
-                          id: event.id,
-                          title: event.title,
-                          hasTitulo: 'titulo' in event,
-                          hasEstado: 'estado' in event,
-                          hasTipoSesion: 'tipo_sesion' in event,
-                          hasDuracion: 'duracion_minutos' in event,
-                          isSesionEvent,
-                          eventKeys: Object.keys(event)
-                        });
-                      }
-                      
-                      if (isSesionEvent) {
-                        return (
-                          <SesionEventDraggable
-                            key={event.id}
-                            sesion={event as any}
-                            onClick={(sesion) => onEventClick?.(sesion as any)}
-                            onMove={onEventMove}
-                            onResize={onEventResize}
-                            compact={true}
-                            showActions={false}
-                            draggable={enableDragDrop}
-                            resizable={enableDragDrop}
-                          />
-                        );
-                      }
-                      
-                      return (
-                        <div
-                          key={event.id}
-                          className={`
-                            p-1 rounded text-xs cursor-pointer truncate
-                            ${getEventColor(event.color)}
-                            hover:opacity-80 transition-opacity
-                          `}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEventClick?.(event);
-                          }}
-                          title={event.title}
-                        >
-                          {event.title}
-                        </div>
-                      );
-                    })}
+                    {dayEvents.slice(0, 2).map((event) => (
+                      <div
+                        key={event.id}
+                        className={`
+                          p-1 rounded text-xs cursor-pointer truncate
+                          ${getEventColor(event.color)}
+                          hover:opacity-80 transition-opacity
+                        `}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventClick?.(event);
+                        }}
+                        title={event.title}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
                     
                     {dayEvents.length > 2 && (
                       <Typography variant="caption" color="secondary" className="block">
