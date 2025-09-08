@@ -11,12 +11,6 @@
 [build.environment]
   # Versión de Node.js
   NODE_VERSION = "18"
-  
-  # Variables de entorno necesarias para el build
-  NEXT_PUBLIC_SUPABASE_URL = ""
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
-  GOOGLE_CLIENT_ID = ""
-  GOOGLE_CLIENT_SECRET = ""
 
 # Redirecciones para SPA
 [[redirects]]
