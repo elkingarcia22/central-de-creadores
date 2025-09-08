@@ -7,10 +7,10 @@ interface GoogleCalendarSyncProps {
 }
 
 export function GoogleCalendarSync({ sesionId, onSyncComplete }: GoogleCalendarSyncProps) {
-  // Temporalmente deshabilitado para debugging
-  const status = { connected: false, message: 'Google Calendar no conectado' };
-  const loading = false;
-  const error = null;
+  // Estado temporal para debugging
+  const [status, setStatus] = React.useState({ connected: false, message: 'Google Calendar no conectado' });
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const handleConnect = () => {
     console.log('Conectar con Google Calendar');
