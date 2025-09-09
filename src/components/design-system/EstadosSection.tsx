@@ -245,6 +245,13 @@ const EstadosSection: React.FC = () => {
               <Typography variant="caption" color="secondary">Verde</Typography>
             </div>
           </div>
+          <div className="flex items-center gap-3 p-3 border rounded-lg">
+            <Chip variant="terminada">Conectado</Chip>
+            <div>
+              <Typography variant="body2" weight="medium">Conectado</Typography>
+              <Typography variant="caption" color="secondary">Verde</Typography>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -315,9 +322,9 @@ const EstadosSection: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 border rounded-lg">
-            <Chip variant="critica">Crítica</Chip>
+            <Chip variant="fallo">Desconectado</Chip>
             <div>
-              <Typography variant="body2" weight="medium">Crítica</Typography>
+              <Typography variant="body2" weight="medium">Desconectado</Typography>
               <Typography variant="caption" color="secondary">Rojo</Typography>
             </div>
           </div>

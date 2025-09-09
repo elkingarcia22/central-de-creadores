@@ -37,7 +37,8 @@ export const ESTADOS_TERMINADOS = [
   'disponible',
   'buena',
   'excelente',
-  'creación'
+  'creación',
+  'conectado'
 ];
 
 // Estados de fallo (rojo)
@@ -51,7 +52,8 @@ export const ESTADOS_FALLO = [
   'no disponible',
   'mal',
   'mala',
-  'muy mala'
+  'muy mala',
+  'desconectado'
 ];
 
 // Tipos de participante (mantener colores únicos)
@@ -92,8 +94,7 @@ export const ESTADOS_DOLOR = [
 export const SEVERIDADES = [
   'baja',
   'media',
-  'alta',
-  'critica'
+  'alta'
 ];
 
 // Función para obtener la variante de chip basada en el valor
@@ -222,7 +223,7 @@ export const getEstadoDolorVariant = (estado: string): 'sin_resolver' | 'resuelt
 };
 
 // Función específica para obtener la variante de chip de severidad
-export const getSeveridadVariant = (severidad: string): 'baja' | 'media' | 'alta' | 'critica' => {
+export const getSeveridadVariant = (severidad: string): 'baja' | 'media' | 'alta' => {
   const severidadLower = severidad?.toLowerCase()?.trim();
   
   switch (severidadLower) {
@@ -232,8 +233,6 @@ export const getSeveridadVariant = (severidad: string): 'baja' | 'media' | 'alta
       return 'media'; // Amarillo
     case 'alta':
       return 'alta'; // Rojo
-    case 'critica':
-      return 'critica'; // Rojo oscuro
     default:
       return 'media'; // Por defecto amarillo
   }
@@ -309,6 +308,8 @@ export const getChipText = (value: string): string => {
       return 'Excelente';
     case 'creación':
       return 'Creación';
+    case 'conectado':
+      return 'Conectado';
     
     // Estados de fallo
     case 'cancelado':
@@ -328,6 +329,8 @@ export const getChipText = (value: string): string => {
       return 'Mala';
     case 'muy mala':
       return 'Muy Mala';
+    case 'desconectado':
+      return 'Desconectado';
     
     // Tipos de participante
     case 'externo':
