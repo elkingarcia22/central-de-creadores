@@ -101,36 +101,36 @@ export const SEVERIDADES = [
 export const getChipVariant = (value: string): string => {
   const valueLower = value?.toLowerCase()?.trim();
   
-  // Debug detallado para ver qué está pasando
-  console.log('🔍 getChipVariant llamado con:', {
-    valorOriginal: value,
-    valorLowercase: valueLower,
-    tipo: typeof value
-  });
+  // Debug detallado para ver qué está pasando (comentado para producción)
+  // console.log('🔍 getChipVariant llamado con:', {
+  //   valorOriginal: value,
+  //   valorLowercase: valueLower,
+  //   tipo: typeof value
+  // });
   
   // Mapeo específico para estados de agendamiento
   if (valueLower === 'finalizado') {
-    console.log('✅ Mapeo: finalizado -> terminada (verde)');
+    // console.log('✅ Mapeo: finalizado -> terminada (verde)');
     return 'terminada'; // Verde
   }
   if (valueLower === 'cancelado') {
-    console.log('✅ Mapeo: cancelado -> fallo (rojo)');
+    // console.log('✅ Mapeo: cancelado -> fallo (rojo)');
     return 'fallo'; // Rojo
   }
   if (valueLower === 'pendiente de agendamiento') {
-    console.log('✅ Mapeo: pendiente de agendamiento -> transitoria (amarillo)');
+    // console.log('✅ Mapeo: pendiente de agendamiento -> transitoria (amarillo)');
     return 'transitoria'; // Amarillo (como estaba originalmente)
   }
   if (valueLower === 'pendiente') {
-    console.log('✅ Mapeo: pendiente -> pendiente (azul)');
+    // console.log('✅ Mapeo: pendiente -> pendiente (azul)');
     return 'pendiente'; // Azul
   }
   if (valueLower === 'en progreso') {
-    console.log('✅ Mapeo: en progreso -> transitoria (amarillo)');
+    // console.log('✅ Mapeo: en progreso -> transitoria (amarillo)');
     return 'transitoria'; // Amarillo
   }
   if (valueLower === 'en_progreso') {
-    console.log('✅ Mapeo: en_progreso -> transitoria (amarillo)');
+    // console.log('✅ Mapeo: en_progreso -> transitoria (amarillo)');
     return 'transitoria'; // Amarillo
   }
   
@@ -200,7 +200,7 @@ export const getChipVariant = (value: string): string => {
   }
   
   // Por defecto
-  console.log('⚠️ No se encontró mapeo específico, retornando default para:', valueLower);
+  // console.log('⚠️ No se encontró mapeo específico, retornando default para:', valueLower);
   return 'default';
 };
 

@@ -36,9 +36,9 @@ const ConexionesPage: NextPage = () => {
 
   // Manejar mensajes de éxito y error de la URL
   useEffect(() => {
-    const { success, error } = router.query;
+    const { google_calendar_connected, error } = router.query;
     
-    if (success === 'google_calendar_connected') {
+    if (google_calendar_connected === 'true') {
       showSuccess('Google Calendar', '¡Google Calendar conectado exitosamente!');
       // Actualizar estado de conexión
       setConnections(prev => prev.map(conn => 
@@ -71,30 +71,51 @@ const ConexionesPage: NextPage = () => {
     }
   }, [router.query, showSuccess, showError]);
 
-  // Estado inicial de conexiones
+  // Estado inicial de conexiones y verificación de estado real
   useEffect(() => {
-    const initialConnections: ConnectionStatus[] = [
-      {
-        id: 'google-calendar',
-        name: 'Google Calendar',
-        description: 'Sincroniza sesiones con tu calendario de Google',
-        connected: false,
-        icon: <CalendarIcon className="w-6 h-6" />,
-        category: 'conectado'
-      },
-      {
-        id: 'hubspot',
-        name: 'HubSpot',
-        description: 'Integra con tu CRM de HubSpot para gestionar leads',
-        connected: false,
-        icon: <DatabaseIcon className="w-6 h-6" />,
-        category: 'desconectado'
+    const loadConnections = async () => {
+      const initialConnections: ConnectionStatus[] = [
+        {
+          id: 'google-calendar',
+          name: 'Google Calendar',
+          description: 'Sincroniza sesiones con tu calendario de Google',
+          connected: false,
+          icon: <CalendarIcon className="w-6 h-6" />,
+          category: 'desconectado'
+        },
+        {
+          id: 'hubspot',
+          name: 'HubSpot',
+          description: 'Integra con tu CRM de HubSpot para gestionar leads',
+          connected: false,
+          icon: <DatabaseIcon className="w-6 h-6" />,
+          category: 'desconectado'
+        }
+      ];
+
+      // Verificar estado real de Google Calendar
+      if (userId) {
+        try {
+          const response = await fetch(`/api/google-calendar/connection-status?userId=${userId}`);
+          const status = await response.json();
+          
+          if (status.connected) {
+            initialConnections[0].connected = true;
+            initialConnections[0].connected_at = status.connected_at;
+            initialConnections[0].last_sync = status.last_sync;
+            initialConnections[0].category = 'conectado';
+          }
+        } catch (error) {
+          console.error('Error verificando estado de Google Calendar:', error);
+        }
       }
-    ];
-    
-    setConnections(initialConnections);
-    setLoading(false);
-  }, []);
+      
+      setConnections(initialConnections);
+      setLoading(false);
+    };
+
+    loadConnections();
+  }, [userId]);
 
   const handleConnect = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {

@@ -40,13 +40,13 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
 
   // Inicializar el estado del sidebar solo en el cliente
   useEffect(() => {
-    console.log('🔍 Layout - useEffect inicialización');
+    // console.log('🔍 Layout - useEffect inicialización');
     if (!isClient) {
       setIsClient(true);
       const saved = localStorage.getItem('sidebarCollapsed');
       // Cambiar el estado inicial a true (contraído) por defecto
       const initialState = saved ? JSON.parse(saved) : true;
-      console.log('Sidebar initial state:', initialState);
+      // console.log('Sidebar initial state:', initialState);
       setSidebarCollapsed(initialState);
     }
   }, []); // Removido isClient de las dependencias para evitar re-ejecuciones
@@ -58,25 +58,25 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
 
   // Sincronizar el contexto de rol con la URL
   useEffect(() => {
-    console.log('🔍 Layout - useEffect rol:', { rol, rolSeleccionado });
+    // console.log('🔍 Layout - useEffect rol:', { rol, rolSeleccionado });
     if (rol && rol !== rolSeleccionado) {
-      console.log('🔍 Layout - Cambiando rol de', rolSeleccionado, 'a', rol);
+      // console.log('🔍 Layout - Cambiando rol de', rolSeleccionado, 'a', rol);
       setRolSeleccionado(rol);
     }
   }, [rol]); // Removido rolSeleccionado y setRolSeleccionado de las dependencias
 
   // Detectar cambios de ruta para forzar actualización
   useEffect(() => {
-    console.log('🔍 Layout - Ruta cambiada:', router.asPath);
+    // console.log('🔍 Layout - Ruta cambiada:', router.asPath);
     // Forzar re-render cuando cambia la ruta
   }, [router.asPath]);
 
   // Guardar el estado del sidebar en localStorage cuando cambie
   useEffect(() => {
-    console.log('🔍 Layout - useEffect sidebarCollapsed:', { sidebarCollapsed });
+    // console.log('🔍 Layout - useEffect sidebarCollapsed:', { sidebarCollapsed });
     if (typeof window !== 'undefined' && isClient) {
       localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
-      console.log('Sidebar state saved:', sidebarCollapsed);
+      // console.log('Sidebar state saved:', sidebarCollapsed);
     }
   }, [sidebarCollapsed]); // Removido isClient de las dependencias
 

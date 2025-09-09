@@ -121,9 +121,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const selectedColor = colorMap[color];
 
   // Para la variante title-only, usar una estructura diferente
-  console.log('🔍 DEBUG PageHeader - variant:', variant);
-  console.log('🔍 DEBUG PageHeader - className recibido:', className);
-  console.log('🔍 DEBUG PageHeader - className final:', cn(className));
   
   if (variant === 'title-only') {
     return (
