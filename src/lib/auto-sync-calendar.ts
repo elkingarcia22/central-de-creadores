@@ -104,18 +104,10 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
         console.log(`⚠️ No se encontró evento para eliminar`);
       }
     } else {
-      // Obtener datos completos del reclutamiento
+      // Obtener datos del reclutamiento (sin JOIN problemático)
       const { data: reclutamiento, error: reclutamientoError } = await supabase
         .from('reclutamientos')
-        .select(`
-          *,
-          investigaciones!inner(
-            nombre,
-            descripcion,
-            responsable_id,
-            implementador_id
-          )
-        `)
+        .select('*')
         .eq('id', reclutamientoId)
         .single();
 
@@ -125,10 +117,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
       }
 
       // Verificar si el usuario tiene acceso a este reclutamiento
-      const hasAccess = 
-        reclutamiento.reclutador_id === userId ||
-        reclutamiento.investigaciones?.responsable_id === userId ||
-        reclutamiento.investigaciones?.implementador_id === userId;
+      const hasAccess = reclutamiento.reclutador_id === userId;
 
       if (!hasAccess) {
         console.log('⚠️ Usuario no tiene acceso a este reclutamiento, saltando auto-sync');
@@ -270,15 +259,14 @@ async function createGoogleCalendarEvent(calendar: any, reclutamiento: any) {
   }
 
   // Crear título del evento
-  const titulo = `${reclutamiento.investigaciones?.nombre || 'Sesión'} - ${participanteNombre}`;
+  const titulo = `Sesión de Reclutamiento - ${participanteNombre}`;
 
   // Crear descripción
   const descripcion = [
     `Participante: ${participanteNombre}`,
-    `Investigación: ${reclutamiento.investigaciones?.nombre || 'Sin nombre'}`,
     `Duración: ${reclutamiento.duracion_sesion || 60} minutos`,
     reclutamiento.meet_link ? `Enlace Meet: ${reclutamiento.meet_link}` : '',
-    reclutamiento.investigaciones?.descripcion ? `Descripción: ${reclutamiento.investigaciones.descripcion}` : ''
+    `ID Reclutamiento: ${reclutamiento.id}`
   ].filter(Boolean).join('\n');
 
   return {
