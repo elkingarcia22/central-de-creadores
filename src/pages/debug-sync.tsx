@@ -72,6 +72,7 @@ const DebugSyncPage: NextPage = () => {
   const [verifyResult, setVerifyResult] = useState<VerifyReclutamientoResult | null>(null);
   const [investigateResult, setInvestigateResult] = useState<InvestigateResult | null>(null);
   const [syncResult, setSyncResult] = useState<any>(null);
+  const [verifyEventResult, setVerifyEventResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -243,6 +244,26 @@ const DebugSyncPage: NextPage = () => {
       }
     } catch (error) {
       setError('Error sincronizando reclutamiento');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyGoogleCalendarEvent = async (reclutamientoId: string) => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/verify-google-calendar-event?reclutamientoId=${reclutamientoId}&userId=${userId}`);
+      const result = await response.json();
+      setVerifyEventResult(result);
+    } catch (error) {
+      setError('Error verificando evento en Google Calendar');
     } finally {
       setLoading(false);
     }
@@ -474,6 +495,14 @@ const DebugSyncPage: NextPage = () => {
                             >
                               Sincronizar
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => verifyGoogleCalendarEvent(reclutamiento.id)}
+                              disabled={loading}
+                            >
+                              Verificar Evento
+                            </Button>
                           </div>
                         )}
                       </div>
@@ -566,6 +595,79 @@ const DebugSyncPage: NextPage = () => {
                         </Typography>
                       </div>
                     )}
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Verify Event Result */}
+          {verifyEventResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Verificación de Evento en Google Calendar
+              </Typography>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Typography variant="h4" className="mb-2">Reclutamiento</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>ID:</strong> {verifyEventResult.reclutamiento.id}</div>
+                      <div><strong>Fecha:</strong> {new Date(verifyEventResult.reclutamiento.fecha_sesion).toLocaleDateString()}</div>
+                      <div><strong>Duración:</strong> {verifyEventResult.reclutamiento.duracion_sesion} min</div>
+                    </div>
+                  </div>
+                  <div>
+                    <Typography variant="h4" className="mb-2">Google Calendar</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Total Eventos:</strong> {verifyEventResult.googleCalendar.totalEvents}</div>
+                      <div><strong>Evento Encontrado:</strong> {verifyEventResult.googleCalendar.matchingEvent ? '✅ Sí' : '❌ No'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {verifyEventResult.googleCalendar.matchingEvent && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Evento Encontrado</Typography>
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div className="space-y-1 text-sm">
+                        <div><strong>ID:</strong> {verifyEventResult.googleCalendar.matchingEvent.id}</div>
+                        <div><strong>Título:</strong> {verifyEventResult.googleCalendar.matchingEvent.summary}</div>
+                        <div><strong>Inicio:</strong> {new Date(verifyEventResult.googleCalendar.matchingEvent.start.dateTime || verifyEventResult.googleCalendar.matchingEvent.start.date).toLocaleString()}</div>
+                        <div><strong>Fin:</strong> {new Date(verifyEventResult.googleCalendar.matchingEvent.end.dateTime || verifyEventResult.googleCalendar.matchingEvent.end.date).toLocaleString()}</div>
+                        {verifyEventResult.googleCalendar.matchingEvent.description && (
+                          <div><strong>Descripción:</strong> {verifyEventResult.googleCalendar.matchingEvent.description}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {verifyEventResult.googleCalendar.allEvents.length > 0 && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Todos los Eventos del Día</Typography>
+                    <div className="space-y-2">
+                      {verifyEventResult.googleCalendar.allEvents.map((event: any, index: number) => (
+                        <div key={index} className="p-2 bg-muted rounded text-sm">
+                          <div><strong>{event.summary || 'Sin título'}</strong></div>
+                          <div>Inicio: {new Date(event.start.dateTime || event.start.date).toLocaleString()}</div>
+                          <div>Fin: {new Date(event.end.dateTime || event.end.date).toLocaleString()}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {verifyEventResult.database.googleEvent && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Registro en Base de Datos</Typography>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="space-y-1 text-sm">
+                        <div><strong>ID:</strong> {verifyEventResult.database.googleEvent.id}</div>
+                        <div><strong>Google Event ID:</strong> {verifyEventResult.database.googleEvent.google_event_id}</div>
+                        <div><strong>Creado:</strong> {new Date(verifyEventResult.database.googleEvent.created_at).toLocaleString()}</div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
