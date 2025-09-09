@@ -264,6 +264,10 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
             value={formatDate(sesion.start)}
           />
           <InfoItem 
+            label="Duración"
+            value={sesion.duracion_minutos ? `${sesion.duracion_minutos} minutos` : 'No especificada'}
+          />
+          <InfoItem 
             label="Fecha de Creación"
             value={formatDate(new Date(sesion.created_at))}
           />
