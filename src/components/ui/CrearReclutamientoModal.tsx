@@ -422,7 +422,7 @@ export default function CrearReclutamientoModal({
         investigacion_id: investigacionIdFinal,
         fecha_sesion: fechaHoraCompleta,
         hora_sesion: horaSesion, // Agregar hora_sesion explícitamente
-        duracion_sesion: parseInt(duracionSesion),
+        duracion_sesion: parseInt(duracionSesion || '60'),
         reclutador_id: responsableId,
         creado_por: responsableId,
         tipo_participante: tipoParticipante,
@@ -520,7 +520,7 @@ export default function CrearReclutamientoModal({
         variant="primary"
         onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         loading={loading}
-        disabled={loading || !responsableId || !fechaSesion || !horaSesion || !tipoParticipante || (tipoParticipante === 'externo' && !participanteSeleccionado) || (tipoParticipante === 'interno' && !participanteSeleccionado) || (tipoParticipante === 'friend_family' && !participanteSeleccionado) || !duracionSesion}
+        disabled={loading || !responsableId || !fechaSesion || !horaSesion || !tipoParticipante || (tipoParticipante === 'externo' && !participanteSeleccionado) || (tipoParticipante === 'interno' && !participanteSeleccionado) || (tipoParticipante === 'friend_family' && !participanteSeleccionado)}
         className="flex items-center gap-2"
       >
         <SaveIcon className="w-4 h-4" />

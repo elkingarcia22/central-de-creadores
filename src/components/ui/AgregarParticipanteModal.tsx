@@ -535,7 +535,7 @@ export default function AgregarParticipanteModal({
           reclutador_id: responsableId,
           fecha_sesion: fechaHoraCompleta,
           hora_sesion: horaSesion, // Agregar hora_sesion explícitamente
-          duracion_sesion: parseInt(duracionSesion),
+          duracion_sesion: parseInt(duracionSesion || '60'),
           participantes_id: tipoParticipante === 'externo' ? participanteId : undefined,
           participantes_internos_id: tipoParticipante === 'interno' ? participanteId : undefined,
           participantes_friend_family_id: tipoParticipante === 'friend_family' ? participanteId : undefined,
@@ -597,7 +597,7 @@ export default function AgregarParticipanteModal({
           reclutador_id: responsableId,
           fecha_sesion: fechaHoraCompleta,
           hora_sesion: horaSesion, // Agregar hora_sesion explícitamente
-          duracion_sesion: parseInt(duracionSesion),
+          duracion_sesion: parseInt(duracionSesion || '60'),
           participantes_id: tipoParticipante === 'externo' ? participanteId : undefined,
           participantes_internos_id: tipoParticipante === 'interno' ? participanteId : undefined,
           participantes_friend_family_id: tipoParticipante === 'friend_family' ? participanteId : undefined,
