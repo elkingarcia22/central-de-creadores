@@ -1,5 +1,6 @@
 import { useRol } from '../contexts/RolContext';
-import { Layout, Typography } from '../components/ui';
+import { Layout, Typography, PageHeader } from '../components/ui';
+import { HomeIcon } from '../components/icons';
 
 export default function HomePage() {
   const { rolSeleccionado, loading } = useRol();
@@ -21,74 +22,30 @@ export default function HomePage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-          <Typography variant="h1" className="text-3xl font-bold text-foreground">
-            Bienvenido a Central de Creadores
-          </Typography>
-          <Typography variant="body1" className="text-muted-foreground mt-2">
-            Panel principal del sistema
-          </Typography>
-        </div>
+      <div className="py-10 px-4">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header */}
+          <PageHeader
+            title="Home"
+            subtitle="Panel principal del sistema"
+            color="blue"
+          />
 
-        {/* Contenido principal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-            <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-              Investigaciones
-            </Typography>
-            <Typography variant="body2" className="text-muted-foreground">
-              Gestiona tus investigaciones y estudios de manera eficiente.
-            </Typography>
-          </div>
-
-          <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-            <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-              Reclutamiento
-            </Typography>
-            <Typography variant="body2" className="text-muted-foreground">
-              Administra el proceso de reclutamiento de participantes.
-            </Typography>
-          </div>
-
-          <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-            <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-              Sesiones
-            </Typography>
-            <Typography variant="body2" className="text-muted-foreground">
-              Programa y gestiona sesiones de investigación.
-            </Typography>
-          </div>
-
-          <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-            <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-              Participantes
-            </Typography>
-            <Typography variant="body2" className="text-muted-foreground">
-              Administra la base de datos de participantes.
-            </Typography>
-          </div>
-
-          <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-            <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-              Empresas
-            </Typography>
-            <Typography variant="body2" className="text-muted-foreground">
-              Gestiona información de empresas y organizaciones.
-            </Typography>
-          </div>
-
-          {rolSeleccionado?.toLowerCase() === 'administrador' && (
-            <div className="bg-card border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-              <Typography variant="h3" className="text-lg font-semibold text-foreground mb-2">
-                Configuraciones
-              </Typography>
-              <Typography variant="body2" className="text-muted-foreground">
-                Configura el sistema y gestiona usuarios.
-              </Typography>
+          {/* Empty State */}
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-6 mb-6">
+              <HomeIcon className="w-16 h-16 text-gray-400 dark:text-gray-500" />
             </div>
-          )}
+            
+            <Typography variant="h2" className="text-2xl font-semibold text-foreground mb-4">
+              Próximamente
+            </Typography>
+            
+            <Typography variant="body1" className="text-muted-foreground text-center max-w-md">
+              Estamos trabajando en esta sección. Pronto podrás ver un dashboard completo 
+              con métricas, estadísticas y acceso rápido a todas las funcionalidades.
+            </Typography>
+          </div>
         </div>
       </div>
     </Layout>

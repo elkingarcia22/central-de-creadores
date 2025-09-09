@@ -1,5 +1,5 @@
 import { useRol } from '../contexts/RolContext';
-import { Layout, Typography } from '../components/ui';
+import { Layout, Typography, PageHeader } from '../components/ui';
 import { MetricasIcon } from '../components/icons';
 
 export default function MetricasPage() {
@@ -22,31 +22,30 @@ export default function MetricasPage() {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-          <Typography variant="h1" className="text-3xl font-bold text-foreground">
-            Métricas
-          </Typography>
-          <Typography variant="body1" className="text-muted-foreground mt-2">
-            Análisis y reportes del sistema
-          </Typography>
-        </div>
+      <div className="py-10 px-4">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header */}
+          <PageHeader
+            title="Métricas"
+            subtitle="Análisis y reportes del sistema"
+            color="orange"
+          />
 
-        {/* Empty State */}
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-6 mb-6">
-            <MetricasIcon className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+          {/* Empty State */}
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-full p-6 mb-6">
+              <MetricasIcon className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+            </div>
+            
+            <Typography variant="h2" className="text-2xl font-semibold text-foreground mb-4">
+              Próximamente
+            </Typography>
+            
+            <Typography variant="body1" className="text-muted-foreground text-center max-w-md">
+              Estamos trabajando en esta sección. Pronto podrás ver métricas detalladas, 
+              reportes y análisis de tu sistema.
+            </Typography>
           </div>
-          
-          <Typography variant="h2" className="text-2xl font-semibold text-foreground mb-4">
-            Próximamente
-          </Typography>
-          
-          <Typography variant="body1" className="text-muted-foreground text-center max-w-md">
-            Estamos trabajando en esta sección. Pronto podrás ver métricas detalladas, 
-            reportes y análisis de tu sistema.
-          </Typography>
         </div>
       </div>
     </Layout>

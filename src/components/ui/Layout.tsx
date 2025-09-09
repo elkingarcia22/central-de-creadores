@@ -12,7 +12,7 @@ import TopNavigation from './TopNavigation';
 import UserMenu from './UserMenu';
 import MobileNavigation from './MobileNavigation';
 import {
-  DashboardIcon,
+  HomeIcon,
   InvestigacionesIcon,
   ReclutamientoIcon,
   SesionesIcon,
@@ -83,7 +83,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   // Configuración de menús principales por rol
   const menuConfig = {
     administrador: [
-      { label: 'Home', href: '/home', icon: <DashboardIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-muted-foreground" /> },
@@ -93,7 +93,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     investigador: [
-      { label: 'Home', href: '/home', icon: <DashboardIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-muted-foreground" /> },
@@ -103,14 +103,14 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     reclutador: [
-      { label: 'Home', href: '/home', icon: <DashboardIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-muted-foreground" /> },
     ],
     agendador: [
-      { label: 'Home', href: '/home', icon: <DashboardIcon className="w-6 h-6 text-muted-foreground" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-muted-foreground" /> },
       { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-muted-foreground" /> },
