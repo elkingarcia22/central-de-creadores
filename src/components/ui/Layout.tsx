@@ -160,10 +160,16 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const handleCloseEditModal = () => setEditModalOpen(false);
 
   // Handler para navegación desde el sidebar
-  const handleSidebarNavigation = (href: string) => {
+  const handleSidebarNavigation = (href: string | undefined) => {
     console.log('🔄 Navegando desde sidebar a:', href);
     console.log('🔄 Ruta actual:', router.asPath);
     console.log('🔄 Router ready:', router.isReady);
+    
+    // Si no hay href, no navegar (solo desplegar submenú)
+    if (!href) {
+      console.log('ℹ️ Sin href, solo desplegando submenú');
+      return;
+    }
     
     // Forzar la navegación
     router.push(href).then(() => {

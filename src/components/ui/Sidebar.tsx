@@ -10,9 +10,10 @@ import { SunIcon, MoonIcon, SettingsIcon, LogoutIcon, ChevronLeftIcon, ChevronRi
 
 interface SidebarItem {
   label: string;
-  href: string;
+  href?: string;
   icon?: React.ReactNode;
   isActive?: boolean;
+  subMenu?: SidebarItem[];
 }
 
 interface SidebarUser {
@@ -28,7 +29,7 @@ interface SidebarProps {
   utilityItems?: SidebarItem[];
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
-  onItemClick?: (href: string) => void;
+  onItemClick?: (href: string | undefined) => void;
   className?: string;
   user?: SidebarUser;
   onLogout?: () => void;
