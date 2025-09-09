@@ -64,12 +64,12 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
 
     if (action === 'delete') {
       // Eliminar evento de Google Calendar
-      console.log(`🔍 Buscando evento para eliminar: sesion_id=${reclutamientoId}, user_id=${userId}`);
+      console.log(`🔍 Buscando evento para eliminar: reclutamiento_id=${reclutamientoId}, user_id=${userId}`);
       
       const { data: existingEvent, error: existingEventError } = await supabase
         .from('google_calendar_events')
         .select('google_event_id')
-        .eq('sesion_id', reclutamientoId)
+        .eq('reclutamiento_id', reclutamientoId)
         .eq('user_id', userId)
         .single();
 
@@ -92,7 +92,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
           await supabase
             .from('google_calendar_events')
             .delete()
-            .eq('sesion_id', reclutamientoId)
+            .eq('reclutamiento_id', reclutamientoId)
             .eq('user_id', userId);
 
           console.log(`✅ Evento eliminado de Google Calendar: ${existingEvent.google_event_id}`);
@@ -168,7 +168,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
       const { data: existingEvent } = await supabase
         .from('google_calendar_events')
         .select('google_event_id')
-        .eq('sesion_id', reclutamientoId)
+        .eq('reclutamiento_id', reclutamientoId)
         .eq('user_id', userId)
         .single();
 
@@ -189,7 +189,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
             sync_status: 'synced',
             last_sync_at: new Date().toISOString()
           })
-          .eq('sesion_id', reclutamientoId)
+          .eq('reclutamiento_id', reclutamientoId)
           .eq('user_id', userId);
           
       } else {
@@ -204,7 +204,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
         // Guardar referencia en la base de datos
         console.log(`💾 Guardando referencia en google_calendar_events:`, {
           user_id: userId,
-          sesion_id: reclutamientoId,
+          reclutamiento_id: reclutamientoId,
           google_event_id: createdEvent.data.id,
           google_calendar_id: 'primary',
           sync_status: 'synced',
@@ -215,7 +215,7 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
           .from('google_calendar_events')
           .insert({
             user_id: userId,
-            sesion_id: reclutamientoId,
+            reclutamiento_id: reclutamientoId,
             google_event_id: createdEvent.data.id,
             google_calendar_id: 'primary',
             sync_status: 'synced',
