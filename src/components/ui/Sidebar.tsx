@@ -77,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-4 px-2' : 'py-3 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <nav className={`flex-1 py-4 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
+      <nav className={`flex-1 py-2 space-y-1 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
+      <div className={`py-2 border-t border-slate-100 dark:border-zinc-700 space-y-1 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
