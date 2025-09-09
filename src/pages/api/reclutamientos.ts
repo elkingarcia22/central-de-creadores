@@ -170,11 +170,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const userId = reclutador_id;
         
         if (userId) {
+          console.log('🔄 Iniciando sincronización con Google Calendar:', {
+            userId,
+            reclutamientoId: data.id,
+            action: 'create'
+          });
+          
           const syncResult = await autoSyncCalendar({
             userId,
             reclutamientoId: data.id,
             action: 'create'
           });
+          
+          console.log('📅 Resultado de sincronización:', syncResult);
           
           if (syncResult.success) {
             console.log('✅ Sincronización automática exitosa');
