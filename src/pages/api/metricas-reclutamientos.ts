@@ -1,10 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const supabase = supabaseUrl && supabaseServiceKey 
+  ? createClient(supabaseUrl, supabaseServiceKey)
+  : null;
 
 // Función para calcular el riesgo de reclutamiento basado en la fecha de inicio
 const calcularRiesgoReclutamiento = (fechaInicio: string): { riesgo: string; color: string; diasRestantes: number } => {
@@ -39,6 +41,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    if (!supabase) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return res.status(500).json({ error: 'Cliente de Supabase no configurado' });
+    }
+
     const { usuarioId, esAdmin, rol } = req.query;
     
     console.log('🔍 Obteniendo métricas de reclutamientos desde vista...');

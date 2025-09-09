@@ -7,12 +7,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 const supabaseKey = supabaseServiceKey || supabaseAnonKey
 
-if (!supabaseUrl || !supabaseKey) {
-	throw new Error('Faltan las credenciales de Supabase para el servidor')
-}
-
-const supabaseServer = createClient(supabaseUrl, supabaseKey, {
-	auth: { persistSession: false }
-})
+// Crear cliente solo si las credenciales están disponibles
+const supabaseServer = (supabaseUrl && supabaseKey) 
+  ? createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    })
+  : null
 
 export { supabaseServer } 

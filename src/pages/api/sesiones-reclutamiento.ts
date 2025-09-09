@@ -9,6 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    if (!supabaseServer) {
+      console.error('❌ Cliente de Supabase no disponible');
+      return res.status(500).json({ error: 'Cliente de Supabase no configurado' });
+    }
+
     console.log('🔄 Obteniendo todas las sesiones de reclutamiento...');
 
     // Obtener todos los reclutamientos con información completa
