@@ -1,151 +1,345 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { NextPage } from 'next';
+import { useFastUser } from '../contexts/FastUserContext';
+import { Layout, Typography, Button, Card, Badge } from '../components/ui';
+import { CheckCircleIcon, XCircleIcon, AlertCircleIcon, RefreshIcon } from '../components/icons';
 
-const DebugSyncPage = () => {
+interface SyncStatus {
+  success: boolean;
+  userId: string;
+  analysis: {
+    totalGoogleEvents: number;
+    totalReclutamientos: number;
+    hasGoogleTokens: boolean;
+    googleEvents: any[];
+    reclutamientos: any[];
+  };
+  problems: string[];
+  summary: {
+    googleCalendarConnected: boolean;
+    totalReclutamientos: number;
+    totalGoogleEvents: number;
+    unsyncedReclutamientos: number;
+    hasProblems: boolean;
+  };
+}
+
+interface ForceSyncResult {
+  success: boolean;
+  message: string;
+  total: number;
+  synced: number;
+  errors: number;
+  results: any[];
+}
+
+const DebugSyncPage: NextPage = () => {
+  const { userId, isAuthenticated } = useFastUser();
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const [forceSyncResult, setForceSyncResult] = useState<ForceSyncResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleTest = async () => {
+  const checkSyncStatus = async () => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
     setLoading(true);
-    try {
-      const response = await fetch('/api/google-calendar/debug-sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: '9b1ef1eb-fdb4-410f-ab22-bfedc68294d6' }) // Usuario que tiene reclutamientos
-      });
+    setError(null);
 
+    try {
+      const response = await fetch(`/api/check-sync-status?userId=${userId}`);
       const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      console.error('Error:', error);
-      setResult({ error: 'Error en la petición', details: error });
+
+      if (data.success) {
+        setSyncStatus(data);
+      } else {
+        setError(data.error || 'Error verificando estado de sincronización');
+      }
+    } catch (err) {
+      setError('Error de conexión al verificar estado');
     } finally {
       setLoading(false);
     }
   };
 
+  const forceSyncAll = async () => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/force-sync-all', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setForceSyncResult(data);
+        // Refrescar el estado después de la sincronización
+        setTimeout(checkSyncStatus, 1000);
+      } else {
+        setError(data.error || 'Error en sincronización forzada');
+      }
+    } catch (err) {
+      setError('Error de conexión en sincronización forzada');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (userId && isAuthenticated) {
+      checkSyncStatus();
+    }
+  }, [userId, isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <Layout>
+        <div className="py-8">
+          <div className="max-w-4xl mx-auto">
+            <Typography variant="h1" className="mb-4">
+              Debug de Sincronización
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Debes estar autenticado para usar esta herramienta.
+            </Typography>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
-    <div style={{ padding: '24px', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h1>Diagnóstico de Sincronización</h1>
-        <button
-          onClick={handleTest}
-          disabled={loading}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: loading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {loading ? 'Ejecutando...' : 'Ejecutar Diagnóstico'}
-        </button>
-      </div>
+    <Layout>
+      <div className="py-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div>
+            <Typography variant="h1" className="mb-2">
+              Debug de Sincronización Google Calendar
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Herramienta para diagnosticar problemas de sincronización con Google Calendar
+            </Typography>
+          </div>
 
-      <div style={{ 
-        padding: '16px', 
-        border: '1px solid #ddd', 
-        borderRadius: '8px',
-        marginBottom: '24px',
-        backgroundColor: '#f9f9f9'
-      }}>
-        <h2>Información del Diagnóstico</h2>
-        <p><strong>API:</strong> /api/google-calendar/debug-sync</p>
-        <p><strong>Usuario de prueba:</strong> 9b1ef1eb-fdb4-410f-ab22-bfedc68294d6 (a@gmail.com - tiene reclutamientos)</p>
-        <p><strong>Descripción:</strong> Diagnostica todos los pasos de la sincronización con Google Calendar</p>
-      </div>
-
-      {result && (
-        <div style={{ 
-          padding: '16px', 
-          border: '1px solid #ddd', 
-          borderRadius: '8px',
-          backgroundColor: result.success ? '#f0f8f0' : '#fff5f5'
-        }}>
-          <h2>Resultado del Diagnóstico</h2>
-          
-          {result.success ? (
-            <div>
-              <div style={{ 
-                padding: '16px', 
-                backgroundColor: '#d4edda', 
-                color: '#155724',
-                borderRadius: '4px',
-                marginBottom: '16px'
-              }}>
-                ✅ Diagnóstico completado exitosamente
+          {/* User Info */}
+          <Card variant="elevated" padding="md">
+            <Typography variant="h3" className="mb-4">
+              Información del Usuario
+            </Typography>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Typography variant="body2" className="font-medium">User ID:</Typography>
+                <Typography variant="body2" className="font-mono text-sm bg-muted px-2 py-1 rounded">
+                  {userId}
+                </Typography>
               </div>
+              <div className="flex items-center gap-2">
+                <Typography variant="body2" className="font-medium">Estado:</Typography>
+                <Badge variant={isAuthenticated ? 'success' : 'error'}>
+                  {isAuthenticated ? 'Autenticado' : 'No autenticado'}
+                </Badge>
+              </div>
+            </div>
+          </Card>
+
+          {/* Actions */}
+          <Card variant="elevated" padding="md">
+            <Typography variant="h3" className="mb-4">
+              Acciones
+            </Typography>
+            <div className="flex gap-4">
+              <Button
+                onClick={checkSyncStatus}
+                disabled={loading}
+                variant="outline"
+              >
+                <RefreshIcon className="w-4 h-4 mr-2" />
+                Verificar Estado
+              </Button>
+              <Button
+                onClick={forceSyncAll}
+                disabled={loading || !syncStatus?.summary.googleCalendarConnected}
+                variant="primary"
+              >
+                <RefreshIcon className="w-4 h-4 mr-2" />
+                Forzar Sincronización
+              </Button>
+            </div>
+          </Card>
+
+          {/* Error */}
+          {error && (
+            <Card variant="elevated" padding="md" className="border-red-200 bg-red-50">
+              <div className="flex items-center gap-2">
+                <XCircleIcon className="w-5 h-5 text-red-600" />
+                <Typography variant="body1" className="text-red-800">
+                  {error}
+                </Typography>
+              </div>
+            </Card>
+          )}
+
+          {/* Loading */}
+          {loading && (
+            <Card variant="elevated" padding="md">
+              <div className="flex items-center justify-center py-4">
+                <RefreshIcon className="w-6 h-6 animate-spin mr-2" />
+                <Typography variant="body1">
+                  Procesando...
+                </Typography>
+              </div>
+            </Card>
+          )}
+
+          {/* Sync Status */}
+          {syncStatus && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Estado de Sincronización
+              </Typography>
               
-              <div>
-                <h3>Resumen:</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '16px' }}>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Tokens Encontrados:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.tokens_encontrados ? '✅ Sí' : '❌ No'}</span>
+              {/* Summary */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="text-center">
+                  <Typography variant="h2" className="text-2xl font-bold">
+                    {syncStatus.summary.totalReclutamientos}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Reclutamientos
+                  </Typography>
+                </div>
+                <div className="text-center">
+                  <Typography variant="h2" className="text-2xl font-bold">
+                    {syncStatus.summary.totalGoogleEvents}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    Eventos Google
+                  </Typography>
+                </div>
+                <div className="text-center">
+                  <Typography variant="h2" className="text-2xl font-bold">
+                    {syncStatus.summary.unsyncedReclutamientos}
+                  </Typography>
+                  <Typography variant="body2" color="secondary">
+                    No Sincronizados
+                  </Typography>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    {syncStatus.summary.googleCalendarConnected ? (
+                      <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <XCircleIcon className="w-6 h-6 text-red-600" />
+                    )}
                   </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Variables de Entorno:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.variables_entorno ? '✅ Sí' : '❌ No'}</span>
-                  </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Acceso Google Calendar:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.acceso_google_calendar ? '✅ Sí' : '❌ No'}</span>
-                  </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Reclutamientos Encontrados:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.reclutamientos_encontrados || 'N/A'}</span>
-                  </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Investigaciones Encontradas:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.investigaciones_encontradas || 'N/A'}</span>
-                  </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Participantes Encontrados:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.participantes_encontrados || 'N/A'}</span>
-                  </div>
-                  <div style={{ padding: '12px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-                    <strong>Evento de Prueba Creado:</strong><br />
-                    <span style={{ color: '#1976d2' }}>{result.resultados?.evento_prueba_creado ? '✅ Sí' : '❌ No'}</span>
-                  </div>
+                  <Typography variant="body2" color="secondary">
+                    Google Calendar
+                  </Typography>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div>
-              <div style={{ 
-                padding: '16px', 
-                backgroundColor: '#f8d7da', 
-                color: '#721c24',
-                borderRadius: '4px',
-                marginBottom: '16px'
-              }}>
-                ❌ Error en el diagnóstico
-              </div>
-              
+
+              {/* Problems */}
+              {syncStatus.problems.length > 0 && (
+                <div className="mb-6">
+                  <Typography variant="h4" className="mb-3">
+                    Problemas Encontrados
+                  </Typography>
+                  <div className="space-y-2">
+                    {syncStatus.problems.map((problem, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <AlertCircleIcon className="w-4 h-4 text-red-600" />
+                        <Typography variant="body2" className="text-red-800">
+                          {problem}
+                        </Typography>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reclutamientos */}
               <div>
-                <h3>Error:</h3>
-                <p style={{ color: '#dc3545' }}>{result.error}</p>
+                <Typography variant="h4" className="mb-3">
+                  Reclutamientos
+                </Typography>
+                <div className="space-y-2">
+                  {syncStatus.analysis.reclutamientos.map((reclutamiento) => (
+                    <div key={reclutamiento.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                      <div>
+                        <Typography variant="body2" className="font-medium">
+                          {reclutamiento.id}
+                        </Typography>
+                        <Typography variant="caption" color="secondary">
+                          {new Date(reclutamiento.fecha_sesion).toLocaleDateString()}
+                        </Typography>
+                      </div>
+                      <Badge variant={reclutamiento.hasGoogleEvent ? 'success' : 'error'}>
+                        {reclutamiento.hasGoogleEvent ? 'Sincronizado' : 'No Sincronizado'}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
               </div>
-              
-              <div>
-                <h3>Detalles:</h3>
-                <pre style={{ 
-                  backgroundColor: '#f5f5f5', 
-                  padding: '12px', 
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                  overflow: 'auto',
-                  border: '1px solid #ddd'
-                }}>
-                  {JSON.stringify(result.details, null, 2)}
-                </pre>
+            </Card>
+          )}
+
+          {/* Force Sync Result */}
+          {forceSyncResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Resultado de Sincronización Forzada
+              </Typography>
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <Typography variant="h2" className="text-2xl font-bold text-green-600">
+                      {forceSyncResult.synced}
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Sincronizados
+                    </Typography>
+                  </div>
+                  <div className="text-center">
+                    <Typography variant="h2" className="text-2xl font-bold text-red-600">
+                      {forceSyncResult.errors}
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Errores
+                    </Typography>
+                  </div>
+                  <div className="text-center">
+                    <Typography variant="h2" className="text-2xl font-bold">
+                      {forceSyncResult.total}
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      Total
+                    </Typography>
+                  </div>
+                </div>
+                
+                <Typography variant="body1" className="text-center">
+                  {forceSyncResult.message}
+                </Typography>
               </div>
-            </div>
+            </Card>
           )}
         </div>
-      )}
-    </div>
+      </div>
+    </Layout>
   );
 };
 
