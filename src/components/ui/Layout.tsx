@@ -223,7 +223,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         onItemClick={handleSidebarNavigation}
       />
       {/* Sidebar para desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 z-40 lg:w-16 hover:lg:w-64">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:flex z-40">
         <Sidebar
           title="Central de creadores"
           items={currentMenu}
@@ -237,7 +237,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         />
       </div>
       {/* Contenedor derecho: solo contenido principal */}
-      <div className="flex-1 flex flex-col transition-all duration-300 lg:ml-16 hover:lg:ml-64">
+      <div className="flex-1 flex flex-col lg:ml-16">
         {/* Contenido de la página */}
         <main className="flex-1 overflow-y-visible">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (isHovered) {
       timeoutId = setTimeout(() => {
         setIsExpanded(true);
-      }, 200); // Reducido a 200ms para respuesta más rápida
+      }, 150); // Reducido para respuesta más rápida
     } else {
       setIsExpanded(false); // Colapsar inmediatamente al quitar el hover
     }
@@ -73,11 +73,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 ${className}`}
+      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-300 ease-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-2' : 'py-4 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <nav className={`flex-1 py-4 space-y-2 transition-all duration-300 ease-out overflow-visible ${isExpanded ? 'px-2 delay-100' : 'px-1 delay-0'}`}>
+      <nav className={`flex-1 py-4 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-300 ease-out overflow-visible ${isExpanded ? 'px-2 delay-100' : 'px-1 delay-0'}`}>
+      <div className={`py-4 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
