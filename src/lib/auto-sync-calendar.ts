@@ -241,7 +241,8 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
 // Función para crear evento en Google Calendar
 async function createGoogleCalendarEvent(calendar: any, reclutamiento: any) {
   const startDate = new Date(reclutamiento.fecha_sesion);
-  const endDate = new Date(startDate.getTime() + (reclutamiento.duracion_sesion || 60) * 60000);
+  const duracion = reclutamiento.duracion_sesion && reclutamiento.duracion_sesion > 0 ? reclutamiento.duracion_sesion : 60;
+  const endDate = new Date(startDate.getTime() + duracion * 60000);
 
   // Determinar el participante
   let participanteNombre = 'Participante no asignado';
@@ -264,7 +265,7 @@ async function createGoogleCalendarEvent(calendar: any, reclutamiento: any) {
   // Crear descripción
   const descripcion = [
     `Participante: ${participanteNombre}`,
-    `Duración: ${reclutamiento.duracion_sesion || 60} minutos`,
+    `Duración: ${duracion} minutos`,
     reclutamiento.meet_link ? `Enlace Meet: ${reclutamiento.meet_link}` : '',
     `ID Reclutamiento: ${reclutamiento.id}`
   ].filter(Boolean).join('\n');
