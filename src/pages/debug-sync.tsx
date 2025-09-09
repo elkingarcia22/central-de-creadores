@@ -44,11 +44,22 @@ interface DebugReclutamientoResult {
   details?: string;
 }
 
+interface VerifyReclutamientoResult {
+  success: boolean;
+  reclutamiento: any;
+  access: any;
+  existingEvent: any;
+  debug: any;
+  error?: string;
+  details?: string;
+}
+
 const DebugSyncPage: NextPage = () => {
   const { userId, isAuthenticated } = useFastUser();
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [forceSyncResult, setForceSyncResult] = useState<ForceSyncResult | null>(null);
   const [debugResult, setDebugResult] = useState<DebugReclutamientoResult | null>(null);
+  const [verifyResult, setVerifyResult] = useState<VerifyReclutamientoResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,6 +149,31 @@ const DebugSyncPage: NextPage = () => {
       }
     } catch (err) {
       setError('Error de conexión al debuggear reclutamiento');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyReclutamiento = async (reclutamientoId: string) => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/verify-reclutamiento-exists?reclutamientoId=${reclutamientoId}&userId=${userId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setVerifyResult(data);
+      } else {
+        setError(data.error || 'Error verificando reclutamiento');
+      }
+    } catch (err) {
+      setError('Error de conexión al verificar reclutamiento');
     } finally {
       setLoading(false);
     }
@@ -336,14 +372,24 @@ const DebugSyncPage: NextPage = () => {
                           {reclutamiento.hasGoogleEvent ? 'Sincronizado' : 'No Sincronizado'}
                         </Badge>
                         {!reclutamiento.hasGoogleEvent && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => debugSpecificReclutamiento(reclutamiento.id)}
-                            disabled={loading}
-                          >
-                            Debug
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => verifyReclutamiento(reclutamiento.id)}
+                              disabled={loading}
+                            >
+                              Verificar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => debugSpecificReclutamiento(reclutamiento.id)}
+                              disabled={loading}
+                            >
+                              Debug
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -454,6 +500,76 @@ const DebugSyncPage: NextPage = () => {
                     {debugResult.details && (
                       <Typography variant="body2" className="text-red-800">
                         <strong>Detalles:</strong> {debugResult.details}
+                      </Typography>
+                    )}
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Verify Result */}
+          {verifyResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Resultado de Verificación
+              </Typography>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Typography variant="h4" className="mb-2">Reclutamiento</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>ID:</strong> {verifyResult.reclutamiento.id}</div>
+                      <div><strong>Fecha:</strong> {new Date(verifyResult.reclutamiento.fecha_sesion).toLocaleDateString()}</div>
+                      <div><strong>Duración:</strong> {verifyResult.reclutamiento.duracion_sesion} min</div>
+                      <div><strong>Reclutador ID:</strong> {verifyResult.reclutamiento.reclutador_id}</div>
+                      <div><strong>Participante ID:</strong> {verifyResult.reclutamiento.participantes_id || 'No'}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <Typography variant="h4" className="mb-2">Acceso</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Tu User ID:</strong> {verifyResult.access.userId}</div>
+                      <div><strong>Es Reclutador:</strong> {verifyResult.access.isReclutador ? '✅' : '❌'}</div>
+                      <div><strong>Es Responsable:</strong> {verifyResult.access.isResponsable ? '✅' : '❌'}</div>
+                      <div><strong>Es Implementador:</strong> {verifyResult.access.isImplementador ? '✅' : '❌'}</div>
+                      <div><strong>Tiene Acceso:</strong> {verifyResult.access.hasAccess ? '✅' : '❌'}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Typography variant="h4" className="mb-2">Debug Info</Typography>
+                  <div className="space-y-1 text-sm">
+                    <div><strong>Reclutamiento encontrado:</strong> {verifyResult.debug.reclutamientoFound ? '✅' : '❌'}</div>
+                    <div><strong>Participante encontrado:</strong> {verifyResult.debug.participanteFound ? '✅' : '❌'}</div>
+                    <div><strong>Evento existente:</strong> {verifyResult.debug.existingEventFound ? '✅' : '❌'}</div>
+                    <div><strong>User ID coincide:</strong> {verifyResult.debug.userIdMatches ? '✅' : '❌'}</div>
+                  </div>
+                </div>
+
+                {verifyResult.existingEvent && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Evento Existente</Typography>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        <strong>Google Event ID:</strong> {verifyResult.existingEvent.google_event_id}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Estado:</strong> {verifyResult.existingEvent.sync_status}
+                      </Typography>
+                    </div>
+                  </div>
+                )}
+
+                {verifyResult.error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <Typography variant="body2" className="text-red-800">
+                      <strong>Error:</strong> {verifyResult.error}
+                    </Typography>
+                    {verifyResult.details && (
+                      <Typography variant="body2" className="text-red-800">
+                        <strong>Detalles:</strong> {verifyResult.details}
                       </Typography>
                     )}
                   </div>
