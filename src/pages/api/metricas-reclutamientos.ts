@@ -41,19 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('🚀 Iniciando API metricas-reclutamientos');
-    console.log('🔧 Variables de entorno:', {
-      supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      supabaseServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      nodeEnv: process.env.NODE_ENV
-    });
-
     if (!supabase) {
       console.error('❌ Cliente de Supabase no disponible');
-      console.error('❌ Variables de entorno faltantes:', {
-        NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY
-      });
       return res.status(500).json({ error: 'Cliente de Supabase no configurado' });
     }
 
@@ -93,21 +82,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    console.log('🔍 Ejecutando consulta de investigaciones...');
     const { data: investigacionesPorAgendar, error: errorPorAgendar } = await queryInvestigaciones;
 
     if (errorPorAgendar) {
-      console.error('❌ Error obteniendo investigaciones por agendar:', errorPorAgendar);
-      console.error('❌ Detalles del error:', {
-        message: errorPorAgendar.message,
-        details: errorPorAgendar.details,
-        hint: errorPorAgendar.hint,
-        code: errorPorAgendar.code
-      });
-      return res.status(500).json({ 
-        error: 'Error obteniendo investigaciones por agendar',
-        details: errorPorAgendar.message 
-      });
+      console.error('Error obteniendo investigaciones por agendar:', errorPorAgendar);
+      return res.status(500).json({ error: 'Error obteniendo investigaciones por agendar' });
     }
 
     console.log('✅ Investigaciones por agendar obtenidas:', investigacionesPorAgendar?.length || 0);
@@ -151,22 +130,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .eq('investigacion_id', inv.id)
         .single();
 
-      // Obtener participantes reclutados (simplificado para evitar errores de join)
-      const { data: participantesData, error: errorParticipantes } = await supabase
+      // Obtener participantes reclutados (solo los que tienen participantes asignados y NO están en "Pendiente de agendamiento")
+      const { data: participantesData } = await supabase
         .from('reclutamientos')
         .select(`
           id, 
           participantes_id, 
           participantes_internos_id, 
           participantes_friend_family_id,
-          estado_agendamiento
+          estado_agendamiento,
+          estado_agendamiento_cat!inner(nombre)
         `)
         .eq('investigacion_id', inv.id)
-        .or('participantes_id.not.is.null,participantes_internos_id.not.is.null,participantes_friend_family_id.not.is.null');
-
-      if (errorParticipantes) {
-        console.error('❌ Error obteniendo participantes para investigación', inv.id, ':', errorParticipantes);
-      }
+        .or('participantes_id.not.is.null,participantes_internos_id.not.is.null,participantes_friend_family_id.not.is.null')
+        .neq('estado_agendamiento_cat.nombre', 'Pendiente de agendamiento');
 
       const participantes_reclutados = participantesData?.length || 0;
       const participantes_requeridos = libretoData?.numero_participantes || 0;
@@ -543,14 +520,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error) {
     console.error('❌ Error en métricas de reclutamientos:', error);
-    console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
-    console.error('❌ Error type:', typeof error);
-    console.error('❌ Error message:', error instanceof Error ? error.message : String(error));
-    
-    return res.status(500).json({ 
-      error: 'Error interno del servidor',
-      message: error instanceof Error ? error.message : String(error),
-      timestamp: new Date().toISOString()
-    });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 } 

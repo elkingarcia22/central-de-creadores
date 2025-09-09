@@ -63,7 +63,7 @@ export const useReclutamientoData = ({ id }: UseReclutamientoDataProps) => {
       loadingRef.current = true;
       setLoading(true);
       
-      const response = await fetch('/api/metricas-reclutamientos-simple');
+      const response = await fetch('/api/metricas-reclutamientos');
       if (response.ok) {
         const data = await response.json();
         const reclutamientoEncontrado = data.investigaciones?.find(
