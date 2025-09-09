@@ -119,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           if (!isExpanded) {
             return (
               <Tooltip 
-                key={item.href}
+                key={`tooltip-${item.href}`}
                 content={item.label} 
                 position="right"
                 delay={200}
@@ -129,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           }
 
-          return <div key={item.href}>{navItem}</div>;
+          return <div key={`nav-${item.href}`}>{navItem}</div>;
         })}
       </nav>
 
@@ -147,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           if (!isExpanded) {
             return (
               <Tooltip 
-                key={item.href}
+                key={`utility-tooltip-${item.href}`}
                 content={item.label} 
                 position="right"
                 delay={200}
@@ -157,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           }
 
-          return <div key={item.href}>{navItem}</div>;
+          return <div key={`utility-nav-${item.href}`}>{navItem}</div>;
         })}
 
         {/* Configuraciones del perfil - Removido, ahora está en el avatar */}
@@ -178,6 +178,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           if (!isExpanded) {
             return (
               <Tooltip 
+                key="theme-tooltip"
                 content={theme === 'dark' ? 'Tema claro' : 'Tema oscuro'} 
                 position="right"
                 delay={200}
@@ -187,7 +188,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           }
 
-          return <div>{navItem}</div>;
+          return <div key="theme-nav">{navItem}</div>;
         })()}
         
         {/* Cerrar sesión */}
@@ -207,6 +208,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           if (!isExpanded) {
             return (
               <Tooltip 
+                key="logout-tooltip"
                 content="Cerrar sesión" 
                 position="right"
                 delay={200}
@@ -216,7 +218,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           }
 
-          return <div>{navItem}</div>;
+          return <div key="logout-nav">{navItem}</div>;
         })()}
       </div>
     </div>

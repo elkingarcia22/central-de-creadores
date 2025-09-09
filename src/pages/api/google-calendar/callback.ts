@@ -94,34 +94,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('✅ Evento de prueba eliminado');
 
-      return res.status(200).json({
-        success: true,
-        message: 'Google Calendar conectado exitosamente',
-        user_id: userId,
-        tokens_saved: true,
-        test_event_created: true,
-        data: {
-          id: data.id,
-          user_id: data.user_id,
-          created_at: data.created_at
-        }
-      });
+      // Redirigir a la página de conexiones con parámetros de éxito
+      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
+      return res.redirect(302, redirectUrl);
 
     } catch (testError) {
       console.error('❌ Error en evento de prueba:', testError);
-      return res.status(200).json({
-        success: true,
-        message: 'Google Calendar conectado pero falló evento de prueba',
-        user_id: userId,
-        tokens_saved: true,
-        test_event_created: false,
-        test_error: testError instanceof Error ? testError.message : 'Error desconocido',
-        data: {
-          id: data.id,
-          user_id: data.user_id,
-          created_at: data.created_at
-        }
-      });
+      // Redirigir a la página de conexiones con parámetros de éxito (aunque falló el evento de prueba)
+      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
+      return res.redirect(302, redirectUrl);
     }
 
   } catch (error) {
