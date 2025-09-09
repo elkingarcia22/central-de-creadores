@@ -33,10 +33,22 @@ interface ForceSyncResult {
   results: any[];
 }
 
+interface DebugReclutamientoResult {
+  success: boolean;
+  reclutamiento: any;
+  tokens: any;
+  existingEvent: any;
+  syncResult: any;
+  debug: any;
+  error?: string;
+  details?: string;
+}
+
 const DebugSyncPage: NextPage = () => {
   const { userId, isAuthenticated } = useFastUser();
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [forceSyncResult, setForceSyncResult] = useState<ForceSyncResult | null>(null);
+  const [debugResult, setDebugResult] = useState<DebugReclutamientoResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,6 +106,38 @@ const DebugSyncPage: NextPage = () => {
       }
     } catch (err) {
       setError('Error de conexión en sincronización forzada');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const debugSpecificReclutamiento = async (reclutamientoId: string) => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/debug-specific-reclutamiento', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, reclutamientoId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setDebugResult(data);
+      } else {
+        setError(data.error || 'Error debuggeando reclutamiento');
+      }
+    } catch (err) {
+      setError('Error de conexión al debuggear reclutamiento');
     } finally {
       setLoading(false);
     }
@@ -287,9 +331,21 @@ const DebugSyncPage: NextPage = () => {
                           {new Date(reclutamiento.fecha_sesion).toLocaleDateString()}
                         </Typography>
                       </div>
-                      <Badge variant={reclutamiento.hasGoogleEvent ? 'success' : 'error'}>
-                        {reclutamiento.hasGoogleEvent ? 'Sincronizado' : 'No Sincronizado'}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={reclutamiento.hasGoogleEvent ? 'success' : 'error'}>
+                          {reclutamiento.hasGoogleEvent ? 'Sincronizado' : 'No Sincronizado'}
+                        </Badge>
+                        {!reclutamiento.hasGoogleEvent && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => debugSpecificReclutamiento(reclutamiento.id)}
+                            disabled={loading}
+                          >
+                            Debug
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -334,6 +390,74 @@ const DebugSyncPage: NextPage = () => {
                 <Typography variant="body1" className="text-center">
                   {forceSyncResult.message}
                 </Typography>
+              </div>
+            </Card>
+          )}
+
+          {/* Debug Result */}
+          {debugResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Resultado del Debug
+              </Typography>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Typography variant="h4" className="mb-2">Reclutamiento</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>ID:</strong> {debugResult.reclutamiento.id}</div>
+                      <div><strong>Fecha:</strong> {new Date(debugResult.reclutamiento.fecha_sesion).toLocaleDateString()}</div>
+                      <div><strong>Duración:</strong> {debugResult.reclutamiento.duracion_sesion} min</div>
+                      <div><strong>Meet Link:</strong> {debugResult.reclutamiento.meet_link || 'No'}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <Typography variant="h4" className="mb-2">Tokens</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Access Token:</strong> {debugResult.tokens.accessToken}</div>
+                      <div><strong>Refresh Token:</strong> {debugResult.tokens.refreshToken}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Typography variant="h4" className="mb-2">Debug Info</Typography>
+                  <div className="space-y-1 text-sm">
+                    <div><strong>Reclutamiento encontrado:</strong> {debugResult.debug.reclutamientoFound ? '✅' : '❌'}</div>
+                    <div><strong>Tokens encontrados:</strong> {debugResult.debug.tokensFound ? '✅' : '❌'}</div>
+                    <div><strong>Participante encontrado:</strong> {debugResult.debug.participanteFound ? '✅' : '❌'}</div>
+                    <div><strong>Evento existente:</strong> {debugResult.debug.existingEventFound ? '✅' : '❌'}</div>
+                  </div>
+                </div>
+
+                {debugResult.syncResult && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Resultado de Sincronización</Typography>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        <strong>Éxito:</strong> {debugResult.syncResult.success ? '✅' : '❌'}
+                      </Typography>
+                      {debugResult.syncResult.reason && (
+                        <Typography variant="body2">
+                          <strong>Razón:</strong> {debugResult.syncResult.reason}
+                        </Typography>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {debugResult.error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <Typography variant="body2" className="text-red-800">
+                      <strong>Error:</strong> {debugResult.error}
+                    </Typography>
+                    {debugResult.details && (
+                      <Typography variant="body2" className="text-red-800">
+                        <strong>Detalles:</strong> {debugResult.details}
+                      </Typography>
+                    )}
+                  </div>
+                )}
               </div>
             </Card>
           )}
