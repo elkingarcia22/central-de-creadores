@@ -53,6 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_sesion,
         hora_sesion,
         duracion_sesion,
+        duracion_sesion_type: typeof duracion_sesion,
         estado_agendamiento,
         meet_link
       });
@@ -70,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (reclutador_id !== undefined && reclutador_id !== '') datosParaInsertar.reclutador_id = reclutador_id;
       if (fecha_sesion !== undefined && fecha_sesion !== '') datosParaInsertar.fecha_sesion = fecha_sesion;
       if (hora_sesion !== undefined && hora_sesion !== '') datosParaInsertar.hora_sesion = hora_sesion;
-      if (duracion_sesion !== undefined && duracion_sesion !== '') datosParaInsertar.duracion_sesion = duracion_sesion;
+      if (duracion_sesion !== undefined && duracion_sesion !== '') datosParaInsertar.duracion_sesion = parseInt(duracion_sesion);
       if (estado_agendamiento !== undefined && estado_agendamiento !== '') datosParaInsertar.estado_agendamiento = estado_agendamiento;
       if (meet_link !== undefined && meet_link !== '') datosParaInsertar.meet_link = meet_link;
 

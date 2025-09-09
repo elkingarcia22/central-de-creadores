@@ -104,7 +104,7 @@ export default function CrearReclutamientoModal({
   const [responsableId, setResponsableId] = useState('');
   const [fechaSesion, setFechaSesion] = useState('');
   const [horaSesion, setHoraSesion] = useState('');
-  const [duracionSesion, setDuracionSesion] = useState('60'); // duración en minutos
+  const [duracionSesion, setDuracionSesion] = useState(''); // duración en minutos
   const [tipoParticipante, setTipoParticipante] = useState<'externo' | 'interno' | 'friend_family'>('externo');
   const [participanteSeleccionado, setParticipanteSeleccionado] = useState<Participante | null>(null);
   const [meetLink, setMeetLink] = useState('');

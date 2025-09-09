@@ -94,7 +94,7 @@ export default function AgregarParticipanteModal({
     }
     return '';
   });
-  const [duracionSesion, setDuracionSesion] = useState('60');
+  const [duracionSesion, setDuracionSesion] = useState('');
   const [tipoParticipante, setTipoParticipante] = useState<'externo' | 'interno' | 'friend_family'>('externo');
   const [participanteId, setParticipanteId] = useState('');
   const [meetLink, setMeetLink] = useState('');
