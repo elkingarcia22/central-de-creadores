@@ -12,11 +12,11 @@
   # Versión de Node.js
   NODE_VERSION = "18"
 
-# Redirecciones para SPA
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Redirecciones para Next.js (comentadas - Next.js maneja sus propias rutas)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
 
 # Headers de seguridad
 [[headers]]
@@ -49,9 +49,9 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
 
-# Configuración de funciones serverless (si se usan)
-[functions]
-  directory = "netlify/functions"
+# Configuración de funciones serverless (comentada - no se usan)
+# [functions]
+#   directory = "netlify/functions"
 
 # Configuración de plugins
 [[plugins]]
