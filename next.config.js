@@ -13,11 +13,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Configuración para export estático (Netlify)
-  output: 'export',
-  trailingSlash: true,
+  // Configuración para Vercel (SSR habilitado)
+  // output: 'export', // Comentado para Vercel
+  // trailingSlash: true, // Comentado para Vercel
   images: {
-    unoptimized: true
+    domains: ['localhost']
   }
 }
 
