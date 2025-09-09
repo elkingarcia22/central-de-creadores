@@ -156,53 +156,7 @@ const ConexionesPage: NextPage = () => {
     }
   };
 
-  const handleSync = async (connectionId: string) => {
-    if (connectionId === 'google-calendar') {
-      try {
-        showSuccess('Google Calendar', 'Iniciando sincronización...');
-        
-        const response = await fetch('/api/google-calendar/sync-reclutamientos-with-meet-fixed', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          showSuccess('Google Calendar', `Sincronización completada: ${result.synced} sesiones sincronizadas`);
-        } else {
-          showError('Google Calendar', result.error || 'Error en la sincronización');
-        }
-      } catch (error) {
-        showError('Error', 'No se pudo sincronizar con Google Calendar');
-      }
-    }
-  };
-
-  const handleCleanDuplicates = async (connectionId: string) => {
-    if (connectionId === 'google-calendar') {
-      try {
-        showSuccess('Google Calendar', 'Limpiando eventos duplicados...');
-        
-        const response = await fetch('/api/google-calendar/clean-duplicates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          showSuccess('Google Calendar', `Limpieza completada: ${result.deleted} eventos duplicados eliminados`);
-        } else {
-          showError('Google Calendar', result.error || 'Error en la limpieza');
-        }
-      } catch (error) {
-        showError('Error', 'No se pudo limpiar eventos duplicados');
-      }
-    }
-  };
+  // Funciones de sincronización manual eliminadas - ahora es automática
 
   return (
     <Layout>
@@ -246,34 +200,18 @@ const ConexionesPage: NextPage = () => {
                       <strong>Conectado desde:</strong> {new Date(connection.connected_at || '').toLocaleDateString()}
                     </Typography>
                   </div>
-                  {connection.last_sync && (
-                    <div className="flex items-center gap-2">
-                      <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                      <Typography variant="body2" className="text-foreground">
-                        <strong>Última sincronización:</strong> {new Date(connection.last_sync).toLocaleDateString()}
-                      </Typography>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <CheckCircleIcon className="w-4 h-4 text-green-600" />
+                    <Typography variant="body2" className="text-foreground">
+                      <strong>Sincronización automática:</strong> Activa - Los eventos se sincronizan automáticamente al crear, editar o eliminar sesiones
+                    </Typography>
+                  </div>
                 </div>
               )}
 
               <div className="flex gap-2">
                 {connection.connected ? (
                   <>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleSync(connection.id)}
-                    >
-                      Sincronizar
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCleanDuplicates(connection.id)}
-                    >
-                      Limpiar Duplicados
-                    </Button>
                     <Button
                       variant="danger"
                       size="sm"

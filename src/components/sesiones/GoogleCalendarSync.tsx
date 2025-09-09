@@ -9,7 +9,8 @@ import {
   XIcon, 
   AlertCircleIcon,
   SettingsIcon,
-  ExternalLinkIcon
+  ExternalLinkIcon,
+  CheckCircleIcon
 } from '../icons';
 
 interface GoogleCalendarSyncProps {
@@ -239,37 +240,22 @@ const GoogleCalendarSync: React.FC<GoogleCalendarSyncProps> = ({
           </div>
         )}
 
-        {/* Botones de acción */}
+        {/* Información de conexión */}
         <div className="flex items-center gap-2">
           {!isAuthenticated ? (
-            <Button
-              onClick={authenticate}
-              disabled={isLoading || authLoading}
-              className="flex-1"
-            >
-              <CalendarIcon className="w-4 h-4 mr-2" />
-              Conectar con Google
-            </Button>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <CalendarIcon className="w-4 h-4" />
+              <Typography variant="body2">
+                Google Calendar no conectado
+              </Typography>
+            </div>
           ) : (
-            <>
-              <Button
-                onClick={handleSync}
-                disabled={isLoading || !isEnabled}
-                variant="outline"
-                className="flex-1"
-              >
-                <SyncIcon className="w-4 h-4 mr-2" />
-                Sincronizar
-              </Button>
-              
-              <Button
-                onClick={signOut}
-                variant="ghost"
-                size="sm"
-              >
-                <SettingsIcon className="w-4 h-4" />
-              </Button>
-            </>
+            <div className="flex items-center gap-2 text-green-600">
+              <CheckCircleIcon className="w-4 h-4" />
+              <Typography variant="body2">
+                Google Calendar conectado - Sincronización automática activa
+              </Typography>
+            </div>
           )}
         </div>
 

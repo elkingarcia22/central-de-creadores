@@ -158,10 +158,35 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
         participanteFriendFamily
       });
 
-      // TEMPORAL: Crear evento directamente sin verificar existencia debido a problemas de foreign key
-      console.log('⚠️ Creando evento directamente (sin verificar existencia debido a problemas de foreign key)');
-      
-      try {
+      // Verificar si ya existe un evento para este reclutamiento
+      const { data: existingEvent } = await supabase
+        .from('google_calendar_events')
+        .select('google_event_id')
+        .eq('sesion_id', reclutamientoId)
+        .eq('user_id', userId)
+        .single();
+
+      if (existingEvent) {
+        // Actualizar evento existente
+        const updatedEvent = await calendar.events.update({
+          calendarId: 'primary',
+          eventId: existingEvent.google_event_id,
+          requestBody: googleEvent,
+        });
+
+        console.log(`✅ Evento actualizado en Google Calendar: ${updatedEvent.data.id}`);
+        
+        // Actualizar timestamp de sincronización
+        await supabase
+          .from('google_calendar_events')
+          .update({
+            sync_status: 'synced',
+            last_sync_at: new Date().toISOString()
+          })
+          .eq('sesion_id', reclutamientoId)
+          .eq('user_id', userId);
+          
+      } else {
         // Crear nuevo evento
         const createdEvent = await calendar.events.insert({
           calendarId: 'primary',
@@ -170,12 +195,17 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
 
         console.log(`✅ Evento creado en Google Calendar: ${createdEvent.data.id}`);
         
-        // TEMPORAL: No guardar referencia en google_calendar_events debido a problemas de foreign key
-        console.log('⚠️ No guardando referencia en google_calendar_events (problema de foreign key)');
-        
-      } catch (createError) {
-        console.error('Error creando evento en Google Calendar:', createError);
-        throw createError;
+        // Guardar referencia en la base de datos
+        await supabase
+          .from('google_calendar_events')
+          .insert({
+            user_id: userId,
+            sesion_id: reclutamientoId,
+            google_event_id: createdEvent.data.id,
+            google_calendar_id: 'primary',
+            sync_status: 'synced',
+            last_sync_at: new Date().toISOString()
+          });
       }
     }
 
