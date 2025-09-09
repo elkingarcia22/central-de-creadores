@@ -28,11 +28,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 2. Verificar reclutamientos del usuario
+    console.log('🔍 Buscando reclutamientos para userId:', userId);
+    
     const { data: reclutamientos, error: reclutamientosError } = await supabaseServer
       .from('reclutamientos')
       .select('id, fecha_sesion, reclutador_id, updated_at')
       .eq('reclutador_id', userId)
       .order('updated_at', { ascending: false });
+
+    console.log('📊 Resultado de búsqueda de reclutamientos:', { reclutamientos, reclutamientosError });
 
     if (reclutamientosError) {
       console.error('❌ Error obteniendo reclutamientos:', reclutamientosError);
