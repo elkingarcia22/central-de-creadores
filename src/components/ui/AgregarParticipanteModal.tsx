@@ -18,7 +18,7 @@ import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
-import { UsersIcon } from '../icons';
+import { UsersIcon, CheckCircleIcon, RefreshIcon } from '../icons';
 
 interface AgregarParticipanteModalProps {
   isOpen: boolean;
@@ -756,50 +756,49 @@ export default function AgregarParticipanteModal({
 
           <div>
             <FilterLabel>Enlace de Google Meet</FilterLabel>
-            <div className="flex space-x-2">
-              <div className="relative flex-1">
-                <Input
-                  type="url"
-                  value={meetLink}
-                  onChange={(e) => setMeetLink(e.target.value)}
-                  placeholder="https://meet.google.com/abc-defg-hij"
-                  disabled={loading}
-                  className={`flex-1 ${meetLink ? 'border-green-500 bg-green-50' : ''}`}
-                />
-                {meetLink && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                )}
+            <div className="space-y-3">
+              <div className="flex space-x-2">
+                <div className="relative flex-1">
+                  <Input
+                    type="url"
+                    value={meetLink}
+                    onChange={(e) => setMeetLink(e.target.value)}
+                    placeholder="https://meet.google.com/abc-defg-hij"
+                    disabled={loading}
+                    className={`flex-1 ${meetLink ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ''}`}
+                  />
+                  {meetLink && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleGenerateMeetLink}
+                  disabled={loading || generatingMeetLink}
+                  className="whitespace-nowrap"
+                >
+                  {generatingMeetLink ? (
+                    <>
+                      <RefreshIcon className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                      Generando...
+                    </>
+                  ) : (
+                    'Generar'
+                  )}
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleGenerateMeetLink}
-                disabled={loading || generatingMeetLink}
-                className="whitespace-nowrap"
-              >
-                {generatingMeetLink ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generando...
-                  </>
-                ) : meetLink ? (
-                  <>
-                    <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
+              
+              {meetLink && (
+                <div className="flex items-center gap-2">
+                  <Chip variant="terminada" size="sm">
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
                     ¡Generado!
-                  </>
-                ) : (
-                  'Generar'
-                )}
-              </Button>
+                  </Chip>
+                </div>
+              )}
             </div>
             <Typography variant="caption" color="secondary" className="mt-1 block">
               Enlace opcional para sesiones virtuales
