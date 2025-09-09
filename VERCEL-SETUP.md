@@ -30,6 +30,10 @@ Para que la aplicación funcione correctamente en Vercel, necesitas configurar l
 
 ## 📋 Pasos para Configurar en Vercel
 
+### ⚠️ IMPORTANTE: El archivo vercel.json ya incluye las variables de entorno
+
+El archivo `vercel.json` ya está configurado con las variables de entorno necesarias. Sin embargo, si necesitas configurarlas manualmente:
+
 ### 1. Acceder a la Configuración del Proyecto
 1. Ve a tu dashboard de Vercel
 2. Selecciona el proyecto "central-de-creadores"
@@ -44,6 +48,11 @@ Para cada variable de entorno:
 3. Ingresa el **Value** (el valor correspondiente)
 4. Selecciona los **Environments** (Production, Preview, Development)
 5. Haz clic en "Save"
+
+### 3. Verificar Configuración con API de Diagnóstico
+Después del deploy, puedes verificar la configuración visitando:
+- `https://tu-proyecto.vercel.app/api/debug-vercel-env`
+- `https://tu-proyecto.vercel.app/api/metricas-reclutamientos-fallback`
 
 ### 3. Verificar Configuración
 Después de agregar todas las variables:

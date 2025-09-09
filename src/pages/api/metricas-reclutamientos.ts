@@ -41,9 +41,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('🚀 Iniciando API metricas-reclutamientos');
+    console.log('🔧 Variables de entorno:', {
+      supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      nodeEnv: process.env.NODE_ENV,
+      vercel: process.env.VERCEL,
+      vercelEnv: process.env.VERCEL_ENV
+    });
+
     if (!supabase) {
       console.error('❌ Cliente de Supabase no disponible');
-      return res.status(500).json({ error: 'Cliente de Supabase no configurado' });
+      console.error('❌ Variables de entorno faltantes:', {
+        NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+      });
+      return res.status(500).json({ 
+        error: 'Cliente de Supabase no configurado',
+        details: 'Variables de entorno faltantes. Verifica NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY',
+        timestamp: new Date().toISOString()
+      });
     }
 
     const { usuarioId, esAdmin, rol } = req.query;
