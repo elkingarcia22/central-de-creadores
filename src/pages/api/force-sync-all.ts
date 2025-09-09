@@ -33,9 +33,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 2. Obtener todos los reclutamientos del usuario
     const { data: reclutamientos, error: reclutamientosError } = await supabaseServer
       .from('reclutamientos')
-      .select('id, fecha_sesion, reclutador_id, created_at')
+      .select('id, fecha_sesion, reclutador_id, updated_at')
       .eq('reclutador_id', userId)
-      .order('created_at', { ascending: false });
+      .order('updated_at', { ascending: false });
 
     if (reclutamientosError) {
       console.error('❌ Error obteniendo reclutamientos:', reclutamientosError);

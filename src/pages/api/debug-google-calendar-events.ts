@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Obtener información de reclutamientos para comparar
     const { data: reclutamientos, error: reclutamientosError } = await supabaseServer
       .from('reclutamientos')
-      .select('id, fecha_sesion, reclutador_id')
+      .select('id, fecha_sesion, reclutador_id, updated_at')
       .eq('reclutador_id', userId);
 
     if (reclutamientosError) {
