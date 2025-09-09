@@ -5,8 +5,8 @@
   # Comando de construcción
   command = "npm run build"
   
-  # Directorio de salida
-  publish = ".next"
+  # Directorio de salida para Next.js
+  publish = "out"
 
 [build.environment]
   # Versión de Node.js
