@@ -241,8 +241,24 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
 // Función para crear evento en Google Calendar
 async function createGoogleCalendarEvent(calendar: any, reclutamiento: any) {
   const startDate = new Date(reclutamiento.fecha_sesion);
+  
+  console.log('🔍 DEBUG DURACIÓN en createGoogleCalendarEvent:', {
+    duracion_sesion_original: reclutamiento.duracion_sesion,
+    duracion_sesion_type: typeof reclutamiento.duracion_sesion,
+    duracion_sesion_isNull: reclutamiento.duracion_sesion === null,
+    duracion_sesion_isUndefined: reclutamiento.duracion_sesion === undefined,
+    duracion_sesion_isZero: reclutamiento.duracion_sesion === 0,
+    duracion_sesion_isEmpty: reclutamiento.duracion_sesion === ''
+  });
+  
   const duracion = reclutamiento.duracion_sesion && reclutamiento.duracion_sesion > 0 ? reclutamiento.duracion_sesion : 60;
   const endDate = new Date(startDate.getTime() + duracion * 60000);
+  
+  console.log('🔍 DEBUG DURACIÓN calculada:', {
+    duracion_final: duracion,
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString()
+  });
 
   // Determinar el participante
   let participanteNombre = 'Participante no asignado';
