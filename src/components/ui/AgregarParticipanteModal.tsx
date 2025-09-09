@@ -545,6 +545,22 @@ export default function AgregarParticipanteModal({
         };
         console.log('📤 Datos a enviar:', datosParaEnviar);
         
+        // DEBUG: Enviar datos de duración para debug
+        try {
+          const debugResponse = await fetch('/api/debug-duracion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              duracion_sesion: duracionSesion,
+              duracion_sesion_type: typeof duracionSesion
+            })
+          });
+          const debugData = await debugResponse.json();
+          console.log('🔍 DEBUG DURACIÓN - Respuesta:', debugData);
+        } catch (debugError) {
+          console.error('❌ Error en debug de duración:', debugError);
+        }
+        
         const response = await fetch('/api/reclutamientos', {
           method: 'POST',
           headers: {
