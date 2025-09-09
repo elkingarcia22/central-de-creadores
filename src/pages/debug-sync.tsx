@@ -73,6 +73,7 @@ const DebugSyncPage: NextPage = () => {
   const [investigateResult, setInvestigateResult] = useState<InvestigateResult | null>(null);
   const [syncResult, setSyncResult] = useState<any>(null);
   const [verifyEventResult, setVerifyEventResult] = useState<any>(null);
+  const [tableStructureResult, setTableStructureResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -269,6 +270,21 @@ const DebugSyncPage: NextPage = () => {
     }
   };
 
+  const checkTableStructure = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/check-google-calendar-events-structure');
+      const result = await response.json();
+      setTableStructureResult(result);
+    } catch (error) {
+      setError('Error verificando estructura de la tabla');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (userId && isAuthenticated) {
       checkSyncStatus();
@@ -334,7 +350,7 @@ const DebugSyncPage: NextPage = () => {
             <div className="flex gap-4">
               <Button
                 onClick={checkSyncStatus}
-                disabled={loading}
+          disabled={loading}
                 variant="outline"
               >
                 <RefreshIcon className="w-4 h-4 mr-2" />
@@ -348,7 +364,14 @@ const DebugSyncPage: NextPage = () => {
                 <RefreshIcon className="w-4 h-4 mr-2" />
                 Forzar Sincronización
               </Button>
-            </div>
+              <Button
+                onClick={checkTableStructure}
+                disabled={loading}
+                variant="outline"
+              >
+                Verificar Estructura Tabla
+              </Button>
+      </div>
           </Card>
 
           {/* Error */}
@@ -359,7 +382,7 @@ const DebugSyncPage: NextPage = () => {
                 <Typography variant="body1" className="text-red-800">
                   {error}
                 </Typography>
-              </div>
+      </div>
             </Card>
           )}
 
@@ -654,12 +677,12 @@ const DebugSyncPage: NextPage = () => {
                           <div>Fin: {new Date(event.end.dateTime || event.end.date).toLocaleString()}</div>
                         </div>
                       ))}
-                    </div>
-                  </div>
+              </div>
+            </div>
                 )}
 
                 {verifyEventResult.database.googleEvent && (
-                  <div>
+            <div>
                     <Typography variant="h4" className="mb-2">Registro en Base de Datos</Typography>
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                       <div className="space-y-1 text-sm">
@@ -667,6 +690,64 @@ const DebugSyncPage: NextPage = () => {
                         <div><strong>Google Event ID:</strong> {verifyEventResult.database.googleEvent.google_event_id}</div>
                         <div><strong>Creado:</strong> {new Date(verifyEventResult.database.googleEvent.created_at).toLocaleString()}</div>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Table Structure Result */}
+          {tableStructureResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Estructura de la Tabla google_calendar_events
+              </Typography>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Typography variant="h4" className="mb-2">Información General</Typography>
+                    <div className="space-y-1 text-sm">
+                      <div><strong>Total Registros:</strong> {tableStructureResult.tableStructure.totalRecords}</div>
+                      <div><strong>Tiene sesion_id:</strong> {tableStructureResult.tableStructure.hasSesionId ? '✅ Sí' : '❌ No'}</div>
+                      <div><strong>Tiene reclutamiento_id:</strong> {tableStructureResult.tableStructure.hasReclutamientoId ? '✅ Sí' : '❌ No'}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <Typography variant="h4" className="mb-2">Recomendación</Typography>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <Typography variant="body2" className="text-blue-700 dark:text-blue-300">
+                        {tableStructureResult.recommendation}
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+
+                {tableStructureResult.tableStructure.sampleRecord && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Registro de Ejemplo</Typography>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <pre className="text-sm overflow-auto">
+                        {JSON.stringify(tableStructureResult.tableStructure.sampleRecord, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {tableStructureResult.tableStructure.allRecords.length > 0 && (
+                  <div>
+                    <Typography variant="h4" className="mb-2">Todos los Registros</Typography>
+                    <div className="space-y-2 max-h-60 overflow-auto">
+                      {tableStructureResult.tableStructure.allRecords.map((record: any, index: number) => (
+                        <div key={index} className="p-2 bg-muted rounded text-sm">
+                          <div><strong>ID:</strong> {record.id}</div>
+                          <div><strong>User ID:</strong> {record.user_id}</div>
+                          <div><strong>Sesión ID:</strong> {record.sesion_id || 'N/A'}</div>
+                          <div><strong>Reclutamiento ID:</strong> {record.reclutamiento_id || 'N/A'}</div>
+                          <div><strong>Google Event ID:</strong> {record.google_event_id}</div>
+                          <div><strong>Última Sincronización:</strong> {new Date(record.last_sync_at).toLocaleString()}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -698,9 +779,9 @@ const DebugSyncPage: NextPage = () => {
                       <div><strong>Refresh Token:</strong> {debugResult.tokens.refreshToken}</div>
                     </div>
                   </div>
-                </div>
-                
-                <div>
+              </div>
+              
+              <div>
                   <Typography variant="h4" className="mb-2">Debug Info</Typography>
                   <div className="space-y-1 text-sm">
                     <div><strong>Reclutamiento encontrado:</strong> {debugResult.debug.reclutamientoFound ? '✅' : '❌'}</div>
@@ -770,9 +851,9 @@ const DebugSyncPage: NextPage = () => {
                       <div><strong>Tiene Acceso:</strong> {verifyResult.access.hasAccess ? '✅' : '❌'}</div>
                     </div>
                   </div>
-                </div>
-                
-                <div>
+              </div>
+              
+              <div>
                   <Typography variant="h4" className="mb-2">Debug Info</Typography>
                   <div className="space-y-1 text-sm">
                     <div><strong>Reclutamiento encontrado:</strong> {verifyResult.debug.reclutamientoFound ? '✅' : '❌'}</div>
@@ -812,7 +893,7 @@ const DebugSyncPage: NextPage = () => {
             </Card>
           )}
         </div>
-      </div>
+    </div>
     </Layout>
   );
 };
