@@ -54,12 +54,24 @@ interface VerifyReclutamientoResult {
   details?: string;
 }
 
+interface InvestigateResult {
+  success: boolean;
+  reclutamientoId: string;
+  userId: string;
+  analysis: any;
+  estaEnListaUsuario: boolean;
+  datos: any;
+  errores: any;
+}
+
 const DebugSyncPage: NextPage = () => {
   const { userId, isAuthenticated } = useFastUser();
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [forceSyncResult, setForceSyncResult] = useState<ForceSyncResult | null>(null);
   const [debugResult, setDebugResult] = useState<DebugReclutamientoResult | null>(null);
   const [verifyResult, setVerifyResult] = useState<VerifyReclutamientoResult | null>(null);
+  const [investigateResult, setInvestigateResult] = useState<InvestigateResult | null>(null);
+  const [syncResult, setSyncResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -174,6 +186,63 @@ const DebugSyncPage: NextPage = () => {
       }
     } catch (err) {
       setError('Error de conexión al verificar reclutamiento');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const investigateReclutamiento = async (reclutamientoId: string) => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/investigate-reclutamiento-ghost?userId=${userId}&reclutamientoId=${reclutamientoId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setInvestigateResult(data);
+      } else {
+        setError(data.error || 'Error investigando reclutamiento');
+      }
+    } catch (err) {
+      setError('Error de conexión al investigar reclutamiento');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const syncSpecificReclutamiento = async (reclutamientoId: string) => {
+    if (!userId) {
+      setError('No se pudo obtener el userId');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/sync-specific-reclutamiento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reclutamientoId, userId })
+      });
+      
+      const result = await response.json();
+      setSyncResult(result);
+      
+      // Refrescar el estado después de sincronizar
+      if (result.success) {
+        setTimeout(() => {
+          checkSyncStatus();
+        }, 1000);
+      }
+    } catch (error) {
+      setError('Error sincronizando reclutamiento');
     } finally {
       setLoading(false);
     }
@@ -376,6 +445,14 @@ const DebugSyncPage: NextPage = () => {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => investigateReclutamiento(reclutamiento.id)}
+                              disabled={loading}
+                            >
+                              Investigar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => verifyReclutamiento(reclutamiento.id)}
                               disabled={loading}
                             >
@@ -388,6 +465,14 @@ const DebugSyncPage: NextPage = () => {
                               disabled={loading}
                             >
                               Debug
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => syncSpecificReclutamiento(reclutamiento.id)}
+                              disabled={loading}
+                            >
+                              Sincronizar
                             </Button>
                           </div>
                         )}
@@ -436,6 +521,53 @@ const DebugSyncPage: NextPage = () => {
                 <Typography variant="body1" className="text-center">
                   {forceSyncResult.message}
                 </Typography>
+              </div>
+            </Card>
+          )}
+
+          {/* Sync Result */}
+          {syncResult && (
+            <Card variant="elevated" padding="md">
+              <Typography variant="h3" className="mb-4">
+                Resultado de Sincronización Específica
+              </Typography>
+              <div className="space-y-4">
+                {syncResult.success ? (
+                  <div className="text-center">
+                    <Typography variant="h2" className="text-2xl font-bold text-green-600 mb-2">
+                      ✅ Sincronización Exitosa
+                    </Typography>
+                    <Typography variant="body1" className="mb-4">
+                      {syncResult.message}
+                    </Typography>
+                    {syncResult.reclutamiento && (
+                      <div className="p-3 bg-muted rounded-lg">
+                        <Typography variant="body2">
+                          <strong>Reclutamiento:</strong> {syncResult.reclutamiento.id}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Fecha:</strong> {new Date(syncResult.reclutamiento.fecha_sesion).toLocaleDateString()}
+                        </Typography>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <Typography variant="h2" className="text-2xl font-bold text-red-600 mb-2">
+                      ❌ Error en Sincronización
+                    </Typography>
+                    <Typography variant="body1" className="mb-4">
+                      {syncResult.error || 'Error desconocido'}
+                    </Typography>
+                    {syncResult.details && (
+                      <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <Typography variant="body2" className="text-red-700 dark:text-red-300">
+                          <strong>Detalles:</strong> {syncResult.details}
+                        </Typography>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </Card>
           )}
