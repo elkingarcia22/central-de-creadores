@@ -64,27 +64,44 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
 
     if (action === 'delete') {
       // Eliminar evento de Google Calendar
-      const { data: existingEvent } = await supabase
+      console.log(`🔍 Buscando evento para eliminar: sesion_id=${reclutamientoId}, user_id=${userId}`);
+      
+      const { data: existingEvent, error: existingEventError } = await supabase
         .from('google_calendar_events')
         .select('google_event_id')
         .eq('sesion_id', reclutamientoId)
         .eq('user_id', userId)
         .single();
 
+      if (existingEventError) {
+        console.log(`⚠️ No se encontró evento en google_calendar_events:`, existingEventError.message);
+        console.log(`🔍 Esto puede ser normal si el evento no estaba sincronizado`);
+        return { success: true, reason: 'No event found in database' };
+      }
+
       if (existingEvent) {
-        await calendar.events.delete({
-          calendarId: 'primary',
-          eventId: existingEvent.google_event_id,
-        });
+        console.log(`🗑️ Eliminando evento de Google Calendar: ${existingEvent.google_event_id}`);
+        
+        try {
+          await calendar.events.delete({
+            calendarId: 'primary',
+            eventId: existingEvent.google_event_id,
+          });
 
-        // Eliminar referencia de la base de datos
-        await supabase
-          .from('google_calendar_events')
-          .delete()
-          .eq('sesion_id', reclutamientoId)
-          .eq('user_id', userId);
+          // Eliminar referencia de la base de datos
+          await supabase
+            .from('google_calendar_events')
+            .delete()
+            .eq('sesion_id', reclutamientoId)
+            .eq('user_id', userId);
 
-        console.log(`✅ Evento eliminado de Google Calendar: ${existingEvent.google_event_id}`);
+          console.log(`✅ Evento eliminado de Google Calendar: ${existingEvent.google_event_id}`);
+        } catch (deleteError) {
+          console.error(`❌ Error eliminando evento de Google Calendar:`, deleteError);
+          throw deleteError;
+        }
+      } else {
+        console.log(`⚠️ No se encontró evento para eliminar`);
       }
     } else {
       // Obtener datos completos del reclutamiento
@@ -196,7 +213,16 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
         console.log(`✅ Evento creado en Google Calendar: ${createdEvent.data.id}`);
         
         // Guardar referencia en la base de datos
-        await supabase
+        console.log(`💾 Guardando referencia en google_calendar_events:`, {
+          user_id: userId,
+          sesion_id: reclutamientoId,
+          google_event_id: createdEvent.data.id,
+          google_calendar_id: 'primary',
+          sync_status: 'synced',
+          last_sync_at: new Date().toISOString()
+        });
+        
+        const { error: insertError } = await supabase
           .from('google_calendar_events')
           .insert({
             user_id: userId,
@@ -206,6 +232,13 @@ export async function autoSyncCalendar({ userId, reclutamientoId, action }: Auto
             sync_status: 'synced',
             last_sync_at: new Date().toISOString()
           });
+
+        if (insertError) {
+          console.error(`❌ Error guardando referencia en google_calendar_events:`, insertError);
+          throw insertError;
+        } else {
+          console.log(`✅ Referencia guardada exitosamente en google_calendar_events`);
+        }
       }
     }
 
