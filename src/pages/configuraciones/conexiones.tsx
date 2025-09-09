@@ -120,9 +120,16 @@ const ConexionesPage: NextPage = () => {
   const handleConnect = async (connectionId: string) => {
     if (connectionId === 'google-calendar') {
       try {
-        // Redirigir a Google OAuth con el userId en el state
-        const authUrl = `/api/auth/google?userId=${userId}&state=${userId}`;
-        window.location.href = authUrl;
+        // Obtener URL de autorización de Google Calendar
+        const response = await fetch(`/api/google-calendar/auth-url?userId=${userId}`);
+        const data = await response.json();
+        
+        if (data.success && data.auth_url) {
+          // Redirigir a Google OAuth
+          window.location.href = data.auth_url;
+        } else {
+          showError('Error', 'No se pudo generar la URL de autorización');
+        }
       } catch (error) {
         showError('Error', 'No se pudo conectar con Google Calendar');
       }
