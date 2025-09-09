@@ -35,7 +35,7 @@ export interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Iniciar contraído por defecto
   const [isClient, setIsClient] = useState(false);
 
   // Inicializar el estado del sidebar solo en el cliente
@@ -44,7 +44,8 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     if (!isClient) {
       setIsClient(true);
       const saved = localStorage.getItem('sidebarCollapsed');
-      const initialState = saved ? JSON.parse(saved) : false;
+      // Cambiar el estado inicial a true (contraído) por defecto
+      const initialState = saved ? JSON.parse(saved) : true;
       console.log('Sidebar initial state:', initialState);
       setSidebarCollapsed(initialState);
     }
@@ -222,12 +223,12 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         onItemClick={handleSidebarNavigation}
       />
       {/* Sidebar para desktop */}
-      <div className={`hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 z-40 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'}`}>
+      <div className="hidden lg:fixed lg:inset-y-0 lg:flex transition-all duration-300 z-40 lg:w-16 hover:lg:w-64">
         <Sidebar
           title="Central de creadores"
           items={currentMenu}
           utilityItems={utilityItems}
-          isCollapsed={sidebarCollapsed}
+          isCollapsed={true}
           onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
           onItemClick={handleSidebarNavigation}
           user={userForMenus}
@@ -236,7 +237,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
         />
       </div>
       {/* Contenedor derecho: solo contenido principal */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
+      <div className="flex-1 flex flex-col transition-all duration-300 lg:ml-16 hover:lg:ml-64">
         {/* Contenido de la página */}
         <main className="flex-1 overflow-y-visible">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

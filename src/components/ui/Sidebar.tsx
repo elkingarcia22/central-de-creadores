@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   title = 'Central de creadores',
   items,
   utilityItems = [],
-  isCollapsed = false,
+  isCollapsed = true, // Cambiar por defecto a true (contraído)
   onToggleCollapse,
   onItemClick,
   className = '',
