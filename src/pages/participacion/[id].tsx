@@ -30,6 +30,8 @@ import { CrearPerfilamientoModal } from '../../components/participantes/CrearPer
 import EditarParticipanteModal from '../../components/ui/EditarParticipanteModal';
 import MeetTranscriptionCapture from '../../components/meet/MeetTranscriptionCapture';
 import TranscriptionViewer from '../../components/meet/TranscriptionViewer';
+import AutoTranscriptionManager from '../../components/meet/AutoTranscriptionManager';
+import SmartTranscriptionManager from '../../components/meet/SmartTranscriptionManager';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
 
 interface Participante {
@@ -2086,7 +2088,7 @@ export default function VistaParticipacion() {
                              </Typography>
                            </div>
                            
-                           <MeetTranscriptionCapture
+                           <SmartTranscriptionManager
                              meetLink={reclutamientoActual.meet_link}
                              reclutamientoId={reclutamientoActual.id}
                              onTranscriptionComplete={(transcription) => {

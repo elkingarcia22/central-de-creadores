@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '../ui';
-import { MicIcon, MicOffIcon, PlayIcon, PauseIcon, StopIcon } from '../icons';
+import { Button, Card } from '../ui';
+import { Typography } from '../ui';
+import { MicIcon, MicOffIcon, PlayIcon, PauseIcon, StopIcon, ClockIcon, VideoIcon } from '../icons';
+import { useToast } from '../../contexts/ToastContext';
+import { useMeetSessionDetection } from '../../hooks/useMeetSessionDetection';
 
-interface MeetTranscriptionCaptureProps {
+interface SmartTranscriptionManagerProps {
   meetLink: string;
   reclutamientoId: string;
   onTranscriptionComplete?: (transcription: string) => void;
   onError?: (error: string) => void;
-  autoStart?: boolean; // Nueva prop para iniciar automáticamente
 }
 
 interface TranscriptionSegment {
@@ -16,12 +18,11 @@ interface TranscriptionSegment {
   speaker?: string;
 }
 
-const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
+const SmartTranscriptionManager: React.FC<SmartTranscriptionManagerProps> = ({
   meetLink,
   reclutamientoId,
   onTranscriptionComplete,
-  onError,
-  autoStart = false
+  onError
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -29,11 +30,17 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
   const [segments, setSegments] = useState<TranscriptionSegment[]>([]);
   const [isSupported, setIsSupported] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [transcriptionStartTime, setTranscriptionStartTime] = useState<Date | null>(null);
+  const [autoStartAttempted, setAutoStartAttempted] = useState(false);
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
+  const { showSuccess, showError } = useToast();
+
+  // Usar el hook de detección de sesión
+  const { isActive: sessionActive, sessionStartTime, forceStartSession, forceEndSession } = useMeetSessionDetection(meetLink);
 
   useEffect(() => {
     // Verificar si el navegador soporta Web Speech API
@@ -63,7 +70,7 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
             const newSegment: TranscriptionSegment = {
               timestamp: Date.now() - startTimeRef.current,
               text: transcript.trim(),
-              speaker: 'Participante' // Por ahora genérico
+              speaker: 'Participante'
             };
             
             setSegments(prev => [...prev, newSegment]);
@@ -73,7 +80,6 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
         }
         
         // Actualizar transcripción en tiempo real
-        const currentTime = Date.now() - startTimeRef.current;
         setTranscription(prev => {
           const finalText = prev + finalTranscript;
           return finalText + interimTranscript;
@@ -108,19 +114,33 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
     };
   }, [isRecording, isPaused, onError]);
 
-  // Efecto para iniciar automáticamente si autoStart es true
+  // Efecto para iniciar automáticamente cuando se detecta una sesión activa
   useEffect(() => {
-    if (autoStart && isSupported && !isRecording && !error) {
-      console.log('🎤 Iniciando transcripción automáticamente...');
-      startTranscription();
+    if (sessionActive && isSupported && !isRecording && !error && !autoStartAttempted) {
+      console.log('🎯 Sesión de Meet detectada - iniciando transcripción automáticamente...');
+      setAutoStartAttempted(true);
+      
+      // Esperar un poco para que la sesión se estabilice
+      setTimeout(() => {
+        startTranscription();
+      }, 2000);
     }
-  }, [autoStart, isSupported, isRecording, error]);
+  }, [sessionActive, isSupported, isRecording, error, autoStartAttempted]);
+
+  // Efecto para detener automáticamente cuando se termina la sesión
+  useEffect(() => {
+    if (!sessionActive && isRecording) {
+      console.log('🏁 Sesión de Meet terminada - deteniendo transcripción automáticamente...');
+      stopTranscription();
+    }
+  }, [sessionActive, isRecording]);
 
   const startTranscription = async () => {
     try {
       setError(null);
       setTranscription('');
       setSegments([]);
+      setTranscriptionStartTime(new Date());
       startTimeRef.current = Date.now();
       
       // Solicitar permisos de micrófono
@@ -143,11 +163,13 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
         recognitionRef.current.start();
         setIsRecording(true);
         setIsPaused(false);
+        showSuccess('🎤 Transcripción automática iniciada');
       }
       
     } catch (error) {
       console.error('Error iniciando transcripción:', error);
-      setError('No se pudo acceder al micrófono');
+      setError('No se pudo acceder al micrófono. Por favor, permite el acceso al micrófono.');
+      showError('Error al acceder al micrófono');
       if (onError) onError('No se pudo acceder al micrófono');
     }
   };
@@ -156,6 +178,7 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
     if (recognitionRef.current && isRecording) {
       recognitionRef.current.stop();
       setIsPaused(true);
+      showSuccess('⏸️ Transcripción pausada');
     }
   };
 
@@ -163,6 +186,7 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
     if (recognitionRef.current && isPaused) {
       recognitionRef.current.start();
       setIsPaused(false);
+      showSuccess('▶️ Transcripción reanudada');
     }
   };
 
@@ -182,11 +206,13 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
       // Guardar transcripción en la base de datos
       if (transcription.trim()) {
         await saveTranscription();
+        showSuccess('✅ Transcripción guardada exitosamente');
       }
       
     } catch (error) {
       console.error('Error deteniendo transcripción:', error);
       setError('Error al detener la transcripción');
+      showError('Error al detener la transcripción');
     }
   };
 
@@ -222,7 +248,16 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
     } catch (error) {
       console.error('Error guardando transcripción:', error);
       setError('Error al guardar la transcripción');
+      showError('Error al guardar la transcripción');
     }
+  };
+
+  const formatDuration = (startTime: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - startTime.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffSecs = Math.floor((diffMs % 60000) / 1000);
+    return `${diffMins}:${diffSecs.toString().padStart(2, '0')}`;
   };
 
   if (!isSupported) {
@@ -238,83 +273,141 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        {!isRecording ? (
-          <Button
-            onClick={startTranscription}
-            variant="primary"
-            className="flex items-center gap-2"
-          >
-            <MicIcon className="w-4 h-4" />
-            Iniciar Transcripción
-          </Button>
-        ) : (
+      {/* Estado de la sesión y transcripción */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            {!isPaused ? (
-              <Button
-                onClick={pauseTranscription}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <PauseIcon className="w-4 h-4" />
-                Pausar
-              </Button>
-            ) : (
-              <Button
-                onClick={resumeTranscription}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <PlayIcon className="w-4 h-4" />
-                Reanudar
-              </Button>
-            )}
+            <VideoIcon className="w-5 h-5 text-green-600" />
+            <Typography variant="h3" className="text-gray-900">
+              Transcripción Inteligente
+            </Typography>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {/* Estado de la sesión */}
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
+              sessionActive 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-gray-100 text-gray-600'
+            }`}>
+              <div className={`w-2 h-2 rounded-full ${
+                sessionActive ? 'bg-green-500' : 'bg-gray-400'
+              }`}></div>
+              <span>{sessionActive ? 'Sesión Activa' : 'Sesión Inactiva'}</span>
+            </div>
             
+            {/* Duración de transcripción */}
+            {transcriptionStartTime && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <ClockIcon className="w-4 h-4" />
+                <span>Transcripción: {formatDuration(transcriptionStartTime)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Controles manuales */}
+        <div className="flex items-center gap-4 mb-4">
+          {!isRecording ? (
             <Button
-              onClick={stopTranscription}
-              variant="destructive"
+              onClick={startTranscription}
+              variant="primary"
               className="flex items-center gap-2"
             >
-              <StopIcon className="w-4 h-4" />
-              Detener
+              <MicIcon className="w-4 h-4" />
+              Iniciar Transcripción
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2">
+              {!isPaused ? (
+                <Button
+                  onClick={pauseTranscription}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <PauseIcon className="w-4 h-4" />
+                  Pausar
+                </Button>
+              ) : (
+                <Button
+                  onClick={resumeTranscription}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <PlayIcon className="w-4 h-4" />
+                  Reanudar
+                </Button>
+              )}
+              
+              <Button
+                onClick={stopTranscription}
+                variant="destructive"
+                className="flex items-center gap-2"
+              >
+                <StopIcon className="w-4 h-4" />
+                Detener y Guardar
+              </Button>
+            </div>
+          )}
+          
+          {/* Controles de testing */}
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={forceStartSession}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              Simular Sesión
+            </Button>
+            <Button
+              onClick={forceEndSession}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              Terminar Sesión
             </Button>
           </div>
-        )}
-        
+        </div>
+
+        {/* Estado de grabación */}
         {isRecording && (
-          <div className="flex items-center gap-2 text-red-600">
+          <div className="flex items-center gap-2 text-red-600 mb-4">
             <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">
               {isPaused ? 'Pausado' : 'Grabando...'}
             </span>
           </div>
         )}
-      </div>
 
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{error}</p>
-        </div>
-      )}
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
+        )}
+      </Card>
 
+      {/* Transcripción en tiempo real */}
       {transcription && (
-        <div className="space-y-3">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+        <Card className="p-4">
+          <Typography variant="h4" className="text-gray-900 mb-3">
             Transcripción en Tiempo Real:
-          </h4>
+          </Typography>
           <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg max-h-64 overflow-y-auto">
             <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
               {transcription}
             </p>
           </div>
-        </div>
+        </Card>
       )}
 
+      {/* Segmentos */}
       {segments.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+        <Card className="p-4">
+          <Typography variant="h4" className="text-gray-900 mb-3">
             Segmentos ({segments.length}):
-          </h4>
+          </Typography>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {segments.map((segment, index) => (
               <div key={index} className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-sm">
@@ -332,10 +425,10 @@ const MeetTranscriptionCapture: React.FC<MeetTranscriptionCaptureProps> = ({
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );
 };
 
-export default MeetTranscriptionCapture;
+export default SmartTranscriptionManager;
