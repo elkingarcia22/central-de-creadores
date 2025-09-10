@@ -53,6 +53,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isHovered, setIsHovered] = React.useState(false);
   const [isExpanded, setIsExpanded] = React.useState(false);
   
+  // Debug: Log del estado de expansión
+  React.useEffect(() => {
+    console.log('Sidebar expanded:', isExpanded, 'Hovered:', isHovered);
+  }, [isExpanded, isHovered]);
+  
   // Delay para la expansión
   React.useEffect(() => {
     let timeoutId: NodeJS.Timeout;
