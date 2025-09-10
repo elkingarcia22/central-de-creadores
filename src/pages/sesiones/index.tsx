@@ -451,6 +451,16 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
       if (sesion.meet_link) {
         console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
         
+        // Guardar información del reclutamiento en localStorage para el detector global
+        const reclutamientoData = {
+          id: sesion.id,
+          meet_link: sesion.meet_link,
+          titulo: sesion.titulo,
+          fecha: sesion.start
+        };
+        localStorage.setItem('currentReclutamiento', JSON.stringify(reclutamientoData));
+        console.log('💾 Información del reclutamiento guardada en localStorage:', reclutamientoData);
+        
         // Abrir Meet en nueva pestaña
         window.open(sesion.meet_link, '_blank');
         

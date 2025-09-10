@@ -52,6 +52,8 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
     currentReclutamientoId: null,
     currentMeetLink: null
   });
+  
+  const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -103,6 +105,14 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
       recognitionRef.current.onerror = (event) => {
         console.error('Error en reconocimiento de voz:', event.error);
         showError(`Error en transcripción: ${event.error}`);
+        
+        // Si es un error crítico, detener la transcripción
+        if (event.error === 'aborted' || event.error === 'network' || event.error === 'not-allowed') {
+          console.log('🛑 Error crítico detectado, deteniendo transcripción automáticamente');
+          setTimeout(() => {
+            stopTranscription();
+          }, 1000);
+        }
       };
       
       recognitionRef.current.onend = () => {
@@ -161,6 +171,12 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
           currentMeetLink: meetLink
         });
         
+        // Timeout de seguridad para detener automáticamente después de 2 horas
+        safetyTimeoutRef.current = setTimeout(() => {
+          console.log('⏰ Timeout de seguridad alcanzado, deteniendo transcripción');
+          stopTranscription();
+        }, 2 * 60 * 60 * 1000); // 2 horas
+        
         showSuccess('🎤 Transcripción automática iniciada');
         console.log('🎤 Transcripción global iniciada para:', reclutamientoId);
       }
@@ -173,6 +189,12 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
 
   const stopTranscription = async () => {
     try {
+      // Limpiar timeout de seguridad
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+      
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
