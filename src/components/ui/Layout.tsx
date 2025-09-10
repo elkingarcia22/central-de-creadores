@@ -260,11 +260,11 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
             </div>
           </main>
         </div>
+        
+        {/* Componentes globales de transcripción */}
+        <GlobalTranscriptionWrapper />
       </div>
       </InlineEditProvider>
-      
-      {/* Componentes globales de transcripción */}
-      <GlobalTranscriptionWrapper />
     </GlobalTranscriptionProvider>
   );
 }; 
