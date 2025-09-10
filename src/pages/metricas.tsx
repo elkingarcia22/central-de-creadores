@@ -45,9 +45,9 @@ export default function MetricasPage() {
               Estamos trabajando en esta sección. Pronto podrás ver métricas detalladas, 
               reportes y análisis de tu sistema.
             </Typography>
-          </div>
+        </div>
         </div>
       </div>
     </Layout>
   );
-}
+} 

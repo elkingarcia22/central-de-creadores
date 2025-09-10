@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer } from '../../../api/supabase-server';
+import { simpleSyncCalendar } from '../../../lib/simple-sync-calendar';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -92,6 +93,29 @@ async function updateSesion(req: NextApiRequest, res: NextApiResponse, id: strin
     }
 
     console.log('✅ Sesión actualizada:', updatedSesion);
+    
+    // Sincronizar con Google Calendar usando Simple Sync
+    try {
+      console.log('🔄 Iniciando sincronización con Google Calendar (Simple Sync)...');
+      console.log('🔍 Datos para sincronización:', {
+        userId: updatedSesion.reclutador_id,
+        reclutamientoId: id,
+        action: 'update',
+        sesion: updatedSesion
+      });
+      
+      const syncResult = await simpleSyncCalendar({
+        userId: updatedSesion.reclutador_id,
+        reclutamientoId: id,
+        action: 'update',
+        reclutamiento: updatedSesion // Pasar los datos completos del reclutamiento
+      });
+      console.log('📊 Resultado de sincronización Simple Sync:', syncResult);
+    } catch (syncError) {
+      console.error('❌ Error en sincronización Simple Sync:', syncError);
+      // No fallar la operación por error de sincronización
+    }
+    
     return res.status(200).json({ sesion: updatedSesion });
   } catch (error) {
     console.error('Error en updateSesion:', error);
@@ -103,10 +127,10 @@ async function deleteSesion(req: NextApiRequest, res: NextApiResponse, id: strin
   try {
     console.log('🗑️ Eliminando sesión:', id);
     
-    // Validar que la sesión existe
+    // Validar que la sesión existe y obtener el reclutador_id
     const { data: existingSesion, error: fetchError } = await supabaseServer
       .from('reclutamientos')
-      .select('id')
+      .select('id, reclutador_id')
       .eq('id', id)
       .single();
 
@@ -115,7 +139,21 @@ async function deleteSesion(req: NextApiRequest, res: NextApiResponse, id: strin
       return res.status(404).json({ error: 'Sesión no encontrada' });
     }
 
-    // Eliminar la sesión
+    // Sincronizar eliminación con Google Calendar ANTES de eliminar de la base de datos
+    try {
+      console.log('🔄 Iniciando sincronización de eliminación con Google Calendar (Simple Sync)...');
+      const syncResult = await simpleSyncCalendar({
+        userId: existingSesion.reclutador_id || '', // Usar el reclutador_id de la sesión eliminada
+        reclutamientoId: id,
+        action: 'delete'
+      });
+      console.log('📊 Resultado de sincronización de eliminación Simple Sync:', syncResult);
+    } catch (syncError) {
+      console.error('❌ Error en sincronización de eliminación Simple Sync:', syncError);
+      // No fallar la operación por error de sincronización
+    }
+
+    // Eliminar la sesión de la base de datos
     const { error: deleteError } = await supabaseServer
       .from('reclutamientos')
       .delete()
@@ -127,6 +165,7 @@ async function deleteSesion(req: NextApiRequest, res: NextApiResponse, id: strin
     }
 
     console.log('✅ Sesión eliminada:', id);
+    
     return res.status(200).json({ message: 'Sesión eliminada exitosamente' });
   } catch (error) {
     console.error('Error en deleteSesion:', error);

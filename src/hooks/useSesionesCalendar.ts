@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Sesion, SesionEvent } from '../types/sesiones';
 import { getTipoParticipanteVariant } from '../utils/tipoParticipanteUtils';
 
@@ -47,9 +47,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
     canceladas: 0
   });
 
-  // Convertir sesiones a eventos de calendario
-  console.log('🔄 [EVENTS] Recalculando eventos del calendario con', sesiones.length, 'sesiones');
-  const sesionesEventos: SesionEvent[] = sesiones
+  // Convertir sesiones a eventos de calendario (memoizado para mejor rendimiento)
+  const sesionesEventos: SesionEvent[] = useMemo(() => {
+    console.log('🔄 [EVENTS] Recalculando eventos del calendario con', sesiones.length, 'sesiones');
+    return sesiones
     .filter(sesion => sesion.fecha_programada) // Filtrar sesiones sin fecha
     .map(sesion => {
       const start = new Date(sesion.fecha_programada);
@@ -87,13 +88,34 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       responsable_real: (sesion as any).responsable_real,
       implementador_real: (sesion as any).implementador_real,
       meet_link: (sesion as any).meet_link,
+      hora_sesion: (sesion as any).hora_sesion, // Agregar hora_sesion al mapeo
       // Mapear reclutador para el modal de edición
-      reclutador: (sesion as any).reclutador || (sesion as any).responsable_real ? {
-        id: (sesion as any).reclutador_id || 'unknown',
-        full_name: (sesion as any).responsable_real || (sesion as any).moderador_nombre || 'Sin responsable',
-        email: (sesion as any).reclutador?.email || '',
-        avatar_url: (sesion as any).reclutador?.avatar_url || ''
-      } : null,
+      reclutador: (() => {
+        const reclutadorData = (sesion as any).reclutador;
+        const responsableReal = (sesion as any).responsable_real;
+        const reclutadorId = (sesion as any).reclutador_id;
+        
+        console.log('🔍 [HOOK] Mapeando reclutador para sesión:', sesion.id);
+        console.log('🔍 [HOOK] reclutadorData:', reclutadorData);
+        console.log('🔍 [HOOK] responsable_real:', responsableReal);
+        console.log('🔍 [HOOK] reclutador_id:', reclutadorId);
+        
+        if (reclutadorData) {
+          console.log('🔍 [HOOK] Usando reclutadorData existente');
+          return reclutadorData;
+        } else if (responsableReal || reclutadorId) {
+          console.log('🔍 [HOOK] Creando reclutador desde responsable_real o reclutador_id');
+          return {
+            id: reclutadorId || 'unknown',
+            full_name: responsableReal || (sesion as any).moderador_nombre || 'Sin responsable',
+            email: '',
+            avatar_url: ''
+          };
+        } else {
+          console.log('🔍 [HOOK] No hay datos de reclutador disponibles');
+          return null;
+        }
+      })(),
       // Propiedades adicionales de SesionEvent
       start,
       end,
@@ -121,6 +143,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
     return event;
   })
   .filter((event): event is SesionEvent => event !== null); // Filtrar eventos null
+  }, [sesiones]); // Dependencia del useMemo
 
   const loadSesiones = async () => {
     setLoading(true);
@@ -139,45 +162,17 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       console.log('📊 Sesiones cargadas para calendario:', data.sesiones?.length || 0);
       
       if (data.sesiones && Array.isArray(data.sesiones)) {
-        // Enriquecer cada sesión con información real del reclutamiento
-        console.log('🔍 Enriqueciendo sesiones con información real del reclutamiento...');
+        // Usar las sesiones directamente sin enriquecimiento adicional para mejorar rendimiento
+        console.log('📊 Usando sesiones directamente para mejorar rendimiento');
         
-        const sesionesEnriquecidas = await Promise.all(
-          data.sesiones.map(async (sesion: any) => {
-            try {
-              // Obtener información real del reclutamiento para esta sesión
-              if (sesion.participante?.id) {
-                const reclutamientoResponse = await fetch(`/api/participantes/${sesion.participante.id}/reclutamiento-actual?reclutamiento_id=${sesion.id}`);
-                
-                if (reclutamientoResponse.ok) {
-                  const reclutamientoData = await reclutamientoResponse.json();
-                  const reclutamiento = reclutamientoData.reclutamiento;
-                  
-                  console.log('🔍 Enriqueciendo sesión:', {
-                    sesionId: sesion.id,
-                    responsable: reclutamiento?.responsable,
-                    estado: reclutamiento?.estado_reclutamiento_nombre
-                  });
-                  
-                  return {
-                    ...sesion,
-                    // Usar información real del reclutamiento
-                    moderador_nombre: reclutamiento?.responsable || sesion.moderador_nombre,
-                    estado_real: reclutamiento?.estado_reclutamiento_nombre || sesion.estado,
-                    responsable_real: reclutamiento?.responsable,
-                    implementador_real: reclutamiento?.implementador
-                    // NO sobrescribir el estado original, usar estado_real en el modal
-                  };
-                }
-              }
-              
-              return sesion;
-            } catch (error) {
-              console.error('❌ Error enriqueciendo sesión:', error);
-              return sesion;
-            }
-          })
-        );
+        const sesionesEnriquecidas = data.sesiones.map((sesion: any) => ({
+          ...sesion,
+          // Usar información básica disponible
+          moderador_nombre: sesion.moderador_nombre || 'Sin asignar',
+          estado_real: sesion.estado,
+          responsable_real: sesion.moderador_nombre,
+          implementador_real: sesion.moderador_nombre
+        }));
         
         setSesiones(sesionesEnriquecidas);
         

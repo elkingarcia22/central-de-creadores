@@ -81,13 +81,20 @@ export default function EditarReclutamientoModal({
     cargarCatalogos();
     if (reclutamiento) {
       console.log('🔍 Debug EditarReclutamientoModal - reclutamiento:', reclutamiento);
+      console.log('🔍 responsable_pre_cargado:', reclutamiento.responsable_pre_cargado);
+      console.log('🔍 reclutador_id:', reclutamiento.reclutador_id);
+      console.log('🔍 reclutador:', reclutamiento.reclutador);
       
       // Si hay responsable pre-cargado, usarlo
       if (reclutamiento.responsable_pre_cargado) {
         console.log('🔍 Usando responsable pre-cargado:', reclutamiento.responsable_pre_cargado);
         setResponsableId(reclutamiento.responsable_pre_cargado.id || '');
+      } else if (reclutamiento.reclutador_id) {
+        console.log('🔍 Usando reclutador_id:', reclutamiento.reclutador_id);
+        setResponsableId(reclutamiento.reclutador_id);
       } else {
-        setResponsableId(reclutamiento.reclutador_id || '');
+        console.log('🔍 No se encontró responsable ni reclutador_id');
+        setResponsableId('');
       }
       
       if (reclutamiento.fecha_sesion) {
@@ -116,9 +123,30 @@ export default function EditarReclutamientoModal({
       
       setDuracionSesion(reclutamiento.duracion_sesion?.toString() || '60');
       console.log('🔍 Duración establecida en modal:', reclutamiento.duracion_sesion?.toString() || '60');
-      setTipoParticipante(reclutamiento.tipo_participante || 'externo');
-      setParticipanteId(reclutamiento.participantes_id || '');
-      console.log('🔍 Debug - participanteId establecido:', reclutamiento.participantes_id);
+      
+      // Determinar tipo de participante y ID basándose en los campos disponibles
+      console.log('🔍 === DEBUG PARTICIPANTE INICIAL ===');
+      console.log('🔍 participantes_friend_family_id:', reclutamiento.participantes_friend_family_id);
+      console.log('🔍 participantes_internos_id:', reclutamiento.participantes_internos_id);
+      console.log('🔍 participantes_id:', reclutamiento.participantes_id);
+      
+      if (reclutamiento.participantes_friend_family_id) {
+        setTipoParticipante('friend_family');
+        setParticipanteId(reclutamiento.participantes_friend_family_id);
+        console.log('🔍 Debug - Participante Friend & Family establecido:', reclutamiento.participantes_friend_family_id);
+      } else if (reclutamiento.participantes_internos_id) {
+        setTipoParticipante('interno');
+        setParticipanteId(reclutamiento.participantes_internos_id);
+        console.log('🔍 Debug - Participante Interno establecido:', reclutamiento.participantes_internos_id);
+      } else if (reclutamiento.participantes_id) {
+        setTipoParticipante('externo');
+        setParticipanteId(reclutamiento.participantes_id);
+        console.log('🔍 Debug - Participante Externo establecido:', reclutamiento.participantes_id);
+      } else {
+        setTipoParticipante('externo');
+        setParticipanteId('');
+        console.log('🔍 Debug - No se encontró participante, usando externo por defecto');
+      }
     } else {
       // Si es un nuevo reclutamiento, usar fecha y hora actual
       const { date, time } = getCurrentDateTime();
@@ -154,6 +182,41 @@ export default function EditarReclutamientoModal({
       });
     }
   }, [isOpen, responsables, reclutamiento]);
+
+  // Sincronizar participante después de cargar catálogos
+  useEffect(() => {
+    if (!isOpen || !reclutamiento) return;
+    
+    // Solo sincronizar si ya se cargaron los catálogos correspondientes
+    const catálogosCargados = tipoParticipante === 'externo' 
+      ? participantesExternos.length > 0
+      : tipoParticipante === 'interno'
+      ? participantesInternos.length > 0
+      : participantesFriendFamily.length > 0;
+    
+    if (catálogosCargados && participanteId) {
+      console.log('🔍 Sincronizando participante después de cargar catálogos:', {
+        tipoParticipante,
+        participanteId,
+        catálogosCargados
+      });
+      
+      // Verificar que el participante existe en la lista cargada
+      const participantesDisponibles = tipoParticipante === 'externo' 
+        ? participantesExternos 
+        : tipoParticipante === 'interno'
+        ? participantesInternos
+        : participantesFriendFamily;
+      
+      const participanteExiste = participantesDisponibles.some(p => p.id === participanteId);
+      console.log('🔍 Participante existe en catálogo:', participanteExiste);
+      
+      if (!participanteExiste) {
+        console.log('⚠️ Participante no encontrado en catálogo, reseteando...');
+        setParticipanteId('');
+      }
+    }
+  }, [isOpen, reclutamiento, tipoParticipante, participanteId, participantesExternos, participantesInternos, participantesFriendFamily]);
 
   // Calcular estado de enfriamiento cuando se selecciona un participante externo
   useEffect(() => {
@@ -237,10 +300,19 @@ export default function EditarReclutamientoModal({
         setParticipantesInternos((data || []).map((p: any) => ({ ...p, tipo: 'interno' })));
       }
       // Participantes Friend and Family
+      console.log('👥 Cargando participantes Friend and Family...');
       const friendFamily = await fetch('/api/participantes-friend-family');
+      console.log('📡 Respuesta API Friend and Family:', friendFamily.status, friendFamily.statusText);
       if (friendFamily.ok) {
         const data = await friendFamily.json();
-        setParticipantesFriendFamily((data || []).map((p: any) => ({ ...p, tipo: 'friend_family' })));
+        console.log('✅ Participantes Friend and Family cargados:', data);
+        const participantesFormateados = (data || []).map((p: any) => ({ ...p, tipo: 'friend_family' }));
+        console.log('📊 Total participantes Friend and Family:', participantesFormateados.length);
+        setParticipantesFriendFamily(participantesFormateados);
+      } else {
+        console.error('❌ Error cargando participantes Friend and Family:', friendFamily.status);
+        const errorText = await friendFamily.text();
+        console.error('❌ Error detallado:', errorText);
       }
     } catch (e) {
       showError('Error cargando catálogos');
@@ -320,7 +392,7 @@ export default function EditarReclutamientoModal({
       } else {
         console.log('🔍 Modal: No hay función onSave, usando fallback');
         // Fallback: hacer la llamada directamente al endpoint
-        const response = await fetch(`/api/reclutamientos/${reclutamiento.id}`, {
+        const response = await fetch(`/api/sesiones-reclutamiento/${reclutamiento.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

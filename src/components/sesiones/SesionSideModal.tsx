@@ -206,11 +206,12 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         />
 
         {/* Contenido del modal */}
-        <div className="flex-1 overflow-y-auto px-6">
+        <div className="flex-1 overflow-y-auto px-6 pt-6 space-y-6">
           {/* Participante Asociado */}
         <InfoContainer 
           title="Participante Asociado"
           icon={<UserIcon className="w-4 h-4" />}
+          padding="none"
         >
           <InfoItem 
             label="Nombre"
@@ -222,6 +223,7 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         <InfoContainer 
           title="Información de la Sesión"
           icon={<FileTextIcon className="w-4 h-4" />}
+          padding="none"
         >
           <InfoItem 
             label="Investigación"
@@ -258,10 +260,15 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         <InfoContainer 
           title="Fechas"
           icon={<ClockIcon className="w-4 h-4" />}
+          padding="none"
         >
           <InfoItem 
             label="Fecha de Sesión"
             value={formatDate(sesion.start)}
+          />
+          <InfoItem 
+            label="Hora de Sesión"
+            value={sesion.hora_sesion || 'No especificada'}
           />
           <InfoItem 
             label="Duración"
@@ -282,6 +289,7 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
               </svg>
             }
+            padding="none"
           >
             <div className="col-span-full">
               <div className="flex items-center gap-2">
@@ -312,6 +320,7 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         <InfoContainer 
           title="Notas de la Sesión"
           icon={<MessageIcon className="w-4 h-4" />}
+          padding="none"
         >
           <div className="col-span-full">
             <Typography variant="body2" weight="medium">

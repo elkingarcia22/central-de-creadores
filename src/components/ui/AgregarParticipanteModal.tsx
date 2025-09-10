@@ -579,7 +579,7 @@ export default function AgregarParticipanteModal({
           const responseData = await response.json();
           console.log('✅ Reclutamiento creado exitosamente:', responseData);
           
-          showSuccess('Participante agregado exitosamente');
+          // No mostrar notificación aquí, la página principal la maneja
           onClose();
           if (onSuccess) {
             // Pasar información sobre el participante que se debe eliminar
@@ -789,11 +789,6 @@ export default function AgregarParticipanteModal({
                     disabled={loading}
                     className={`flex-1 ${meetLink ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : ''}`}
                   />
-                  {meetLink && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                    </div>
-                  )}
                 </div>
                 <Button
                   type="button"
@@ -807,20 +802,17 @@ export default function AgregarParticipanteModal({
                       <RefreshIcon className="animate-spin -ml-1 mr-2 h-4 w-4" />
                       Generando...
                     </>
+                  ) : meetLink ? (
+                    <>
+                      <CheckCircleIcon className="w-4 h-4 mr-2" />
+                      Generado
+                    </>
                   ) : (
                     'Generar'
                   )}
                 </Button>
               </div>
               
-              {meetLink && (
-                <div className="flex items-center gap-2">
-                  <Chip variant="terminada" size="sm">
-                    <CheckCircleIcon className="w-3 h-3 mr-1" />
-                    ¡Generado!
-                  </Chip>
-                </div>
-              )}
             </div>
             <Typography variant="caption" color="secondary" className="mt-1 block">
               Enlace opcional para sesiones virtuales

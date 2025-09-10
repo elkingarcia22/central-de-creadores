@@ -245,7 +245,7 @@ export default function AsignarAgendamientoModal({
       try {
         setLoading(true);
         
-        const response = await fetch(`/api/reclutamientos/${reclutamientoId}`, {
+        const response = await fetch(`/api/sesiones-reclutamiento/${reclutamientoId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

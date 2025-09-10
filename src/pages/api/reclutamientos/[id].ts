@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer as supabase } from '../../../api/supabase-server';
-import { autoSyncCalendar } from '../../../lib/auto-sync-calendar';
+import { simpleSyncCalendar } from '../../../lib/simple-sync-calendar';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -109,7 +109,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const userId = req.body.reclutador_id;
         
         if (userId) {
-          const syncResult = await autoSyncCalendar({
+          const syncResult = await simpleSyncCalendar({
             userId,
             reclutamientoId: id as string,
             action: 'update'
@@ -162,7 +162,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const reclutadorId = data[0].reclutador_id;
         
         if (reclutadorId) {
-          const syncResult = await autoSyncCalendar({
+          const syncResult = await simpleSyncCalendar({
             userId: reclutadorId,
             reclutamientoId: id as string,
             action: 'delete'

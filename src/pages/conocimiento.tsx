@@ -39,7 +39,7 @@ export default function ConocimientoPage() {
             
             <Typography variant="h2" className="text-2xl font-semibold text-foreground mb-4">
               Próximamente
-            </Typography>
+                </Typography>
             
             <Typography variant="body1" className="text-muted-foreground text-center max-w-md">
               Estamos trabajando en esta sección. Pronto podrás acceder a recursos, 
@@ -50,4 +50,4 @@ export default function ConocimientoPage() {
       </div>
     </Layout>
   );
-}
+} 

@@ -364,8 +364,23 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         showSearch={true}
       />
 
-      {/* Loading overlay */}
+      {/* Loading overlay mejorado */}
       {loading && (
+        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <Typography variant="h3" className="text-gray-600 dark:text-gray-300">
+              Cargando sesiones...
+            </Typography>
+            <Typography variant="body2" color="secondary" className="mt-2">
+              Esto puede tomar unos segundos
+            </Typography>
+          </div>
+        </div>
+      )}
+      
+      {/* Loading overlay original (oculto) */}
+      {false && loading && (
         <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
           <div className="flex items-center gap-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
@@ -417,15 +432,37 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         console.log('🚀 [AGENDA EDIT] Renderizando modal de edición');
         console.log('🚀 [AGENDA EDIT] sesionToEdit en render:', JSON.stringify(sesionToEdit, null, 2));
         
+        // Mapear el participante según su tipo
+        const participanteMapping = (() => {
+          const participanteId = sesionToEdit.participante?.id;
+          const tipoParticipante = sesionToEdit.tipo_participante;
+          
+          console.log('🔍 [AGENDA EDIT] Mapeando participante:', { participanteId, tipoParticipante });
+          
+          if (!participanteId) return {};
+          
+          switch (tipoParticipante) {
+            case 'friend_family':
+              console.log('🔍 [AGENDA EDIT] Mapeando como friend_family:', { participantes_friend_family_id: participanteId });
+              return { participantes_friend_family_id: participanteId };
+            case 'interno':
+              console.log('🔍 [AGENDA EDIT] Mapeando como interno:', { participantes_internos_id: participanteId });
+              return { participantes_internos_id: participanteId };
+            case 'externo':
+            default:
+              console.log('🔍 [AGENDA EDIT] Mapeando como externo:', { participantes_id: participanteId });
+              return { participantes_id: participanteId };
+          }
+        })();
+
         const reclutamientoData = {
           id: sesionToEdit.id,
           investigacion_id: sesionToEdit.investigacion_id,
-          participantes_id: sesionToEdit.participante?.id,
+          ...participanteMapping, // Usar el mapeo correcto según el tipo
           fecha_sesion: sesionToEdit.start,
           hora_sesion: sesionToEdit.hora_sesion,
           duracion_sesion: sesionToEdit.duracion_minutos,
           estado_agendamiento: sesionToEdit.estado_agendamiento,
-          reclutador_id: sesionToEdit.reclutador?.id,
           // El modal busca responsable_pre_cargado, así que lo mapeamos correctamente
           responsable_pre_cargado: sesionToEdit.reclutador ? {
             id: sesionToEdit.reclutador.id,
@@ -438,6 +475,8 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
             email: '',
             avatar_url: ''
           } : null),
+          // Asegurar que reclutador_id esté presente
+          reclutador_id: sesionToEdit.reclutador?.id || (sesionToEdit as any).reclutador_id || '',
           // Agregar información adicional para el modal
           participante: sesionToEdit.participante,
           tipo_participante: sesionToEdit.tipo_participante,

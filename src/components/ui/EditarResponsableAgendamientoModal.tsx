@@ -90,7 +90,7 @@ export default function EditarResponsableAgendamientoModal({
     try {
       setLoading(true);
       
-      const response = await fetch(`/api/reclutamientos/${reclutamiento.id}`, {
+      const response = await fetch(`/api/sesiones-reclutamiento/${reclutamiento.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

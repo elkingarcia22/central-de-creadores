@@ -4,9 +4,16 @@ import { supabaseServer } from '../../api/supabase-server';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
-  if (method !== 'GET') {
+  if (method === 'GET') {
+    return await getSesiones(req, res);
+  } else if (method === 'POST') {
+    return await createSesion(req, res);
+  } else {
     return res.status(405).json({ error: 'Método no permitido' });
   }
+}
+
+async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     if (!supabaseServer) {
@@ -82,12 +89,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Obtener reclutadores
     console.log('🔍 Reclutador IDs a buscar:', Array.from(reclutadorIds));
-    const { data: reclutadores } = await supabaseServer
+    const { data: reclutadores, error: reclutadoresError } = await supabaseServer
       .from('usuarios')
-      .select('id, full_name, email')
+      .select('id, full_name, email, avatar_url')
       .in('id', Array.from(reclutadorIds));
     
     console.log('🔍 Reclutadores encontrados:', reclutadores?.length || 0);
+    console.log('🔍 Error en reclutadores:', reclutadoresError);
     console.log('🔍 Primer reclutador:', reclutadores?.[0]);
 
     // Crear mapas para acceso rápido
@@ -123,11 +131,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Determinar el estado de la sesión
       let estadoSesion = 'programada';
-      if (reclutamiento.estado_agendamiento_cat?.nombre === 'Finalizado') {
+      const estadoNombre = Array.isArray(reclutamiento.estado_agendamiento_cat) 
+        ? (reclutamiento.estado_agendamiento_cat[0] as any)?.nombre 
+        : (reclutamiento.estado_agendamiento_cat as any)?.nombre;
+        
+      if (estadoNombre === 'Finalizado') {
         estadoSesion = 'completada';
-      } else if (reclutamiento.estado_agendamiento_cat?.nombre === 'En progreso') {
+      } else if (estadoNombre === 'En progreso') {
         estadoSesion = 'en_curso';
-      } else if (reclutamiento.estado_agendamiento_cat?.nombre === 'Cancelado') {
+      } else if (estadoNombre === 'Cancelado') {
         estadoSesion = 'cancelada';
       }
 
@@ -141,23 +153,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         titulo: `${participante?.nombre || 'Participante'} - ${investigacion?.nombre || 'Investigación'}`,
         descripcion: `Sesión de investigación con ${participante?.nombre || 'participante'} para ${investigacion?.nombre || 'investigación'}`,
         fecha_programada: reclutamiento.fecha_sesion ? new Date(reclutamiento.fecha_sesion) : null,
-        duracion_minutos: 60, // Duración por defecto, se puede obtener de la configuración
+        duracion_minutos: reclutamiento.duracion_sesion || 60, // Usar duración real del reclutamiento
         ubicacion: 'Oficina Principal', // Ubicación por defecto
         investigacion_id: reclutamiento.investigacion_id,
         investigacion_nombre: investigacion?.nombre,
         estado: estadoSesion,
         tipo_sesion: tipoSesion,
         grabacion_permitida: true, // Por defecto permitida
-        notas_publicas: `Estado: ${reclutamiento.estado_agendamiento_cat?.nombre || 'Sin estado'}`,
+        notas_publicas: `Estado: ${estadoNombre || 'Sin estado'}`,
         created_at: new Date(), // Fecha actual como fallback
         updated_at: new Date(), // Fecha actual como fallback
         
         // Información adicional del reclutamiento
         participante: participante,
         tipo_participante: tipoParticipante,
-        reclutador: reclutadoresMap.get(reclutamiento.reclutador_id),
+        reclutador: reclutadoresMap.get(reclutamiento.reclutador_id) || {
+          id: reclutamiento.reclutador_id,
+          full_name: 'Usuario no encontrado',
+          email: '',
+          avatar_url: ''
+        },
         reclutador_id: reclutamiento.reclutador_id, // Agregar reclutador_id explícitamente
-        estado_agendamiento: reclutamiento.estado_agendamiento_cat?.nombre,
+        estado_agendamiento: estadoNombre,
         estado_agendamiento_color: null, // Color no disponible en la tabla
         hora_sesion: reclutamiento.hora_sesion,
         fecha_asignado: reclutamiento.fecha_asignado,
@@ -174,6 +191,106 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error) {
     console.error('❌ Error en sesiones-reclutamiento:', error);
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+}
+
+async function createSesion(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    console.log('🔄 Creando nueva sesión de reclutamiento...');
+    console.log('📝 Datos recibidos:', req.body);
+    
+    const {
+      investigacion_id,
+      participantes_id,
+      participantes_internos_id,
+      participantes_friend_family_id,
+      fecha_sesion,
+      hora_sesion,
+      duracion_sesion,
+      reclutador_id,
+      meet_link
+    } = req.body;
+
+    // Validar campos requeridos
+    if (!investigacion_id || !fecha_sesion || !reclutador_id) {
+      return res.status(400).json({ 
+        error: 'Campos requeridos faltantes',
+        details: 'Se requiere investigacion_id, fecha_sesion y reclutador_id'
+      });
+    }
+
+    // Validar que al menos un participante esté presente
+    const tieneParticipante = participantes_id || participantes_internos_id || participantes_friend_family_id;
+    if (!tieneParticipante) {
+      return res.status(400).json({ 
+        error: 'Participante requerido',
+        details: 'Se requiere al menos un participante (participantes_id, participantes_internos_id, o participantes_friend_family_id)'
+      });
+    }
+
+    // Preparar datos para insertar
+    const datosParaInsertar: any = {
+      investigacion_id,
+      fecha_sesion: new Date(fecha_sesion).toISOString(),
+      hora_sesion: hora_sesion || '00:00:00',
+      duracion_sesion: parseInt(duracion_sesion) || 60,
+      reclutador_id,
+      estado_agendamiento: '0b8723e0-4f43-455d-bd95-a9576b7beb9d', // Estado por defecto
+      meet_link: meet_link || null
+      // Removido created_at y updated_at - no existen en la tabla
+    };
+
+    // Agregar el participante correspondiente
+    if (participantes_id) {
+      datosParaInsertar.participantes_id = participantes_id;
+    } else if (participantes_internos_id) {
+      datosParaInsertar.participantes_internos_id = participantes_internos_id;
+    } else if (participantes_friend_family_id) {
+      datosParaInsertar.participantes_friend_family_id = participantes_friend_family_id;
+    }
+
+    console.log('📊 Datos para insertar:', datosParaInsertar);
+
+    // Insertar en la base de datos
+    const { data: nuevaSesion, error: insertError } = await supabaseServer
+      .from('reclutamientos')
+      .insert(datosParaInsertar)
+      .select('*')
+      .single();
+
+    if (insertError) {
+      console.error('❌ Error insertando sesión:', insertError);
+      return res.status(400).json({ 
+        error: 'Error creando sesión', 
+        details: insertError.message 
+      });
+    }
+
+    console.log('✅ Sesión creada exitosamente:', nuevaSesion);
+
+    // Sincronizar con Google Calendar usando Simple Sync
+    try {
+      console.log('🔄 Iniciando sincronización con Google Calendar (Simple Sync)...');
+      const { simpleSyncCalendar } = await import('../../lib/simple-sync-calendar');
+      const syncResult = await simpleSyncCalendar({
+        userId: reclutador_id,
+        reclutamientoId: nuevaSesion.id,
+        action: 'create'
+      });
+      console.log('📊 Resultado de sincronización Simple Sync:', syncResult);
+    } catch (syncError) {
+      console.error('❌ Error en sincronización Simple Sync:', syncError);
+      // No fallar la operación por error de sincronización
+    }
+
+    return res.status(201).json({ sesion: nuevaSesion });
+
+  } catch (error) {
+    console.error('❌ Error en createSesion:', error);
     return res.status(500).json({ 
       error: 'Error interno del servidor',
       details: error instanceof Error ? error.message : 'Error desconocido'
