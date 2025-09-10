@@ -14,7 +14,7 @@ import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -28,6 +28,8 @@ import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../com
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import EditarParticipanteModal from '../../components/ui/EditarParticipanteModal';
+import MeetTranscriptionCapture from '../../components/meet/MeetTranscriptionCapture';
+import TranscriptionViewer from '../../components/meet/TranscriptionViewer';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
 
 interface Participante {
@@ -2060,6 +2062,64 @@ export default function VistaParticipacion() {
                    participanteNombre={participante?.nombre || ''}
                    usuarios={usuarios}
                  />
+               )
+             },
+             {
+               id: 'notas-automaticas',
+               label: 'Notas Automáticas',
+               content: (
+                 <div className="space-y-6">
+                   {reclutamientoActual?.meet_link ? (
+                     <>
+                       <Card className="p-6">
+                         <div className="flex items-center gap-2 mb-4">
+                           <MicIcon className="w-5 h-5 text-blue-600" />
+                           <Typography variant="h3" className="text-gray-900">
+                             Transcripción de Google Meet
+                           </Typography>
+                         </div>
+                         
+                         <div className="space-y-4">
+                           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                             <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
+                               <strong>Enlace de Meet:</strong> {reclutamientoActual.meet_link}
+                             </Typography>
+                           </div>
+                           
+                           <MeetTranscriptionCapture
+                             meetLink={reclutamientoActual.meet_link}
+                             reclutamientoId={reclutamientoActual.id}
+                             onTranscriptionComplete={(transcription) => {
+                               console.log('Transcripción completada:', transcription);
+                               // Recargar la vista de transcripción
+                               window.location.reload();
+                             }}
+                             onError={(error) => {
+                               console.error('Error en transcripción:', error);
+                             }}
+                           />
+                           
+                           <TranscriptionViewer
+                             reclutamientoId={reclutamientoActual.id}
+                             meetLink={reclutamientoActual.meet_link}
+                           />
+                         </div>
+                       </Card>
+                     </>
+                   ) : (
+                     <Card className="p-6">
+                       <div className="text-center">
+                         <MicIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                         <Typography variant="h3" className="text-gray-600 mb-2">
+                           Sin enlace de Meet
+                         </Typography>
+                         <Typography variant="body2" className="text-gray-500">
+                           Esta sesión no tiene un enlace de Google Meet configurado.
+                         </Typography>
+                       </div>
+                     </Card>
+                   )}
+                 </div>
                )
              },
              {
