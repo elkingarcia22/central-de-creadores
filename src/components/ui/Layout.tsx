@@ -35,7 +35,7 @@ export interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // Iniciar expandido por defecto
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Iniciar contraído por defecto para evitar problemas de hidratación
   const [isClient, setIsClient] = useState(false);
 
   // Inicializar el estado del sidebar solo en el cliente
@@ -233,17 +233,19 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
       />
       {/* Sidebar para desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex z-40">
-        <Sidebar
-          title="Central de creadores"
-          items={currentMenu}
-          utilityItems={utilityItems}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
-          onItemClick={handleSidebarNavigation}
-          user={userForMenus}
-          onLogout={handleLogout}
-          onSettings={handleEditProfile}
-        />
+        {isClient && (
+          <Sidebar
+            title="Central de creadores"
+            items={currentMenu}
+            utilityItems={utilityItems}
+            isCollapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+            onItemClick={handleSidebarNavigation}
+            user={userForMenus}
+            onLogout={handleLogout}
+            onSettings={handleEditProfile}
+          />
+        )}
       </div>
       {/* Contenedor derecho: solo contenido principal */}
       <div className="flex-1 flex flex-col lg:ml-16">
