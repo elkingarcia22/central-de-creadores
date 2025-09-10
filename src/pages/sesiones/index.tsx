@@ -303,18 +303,44 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   };
 
   // Función para manejar "Ver más" - navegar a vista específica de la sesión
-  const handleVerMas = (sesion: Sesion) => {
+  const handleVerMas = (sesion: SesionEvent) => {
     console.log('🚀 [CORRECCIÓN APLICADA] handleVerMas ejecutándose');
     console.log('🚀 [CORRECCIÓN APLICADA] Sesión recibida:', sesion);
+    console.log('🚀 [CORRECCIÓN APLICADA] Participante completo:', sesion.participante);
+    console.log('🚀 [CORRECCIÓN APLICADA] Tipo participante:', sesion.tipo_participante);
     
     // Obtener el ID del participante desde los datos de la sesión
-    const participanteId = sesion.participante?.id;
+    let participanteId = sesion.participante?.id;
+    
+    // Si no hay participante en el objeto, intentar obtenerlo de los campos directos
+    if (!participanteId) {
+      console.log('🔍 [DEBUG] Participante no encontrado en objeto, buscando en campos directos...');
+      
+      // Buscar en los campos directos del reclutamiento
+      if (sesion.participantes_id) {
+        participanteId = sesion.participantes_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_id:', participanteId);
+      } else if (sesion.participantes_internos_id) {
+        participanteId = sesion.participantes_internos_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_internos_id:', participanteId);
+      } else if (sesion.participantes_friend_family_id) {
+        participanteId = sesion.participantes_friend_family_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_friend_family_id:', participanteId);
+      }
+    }
     
     console.log('🚀 [CORRECCIÓN APLICADA] ID del participante extraído:', participanteId);
     console.log('🚀 [CORRECCIÓN APLICADA] ID de reclutamiento:', sesion.id);
     
     if (!participanteId) {
       console.error('❌ No se encontró ID del participante en la sesión:', sesion);
+      console.error('❌ Campos disponibles:', {
+        participante: sesion.participante,
+        participantes_id: sesion.participantes_id,
+        participantes_internos_id: sesion.participantes_internos_id,
+        participantes_friend_family_id: sesion.participantes_friend_family_id,
+        tipo_participante: sesion.tipo_participante
+      });
       showError('Error: No se pudo obtener la información del participante');
       return;
     }
@@ -1130,13 +1156,11 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
           responsable_pre_cargado: sesionToEdit.reclutador ? {
             id: sesionToEdit.reclutador.id,
             full_name: sesionToEdit.reclutador.full_name || sesionToEdit.reclutador.email || '',
-            email: sesionToEdit.reclutador.email || '',
-            avatar_url: sesionToEdit.reclutador.avatar_url || ''
+            email: sesionToEdit.reclutador.email || ''
           } : (sesionToEdit.reclutador_id ? {
             id: sesionToEdit.reclutador_id,
             full_name: 'Usuario',
-            email: '',
-            avatar_url: ''
+            email: ''
           } : null),
           // Agregar información adicional para el modal
           participante: sesionToEdit.participante,

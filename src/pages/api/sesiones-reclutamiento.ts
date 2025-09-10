@@ -178,7 +178,12 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         estado_agendamiento_color: null, // Color no disponible en la tabla
         hora_sesion: reclutamiento.hora_sesion,
         fecha_asignado: reclutamiento.fecha_asignado,
-        meet_link: reclutamiento.meet_link // Agregar enlace de Google Meet
+        meet_link: reclutamiento.meet_link, // Agregar enlace de Google Meet
+        
+        // Campos directos de participantes para casos donde el objeto participante es null
+        participantes_id: reclutamiento.participantes_id,
+        participantes_internos_id: reclutamiento.participantes_internos_id,
+        participantes_friend_family_id: reclutamiento.participantes_friend_family_id
       };
     }).filter(sesion => sesion.fecha_programada); // Solo sesiones con fecha programada
 

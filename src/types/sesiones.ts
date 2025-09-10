@@ -43,6 +43,11 @@ export interface Sesion {
   estado_agendamiento_color?: string;
   hora_sesion?: string;
   fecha_asignado?: string;
+  // Campos directos de participantes para casos donde el objeto participante es null
+  participantes_id?: string;
+  participantes_internos_id?: string;
+  participantes_friend_family_id?: string;
+  reclutador_id?: string;
 }
 
 export interface SesionParticipante {
