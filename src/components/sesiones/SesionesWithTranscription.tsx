@@ -8,16 +8,16 @@ interface SesionesWithTranscriptionProps {
 const SesionesWithTranscription: React.FC<SesionesWithTranscriptionProps> = ({ children }) => {
   let globalTranscription = null;
   
-  console.log('🔍 SesionesWithTranscription - Iniciando wrapper...');
+  console.log('🎯🎯🎯 SESIONES WRAPPER - INICIANDO WRAPPER 🎯🎯🎯');
   
   try {
     globalTranscription = useGlobalTranscription();
-    console.log('✅ SesionesWithTranscription - Contexto obtenido:', globalTranscription);
+    console.log('✅✅✅ SESIONES WRAPPER - CONTEXTO OBTENIDO:', globalTranscription);
   } catch (error) {
-    console.warn('❌ SesionesWithTranscription - GlobalTranscriptionContext no está disponible:', error);
+    console.warn('❌❌❌ SESIONES WRAPPER - CONTEXTO NO DISPONIBLE:', error);
   }
 
-  console.log('🔍 SesionesWithTranscription - Pasando contexto a children:', globalTranscription);
+  console.log('🔄🔄🔄 SESIONES WRAPPER - PASANDO CONTEXTO A CHILDREN:', globalTranscription);
   return <>{children(globalTranscription)}</>;
 };
 

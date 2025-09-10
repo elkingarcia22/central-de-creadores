@@ -1160,12 +1160,12 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
 };
 
 const SesionesPage: NextPage = () => {
-  console.log('🔍 SesionesPage - Componente principal iniciando...');
+  console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
   
   return (
     <SesionesWithTranscription>
       {(globalTranscription) => {
-        console.log('🔍 SesionesPage - Render props ejecutándose con:', globalTranscription);
+        console.log('🔄🔄🔄 SESIONES PAGE - RENDER PROPS EJECUTÁNDOSE CON:', globalTranscription);
         return <SesionesPageContent globalTranscription={globalTranscription} />;
       }}
     </SesionesWithTranscription>
