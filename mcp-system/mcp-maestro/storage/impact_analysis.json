@@ -1,5 +1,50 @@
 {
-  "analyses": [],
+  "analyses": [
+    {
+      "decision_id": "6d8f1f01910d",
+      "impact_level": 4,
+      "analysis_date": "2025-09-10T11:49:21.628Z",
+      "immediate_impacts": [
+        "Cambios en estructura de código",
+        "Actualización de dependencias",
+        "Refactoring de componentes"
+      ],
+      "long_term_impacts": [
+        "Cambios en arquitectura del sistema",
+        "Impacto en performance del sistema",
+        "Cambios en procesos de desarrollo"
+      ],
+      "affected_areas": [
+        "backend",
+        "frontend",
+        "database"
+      ],
+      "risk_assessment": {
+        "technical": 5,
+        "business": 2,
+        "timeline": 4,
+        "reversibility": 1,
+        "overall": 4
+      },
+      "recommendations": [
+        {
+          "type": "testing",
+          "priority": "high",
+          "description": "Realizar testing exhaustivo antes de implementar"
+        },
+        {
+          "type": "review",
+          "priority": "high",
+          "description": "Solicitar revisión de múltiples stakeholders"
+        },
+        {
+          "type": "planning",
+          "priority": "high",
+          "description": "Crear plan detallado de rollback"
+        }
+      ]
+    }
+  ],
   "trends": {},
   "patterns": {}
 }
