@@ -28,7 +28,6 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   const [open, setOpen] = useState(false);
   const submenuRef = useRef<HTMLDivElement>(null);
   
-  
   // Mejorada la lógica de detección de ruta activa para rutas dinámicas
   const isActive = href && (
     router.pathname === href || 
@@ -38,8 +37,8 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     (href !== '/' && router.asPath.startsWith(href))
   );
   
-  const baseClasses = `flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-    isCollapsed ? 'justify-center px-3' : 'justify-start'
+  const baseClasses = `flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+    isCollapsed ? 'justify-center px-3' : ''
   }`;
   
   const activeClasses = isActive
@@ -85,8 +84,8 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           onClick={handleClick}
           aria-expanded={open}
         >
-          <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-          {!isCollapsed && <span className="flex-1 text-left truncate text-white">{label}</span>}
+          <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
+          {!isCollapsed && <span className="flex-1 text-left">{label}</span>}
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
           )}
@@ -116,8 +115,8 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         className={`${baseClasses} ${activeClasses} ${className} w-full focus:outline-none`}
         onClick={onClick}
       >
-        <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-        {!isCollapsed && <span className="flex-1 truncate text-white">{label}</span>}
+        <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
+        {!isCollapsed && <span>{label}</span>}
       </button>
     );
   }
@@ -147,8 +146,8 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         // Si no hay onClick handler, dejar que el Link maneje la navegación
       }}
     >
-      <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-      {!isCollapsed && <span className="flex-1 truncate text-white">{label}</span>}
+      <span className="w-6 h-6 flex items-center justify-center flex-shrink-0">{icon}</span>
+      {!isCollapsed && <span>{label}</span>}
     </Link>
   );
 };
