@@ -90,7 +90,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           aria-expanded={open}
         >
           <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-          {!isCollapsed && <span className="flex-1 text-left truncate">{label}</span>}
+          {!isCollapsed && <span className="flex-1 text-left truncate text-white">{label}</span>}
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
           )}
@@ -121,7 +121,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         onClick={onClick}
       >
         <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-        {!isCollapsed && <span className="flex-1 truncate">{label}</span>}
+        {!isCollapsed && <span className="flex-1 truncate text-white">{label}</span>}
       </button>
     );
   }
@@ -152,7 +152,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       }}
     >
       <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">{icon}</span>
-      {!isCollapsed && <span className="flex-1 truncate">{label}</span>}
+      {!isCollapsed && <span className="flex-1 truncate text-white">{label}</span>}
     </Link>
   );
 };
