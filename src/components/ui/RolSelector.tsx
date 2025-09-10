@@ -135,7 +135,7 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
         className={`
           flex items-center gap-1 capitalize cursor-pointer
           hover:opacity-80 transition-opacity
-          text-muted-foreground
+          ${className || 'text-muted-foreground'}
           ${isSidebar ? 'text-sm' : 'text-base'}
         `}
       >
