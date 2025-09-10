@@ -55,9 +55,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Estado de expansión basado en isCollapsed y hover
   const isExpanded = isCollapsed ? isHovered : true;
   
-  // Debug temporal - más visible
-  console.log('🔍 SIDEBAR DEBUG:', { isCollapsed, isHovered, isExpanded });
-  console.log('🔍 SIDEBAR WIDTH:', isExpanded ? 'w-80 (320px)' : 'w-20 (80px)');
   
 
   return (
@@ -65,14 +62,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       className={`flex flex-col flex-grow bg-zinc-900 border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-80' : 'w-20'} z-50 overflow-visible ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ border: '2px solid red' }} // Debug visual temporal
     >
       <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-4' : 'py-4 px-2'} relative`}>
         
-        {/* DEBUG: Texto visible para verificar cambios */}
-        <div style={{ color: 'yellow', fontSize: '12px', textAlign: 'center', marginBottom: '10px' }}>
-          CAMBIOS APLICADOS - {isExpanded ? 'EXPANDIDO' : 'CONTRAIDO'}
-        </div>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
