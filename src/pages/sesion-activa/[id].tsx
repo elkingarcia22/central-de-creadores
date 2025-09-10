@@ -54,6 +54,10 @@ export default function SesionActivaPage() {
   const [transcription, setTranscription] = useState<string>('');
   const [isRecording, setIsRecording] = useState(false);
   const [activeTab, setActiveTab] = useState('notas');
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Cargar datos del participante y reclutamiento
   useEffect(() => {
@@ -61,6 +65,18 @@ export default function SesionActivaPage() {
       loadParticipantData();
     }
   }, [id]);
+
+  // Limpiar recursos al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (recordingInterval) {
+        clearInterval(recordingInterval);
+      }
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+      }
+    };
+  }, [recordingInterval, mediaRecorder, isRecording]);
 
   const loadParticipantData = async () => {
     try {
@@ -86,16 +102,88 @@ export default function SesionActivaPage() {
     }
   };
 
-  const handleStartRecording = () => {
-    setIsRecording(true);
-    // Aquí implementarías la lógica de grabación
-    console.log('Iniciando grabación...');
+  const handleStartRecording = async () => {
+    try {
+      console.log('🎤 Solicitando permisos de micrófono...');
+      
+      // Solicitar permisos de micrófono
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        } 
+      });
+      
+      console.log('✅ Permisos de micrófono obtenidos');
+      
+      // Crear MediaRecorder
+      const recorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      const chunks: Blob[] = [];
+      
+      // Configurar eventos del MediaRecorder
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+          setAudioChunks(chunks);
+        }
+      };
+      
+      recorder.onstop = () => {
+        console.log('🛑 Grabación detenida');
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        console.log('📁 Audio guardado:', audioBlob);
+        
+        // Detener el stream
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Aquí podrías enviar el audio a un servicio de transcripción
+        // Por ahora, solo mostramos un mensaje
+        alert('🎤 Grabación completada! El audio se ha guardado.');
+      };
+      
+      // Iniciar grabación
+      recorder.start(1000); // Grabar en chunks de 1 segundo
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+      setRecordingTime(0);
+      
+      // Iniciar contador de tiempo
+      const interval = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+      setRecordingInterval(interval);
+      
+      console.log('🎤 Grabación iniciada');
+      
+    } catch (error) {
+      console.error('❌ Error al iniciar grabación:', error);
+      alert('❌ Error al acceder al micrófono. Verifica los permisos.');
+    }
   };
 
   const handleStopRecording = () => {
-    setIsRecording(false);
-    // Aquí implementarías la lógica para detener la grabación
-    console.log('Deteniendo grabación...');
+    if (mediaRecorder && isRecording) {
+      console.log('🛑 Deteniendo grabación...');
+      
+      // Detener grabación
+      mediaRecorder.stop();
+      setIsRecording(false);
+      
+      // Limpiar intervalo
+      if (recordingInterval) {
+        clearInterval(recordingInterval);
+        setRecordingInterval(null);
+      }
+      
+      // Limpiar estado
+      setMediaRecorder(null);
+      setAudioChunks([]);
+      setRecordingTime(0);
+    }
   };
 
   const handleSaveTranscription = () => {
@@ -108,6 +196,12 @@ export default function SesionActivaPage() {
 
   const handleBackToSessions = () => {
     router.push('/sesiones');
+  };
+
+  const formatRecordingTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -154,25 +248,37 @@ export default function SesionActivaPage() {
             )}
 
             {/* Controles de grabación */}
-            <div className="flex space-x-3 mb-6">
-              {!isRecording ? (
-                <Button
-                  onClick={handleStartRecording}
-                  variant="primary"
-                  className="flex items-center gap-2"
-                >
-                  <MicIcon className="h-4 w-4" />
-                  Iniciar Grabación
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleStopRecording}
-                  variant="danger"
-                  className="flex items-center gap-2"
-                >
-                  <MicIcon className="h-4 w-4" />
-                  Detener Grabación
-                </Button>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex space-x-3">
+                {!isRecording ? (
+                  <Button
+                    onClick={handleStartRecording}
+                    variant="primary"
+                    className="flex items-center gap-2"
+                  >
+                    <MicIcon className="h-4 w-4" />
+                    Iniciar Grabación
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleStopRecording}
+                    variant="danger"
+                    className="flex items-center gap-2"
+                  >
+                    <MicIcon className="h-4 w-4" />
+                    Detener Grabación
+                  </Button>
+                )}
+              </div>
+              
+              {/* Indicador de tiempo de grabación */}
+              {isRecording && (
+                <div className="flex items-center gap-2 text-red-600">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <Typography variant="body2" className="font-mono">
+                    {formatRecordingTime(recordingTime)}
+                  </Typography>
+                </div>
               )}
             </div>
 
