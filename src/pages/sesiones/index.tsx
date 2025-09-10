@@ -1181,7 +1181,7 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
           usuarios: usuarios
         }}
       />
-    </Layout>
+    </>
   );
 };
 
