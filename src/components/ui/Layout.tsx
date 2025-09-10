@@ -43,9 +43,10 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     // console.log('🔍 Layout - useEffect inicialización');
     if (!isClient) {
       setIsClient(true);
-      const saved = localStorage.getItem('sidebarCollapsed');
-      // Cambiar el estado inicial a false (expandido) por defecto
-      const initialState = saved ? JSON.parse(saved) : false;
+      // Limpiar localStorage para forzar estado inicial contraído
+      localStorage.removeItem('sidebarCollapsed');
+      // Forzar estado inicial contraído (true) para evitar problemas de hidratación
+      const initialState = true;
       // console.log('Sidebar initial state:', initialState);
       setSidebarCollapsed(initialState);
     }
