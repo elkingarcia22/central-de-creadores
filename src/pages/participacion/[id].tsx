@@ -33,8 +33,11 @@ import TranscriptionViewer from '../../components/meet/TranscriptionViewer';
 import AutoTranscriptionManager from '../../components/meet/AutoTranscriptionManager';
 import SmartTranscriptionManager from '../../components/meet/SmartTranscriptionManager';
 import { useAutoMeetTranscription } from '../../hooks/useAutoMeetTranscription';
+import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
 import AutoMeetTranscription from '../../components/meet/AutoMeetTranscription';
 import UniversalMeetDetector from '../../components/meet/UniversalMeetDetector';
+import SimpleMeetDetector from '../../components/meet/SimpleMeetDetector';
+import MeetLinkEnhancer from '../../components/meet/MeetLinkEnhancer';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
 
 interface Participante {
@@ -193,6 +196,14 @@ export default function VistaParticipacion() {
     meetLink: reclutamientoActual?.meet_link,
     autoStart: true
   });
+
+  // Hook para acceso al contexto global de transcripción
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+  } catch (error) {
+    console.warn('GlobalTranscriptionContext no está disponible:', error);
+  }
 
   // Estados para opciones de filtros
   const [filterOptions, setFilterOptions] = useState<any>({
@@ -1891,9 +1902,17 @@ export default function VistaParticipacion() {
 
   return (
     <Layout rol={rolSeleccionado}>
-      {/* Componente de transcripción automática universal */}
+      {/* Componente de transcripción automática simple */}
       {reclutamientoActual?.meet_link && (
-        <UniversalMeetDetector
+        <SimpleMeetDetector
+          reclutamientoId={Array.isArray(id) ? id[0] : id}
+          meetLink={reclutamientoActual.meet_link}
+        />
+      )}
+      
+      {/* Mejorador de enlaces de Meet */}
+      {reclutamientoActual?.meet_link && (
+        <MeetLinkEnhancer
           reclutamientoId={Array.isArray(id) ? id[0] : id}
           meetLink={reclutamientoActual.meet_link}
         />
@@ -2114,6 +2133,45 @@ export default function VistaParticipacion() {
                                  <Typography variant="body2" className="text-green-800">
                                    <strong>Transcripción automática activa</strong> - Se está grabando automáticamente en segundo plano
                                  </Typography>
+                               </div>
+                             </div>
+                           )}
+                           
+                           {/* Botón de inicio automático */}
+                           {!transcriptionActive && (
+                             <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                               <div className="flex items-center justify-between">
+                                 <div>
+                                   <Typography variant="h4" className="text-blue-900 mb-2">
+                                     🎤 Transcripción Automática
+                                   </Typography>
+                                   <Typography variant="body2" className="text-blue-700">
+                                     Haz clic en el enlace de Meet para iniciar la transcripción automáticamente
+                                   </Typography>
+                                 </div>
+                                 <Button
+                                   onClick={() => {
+                                     if (reclutamientoActual?.meet_link) {
+                                       // Abrir Meet en nueva pestaña
+                                       window.open(reclutamientoActual.meet_link, '_blank');
+                                       
+                                       // Iniciar transcripción después de un breve delay
+                                       setTimeout(() => {
+                                         if (globalTranscription && !transcriptionRecording) {
+                                           globalTranscription.startTranscription(
+                                             Array.isArray(id) ? id[0] : id,
+                                             reclutamientoActual.meet_link
+                                           );
+                                           alert('🎤 Transcripción automática iniciada!');
+                                         }
+                                       }, 2000);
+                                     }
+                                   }}
+                                   variant="primary"
+                                   className="flex items-center gap-2"
+                                 >
+                                   🎤 Iniciar Meet + Transcripción
+                                 </Button>
                                </div>
                              </div>
                            )}
