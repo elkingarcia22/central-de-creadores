@@ -577,17 +577,54 @@ const VerReclutamiento: NextPage = () => {
           return;
         }
         
+        // Mapear el participante según su tipo (igual que en sesiones)
+        const participanteMapping = (() => {
+          const participanteId = participante.id;
+          const tipoParticipante = participante.tipo || 'externo';
+          
+          if (!participanteId) return {};
+          
+          switch (tipoParticipante) {
+            case 'friend_family':
+              return { participantes_friend_family_id: participanteId };
+            case 'interno':
+              return { participantes_internos_id: participanteId };
+            case 'externo':
+            default:
+              return { participantes_id: participanteId };
+          }
+        })();
+
         const reclutamientoData = {
           id: reclutamientoId,
-          participantes_id: debugData.participantes_id || participante.id,
-          reclutador_id: debugData.reclutador_id || '',
-          fecha_sesion: debugData.fecha_sesion || participante.fecha_sesion,
           investigacion_id: reclutamiento?.investigacion_id || '',
+          ...participanteMapping, // Usar el mapeo correcto según el tipo
+          fecha_sesion: debugData.fecha_sesion || participante.fecha_sesion,
+          hora_sesion: debugData.hora_sesion,
           duracion_sesion: debugData.duracion_sesion,
+          estado_agendamiento: debugData.estado_agendamiento,
+          reclutador_id: debugData.reclutador_id || '',
+          // El modal busca responsable_pre_cargado, así que lo mapeamos correctamente
+          responsable_pre_cargado: debugData.reclutador ? {
+            id: debugData.reclutador.id,
+            full_name: debugData.reclutador.full_name || debugData.reclutador.email || '',
+            email: debugData.reclutador.email || '',
+            avatar_url: debugData.reclutador.avatar_url || ''
+          } : (debugData.reclutador_id ? {
+            id: debugData.reclutador_id,
+            full_name: 'Usuario',
+            email: '',
+            avatar_url: ''
+          } : null),
+          // Agregar información adicional para el modal
+          participante: participante,
           tipo_participante: participante.tipo || 'externo',
+          investigacion_nombre: reclutamiento?.investigacion_nombre || '',
           es_agendamiento_pendiente: false // Participantes normales no son agendamiento pendiente
         };
         console.log('🔍 Debug handleEditParticipante - reclutamientoData:', reclutamientoData);
+        console.log('🔍 Debug handleEditParticipante - participanteMapping:', participanteMapping);
+        console.log('🔍 Debug handleEditParticipante - participante original:', participante);
         console.log('🔍 Configurando modal de edición...');
         setParticipanteToEdit(reclutamientoData);
         setShowEditModal(true);
