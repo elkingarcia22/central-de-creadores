@@ -4,6 +4,9 @@ import { useRol } from '../../contexts/RolContext';
 import { useUser } from '../../contexts/UserContext';
 import { usePermisos } from '../../hooks/usePermisos';
 import { InlineEditProvider } from '../../contexts/InlineEditContext';
+import { GlobalTranscriptionProvider } from '../../contexts/GlobalTranscriptionContext';
+import GlobalMeetDetector from '../global/GlobalMeetDetector';
+import TranscriptionStatusIndicator from '../global/TranscriptionStatusIndicator';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -217,48 +220,54 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   };
 
   return (
-    <InlineEditProvider>
-      <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
-        {/* Modal de edición de perfil */}
-        <PerfilPersonalModal
-          usuario={userProfile}
-          isOpen={editModalOpen}
-          onSave={handleSaveProfile}
-          onClose={handleCloseEditModal}
-        />
-      {/* Navegación móvil */}
-      <MobileNavigation
-        items={currentMenu}
-        user={userForMenus}
-        onItemClick={handleSidebarNavigation}
-      />
-      {/* Sidebar para desktop */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex z-40">
-        {isClient && (
-          <Sidebar
-            title="Central de creadores"
-            items={currentMenu}
-            utilityItems={utilityItems}
-            isCollapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
-            onItemClick={handleSidebarNavigation}
-            user={userForMenus}
-            onLogout={handleLogout}
-            onSettings={handleEditProfile}
+    <GlobalTranscriptionProvider>
+      <InlineEditProvider>
+        <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
+          {/* Componentes globales */}
+          <GlobalMeetDetector />
+          <TranscriptionStatusIndicator />
+          
+          {/* Modal de edición de perfil */}
+          <PerfilPersonalModal
+            usuario={userProfile}
+            isOpen={editModalOpen}
+            onSave={handleSaveProfile}
+            onClose={handleCloseEditModal}
           />
-        )}
+        {/* Navegación móvil */}
+        <MobileNavigation
+          items={currentMenu}
+          user={userForMenus}
+          onItemClick={handleSidebarNavigation}
+        />
+        {/* Sidebar para desktop */}
+        <div className="hidden lg:fixed lg:inset-y-0 lg:flex z-40">
+          {isClient && (
+            <Sidebar
+              title="Central de creadores"
+              items={currentMenu}
+              utilityItems={utilityItems}
+              isCollapsed={sidebarCollapsed}
+              onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+              onItemClick={handleSidebarNavigation}
+              user={userForMenus}
+              onLogout={handleLogout}
+              onSettings={handleEditProfile}
+            />
+          )}
+        </div>
+        {/* Contenedor derecho: solo contenido principal */}
+        <div className="flex-1 flex flex-col lg:ml-16">
+          {/* Contenido de la página */}
+          <main className="flex-1 overflow-y-visible">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-      {/* Contenedor derecho: solo contenido principal */}
-      <div className="flex-1 flex flex-col lg:ml-16">
-        {/* Contenido de la página */}
-        <main className="flex-1 overflow-y-visible">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
-    </InlineEditProvider>
+      </InlineEditProvider>
+    </GlobalTranscriptionProvider>
   );
 }; 
 

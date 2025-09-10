@@ -32,6 +32,7 @@ import MeetTranscriptionCapture from '../../components/meet/MeetTranscriptionCap
 import TranscriptionViewer from '../../components/meet/TranscriptionViewer';
 import AutoTranscriptionManager from '../../components/meet/AutoTranscriptionManager';
 import SmartTranscriptionManager from '../../components/meet/SmartTranscriptionManager';
+import { useAutoMeetTranscription } from '../../hooks/useAutoMeetTranscription';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
 
 interface Participante {
@@ -183,6 +184,13 @@ export default function VistaParticipacion() {
   const [searchTermParticipaciones, setSearchTermParticipaciones] = useState('');
   const [filtersParticipaciones, setFiltersParticipaciones] = useState<any>({});
   const [showFilterDrawerParticipaciones, setShowFilterDrawerParticipaciones] = useState(false);
+
+  // Hook para transcripción automática de Meet
+  const { isActive: transcriptionActive, isRecording: transcriptionRecording } = useAutoMeetTranscription({
+    reclutamientoId: Array.isArray(id) ? id[0] : id,
+    meetLink: reclutamientoActual?.meet_link,
+    autoStart: true
+  });
 
   // Estados para opciones de filtros
   const [filterOptions, setFilterOptions] = useState<any>({
@@ -1881,7 +1889,7 @@ export default function VistaParticipacion() {
 
   return (
     <Layout rol={rolSeleccionado}>
-      <div className="py-8">
+      <div className="py-8" data-reclutamiento-id={id}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
@@ -2087,6 +2095,18 @@ export default function VistaParticipacion() {
                                <strong>Enlace de Meet:</strong> {reclutamientoActual.meet_link}
                              </Typography>
                            </div>
+                           
+                           {/* Estado de transcripción global */}
+                           {transcriptionActive && (
+                             <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                               <div className="flex items-center gap-2">
+                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                 <Typography variant="body2" className="text-green-800">
+                                   <strong>Transcripción automática activa</strong> - Se está grabando automáticamente en segundo plano
+                                 </Typography>
+                               </div>
+                             </div>
+                           )}
                            
                            <SmartTranscriptionManager
                              meetLink={reclutamientoActual.meet_link}
