@@ -74,11 +74,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-card border-r border-slate-100 dark:border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
+      className={`flex flex-col flex-grow bg-card border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center border-b border-slate-100 dark:border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-4 px-2' : 'py-3 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-4 px-2' : 'py-3 px-1'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
