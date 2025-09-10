@@ -51,22 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const displayName = user?.name || user?.email || 'Usuario';
   const [isHovered, setIsHovered] = React.useState(false);
-  const [isExpanded, setIsExpanded] = React.useState(!isCollapsed);
   
+  // Estado de expansión basado en isCollapsed y hover
+  const isExpanded = isCollapsed ? isHovered : true;
   
-  // Lógica de expansión simplificada
-  React.useEffect(() => {
-    if (isCollapsed) {
-      // Si está contraído, solo expandir en hover
-      setIsExpanded(isHovered);
-    } else {
-      // Si no está contraído, siempre expandido
-      setIsExpanded(true);
-    }
-  }, [isHovered, isCollapsed]);
-  
-  // Debug temporal
-  console.log('Sidebar Debug - isExpanded:', isExpanded, 'isHovered:', isHovered, 'isCollapsed:', isCollapsed);
 
   return (
     <div 

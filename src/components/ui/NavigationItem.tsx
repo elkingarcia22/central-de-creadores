@@ -28,8 +28,6 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   const [open, setOpen] = useState(false);
   const submenuRef = useRef<HTMLDivElement>(null);
   
-  // Debug temporal
-  console.log(`NavigationItem "${label}" - isCollapsed:`, isCollapsed);
   
   
   // Mejorada la lógica de detección de ruta activa para rutas dinámicas
