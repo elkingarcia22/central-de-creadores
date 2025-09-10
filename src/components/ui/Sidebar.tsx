@@ -55,6 +55,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Estado de expansión basado en isCollapsed y hover
   const isExpanded = isCollapsed ? isHovered : true;
   
+  // Debug detallado del Sidebar
+  console.log('🔍 Sidebar Debug:', {
+    isCollapsed,
+    isHovered,
+    isExpanded,
+    itemsCount: items.length,
+    utilityItemsCount: utilityItems.length
+  });
+  
   
 
   return (
