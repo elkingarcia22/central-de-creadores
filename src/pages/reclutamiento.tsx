@@ -10,7 +10,7 @@ import { Layout, Typography, Card, Button, Input, Chip, ProgressBar, FilterDrawe
 import DataTable from '../components/ui/DataTable';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
 import type { FilterValuesReclutamiento, FilterOptions } from '../components/ui';
-import CrearReclutamientoModal from '../components/ui/CrearReclutamientoModal';
+import AgregarParticipanteModal from '../components/ui/AgregarParticipanteModal';
 import AsignarAgendamientoModal from '../components/ui/AsignarAgendamientoModal';
 import ReclutamientoUnifiedContainer from '../components/reclutamiento/ReclutamientoUnifiedContainer';
 import { 
@@ -114,7 +114,7 @@ export default function ReclutamientoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
-  const [showCrearReclutamientoModal, setShowCrearReclutamientoModal] = useState(false);
+  const [showAgregarParticipanteModal, setShowAgregarParticipanteModal] = useState(false);
   const [showAsignarAgendamientoModal, setShowAsignarAgendamientoModal] = useState(false);
   const [investigacionSeleccionada, setInvestigacionSeleccionada] = useState<InvestigacionReclutamiento | null>(null);
   
@@ -431,19 +431,19 @@ export default function ReclutamientoPage() {
 
   // Handlers
   const handleCrearReclutamiento = () => {
-    setShowCrearReclutamientoModal(true);
+    setShowAgregarParticipanteModal(true);
   };
 
-  const handleCloseCrearReclutamientoModal = () => {
-    setShowCrearReclutamientoModal(false);
+  const handleCloseAgregarParticipanteModal = () => {
+    setShowAgregarParticipanteModal(false);
     setInvestigacionSeleccionada(null);
   };
 
-  const handleSuccessCrearReclutamiento = () => {
-    setShowCrearReclutamientoModal(false);
+  const handleSuccessAgregarParticipante = () => {
+    setShowAgregarParticipanteModal(false);
     setInvestigacionSeleccionada(null);
     cargarDatos();
-    showSuccess('Reclutamiento creado exitosamente');
+    showSuccess('Participante agregado exitosamente');
   };
 
   const handleAsignarAgendamiento = () => {
@@ -756,7 +756,7 @@ export default function ReclutamientoPage() {
             icon: <PlusIcon className="w-4 h-4" />,
             onClick: () => {
               setInvestigacionSeleccionada(row);
-              setShowCrearReclutamientoModal(true);
+              setShowAgregarParticipanteModal(true);
             },
             className: 'text-popover-foreground hover:text-popover-foreground/80'
           },
@@ -970,11 +970,16 @@ export default function ReclutamientoPage() {
 
 
 
-      {/* Modal de creación de reclutamiento */}
-      <CrearReclutamientoModal
-        isOpen={showCrearReclutamientoModal}
-        onClose={handleCloseCrearReclutamientoModal}
-        onSuccess={handleSuccessCrearReclutamiento}
+      {/* Modal de agregar participante */}
+      <AgregarParticipanteModal
+        isOpen={showAgregarParticipanteModal}
+        onClose={handleCloseAgregarParticipanteModal}
+        onSuccess={handleSuccessAgregarParticipante}
+        showInvestigacionSelector={true}
+        reclutamiento={investigacionSeleccionada ? {
+          investigacion_id: investigacionSeleccionada.investigacion_id,
+          investigacion_nombre: investigacionSeleccionada.investigacion_nombre
+        } : null}
       />
 
       {/* Modal de asignar agendamiento */}
