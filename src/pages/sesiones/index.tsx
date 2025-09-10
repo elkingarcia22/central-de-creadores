@@ -12,12 +12,21 @@ import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones
 import SesionesWithTranscription from '../../components/sesiones/SesionesWithTranscription';
 import { useFastUser } from '../../contexts/FastUserContext';
 
-const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription }) => {
+const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription: _ }) => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
   
-  console.log('🔍 SesionesPageContent - Recibido globalTranscription:', globalTranscription);
+  // Obtener el contexto directamente aquí, ya que estamos dentro del Layout
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+    console.log('✅✅✅ SESIONES PAGE CONTENT - CONTEXTO OBTENIDO:', globalTranscription);
+  } catch (error) {
+    console.warn('❌❌❌ SESIONES PAGE CONTENT - CONTEXTO NO DISPONIBLE:', error);
+  }
+  
+  console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
@@ -1162,16 +1171,8 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
 const SesionesPage: NextPage = () => {
   console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
   
-  // Usar el hook directamente aquí, ya que estamos dentro del Layout que tiene el provider
-  let globalTranscription = null;
-  try {
-    globalTranscription = useGlobalTranscription();
-    console.log('✅✅✅ SESIONES PAGE - CONTEXTO OBTENIDO DIRECTAMENTE:', globalTranscription);
-  } catch (error) {
-    console.warn('❌❌❌ SESIONES PAGE - CONTEXTO NO DISPONIBLE:', error);
-  }
-  
-  return <SesionesPageContent globalTranscription={globalTranscription} />;
+  // El contexto se obtendrá dentro de SesionesPageContent, que está dentro del Layout
+  return <SesionesPageContent globalTranscription={null} />;
 };
 
 export default SesionesPage;
