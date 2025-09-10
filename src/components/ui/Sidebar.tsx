@@ -58,23 +58,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     console.log('Sidebar expanded:', isExpanded, 'Hovered:', isHovered);
   }, [isExpanded, isHovered]);
   
-  // Delay para la expansión
+  // Lógica de expansión simplificada
   React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
     if (isHovered) {
-      timeoutId = setTimeout(() => {
-        setIsExpanded(true);
-      }, 150); // Reducido para respuesta más rápida
+      setIsExpanded(true);
     } else {
-      setIsExpanded(false); // Colapsar inmediatamente al quitar el hover
+      setIsExpanded(false);
     }
-    
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
   }, [isHovered]);
 
   return (
