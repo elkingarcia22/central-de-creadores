@@ -22,6 +22,11 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   try {
     globalTranscription = useGlobalTranscription();
     console.log('✅✅✅ SESIONES PAGE CONTENT - CONTEXTO OBTENIDO:', globalTranscription);
+    console.log('🎯 CONTEXTO DISPONIBLE - FUNCIONES:', {
+      startTranscription: typeof globalTranscription?.startTranscription,
+      stopTranscription: typeof globalTranscription?.stopTranscription,
+      transcriptionState: globalTranscription?.transcriptionState
+    });
   } catch (error) {
     console.warn('❌❌❌ SESIONES PAGE CONTENT - CONTEXTO NO DISPONIBLE:', error);
     // Si no hay contexto, mostrar loading en lugar de null
