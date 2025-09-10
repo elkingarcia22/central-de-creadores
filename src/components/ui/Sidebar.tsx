@@ -54,8 +54,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   
   // Estado de expansión basado en isCollapsed y hover
   const isExpanded = isCollapsed ? isHovered : true;
-  
-  
 
   return (
     <div 
@@ -64,7 +62,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-4' : 'py-4 px-2'} relative`}>
-        
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>

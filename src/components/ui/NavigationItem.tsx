@@ -29,7 +29,6 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   const submenuRef = useRef<HTMLDivElement>(null);
   
   
-  
   // Mejorada la lógica de detección de ruta activa para rutas dinámicas
   const isActive = href && (
     router.pathname === href || 
