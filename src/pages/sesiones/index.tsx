@@ -12,35 +12,36 @@ import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones
 import SesionesWithTranscription from '../../components/sesiones/SesionesWithTranscription';
 import { useFastUser } from '../../contexts/FastUserContext';
 
-const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription: _ }) => {
-  const router = useRouter();
-  const { showError, showSuccess, showWarning } = useToast();
-  const { userId, isAuthenticated } = useFastUser();
-  
-  // Obtener el contexto directamente aquí, ya que estamos dentro del Layout
+// Componente que maneja el contexto de transcripción
+const SesionesWithTranscriptionContext: React.FC = () => {
   let globalTranscription = null;
   try {
     globalTranscription = useGlobalTranscription();
-    console.log('✅✅✅ SESIONES PAGE CONTENT - CONTEXTO OBTENIDO:', globalTranscription);
+    console.log('✅✅✅ SESIONES WITH CONTEXT - CONTEXTO OBTENIDO:', globalTranscription);
     console.log('🎯 CONTEXTO DISPONIBLE - FUNCIONES:', {
       startTranscription: typeof globalTranscription?.startTranscription,
       stopTranscription: typeof globalTranscription?.stopTranscription,
       transcriptionState: globalTranscription?.transcriptionState
     });
   } catch (error) {
-    console.warn('❌❌❌ SESIONES PAGE CONTENT - CONTEXTO NO DISPONIBLE:', error);
-    // Si no hay contexto, mostrar loading en lugar de null
+    console.warn('❌❌❌ SESIONES WITH CONTEXT - CONTEXTO NO DISPONIBLE:', error);
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Cargando transcripción...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando transcripción...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
+  
+  return <SesionesPageContent globalTranscription={globalTranscription} />;
+};
+
+const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription }) => {
+  const router = useRouter();
+  const { showError, showSuccess, showWarning } = useToast();
+  const { userId, isAuthenticated } = useFastUser();
   
   console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
@@ -1187,8 +1188,12 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
 const SesionesPage: NextPage = () => {
   console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
   
-  // El contexto se obtendrá dentro de SesionesPageContent, que está dentro del Layout
-  return <SesionesPageContent globalTranscription={null} />;
+  // Renderizar el componente que maneja el contexto
+  return (
+    <Layout>
+      <SesionesWithTranscriptionContext />
+    </Layout>
+  );
 };
 
 export default SesionesPage;
