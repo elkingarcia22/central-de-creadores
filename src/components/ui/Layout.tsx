@@ -86,38 +86,38 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   // Configuración de menús principales por rol
   const menuConfig = {
     administrador: [
-      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-white" /> },
-      { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-white" /> },
-      { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-white" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-current" /> },
+      { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-current" /> },
+      { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-current" /> },
     ],
     investigador: [
-      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-white" /> },
-      { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-white" /> },
-      { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-white" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-current" /> },
+      { label: 'Investigaciones', href: '/investigaciones', icon: <InvestigacionesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-current" /> },
+      { label: 'Sesiones', href: '/sesiones', icon: <SesionesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Métricas', href: '/metricas', icon: <MetricasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-current" /> },
     ],
     reclutador: [
-      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-white" /> },
-      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-white" /> },
-      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-white" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-current" /> },
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-current" /> },
+      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-current" /> },
     ],
     agendador: [
-      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-white" /> },
-      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-white" /> },
-      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-white" /> },
-      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-white" /> },
-      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-white" /> },
+      { label: 'Home', href: '/home', icon: <HomeIcon className="w-6 h-6 text-current" /> },
+      { label: 'Reclutamiento', href: '/reclutamiento', icon: <ReclutamientoIcon className="w-6 h-6 text-current" /> },
+      { label: 'Participantes', href: '/participantes', icon: <ParticipantesIcon className="w-6 h-6 text-current" /> },
+      { label: 'Empresas', href: '/empresas', icon: <EmpresasIcon className="w-6 h-6 text-current" /> },
+      { label: 'Conocimiento', href: '/conocimiento', icon: <ConocimientoIcon className="w-6 h-6 text-current" /> },
     ],
   };
 
@@ -126,14 +126,14 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     { 
       label: 'Configuraciones', 
       href: undefined, // Sin href para que solo despliegue el submenú
-      icon: <ConfiguracionesIcon className="w-6 h-6 text-white" />,
+      icon: <ConfiguracionesIcon className="w-6 h-6 text-current" />,
       subMenu: [
-        { label: 'Conexiones', href: '/configuraciones/conexiones', icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg> },
-        { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-white" /> },
-        { label: 'Roles y Permisos', href: '/configuraciones/roles-permisos', icon: <ShieldIcon className="w-6 h-6 text-white" /> }
+        { label: 'Conexiones', href: '/configuraciones/conexiones', icon: <svg className="w-6 h-6 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg> },
+        { label: 'Gestión de Usuarios', href: '/configuraciones/gestion-usuarios', icon: <UsuariosIcon className="w-6 h-6 text-current" /> },
+        { label: 'Roles y Permisos', href: '/configuraciones/roles-permisos', icon: <ShieldIcon className="w-6 h-6 text-current" /> }
       ]
     },
-    { label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-white" /> },
+    { label: 'Sistema de Diseño', href: '/design-system', icon: <DesignSystemIcon className="w-6 h-6 text-current" /> },
   ] : [];
 
   // Usar el rol del contexto si existe
