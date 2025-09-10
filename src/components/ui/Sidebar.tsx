@@ -100,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 {displayName}
               </Typography>
             </div>
-            <RolSelector variant="sidebar" className="text-gray-200" isCollapsed={!isExpanded} />
+            <RolSelector variant="sidebar" className="text-white" isCollapsed={!isExpanded} />
           </div>
         )}
       </div>
