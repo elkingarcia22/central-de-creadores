@@ -194,7 +194,7 @@ export default function VistaParticipacion() {
   const { isActive: transcriptionActive, isRecording: transcriptionRecording } = useAutoMeetTranscription({
     reclutamientoId: Array.isArray(id) ? id[0] : id,
     meetLink: reclutamientoActual?.meet_link,
-    autoStart: true
+    autoStart: false // Deshabilitar inicio automático
   });
 
   // Hook para acceso al contexto global de transcripción
@@ -2179,6 +2179,7 @@ export default function VistaParticipacion() {
                            <SmartTranscriptionManager
                              meetLink={reclutamientoActual.meet_link}
                              reclutamientoId={reclutamientoActual.id}
+                             autoStart={false} // Deshabilitar inicio automático
                              onTranscriptionComplete={(transcription) => {
                                console.log('Transcripción completada:', transcription);
                                // Recargar la vista de transcripción
