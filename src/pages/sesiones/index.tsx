@@ -9,20 +9,13 @@ import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
 import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
+import SesionesWithTranscription from '../../components/sesiones/SesionesWithTranscription';
 import { useFastUser } from '../../contexts/FastUserContext';
 
-const SesionesPage: NextPage = () => {
+const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription }) => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
-  
-  // Hook para acceso al contexto global de transcripción
-  let globalTranscription = null;
-  try {
-    globalTranscription = useGlobalTranscription();
-  } catch (error) {
-    console.warn('GlobalTranscriptionContext no está disponible:', error);
-  }
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
@@ -1161,6 +1154,16 @@ const SesionesPage: NextPage = () => {
         }}
       />
     </Layout>
+  );
+};
+
+const SesionesPage: NextPage = () => {
+  return (
+    <SesionesWithTranscription>
+      {(globalTranscription) => (
+        <SesionesPageContent globalTranscription={globalTranscription} />
+      )}
+    </SesionesWithTranscription>
   );
 };
 
