@@ -256,15 +256,14 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
           {/* Contenido de la página */}
           <main className="flex-1 overflow-y-visible">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              {/* Componentes globales de transcripción */}
+              <GlobalTranscriptionWrapper />
               {children}
             </div>
           </main>
         </div>
       </div>
       </InlineEditProvider>
-      
-      {/* Componentes globales de transcripción */}
-      <GlobalTranscriptionWrapper />
     </GlobalTranscriptionProvider>
   );
 }; 
