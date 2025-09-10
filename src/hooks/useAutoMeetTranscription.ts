@@ -8,12 +8,28 @@ interface AutoMeetTranscriptionOptions {
 }
 
 export const useAutoMeetTranscription = (options: AutoMeetTranscriptionOptions = {}) => {
-  const { startTranscription, stopTranscription, transcriptionState } = useGlobalTranscription();
   const { reclutamientoId, meetLink, autoStart = true } = options;
   const hasStartedRef = useRef(false);
+  
+  // Usar try-catch para manejar el caso cuando el contexto no esté disponible
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+  } catch (error) {
+    console.warn('GlobalTranscriptionContext no está disponible:', error);
+    return {
+      isActive: false,
+      isRecording: false,
+      startManual: () => {},
+      stopManual: () => {},
+      transcriptionState: null
+    };
+  }
+  
+  const { startTranscription, stopTranscription, transcriptionState } = globalTranscription;
 
   useEffect(() => {
-    if (!autoStart || !reclutamientoId || !meetLink || hasStartedRef.current) {
+    if (!autoStart || !reclutamientoId || !meetLink || hasStartedRef.current || !globalTranscription) {
       return;
     }
 
@@ -99,11 +115,11 @@ export const useAutoMeetTranscription = (options: AutoMeetTranscriptionOptions =
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       titleObserver.disconnect();
     };
-  }, [reclutamientoId, meetLink, autoStart, startTranscription, stopTranscription, transcriptionState.isRecording]);
+  }, [reclutamientoId, meetLink, autoStart, startTranscription, stopTranscription, transcriptionState?.isRecording, globalTranscription]);
 
   // Función para iniciar manualmente
   const startManual = () => {
-    if (reclutamientoId && meetLink) {
+    if (reclutamientoId && meetLink && globalTranscription) {
       hasStartedRef.current = true;
       startTranscription(reclutamientoId, meetLink);
     }
@@ -111,13 +127,15 @@ export const useAutoMeetTranscription = (options: AutoMeetTranscriptionOptions =
 
   // Función para detener manualmente
   const stopManual = () => {
-    hasStartedRef.current = false;
-    stopTranscription();
+    if (globalTranscription) {
+      hasStartedRef.current = false;
+      stopTranscription();
+    }
   };
 
   return {
-    isActive: transcriptionState.isActive,
-    isRecording: transcriptionState.isRecording,
+    isActive: transcriptionState?.isActive || false,
+    isRecording: transcriptionState?.isRecording || false,
     startManual,
     stopManual,
     transcriptionState

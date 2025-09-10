@@ -7,12 +7,30 @@ interface MeetSessionInfo {
 }
 
 export const useGlobalMeetDetection = () => {
-  const { startTranscription, stopTranscription, transcriptionState } = useGlobalTranscription();
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastMeetUrlRef = useRef<string>('');
   const activeMeetSessionsRef = useRef<Map<string, MeetSessionInfo>>(new Map());
+  
+  // Usar try-catch para manejar el caso cuando el contexto no esté disponible
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+  } catch (error) {
+    console.warn('GlobalTranscriptionContext no está disponible:', error);
+    return {
+      registerMeetSession: () => {},
+      unregisterMeetSession: () => {},
+      activeSessions: []
+    };
+  }
+  
+  const { startTranscription, stopTranscription, transcriptionState } = globalTranscription;
 
   useEffect(() => {
+    if (!globalTranscription) {
+      return;
+    }
+    
     // Función para detectar sesiones de Meet activas
     const detectMeetSessions = () => {
       try {
@@ -159,24 +177,28 @@ export const useGlobalMeetDetection = () => {
         clearInterval(detectionIntervalRef.current);
       }
     };
-  }, [startTranscription, stopTranscription, transcriptionState.isRecording]);
+  }, [startTranscription, stopTranscription, transcriptionState?.isRecording, globalTranscription]);
 
   // Función para registrar manualmente una sesión de Meet
   const registerMeetSession = (reclutamientoId: string, meetLink: string) => {
+    if (!globalTranscription) return;
+    
     console.log('📝 Registrando sesión de Meet manualmente:', { reclutamientoId, meetLink });
     activeMeetSessionsRef.current.set(meetLink, { reclutamientoId, meetLink });
     
-    if (!transcriptionState.isRecording) {
+    if (!transcriptionState?.isRecording) {
       startTranscription(reclutamientoId, meetLink);
     }
   };
 
   // Función para desregistrar una sesión de Meet
   const unregisterMeetSession = (meetLink: string) => {
+    if (!globalTranscription) return;
+    
     console.log('🗑️ Desregistrando sesión de Meet:', meetLink);
     activeMeetSessionsRef.current.delete(meetLink);
     
-    if (activeMeetSessionsRef.current.size === 0 && transcriptionState.isRecording) {
+    if (activeMeetSessionsRef.current.size === 0 && transcriptionState?.isRecording) {
       stopTranscription();
     }
   };

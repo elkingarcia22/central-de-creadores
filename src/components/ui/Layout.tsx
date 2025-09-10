@@ -5,8 +5,7 @@ import { useUser } from '../../contexts/UserContext';
 import { usePermisos } from '../../hooks/usePermisos';
 import { InlineEditProvider } from '../../contexts/InlineEditContext';
 import { GlobalTranscriptionProvider } from '../../contexts/GlobalTranscriptionContext';
-import GlobalMeetDetector from '../global/GlobalMeetDetector';
-import TranscriptionStatusIndicator from '../global/TranscriptionStatusIndicator';
+import GlobalTranscriptionWrapper from '../global/GlobalTranscriptionWrapper';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -223,10 +222,6 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     <GlobalTranscriptionProvider>
       <InlineEditProvider>
         <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
-          {/* Componentes globales */}
-          <GlobalMeetDetector />
-          <TranscriptionStatusIndicator />
-          
           {/* Modal de edición de perfil */}
           <PerfilPersonalModal
             usuario={userProfile}
@@ -265,6 +260,9 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
             </div>
           </main>
         </div>
+        
+        {/* Componentes globales de transcripción */}
+        <GlobalTranscriptionWrapper />
       </div>
       </InlineEditProvider>
     </GlobalTranscriptionProvider>
