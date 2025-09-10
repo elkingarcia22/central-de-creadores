@@ -39,6 +39,8 @@ import UniversalMeetDetector from '../../components/meet/UniversalMeetDetector';
 import SimpleMeetDetector from '../../components/meet/SimpleMeetDetector';
 import MeetLinkEnhancer from '../../components/meet/MeetLinkEnhancer';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
+import GoogleMeetTranscription from '../../components/meet/GoogleMeetTranscription';
+import OtterIntegration from '../../components/meet/OtterIntegration';
 
 interface Participante {
   id: string;
@@ -2110,92 +2112,93 @@ export default function VistaParticipacion() {
                  <div className="space-y-6">
                    {reclutamientoActual?.meet_link ? (
                      <>
+                       {/* Enlace de Meet */}
                        <Card className="p-6">
                          <div className="flex items-center gap-2 mb-4">
                            <MicIcon className="w-5 h-5 text-blue-600" />
                            <Typography variant="h3" className="text-gray-900">
-                             Transcripción de Google Meet
+                             Enlace de Meet
                            </Typography>
                          </div>
                          
-                         <div className="space-y-4">
-                           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                             <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
-                               <strong>Enlace de Meet:</strong> {reclutamientoActual.meet_link}
+                         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                           <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
+                             <strong>Enlace de Meet:</strong> {reclutamientoActual.meet_link}
+                           </Typography>
+                         </div>
+                       </Card>
+
+                       {/* Opciones de Transcripción */}
+                       <div className="space-y-6">
+                         <div className="text-center">
+                           <Typography variant="h3" className="text-gray-900 mb-2">
+                             Opciones de Transcripción
+                           </Typography>
+                           <Typography variant="body2" className="text-gray-600">
+                             Elige la mejor opción para transcribir tu sesión de Meet
+                           </Typography>
+                         </div>
+
+                         {/* Google Meet Transcripción Nativa */}
+                         <GoogleMeetTranscription
+                           meetLink={reclutamientoActual.meet_link}
+                           sessionId={reclutamientoActual.id}
+                           onTranscriptionReady={(transcription) => {
+                             console.log('Transcripción de Google Meet:', transcription);
+                           }}
+                         />
+
+                         {/* Otter.ai Integration */}
+                         <OtterIntegration
+                           meetLink={reclutamientoActual.meet_link}
+                           sessionId={reclutamientoActual.id}
+                           onTranscriptionReady={(transcription) => {
+                             console.log('Transcripción de Otter.ai:', transcription);
+                           }}
+                         />
+
+                         {/* Transcripción Manual (Fallback) */}
+                         <Card className="p-6">
+                           <div className="flex items-center gap-2 mb-4">
+                             <MicIcon className="w-5 h-5 text-gray-600" />
+                             <Typography variant="h3" className="text-gray-900">
+                               Transcripción Manual
                              </Typography>
                            </div>
                            
-                           {/* Estado de transcripción global */}
-                           {transcriptionActive && (
-                             <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                               <div className="flex items-center gap-2">
-                                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                 <Typography variant="body2" className="text-green-800">
-                                   <strong>Transcripción automática activa</strong> - Se está grabando automáticamente en segundo plano
-                                 </Typography>
-                               </div>
-                             </div>
-                           )}
-                           
-                           {/* Botón de inicio automático */}
-                           {!transcriptionActive && (
-                             <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                               <div className="flex items-center justify-between">
-                                 <div>
-                                   <Typography variant="h4" className="text-blue-900 mb-2">
-                                     🎤 Transcripción Automática
-                                   </Typography>
-                                   <Typography variant="body2" className="text-blue-700">
-                                     Haz clic en el enlace de Meet para iniciar la transcripción automáticamente
-                                   </Typography>
+                           <div className="space-y-4">
+                             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                               <div className="flex items-start space-x-3">
+                                 <div className="flex-shrink-0">
+                                   <div className="w-2 h-2 bg-gray-400 rounded-full mt-2"></div>
                                  </div>
-                                 <Button
-                                   onClick={() => {
-                                     if (reclutamientoActual?.meet_link) {
-                                       // Abrir Meet en nueva pestaña
-                                       window.open(reclutamientoActual.meet_link, '_blank');
-                                       
-                                       // Iniciar transcripción después de un breve delay
-                                       setTimeout(() => {
-                                         if (globalTranscription && !transcriptionRecording) {
-                                           globalTranscription.startTranscription(
-                                             Array.isArray(id) ? id[0] : id,
-                                             reclutamientoActual.meet_link
-                                           );
-                                           alert('🎤 Transcripción automática iniciada!');
-                                         }
-                                       }, 2000);
-                                     }
-                                   }}
-                                   variant="primary"
-                                   className="flex items-center gap-2"
-                                 >
-                                   🎤 Iniciar Meet + Transcripción
-                                 </Button>
+                                 <div className="flex-1">
+                                   <h4 className="text-sm font-medium text-gray-900">
+                                     Transcripción Manual
+                                   </h4>
+                                   <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                                     <li>• Usa la transcripción nativa de Google Meet</li>
+                                     <li>• O utiliza aplicaciones como Otter.ai</li>
+                                     <li>• Copia y pega la transcripción aquí</li>
+                                   </ul>
+                                 </div>
                                </div>
                              </div>
-                           )}
-                           
-                           <SmartTranscriptionManager
-                             meetLink={reclutamientoActual.meet_link}
-                             reclutamientoId={reclutamientoActual.id}
-                             autoStart={false} // Deshabilitar inicio automático
-                             onTranscriptionComplete={(transcription) => {
-                               console.log('Transcripción completada:', transcription);
-                               // Recargar la vista de transcripción
-                               window.location.reload();
-                             }}
-                             onError={(error) => {
-                               console.error('Error en transcripción:', error);
-                             }}
-                           />
-                           
-                           <TranscriptionViewer
-                             reclutamientoId={reclutamientoActual.id}
-                             meetLink={reclutamientoActual.meet_link}
-                           />
-                         </div>
-                       </Card>
+
+                             <textarea
+                               className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Pega aquí la transcripción de tu sesión..."
+                             />
+                             
+                             <Button
+                               variant="outline"
+                               className="w-full"
+                             >
+                               Guardar Transcripción
+                             </Button>
+                           </div>
+                         </Card>
+                       </div>
                      </>
                    ) : (
                      <Card className="p-6">
