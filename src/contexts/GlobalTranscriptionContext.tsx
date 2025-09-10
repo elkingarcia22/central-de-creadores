@@ -135,14 +135,20 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
 
   const startTranscription = async (reclutamientoId: string, meetLink: string) => {
     try {
+      console.log('🚀 [DEBUG] startTranscription llamado con:', { reclutamientoId, meetLink });
+      console.log('🚀 [DEBUG] Estado actual:', transcriptionState);
+      
       if (transcriptionState.isRecording) {
-        console.log('Ya hay una transcripción en progreso');
+        console.log('⚠️ [DEBUG] Ya hay una transcripción en progreso');
         return;
       }
 
+      console.log('🎤 [DEBUG] Solicitando permisos de micrófono...');
       // Solicitar permisos de micrófono
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('✅ [DEBUG] Permisos de micrófono obtenidos');
       
+      console.log('🎤 [DEBUG] Configurando MediaRecorder...');
       // Configurar MediaRecorder
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
@@ -153,13 +159,16 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
         }
       };
       
+      console.log('🎤 [DEBUG] Iniciando MediaRecorder...');
       mediaRecorderRef.current.start(1000);
       
       // Iniciar reconocimiento
       if (recognitionRef.current) {
+        console.log('🎤 [DEBUG] Iniciando reconocimiento de voz...');
         startTimeRef.current = Date.now();
         recognitionRef.current.start();
         
+        console.log('🎤 [DEBUG] Actualizando estado de transcripción...');
         setTranscriptionState({
           isActive: true,
           isRecording: true,
@@ -177,12 +186,13 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
           stopTranscription();
         }, 2 * 60 * 60 * 1000); // 2 horas
         
+        console.log('🎤 [DEBUG] Mostrando notificación de éxito...');
         showSuccess('🎤 Transcripción automática iniciada');
-        console.log('🎤 Transcripción global iniciada para:', reclutamientoId);
+        console.log('🎤 [DEBUG] Transcripción global iniciada para:', reclutamientoId);
       }
       
     } catch (error) {
-      console.error('Error iniciando transcripción global:', error);
+      console.error('❌ [DEBUG] Error iniciando transcripción global:', error);
       showError('Error al acceder al micrófono');
     }
   };
