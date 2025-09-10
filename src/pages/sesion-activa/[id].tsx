@@ -58,7 +58,7 @@ export default function SesionActivaPage() {
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
   const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
-  const [speechRecognition, setSpeechRecognition] = useState<SpeechRecognition | null>(null);
+  const [speechRecognition, setSpeechRecognition] = useState<any>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [liveTranscription, setLiveTranscription] = useState<string>('');
   const [transcriptionHistory, setTranscriptionHistory] = useState<string[]>([]);
@@ -166,7 +166,7 @@ export default function SesionActivaPage() {
       console.log('✅ Permisos de micrófono obtenidos');
       
       // Crear Speech Recognition
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
       
       // Configurar Speech Recognition
@@ -334,6 +334,53 @@ export default function SesionActivaPage() {
     router.push('/sesiones');
   };
 
+  const handleSaveAndViewSession = async () => {
+    try {
+      // Guardar transcripción si existe
+      if (transcription.trim() && reclutamiento?.id) {
+        console.log('💾 Guardando transcripción antes de redirigir...');
+        
+        const duracionTotal = recordingTime;
+        const segments = transcriptionHistory.map((text, index) => ({
+          timestamp: index * 1000,
+          text: text,
+          speaker: 'Participante'
+        }));
+
+        const response = await fetch(`/api/transcripciones/${reclutamiento.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            meet_link: reclutamiento.meet_link || '',
+            transcripcion_completa: transcription,
+            transcripcion_por_segmentos: segments,
+            duracion_total: duracionTotal,
+            idioma_detectado: 'es'
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Error guardando transcripción');
+        }
+
+        console.log('✅ Transcripción guardada exitosamente');
+      }
+
+      // Redirigir a la vista de la sesión
+      if (participante?.id) {
+        router.push(`/participacion/${participante.id}`);
+      } else {
+        alert('❌ No se pudo obtener el ID del participante');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error guardando y redirigiendo:', error);
+      alert('❌ Error al guardar. Intenta nuevamente.');
+    }
+  };
+
   const formatRecordingTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -398,7 +445,7 @@ export default function SesionActivaPage() {
                 ) : (
                   <Button
                     onClick={handleStopRecording}
-                    variant="danger"
+                    variant="destructive"
                     className="flex items-center gap-2"
                   >
                     <MicIcon className="h-4 w-4" />
@@ -480,13 +527,9 @@ export default function SesionActivaPage() {
               />
 
               <div className="flex justify-end">
-                <Button
-                  onClick={handleSaveTranscription}
-                  variant="primary"
-                  disabled={!transcription.trim()}
-                >
-                  Guardar Transcripción
-                </Button>
+                <Typography variant="body2" className="text-gray-500">
+                  💡 Usa el botón "Guardar y Ver Sesión" en el header para guardar todo
+                </Typography>
               </div>
             </div>
           </Card>
@@ -509,12 +552,12 @@ export default function SesionActivaPage() {
                 <InfoItem label="Email" value={participante.email} />
                 <InfoItem label="Teléfono" value={participante.telefono || 'No disponible'} />
                 <InfoItem label="Tipo" value={
-                  <Badge variant={getTipoParticipanteVariant(participante.tipo)}>
+                  <Badge variant="info">
                     {participante.tipo}
                   </Badge>
                 } />
                 <InfoItem label="Estado" value={
-                  <Badge variant={getEstadoParticipanteVariant(participante.estado)}>
+                  <Badge variant="success">
                     {participante.estado}
                   </Badge>
                 } />
@@ -568,7 +611,7 @@ export default function SesionActivaPage() {
                 <InfoItem label="Descripción" value={reclutamiento.descripcion || 'No disponible'} />
                 <InfoItem label="Fecha" value={formatearFecha(reclutamiento.fecha)} />
                 <InfoItem label="Estado" value={
-                  <Badge variant={getEstadoReclutamientoVariant(reclutamiento.estado)}>
+                  <Badge variant="info">
                     {reclutamiento.estado}
                   </Badge>
                 } />
@@ -611,18 +654,46 @@ export default function SesionActivaPage() {
 
   return (
     <Layout>
-      <PageHeader
-        title={`Sesión Activa: ${reclutamiento?.titulo || 'Cargando...'}`}
-        subtitle={participante?.nombre ? `Participante: ${participante.nombre}` : 'Cargando participante...'}
-        onBack={handleBackToSessions}
-        actions={
-          <div className="flex items-center gap-2">
-            <Badge variant={isRecording ? 'success' : 'secondary'}>
-              {isRecording ? 'Grabando' : 'Inactivo'}
-            </Badge>
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleBackToSessions}
+              variant="secondary"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeftIcon className="h-4 w-4" />
+              Volver a Sesiones
+            </Button>
+            <div>
+              <Typography variant="h2" className="text-gray-900">
+                Sesión Activa: {reclutamiento?.titulo || 'Cargando...'}
+              </Typography>
+              <Typography variant="body2" className="text-gray-600">
+                {participante?.nombre ? `Participante: ${participante.nombre}` : 'Cargando participante...'}
+              </Typography>
+            </div>
           </div>
-        }
-      />
+          
+          <div className="flex items-center gap-3">
+            <Badge variant={isRecording ? 'success' : 'secondary'}>
+              {isRecording ? 'Transcribiendo' : 'Inactivo'}
+            </Badge>
+            
+            <Button
+              onClick={handleSaveAndViewSession}
+              variant="primary"
+              className="flex items-center gap-2"
+              disabled={isRecording}
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              Guardar y Ver Sesión
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="space-y-6">
         <Tabs
