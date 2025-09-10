@@ -54,14 +54,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isExpanded, setIsExpanded] = React.useState(false);
   
   
-  // Lógica de expansión simplificada
+  // Lógica de expansión que respeta la prop isCollapsed
   React.useEffect(() => {
-    if (isHovered) {
+    if (isHovered && isCollapsed) {
       setIsExpanded(true);
-    } else {
+    } else if (!isHovered && isCollapsed) {
       setIsExpanded(false);
+    } else if (!isCollapsed) {
+      setIsExpanded(true);
     }
-  }, [isHovered]);
+  }, [isHovered, isCollapsed]);
   
   // Debug temporal
   console.log('Sidebar Debug - isExpanded:', isExpanded, 'isHovered:', isHovered);
