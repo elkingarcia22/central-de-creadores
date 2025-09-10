@@ -51,8 +51,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme } = useTheme();
   const displayName = user?.name || user?.email || 'Usuario';
   const [isHovered, setIsHovered] = React.useState(false);
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(!isCollapsed);
   
+  
+  // Sincronizar estado inicial con la prop isCollapsed
+  React.useEffect(() => {
+    setIsExpanded(!isCollapsed);
+  }, [isCollapsed]);
   
   // Lógica de expansión que respeta la prop isCollapsed
   React.useEffect(() => {
