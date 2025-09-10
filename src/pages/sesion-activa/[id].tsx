@@ -910,12 +910,14 @@ export default function SesionActivaPage() {
             </div>
           </div>
 
-      <div className="space-y-6">
-        <Tabs
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+          <div className="space-y-6">
+            <Tabs
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          </div>
+        </div>
       </div>
     </Layout>
   );
