@@ -647,8 +647,7 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   };
 
   return (
-    <Layout>
-      <div className="py-8">
+    <div className="py-8">
         {/* Header */}
         <PageHeader
           title={
@@ -1181,7 +1180,7 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
           usuarios: usuarios
         }}
       />
-    </>
+    </div>
   );
 };
 
