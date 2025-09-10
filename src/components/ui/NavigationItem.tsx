@@ -28,6 +28,14 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   const [open, setOpen] = useState(false);
   const submenuRef = useRef<HTMLDivElement>(null);
   
+  // Debug detallado
+  console.log(`🔍 NavigationItem "${label}":`, {
+    isCollapsed,
+    label,
+    hasIcon: !!icon,
+    shouldShowText: !isCollapsed
+  });
+  
   
   
   // Mejorada la lógica de detección de ruta activa para rutas dinámicas
@@ -87,7 +95,11 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           aria-expanded={open}
         >
           <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
-          {!isCollapsed && <span className="flex-1 text-left truncate text-white min-w-0">{label}</span>}
+          {!isCollapsed && (
+            <span className="flex-1 text-left truncate text-white min-w-0" style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
+              {label}
+            </span>
+          )}
           {!isCollapsed && (
             <ChevronDownIcon className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
           )}
@@ -118,7 +130,11 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         onClick={onClick}
       >
         <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
-        {!isCollapsed && <span className="flex-1 truncate text-white min-w-0">{label}</span>}
+        {!isCollapsed && (
+          <span className="flex-1 truncate text-white min-w-0" style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
+            {label}
+          </span>
+        )}
       </button>
     );
   }
@@ -149,7 +165,11 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       }}
     >
       <span className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</span>
-      {!isCollapsed && <span className="flex-1 truncate text-white min-w-0">{label}</span>}
+      {!isCollapsed && (
+        <span className="flex-1 truncate text-white min-w-0" style={{ backgroundColor: 'rgba(255,0,0,0.2)' }}>
+          {label}
+        </span>
+      )}
     </Link>
   );
 };
