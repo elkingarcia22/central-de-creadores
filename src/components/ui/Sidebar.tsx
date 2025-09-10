@@ -74,11 +74,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-zinc-900 border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
+      className={`flex flex-col flex-grow bg-zinc-900 border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-72' : 'w-20'} z-50 overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-4 px-2' : 'py-3 px-1'} relative`}>
+      <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-4' : 'py-4 px-2'} relative`}>
         
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
@@ -100,12 +100,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 {displayName}
               </Typography>
             </div>
-            <RolSelector variant="sidebar" className="text-gray-300" isCollapsed={!isExpanded} />
+            <RolSelector variant="sidebar" className="text-gray-200" isCollapsed={!isExpanded} />
           </div>
         )}
       </div>
 
-      <nav className={`flex-1 py-2 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
+      <nav className={`flex-1 py-4 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-4 delay-50' : 'px-2 delay-0'}`}>
         {items.map((item) => {
           const navItem = (
             <NavigationItem
@@ -133,7 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`py-2 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-1 delay-0'}`}>
+      <div className={`py-4 border-t border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-4 delay-50' : 'px-2 delay-0'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (

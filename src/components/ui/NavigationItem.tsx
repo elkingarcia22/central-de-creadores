@@ -37,13 +37,13 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     (href !== '/' && router.asPath.startsWith(href))
   );
   
-  const baseClasses = `flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-    isCollapsed ? 'justify-center px-2' : ''
+  const baseClasses = `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-md transition-colors ${
+    isCollapsed ? 'justify-center px-3' : ''
   }`;
   
   const activeClasses = isActive
     ? 'bg-zinc-800 text-white border-r-2 border-primary'
-    : 'text-gray-300 hover:bg-zinc-800 hover:text-white';
+    : 'text-gray-200 hover:bg-zinc-800 hover:text-white';
   
   // Cerrar submenú cuando se hace clic fuera
   useEffect(() => {
