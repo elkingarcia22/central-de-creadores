@@ -66,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [isHovered, isCollapsed]);
   
   // Debug temporal
-  console.log('Sidebar Debug - isExpanded:', isExpanded, 'isHovered:', isHovered);
+  console.log('Sidebar Debug - isExpanded:', isExpanded, 'isHovered:', isHovered, 'isCollapsed:', isCollapsed);
 
   return (
     <div 
