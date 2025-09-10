@@ -35,7 +35,7 @@ export interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Iniciar contraído por defecto
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // Iniciar expandido por defecto
   const [isClient, setIsClient] = useState(false);
 
   // Inicializar el estado del sidebar solo en el cliente
@@ -44,8 +44,8 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
     if (!isClient) {
       setIsClient(true);
       const saved = localStorage.getItem('sidebarCollapsed');
-      // Cambiar el estado inicial a true (contraído) por defecto
-      const initialState = saved ? JSON.parse(saved) : true;
+      // Cambiar el estado inicial a false (expandido) por defecto
+      const initialState = saved ? JSON.parse(saved) : false;
       // console.log('Sidebar initial state:', initialState);
       setSidebarCollapsed(initialState);
     }
