@@ -24,6 +24,8 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
     console.log('✅✅✅ SESIONES PAGE CONTENT - CONTEXTO OBTENIDO:', globalTranscription);
   } catch (error) {
     console.warn('❌❌❌ SESIONES PAGE CONTENT - CONTEXTO NO DISPONIBLE:', error);
+    // Si no hay contexto, retornar null para evitar renderizado
+    return null;
   }
   
   console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
