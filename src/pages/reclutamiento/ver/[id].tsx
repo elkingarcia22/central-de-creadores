@@ -652,9 +652,9 @@ const VerReclutamiento: NextPage = () => {
     try {
       setDeletingParticipante(true);
       
-      // Eliminar el reclutamiento por su id
+      // Eliminar el reclutamiento por su id usando la API de sesiones para sincronización con Google Calendar
       const reclutamientoId = participanteToDelete.reclutamiento_id || participanteToDelete.id;
-      const response = await fetch(`/api/reclutamientos/${reclutamientoId}`, {
+      const response = await fetch(`/api/sesiones-reclutamiento/${reclutamientoId}`, {
         method: 'DELETE',
       });
 
