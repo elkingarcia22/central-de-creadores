@@ -54,18 +54,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isExpanded, setIsExpanded] = React.useState(!isCollapsed);
   
   
-  // Sincronizar estado inicial con la prop isCollapsed
+  // Lógica de expansión simplificada
   React.useEffect(() => {
-    setIsExpanded(!isCollapsed);
-  }, [isCollapsed]);
-  
-  // Lógica de expansión que respeta la prop isCollapsed
-  React.useEffect(() => {
-    if (isHovered && isCollapsed) {
-      setIsExpanded(true);
-    } else if (!isHovered && isCollapsed) {
-      setIsExpanded(false);
-    } else if (!isCollapsed) {
+    if (isCollapsed) {
+      // Si está contraído, solo expandir en hover
+      setIsExpanded(isHovered);
+    } else {
+      // Si no está contraído, siempre expandido
       setIsExpanded(true);
     }
   }, [isHovered, isCollapsed]);
