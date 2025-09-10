@@ -37,7 +37,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     (href !== '/' && router.asPath.startsWith(href))
   );
   
-  const baseClasses = `flex items-center gap-2.5 px-3 py-3 text-sm font-medium rounded-md transition-colors ${
+  const baseClasses = `flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
     isCollapsed ? 'justify-center px-3' : ''
   }`;
   
