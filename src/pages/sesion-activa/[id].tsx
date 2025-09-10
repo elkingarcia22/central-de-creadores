@@ -6,6 +6,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
+import Chip from '../../components/ui/Chip';
 import { SideModal, Input, Textarea, Select, ConfirmModal, EmptyState } from '../../components/ui';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
@@ -410,16 +411,24 @@ export default function SesionActivaPage() {
         <div className="space-y-6">
           {/* Estado de la sesión */}
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <MicIcon className="w-5 h-5 text-blue-600" />
-                <Typography variant="h3" className="text-gray-900">
-                  Sesión Activa
-                </Typography>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <MicIcon className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <Typography variant="h3" className="text-gray-900">
+                    Transcripción Automática
+                  </Typography>
+                  <Typography variant="body2" className="text-gray-600">
+                    Captura automática de la conversación en tiempo real
+                  </Typography>
+                </div>
               </div>
-              <Badge variant={isRecording ? 'success' : 'secondary'}>
+              
+              <Chip variant={isRecording ? 'success' : 'danger'} size="md">
                 {isRecording ? 'Transcribiendo' : 'Inactivo'}
-              </Badge>
+              </Chip>
             </div>
 
             {reclutamiento?.meet_link && (
@@ -430,108 +439,141 @@ export default function SesionActivaPage() {
               </div>
             )}
 
-            {/* Controles de grabación */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex space-x-3">
-                {!isRecording ? (
-                  <Button
-                    onClick={handleStartRecording}
-                    variant="primary"
-                    className="flex items-center gap-2"
-                  >
-                    <MicIcon className="h-4 w-4" />
-                    Iniciar Transcripción Automática
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleStopRecording}
-                    variant="destructive"
-                    className="flex items-center gap-2"
-                  >
-                    <MicIcon className="h-4 w-4" />
-                    Detener Transcripción
-                  </Button>
+            {/* Controles de transcripción */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {!isRecording ? (
+                    <Button
+                      onClick={handleStartRecording}
+                      variant="primary"
+                      className="flex items-center gap-2"
+                    >
+                      <MicIcon className="h-4 w-4" />
+                      Iniciar Transcripción Automática
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleStopRecording}
+                      variant="destructive"
+                      className="flex items-center gap-2"
+                    >
+                      <MicIcon className="h-4 w-4" />
+                      Detener Transcripción
+                    </Button>
+                  )}
+                  
+                  <div className="text-sm text-gray-600">
+                    {!isRecording ? 'Presiona para comenzar a transcribir' : 'Transcripción en curso'}
+                  </div>
+                </div>
+                
+                {/* Indicador de tiempo de transcripción */}
+                {isRecording && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <Typography variant="body2" className="font-mono">
+                      {formatRecordingTime(recordingTime)}
+                    </Typography>
+                  </div>
                 )}
               </div>
-              
-              {/* Indicador de tiempo de transcripción */}
-              {isRecording && (
-                <div className="flex items-center gap-2 text-green-600">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <Typography variant="body2" className="font-mono">
-                    Transcribiendo: {formatRecordingTime(recordingTime)}
-                  </Typography>
-                </div>
-              )}
             </div>
 
             {/* Transcripción en tiempo real */}
             {isTranscribing && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
+              <Card className="p-4 border-l-4 border-l-green-500 bg-green-50/50">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <Typography variant="body2" className="text-green-800 font-medium">
-                    Transcripción en tiempo real:
+                  <Typography variant="body1" className="text-green-800 font-medium">
+                    Transcripción en tiempo real
                   </Typography>
                 </div>
-                <div className="bg-white p-3 rounded border min-h-[60px]">
-                  <Typography variant="body2" className="text-gray-700">
+                <div className="bg-white p-4 rounded-lg border border-green-200 min-h-[80px] shadow-sm">
+                  <Typography variant="body2" className="text-gray-700 leading-relaxed">
                     {liveTranscription || 'Escuchando...'}
                   </Typography>
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Historial de transcripción */}
             {transcriptionHistory.length > 0 && (
-              <div className="mb-6">
-                <Typography variant="h4" className="text-gray-900 mb-2">
-                  Transcripción Final
-                </Typography>
-                <div className="bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircleIcon className="w-5 h-5 text-green-600" />
+                  <Typography variant="h4" className="text-gray-900">
+                    Transcripción Final
+                  </Typography>
+                  <Chip variant="success" size="sm">
+                    {transcriptionHistory.length} segmentos
+                  </Chip>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg max-h-48 overflow-y-auto space-y-3">
                   {transcriptionHistory.map((text, index) => (
-                    <div key={index} className="mb-2">
-                      <Typography variant="body2" className="text-gray-700">
+                    <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <Typography variant="body2" className="text-gray-700 leading-relaxed">
                         {text}
                       </Typography>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             )}
 
-            {/* Campo de transcripción manual */}
-            <div className="space-y-4">
-              <div>
-                <Typography variant="h4" className="text-gray-900 mb-2">
+            {/* Campo de transcripción completa */}
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <FileTextIcon className="w-5 h-5 text-gray-600" />
+                <Typography variant="h4" className="text-gray-900">
                   Transcripción Completa
                 </Typography>
-                <Typography variant="body2" className="text-gray-600 mb-4">
-                  {isTranscribing 
-                    ? 'La transcripción automática se está agregando aquí en tiempo real'
-                    : 'Puedes escribir o pegar la transcripción de la sesión aquí'
-                  }
-                </Typography>
+                {isTranscribing && (
+                  <Chip variant="info" size="sm">
+                    Auto-completando
+                  </Chip>
+                )}
               </div>
-
-              <Textarea
-                value={transcription}
-                onChange={(e) => setTranscription(e.target.value)}
-                placeholder={isTranscribing 
-                  ? 'La transcripción automática aparecerá aquí...'
-                  : 'Escribe o pega aquí la transcripción de la sesión...'
+              
+              <Typography variant="body2" className="text-gray-600 mb-4">
+                {isTranscribing 
+                  ? 'La transcripción automática se está agregando aquí en tiempo real'
+                  : 'Puedes escribir o pegar la transcripción de la sesión aquí'
                 }
-                rows={12}
-                className="w-full"
-                readOnly={isTranscribing}
-              />
+              </Typography>
 
-              <div className="flex justify-end">
-                <Typography variant="body2" className="text-gray-500">
-                  💡 Usa el botón "Guardar y Ver Sesión" en el header para guardar todo
-                </Typography>
+              <div className="space-y-4">
+                <Textarea
+                  value={transcription}
+                  onChange={(e) => setTranscription(e.target.value)}
+                  placeholder={isTranscribing 
+                    ? 'La transcripción automática aparecerá aquí...'
+                    : 'Escribe o pega aquí la transcripción de la sesión...'
+                  }
+                  rows={12}
+                  className="w-full"
+                  readOnly={isTranscribing}
+                />
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Usa el botón "Guardar y Ver Sesión" en el header para guardar todo
+                  </div>
+                  
+                  {transcription.length > 0 && (
+                    <Chip variant="info" size="sm">
+                      {transcription.length} caracteres
+                    </Chip>
+                  )}
+                </div>
               </div>
-            </div>
+            </Card>
           </Card>
         </div>
       )
@@ -544,46 +586,137 @@ export default function SesionActivaPage() {
           {participante ? (
             <>
               {/* Información básica */}
-              <InfoContainer 
-                title="Información Básica"
-                icon={<UserIcon className="w-4 h-4" />}
-              >
-                <InfoItem label="Nombre" value={participante.nombre} />
-                <InfoItem label="Email" value={participante.email} />
-                <InfoItem label="Teléfono" value={participante.telefono || 'No disponible'} />
-                <InfoItem label="Tipo" value={
-                  <Badge variant="info">
-                    {participante.tipo}
-                  </Badge>
-                } />
-                <InfoItem label="Estado" value={
-                  <Badge variant="success">
-                    {participante.estado}
-                  </Badge>
-                } />
-              </InfoContainer>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-blue-50 rounded-lg">
+                    <UserIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
+                      Información Básica
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                      Datos principales del participante
+                    </Typography>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {participante.nombre}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Email</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.email}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Teléfono</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.telefono || 'No disponible'}
+                      </Typography>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Tipo</Typography>
+                      <Chip variant="info" size="md">
+                        {participante.tipo}
+                      </Chip>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
+                      <Chip variant="success" size="md">
+                        {participante.estado}
+                      </Chip>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
               {/* Información de empresa */}
               {participante.empresa_nombre && (
-                <InfoContainer 
-                  title="Información de Empresa"
-                  icon={<BuildingIcon className="w-4 h-4" />}
-                >
-                  <InfoItem label="Empresa" value={participante.empresa_nombre} />
-                  <InfoItem label="Rol" value={participante.rol_empresa || 'No disponible'} />
-                  <InfoItem label="Departamento" value={participante.departamento_nombre || 'No disponible'} />
-                </InfoContainer>
+                <Card className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-purple-50 rounded-lg">
+                      <BuildingIcon className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <Typography variant="h3" className="text-gray-900">
+                        Información de Empresa
+                      </Typography>
+                      <Typography variant="body2" className="text-gray-600">
+                        Datos corporativos del participante
+                      </Typography>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Empresa</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {participante.empresa_nombre}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Rol</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.rol_empresa || 'No disponible'}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Departamento</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.departamento_nombre || 'No disponible'}
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
               )}
 
               {/* Fechas */}
-              <InfoContainer 
-                title="Fechas"
-                icon={<ClockIcon className="w-4 h-4" />}
-              >
-                <InfoItem label="Fecha de Nacimiento" value={participante.fecha_nacimiento ? formatearFecha(participante.fecha_nacimiento) : 'No disponible'} />
-                <InfoItem label="Fecha de Creación" value={participante.created_at ? formatearFecha(participante.created_at) : 'No disponible'} />
-                <InfoItem label="Última Actualización" value={participante.updated_at ? formatearFecha(participante.updated_at) : 'No disponible'} />
-              </InfoContainer>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-green-50 rounded-lg">
+                    <ClockIcon className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
+                      Fechas
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                      Historial de fechas del participante
+                    </Typography>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <Typography variant="body2" className="text-gray-500 mb-1">Fecha de Nacimiento</Typography>
+                    <Typography variant="body1" className="text-gray-900">
+                      {participante.fecha_nacimiento ? formatearFecha(participante.fecha_nacimiento) : 'No disponible'}
+                    </Typography>
+                  </div>
+                  <div>
+                    <Typography variant="body2" className="text-gray-500 mb-1">Fecha de Creación</Typography>
+                    <Typography variant="body1" className="text-gray-900">
+                      {participante.created_at ? formatearFecha(participante.created_at) : 'No disponible'}
+                    </Typography>
+                  </div>
+                  <div>
+                    <Typography variant="body2" className="text-gray-500 mb-1">Última Actualización</Typography>
+                    <Typography variant="body1" className="text-gray-900">
+                      {participante.updated_at ? formatearFecha(participante.updated_at) : 'No disponible'}
+                    </Typography>
+                  </div>
+                </div>
+              </Card>
             </>
           ) : (
             <EmptyState
@@ -603,41 +736,104 @@ export default function SesionActivaPage() {
           {reclutamiento ? (
             <>
               {/* Información de la sesión */}
-              <InfoContainer 
-                title="Detalles de la Sesión"
-                icon={<CalendarIcon className="w-4 h-4" />}
-              >
-                <InfoItem label="Título" value={reclutamiento.titulo} />
-                <InfoItem label="Descripción" value={reclutamiento.descripcion || 'No disponible'} />
-                <InfoItem label="Fecha" value={formatearFecha(reclutamiento.fecha)} />
-                <InfoItem label="Estado" value={
-                  <Badge variant="info">
-                    {reclutamiento.estado}
-                  </Badge>
-                } />
-                <InfoItem label="Enlace de Meet" value={
-                  reclutamiento.meet_link ? (
-                    <a 
-                      href={reclutamiento.meet_link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline"
-                    >
-                      {reclutamiento.meet_link}
-                    </a>
-                  ) : 'No disponible'
-                } />
-              </InfoContainer>
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-orange-50 rounded-lg">
+                    <CalendarIcon className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
+                      Detalles de la Sesión
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                      Información de la sesión programada
+                    </Typography>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {reclutamiento.titulo}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
+                      <Chip variant="info" size="md">
+                        {reclutamiento.estado}
+                      </Chip>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Typography variant="body2" className="text-gray-500 mb-1">Descripción</Typography>
+                    <Typography variant="body1" className="text-gray-900">
+                      {reclutamiento.descripcion || 'No disponible'}
+                    </Typography>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Fecha</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {formatearFecha(reclutamiento.fecha)}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Enlace de Meet</Typography>
+                      {reclutamiento.meet_link ? (
+                        <a 
+                          href={reclutamiento.meet_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline break-all"
+                        >
+                          {reclutamiento.meet_link}
+                        </a>
+                      ) : (
+                        <Typography variant="body1" className="text-gray-500">
+                          No disponible
+                        </Typography>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
               {/* Información del reclutador */}
               {reclutamiento.reclutador && (
-                <InfoContainer 
-                  title="Reclutador"
-                  icon={<UsersIcon className="w-4 h-4" />}
-                >
-                  <InfoItem label="Nombre" value={reclutamiento.reclutador.nombre} />
-                  <InfoItem label="Email" value={reclutamiento.reclutador.email} />
-                </InfoContainer>
+                <Card className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-purple-50 rounded-lg">
+                      <UsersIcon className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <Typography variant="h3" className="text-gray-900">
+                        Reclutador
+                      </Typography>
+                      <Typography variant="body2" className="text-gray-600">
+                        Información del reclutador asignado
+                      </Typography>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {reclutamiento.reclutador.nombre}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Email</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {reclutamiento.reclutador.email}
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
               )}
             </>
           ) : (
@@ -654,46 +850,65 @@ export default function SesionActivaPage() {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={handleBackToSessions}
-              variant="secondary"
-              className="flex items-center gap-2"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              Volver a Sesiones
-            </Button>
-            <div>
-              <Typography variant="h2" className="text-gray-900">
-                Sesión Activa: {reclutamiento?.titulo || 'Cargando...'}
-              </Typography>
-              <Typography variant="body2" className="text-gray-600">
-                {participante?.nombre ? `Participante: ${participante.nombre}` : 'Cargando participante...'}
-              </Typography>
+      <div className="py-10 px-4">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header con PageHeader estándar */}
+          <PageHeader
+            title="Sesión Activa"
+            subtitle={reclutamiento?.titulo ? `Reclutamiento: ${reclutamiento.titulo}` : 'Cargando reclutamiento...'}
+            color="blue"
+            primaryAction={{
+              label: "Guardar y Ver Sesión",
+              onClick: handleSaveAndViewSession,
+              variant: "primary",
+              icon: (
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+              ),
+              disabled: isRecording
+            }}
+            secondaryActions={[
+              {
+                label: "Volver a Sesiones",
+                onClick: handleBackToSessions,
+                variant: "outline",
+                icon: <ArrowLeftIcon className="h-4 w-4" />
+              }
+            ]}
+          />
+
+          {/* Estado de la sesión */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <UserIcon className="w-5 h-5 text-gray-600" />
+                <Typography variant="body1" className="text-gray-700">
+                  <strong>Participante:</strong> {participante?.nombre || 'Cargando...'}
+                </Typography>
+              </div>
+              <div className="flex items-center gap-2">
+                <EmailIcon className="w-4 h-4 text-gray-500" />
+                <Typography variant="body2" className="text-gray-600">
+                  {participante?.email || 'Sin email'}
+                </Typography>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Chip variant={isRecording ? 'success' : 'danger'} size="md">
+                {isRecording ? 'Transcribiendo' : 'Inactivo'}
+              </Chip>
+              {isRecording && (
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <Typography variant="body2" className="font-mono">
+                    Transcribiendo: {formatRecordingTime(recordingTime)}
+                  </Typography>
+                </div>
+              )}
             </div>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <Badge variant={isRecording ? 'success' : 'secondary'}>
-              {isRecording ? 'Transcribiendo' : 'Inactivo'}
-            </Badge>
-            
-            <Button
-              onClick={handleSaveAndViewSession}
-              variant="primary"
-              className="flex items-center gap-2"
-              disabled={isRecording}
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              Guardar y Ver Sesión
-            </Button>
-          </div>
-        </div>
-      </div>
 
       <div className="space-y-6">
         <Tabs
