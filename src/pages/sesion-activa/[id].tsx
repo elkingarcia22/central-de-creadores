@@ -70,6 +70,13 @@ export default function SesionActivaPage() {
     }
   }, [id]);
 
+  // Cargar transcripción existente cuando se carga el reclutamiento
+  useEffect(() => {
+    if (reclutamiento?.id) {
+      loadExistingTranscription();
+    }
+  }, [reclutamiento?.id]);
+
   // Limpiar recursos al desmontar el componente
   useEffect(() => {
     return () => {
@@ -103,6 +110,37 @@ export default function SesionActivaPage() {
       console.error('Error cargando datos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadExistingTranscription = async () => {
+    try {
+      if (!reclutamiento?.id) return;
+      
+      console.log('🔍 Cargando transcripción existente...');
+      
+      const response = await fetch(`/api/transcripciones/${reclutamiento.id}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.transcripcion) {
+          console.log('✅ Transcripción existente encontrada');
+          setTranscription(data.transcripcion.transcripcion_completa || '');
+          
+          // Convertir segmentos a historial si existen
+          if (data.transcripcion.transcripcion_por_segmentos) {
+            const history = data.transcripcion.transcripcion_por_segmentos.map((segment: any) => segment.text);
+            setTranscriptionHistory(history);
+          }
+        }
+      } else if (response.status === 404) {
+        console.log('ℹ️ No hay transcripción existente');
+      } else {
+        console.error('❌ Error cargando transcripción:', response.status);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error cargando transcripción existente:', error);
     }
   };
 
@@ -206,6 +244,11 @@ export default function SesionActivaPage() {
         
         // Detener el stream
         stream.getTracks().forEach(track => track.stop());
+        
+        // Guardar automáticamente la transcripción en Supabase
+        if (transcription.trim() && reclutamiento?.id) {
+          handleSaveTranscription();
+        }
       };
       
       // Guardar referencias
@@ -245,11 +288,45 @@ export default function SesionActivaPage() {
     }
   };
 
-  const handleSaveTranscription = () => {
-    if (transcription.trim()) {
-      // Aquí implementarías la lógica para guardar la transcripción
-      console.log('Guardando transcripción:', transcription);
-      alert('Transcripción guardada exitosamente');
+  const handleSaveTranscription = async () => {
+    if (transcription.trim() && reclutamiento?.id) {
+      try {
+        console.log('💾 Guardando transcripción en Supabase...');
+        
+        const duracionTotal = recordingTime;
+        const segments = transcriptionHistory.map((text, index) => ({
+          timestamp: index * 1000, // Timestamp aproximado
+          text: text,
+          speaker: 'Participante' // Por ahora asumimos que es el participante
+        }));
+
+        const response = await fetch(`/api/transcripciones/${reclutamiento.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            meet_link: reclutamiento.meet_link || '',
+            transcripcion_completa: transcription,
+            transcripcion_por_segmentos: segments,
+            duracion_total: duracionTotal,
+            idioma_detectado: 'es'
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Error guardando transcripción');
+        }
+
+        const data = await response.json();
+        console.log('✅ Transcripción guardada en Supabase:', data);
+        
+        alert('✅ Transcripción guardada exitosamente en Supabase!');
+        
+      } catch (error) {
+        console.error('❌ Error guardando transcripción:', error);
+        alert('❌ Error al guardar la transcripción. Intenta nuevamente.');
+      }
     }
   };
 
