@@ -69,6 +69,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       <div className={`flex flex-col items-center justify-center border-b border-zinc-700 transition-all duration-200 ease-out ${isExpanded ? 'py-6 px-4' : 'py-4 px-2'} relative`}>
         
+        {/* DEBUG: Texto visible para verificar cambios */}
+        <div style={{ color: 'yellow', fontSize: '12px', textAlign: 'center', marginBottom: '10px' }}>
+          CAMBIOS APLICADOS - {isExpanded ? 'EXPANDIDO' : 'CONTRAIDO'}
+        </div>
+        
         <Tooltip content="Configuraciones del perfil" position="bottom" delay={200}>
           <div className={`transition-transform duration-300 ease-out ${isExpanded ? 'delay-100' : 'delay-0'}`}>
             <SimpleAvatar
