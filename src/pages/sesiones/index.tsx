@@ -647,7 +647,8 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   };
 
   return (
-    <div className="py-8">
+    <>
+      <div className="py-8">
         {/* Header */}
         <PageHeader
           title={
@@ -1000,7 +1001,6 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
           )}
 
         </div>
-      </div>
 
       {/* Modal de confirmación para eliminar sesión */}
       {showDeleteModal && sesionToDelete && (
@@ -1180,7 +1180,8 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
           usuarios: usuarios
         }}
       />
-    </div>
+      </div>
+    </>
   );
 };
 
