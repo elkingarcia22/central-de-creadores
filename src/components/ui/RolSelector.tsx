@@ -152,7 +152,7 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
       {isOpen && (
         <div className={`
           absolute z-50 mt-1 rounded-md  min-w-[120px]
-          ${theme === 'dark' ? 'bg-zinc-900 border border-zinc-700' : 'bg-popover border border-border'}
+          bg-zinc-900 border border-zinc-700
           ${isSidebar ? 'left-0' : 'left-0 right-0'}
         `}>
           <div className="py-1">
@@ -163,12 +163,8 @@ export const RolSelector: React.FC<RolSelectorProps> = ({
                 className={`
                   w-full text-left px-3 py-2 text-sm transition-colors capitalize
                   ${rol === rolSeleccionado
-                    ? theme === 'dark'
-                              ? 'bg-zinc-800 text-white'
-        : 'bg-accent text-accent-foreground'
-                    : theme === 'dark'
-                      ? 'text-white hover:bg-zinc-800'
-                      : 'text-popover-foreground hover:bg-accent'
+                    ? 'bg-zinc-800 text-white'
+                    : 'text-white hover:bg-zinc-800'
                   }
                 `}
               >
