@@ -16,6 +16,8 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
+  
+  console.log('🔍 SesionesPageContent - Recibido globalTranscription:', globalTranscription);
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
