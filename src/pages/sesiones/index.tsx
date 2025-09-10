@@ -490,23 +490,15 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
         // Abrir Meet en nueva pestaña
         window.open(sesion.meet_link, '_blank');
         
-        // Iniciar transcripción automáticamente después de un breve delay
-        setTimeout(() => {
-          console.log('⏰ Timeout ejecutado - verificando condiciones...');
-          console.log('🔍 Debug - globalTranscription existe:', !!globalTranscription);
-          console.log('🔍 Debug - transcriptionState:', globalTranscription?.transcriptionState);
-          console.log('🔍 Debug - isRecording:', globalTranscription?.transcriptionState?.isRecording);
-          
-          if (globalTranscription && !globalTranscription.transcriptionState?.isRecording) {
-            console.log('🎤 Iniciando transcripción automática...');
-            globalTranscription.startTranscription(sesion.id, sesion.meet_link);
-            showSuccess('🎤 Transcripción automática iniciada!');
-          } else {
-            console.log('❌ No se puede iniciar transcripción:');
-            console.log('   - globalTranscription existe:', !!globalTranscription);
-            console.log('   - Ya está grabando:', globalTranscription?.transcriptionState?.isRecording);
-          }
-        }, 2000);
+        // Redirigir a la página de sesión activa
+        const participanteId = sesion.participante?.id || sesion.participantes_id || sesion.participantes_internos_id || sesion.participantes_friend_family_id;
+        if (participanteId) {
+          console.log('🚀 Redirigiendo a sesión activa para participante:', participanteId);
+          router.push(`/sesion-activa/${participanteId}`);
+        } else {
+          console.log('❌ No se puede redirigir: No hay ID de participante');
+          showError('No se pudo encontrar el ID del participante');
+        }
         
       } else {
         // Si no hay enlace de Meet, solo mostrar mensaje
