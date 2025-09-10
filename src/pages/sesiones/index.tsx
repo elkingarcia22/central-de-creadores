@@ -5,8 +5,9 @@ import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Butt
 import { getChipVariant } from '../../utils/chipUtils';
 import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
-import { Sesion } from '../../types/sesiones';
+import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
+import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
 import { useFastUser } from '../../contexts/FastUserContext';
 
@@ -14,9 +15,17 @@ const SesionesPage: NextPage = () => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
+  
+  // Hook para acceso al contexto global de transcripción
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+  } catch (error) {
+    console.warn('GlobalTranscriptionContext no está disponible:', error);
+  }
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
-  const [sesiones, setSesiones] = useState<Sesion[]>([]);
+  const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -410,6 +419,38 @@ const SesionesPage: NextPage = () => {
     setFilters(newFilters);
   };
 
+  // Función para iniciar sesión con transcripción automática
+  const handleIniciarSesion = async (sesion: SesionEvent) => {
+    try {
+      console.log('🎯 Iniciando sesión:', sesion.id);
+      
+      // Si la sesión tiene enlace de Meet, abrirlo
+      if (sesion.meet_link) {
+        console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
+        
+        // Abrir Meet en nueva pestaña
+        window.open(sesion.meet_link, '_blank');
+        
+        // Iniciar transcripción automáticamente después de un breve delay
+        setTimeout(() => {
+          if (globalTranscription && !globalTranscription.transcriptionState?.isRecording) {
+            console.log('🎤 Iniciando transcripción automática...');
+            globalTranscription.startTranscription(sesion.id, sesion.meet_link);
+            showSuccess('🎤 Transcripción automática iniciada!');
+          }
+        }, 2000);
+        
+      } else {
+        // Si no hay enlace de Meet, solo mostrar mensaje
+        showWarning('Esta sesión no tiene enlace de Meet configurado');
+      }
+      
+    } catch (error) {
+      console.error('Error iniciando sesión:', error);
+      showError('Error al iniciar la sesión');
+    }
+  };
+
   const getActiveFiltersCount = () => {
     let count = 0;
     if (filters.tipo_participante && filters.tipo_participante !== 'todos') count++;
@@ -514,7 +555,7 @@ const SesionesPage: NextPage = () => {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => console.log('Ingresar a sesión:', sesion.id)}
+              onClick={() => handleIniciarSesion(sesion)}
               icon={<PlayIcon className="w-4 h-4" />}
             >
               Iniciar
