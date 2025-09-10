@@ -423,6 +423,8 @@ const SesionesPage: NextPage = () => {
   const handleIniciarSesion = async (sesion: SesionEvent) => {
     try {
       console.log('🎯 Iniciando sesión:', sesion.id);
+      console.log('🔍 Debug - globalTranscription:', globalTranscription);
+      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
       
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
@@ -433,15 +435,25 @@ const SesionesPage: NextPage = () => {
         
         // Iniciar transcripción automáticamente después de un breve delay
         setTimeout(() => {
+          console.log('⏰ Timeout ejecutado - verificando condiciones...');
+          console.log('🔍 Debug - globalTranscription existe:', !!globalTranscription);
+          console.log('🔍 Debug - transcriptionState:', globalTranscription?.transcriptionState);
+          console.log('🔍 Debug - isRecording:', globalTranscription?.transcriptionState?.isRecording);
+          
           if (globalTranscription && !globalTranscription.transcriptionState?.isRecording) {
             console.log('🎤 Iniciando transcripción automática...');
             globalTranscription.startTranscription(sesion.id, sesion.meet_link);
             showSuccess('🎤 Transcripción automática iniciada!');
+          } else {
+            console.log('❌ No se puede iniciar transcripción:');
+            console.log('   - globalTranscription existe:', !!globalTranscription);
+            console.log('   - Ya está grabando:', globalTranscription?.transcriptionState?.isRecording);
           }
         }, 2000);
         
       } else {
         // Si no hay enlace de Meet, solo mostrar mensaje
+        console.log('⚠️ No hay enlace de Meet en la sesión');
         showWarning('Esta sesión no tiene enlace de Meet configurado');
       }
       
