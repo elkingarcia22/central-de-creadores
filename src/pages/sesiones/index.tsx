@@ -24,8 +24,17 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
     console.log('✅✅✅ SESIONES PAGE CONTENT - CONTEXTO OBTENIDO:', globalTranscription);
   } catch (error) {
     console.warn('❌❌❌ SESIONES PAGE CONTENT - CONTEXTO NO DISPONIBLE:', error);
-    // Si no hay contexto, retornar null para evitar renderizado
-    return null;
+    // Si no hay contexto, mostrar loading en lugar de null
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Cargando transcripción...</p>
+          </div>
+        </div>
+      </Layout>
+    );
   }
   
   console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
