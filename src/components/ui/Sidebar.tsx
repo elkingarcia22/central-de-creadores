@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div 
-      className={`flex flex-col flex-grow bg-card border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
+      className={`flex flex-col flex-grow bg-gray-900 border-r border-zinc-700 h-screen min-h-0 transition-all duration-300 ease-out ${isExpanded ? 'w-64' : 'w-16'} z-50 overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -96,11 +96,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         {user && (
           <div className={`text-center w-full flex flex-col items-center transition-all duration-300 ease-out ${isExpanded ? 'mt-3 delay-150' : 'mt-2 delay-0'}`}>
             <div className={`transition-all duration-300 ease-out ${isExpanded ? 'opacity-100 max-h-6 delay-200' : 'opacity-0 max-h-0 overflow-hidden delay-0'}`}>
-              <Typography variant="body2" weight="medium" className="text-foreground truncate">
+              <Typography variant="body2" weight="medium" className="text-white truncate">
                 {displayName}
               </Typography>
             </div>
-            <RolSelector variant="sidebar" className="text-muted-foreground" isCollapsed={!isExpanded} />
+            <RolSelector variant="sidebar" className="text-gray-300" isCollapsed={!isExpanded} />
           </div>
         )}
       </div>

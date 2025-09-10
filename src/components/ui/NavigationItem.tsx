@@ -42,8 +42,8 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   }`;
   
   const activeClasses = isActive
-    ? 'bg-muted text-foreground border-r-2 border-primary'
-    : 'text-gray-400 hover:bg-muted hover:text-gray-300';
+    ? 'bg-gray-800 text-white border-r-2 border-primary'
+    : 'text-gray-300 hover:bg-gray-800 hover:text-white';
   
   // Cerrar submenú cuando se hace clic fuera
   useEffect(() => {
