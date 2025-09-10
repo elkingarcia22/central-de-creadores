@@ -1162,14 +1162,16 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
 const SesionesPage: NextPage = () => {
   console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
   
-  return (
-    <SesionesWithTranscription>
-      {(globalTranscription) => {
-        console.log('🔄🔄🔄 SESIONES PAGE - RENDER PROPS EJECUTÁNDOSE CON:', globalTranscription);
-        return <SesionesPageContent globalTranscription={globalTranscription} />;
-      }}
-    </SesionesWithTranscription>
-  );
+  // Usar el hook directamente aquí, ya que estamos dentro del Layout que tiene el provider
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+    console.log('✅✅✅ SESIONES PAGE - CONTEXTO OBTENIDO DIRECTAMENTE:', globalTranscription);
+  } catch (error) {
+    console.warn('❌❌❌ SESIONES PAGE - CONTEXTO NO DISPONIBLE:', error);
+  }
+  
+  return <SesionesPageContent globalTranscription={globalTranscription} />;
 };
 
 export default SesionesPage;
