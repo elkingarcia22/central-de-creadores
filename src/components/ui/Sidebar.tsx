@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   title = 'Central de creadores',
   items,
   utilityItems = [],
-  isCollapsed = true, // Cambiar por defecto a true (contraído)
+  isCollapsed = false, // Cambiar por defecto a false (expandido)
   onToggleCollapse,
   onItemClick,
   className = '',
@@ -54,15 +54,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   
   // Estado de expansión basado en isCollapsed y hover
   const isExpanded = isCollapsed ? isHovered : true;
-  
-  // Debug detallado del Sidebar
-  console.log('🔍 Sidebar Debug:', {
-    isCollapsed,
-    isHovered,
-    isExpanded,
-    itemsCount: items.length,
-    utilityItemsCount: utilityItems.length
-  });
   
   
 
