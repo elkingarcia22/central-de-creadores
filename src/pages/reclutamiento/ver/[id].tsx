@@ -2564,6 +2564,8 @@ const VerReclutamiento: NextPage = () => {
         isOpen={showAgregarParticipanteModal}
         onClose={() => setShowAgregarParticipanteModal(false)}
         onSuccess={async () => {
+          // Mostrar notificación exitosa
+          showSuccess('Participante agregado exitosamente');
           // Recargar datos completos (participantes + reclutamiento + métricas)
           await recargarDatosCompletos();
           await actualizarYcargarReclutamiento();
