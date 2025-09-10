@@ -237,7 +237,7 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
           title="Central de creadores"
           items={currentMenu}
           utilityItems={utilityItems}
-          isCollapsed={true}
+          isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
           onItemClick={handleSidebarNavigation}
           user={userForMenus}
