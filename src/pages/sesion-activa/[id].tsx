@@ -58,6 +58,10 @@ export default function SesionActivaPage() {
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
   const [recordingInterval, setRecordingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [speechRecognition, setSpeechRecognition] = useState<SpeechRecognition | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [liveTranscription, setLiveTranscription] = useState<string>('');
+  const [transcriptionHistory, setTranscriptionHistory] = useState<string[]>([]);
 
   // Cargar datos del participante y reclutamiento
   useEffect(() => {
@@ -72,11 +76,11 @@ export default function SesionActivaPage() {
       if (recordingInterval) {
         clearInterval(recordingInterval);
       }
-      if (mediaRecorder && isRecording) {
-        mediaRecorder.stop();
+      if (speechRecognition && isRecording) {
+        speechRecognition.stop();
       }
     };
-  }, [recordingInterval, mediaRecorder, isRecording]);
+  }, [recordingInterval, speechRecognition, isRecording]);
 
   const loadParticipantData = async () => {
     try {
@@ -104,7 +108,13 @@ export default function SesionActivaPage() {
 
   const handleStartRecording = async () => {
     try {
-      console.log('🎤 Solicitando permisos de micrófono...');
+      console.log('🎤 Iniciando transcripción automática...');
+      
+      // Verificar si el navegador soporta Speech Recognition
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('❌ Tu navegador no soporta transcripción de voz. Usa Chrome o Edge.');
+        return;
+      }
       
       // Solicitar permisos de micrófono
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -117,61 +127,109 @@ export default function SesionActivaPage() {
       
       console.log('✅ Permisos de micrófono obtenidos');
       
-      // Crear MediaRecorder
-      const recorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
+      // Crear Speech Recognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
       
-      const chunks: Blob[] = [];
+      // Configurar Speech Recognition
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'es-ES';
+      recognition.maxAlternatives = 1;
       
-      // Configurar eventos del MediaRecorder
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-          setAudioChunks(chunks);
+      // Eventos de Speech Recognition
+      recognition.onstart = () => {
+        console.log('🎤 Transcripción iniciada');
+        setIsTranscribing(true);
+        setIsRecording(true);
+        setRecordingTime(0);
+        setLiveTranscription('');
+        setTranscriptionHistory([]);
+        
+        // Iniciar contador de tiempo
+        const interval = setInterval(() => {
+          setRecordingTime(prev => prev + 1);
+        }, 1000);
+        setRecordingInterval(interval);
+      };
+      
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+            console.log('📝 Transcripción final:', transcript);
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        // Actualizar transcripción en tiempo real
+        setLiveTranscription(interimTranscript);
+        
+        // Agregar transcripción final al historial
+        if (finalTranscript) {
+          setTranscriptionHistory(prev => [...prev, finalTranscript]);
+          setTranscription(prev => prev + finalTranscript + ' ');
         }
       };
       
-      recorder.onstop = () => {
-        console.log('🛑 Grabación detenida');
-        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-        console.log('📁 Audio guardado:', audioBlob);
+      recognition.onerror = (event) => {
+        console.error('❌ Error en transcripción:', event.error);
+        setIsTranscribing(false);
+        setIsRecording(false);
+        
+        if (recordingInterval) {
+          clearInterval(recordingInterval);
+          setRecordingInterval(null);
+        }
         
         // Detener el stream
         stream.getTracks().forEach(track => track.stop());
         
-        // Aquí podrías enviar el audio a un servicio de transcripción
-        // Por ahora, solo mostramos un mensaje
-        alert('🎤 Grabación completada! El audio se ha guardado.');
+        alert(`❌ Error en transcripción: ${event.error}`);
       };
       
-      // Iniciar grabación
-      recorder.start(1000); // Grabar en chunks de 1 segundo
-      setMediaRecorder(recorder);
-      setIsRecording(true);
-      setRecordingTime(0);
+      recognition.onend = () => {
+        console.log('🛑 Transcripción detenida');
+        setIsTranscribing(false);
+        setIsRecording(false);
+        
+        if (recordingInterval) {
+          clearInterval(recordingInterval);
+          setRecordingInterval(null);
+        }
+        
+        // Detener el stream
+        stream.getTracks().forEach(track => track.stop());
+      };
       
-      // Iniciar contador de tiempo
-      const interval = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
-      setRecordingInterval(interval);
+      // Guardar referencias
+      setSpeechRecognition(recognition);
       
-      console.log('🎤 Grabación iniciada');
+      // Iniciar transcripción
+      recognition.start();
+      
+      console.log('🎤 Transcripción automática iniciada');
       
     } catch (error) {
-      console.error('❌ Error al iniciar grabación:', error);
+      console.error('❌ Error al iniciar transcripción:', error);
       alert('❌ Error al acceder al micrófono. Verifica los permisos.');
     }
   };
 
   const handleStopRecording = () => {
-    if (mediaRecorder && isRecording) {
-      console.log('🛑 Deteniendo grabación...');
+    if (speechRecognition && isRecording) {
+      console.log('🛑 Deteniendo transcripción...');
       
-      // Detener grabación
-      mediaRecorder.stop();
+      // Detener transcripción
+      speechRecognition.stop();
       setIsRecording(false);
+      setIsTranscribing(false);
       
       // Limpiar intervalo
       if (recordingInterval) {
@@ -180,9 +238,10 @@ export default function SesionActivaPage() {
       }
       
       // Limpiar estado
-      setMediaRecorder(null);
-      setAudioChunks([]);
+      setSpeechRecognition(null);
       setRecordingTime(0);
+      
+      console.log('✅ Transcripción detenida');
     }
   };
 
@@ -235,7 +294,7 @@ export default function SesionActivaPage() {
                 </Typography>
               </div>
               <Badge variant={isRecording ? 'success' : 'secondary'}>
-                {isRecording ? 'Grabando' : 'Inactivo'}
+                {isRecording ? 'Transcribiendo' : 'Inactivo'}
               </Badge>
             </div>
 
@@ -257,7 +316,7 @@ export default function SesionActivaPage() {
                     className="flex items-center gap-2"
                   >
                     <MicIcon className="h-4 w-4" />
-                    Iniciar Grabación
+                    Iniciar Transcripción Automática
                   </Button>
                 ) : (
                   <Button
@@ -266,39 +325,81 @@ export default function SesionActivaPage() {
                     className="flex items-center gap-2"
                   >
                     <MicIcon className="h-4 w-4" />
-                    Detener Grabación
+                    Detener Transcripción
                   </Button>
                 )}
               </div>
               
-              {/* Indicador de tiempo de grabación */}
+              {/* Indicador de tiempo de transcripción */}
               {isRecording && (
-                <div className="flex items-center gap-2 text-red-600">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <Typography variant="body2" className="font-mono">
-                    {formatRecordingTime(recordingTime)}
+                    Transcribiendo: {formatRecordingTime(recordingTime)}
                   </Typography>
                 </div>
               )}
             </div>
 
-            {/* Campo de transcripción */}
+            {/* Transcripción en tiempo real */}
+            {isTranscribing && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <Typography variant="body2" className="text-green-800 font-medium">
+                    Transcripción en tiempo real:
+                  </Typography>
+                </div>
+                <div className="bg-white p-3 rounded border min-h-[60px]">
+                  <Typography variant="body2" className="text-gray-700">
+                    {liveTranscription || 'Escuchando...'}
+                  </Typography>
+                </div>
+              </div>
+            )}
+
+            {/* Historial de transcripción */}
+            {transcriptionHistory.length > 0 && (
+              <div className="mb-6">
+                <Typography variant="h4" className="text-gray-900 mb-2">
+                  Transcripción Final
+                </Typography>
+                <div className="bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
+                  {transcriptionHistory.map((text, index) => (
+                    <div key={index} className="mb-2">
+                      <Typography variant="body2" className="text-gray-700">
+                        {text}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Campo de transcripción manual */}
             <div className="space-y-4">
               <div>
                 <Typography variant="h4" className="text-gray-900 mb-2">
-                  Transcripción Manual
+                  Transcripción Completa
                 </Typography>
                 <Typography variant="body2" className="text-gray-600 mb-4">
-                  Puedes escribir o pegar la transcripción de la sesión aquí
+                  {isTranscribing 
+                    ? 'La transcripción automática se está agregando aquí en tiempo real'
+                    : 'Puedes escribir o pegar la transcripción de la sesión aquí'
+                  }
                 </Typography>
               </div>
 
               <Textarea
                 value={transcription}
                 onChange={(e) => setTranscription(e.target.value)}
-                placeholder="Escribe o pega aquí la transcripción de la sesión..."
+                placeholder={isTranscribing 
+                  ? 'La transcripción automática aparecerá aquí...'
+                  : 'Escribe o pega aquí la transcripción de la sesión...'
+                }
                 rows={12}
                 className="w-full"
+                readOnly={isTranscribing}
               />
 
               <div className="flex justify-end">
