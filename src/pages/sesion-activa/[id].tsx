@@ -19,6 +19,7 @@ import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedCont
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
+import { useAudioTranscription } from '../../hooks/useAudioTranscription';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -122,6 +123,9 @@ export default function SesionActivaPage() {
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
   const [segmentosTranscripcion, setSegmentosTranscripcion] = useState<any[]>([]);
+  
+  // Hook para transcripción de audio
+  const audioTranscription = useAudioTranscription();
   
   // Estado para opciones de filtro dinámicas
   const [filterOptions, setFilterOptions] = useState({
@@ -502,12 +506,33 @@ export default function SesionActivaPage() {
 
   const handleToggleRecording = async () => {
     try {
-      if (isRecording) {
+      if (audioTranscription.state.isRecording) {
         // Detener grabación
-        await stopRecording();
+        await audioTranscription.stopRecording();
+        setIsRecording(false);
+        
+        // Procesar transcripción si hay audio
+        if (audioTranscription.state.audioBlob) {
+          await audioTranscription.transcribeAudio(audioTranscription.state.audioBlob);
+          
+          // Actualizar transcripción en la base de datos
+          if (transcripcionId && audioTranscription.state.transcription) {
+            await updateTranscripcion(transcripcionId, {
+              transcripcion_completa: audioTranscription.state.transcription,
+              transcripcion_por_segmentos: audioTranscription.state.segments,
+              estado: 'completada'
+            });
+          }
+        }
       } else {
         // Iniciar grabación
-        await startRecording();
+        await audioTranscription.startRecording();
+        setIsRecording(true);
+        
+        // Crear nueva transcripción en la base de datos
+        if (reclutamiento?.id) {
+          await createTranscripcion();
+        }
       }
     } catch (error) {
       console.error('Error al manejar grabación:', error);
@@ -585,6 +610,53 @@ export default function SesionActivaPage() {
       
     } catch (error) {
       console.error('Error al detener grabación:', error);
+    }
+  };
+
+  // Función para crear nueva transcripción
+  const createTranscripcion = async () => {
+    try {
+      const response = await fetch('/api/transcripciones', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reclutamiento_id: reclutamiento?.id,
+          meet_link: reclutamiento?.meet_link || '',
+          estado: 'procesando',
+          fecha_inicio: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTranscripcionId(data.id);
+        console.log('📝 Nueva transcripción creada:', data.id);
+      }
+    } catch (error) {
+      console.error('Error creando transcripción:', error);
+    }
+  };
+
+  // Función para actualizar transcripción
+  const updateTranscripcion = async (id: string, data: any) => {
+    try {
+      const response = await fetch(`/api/transcripciones/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        console.log('✅ Transcripción actualizada:', id);
+        // Recargar transcripciones
+        await loadTranscripciones();
+      }
+    } catch (error) {
+      console.error('Error actualizando transcripción:', error);
     }
   };
 
@@ -1620,10 +1692,12 @@ export default function SesionActivaPage() {
       content: (
         <NotasAutomaticasContent
           reclutamientoId={reclutamiento?.id}
-          isRecording={isRecording}
-          duracionGrabacion={duracionGrabacion}
-          transcripcionCompleta={transcripcionCompleta}
-          segmentosTranscripcion={segmentosTranscripcion}
+          isRecording={audioTranscription.state.isRecording}
+          duracionGrabacion={audioTranscription.state.duration}
+          transcripcionCompleta={audioTranscription.state.transcription || transcripcionCompleta}
+          segmentosTranscripcion={audioTranscription.state.segments.length > 0 ? audioTranscription.state.segments : segmentosTranscripcion}
+          isProcessing={audioTranscription.state.isProcessing}
+          error={audioTranscription.state.error}
         />
       )
     }
@@ -1658,11 +1732,17 @@ export default function SesionActivaPage() {
           <div className="flex flex-wrap gap-3">
             <Button 
               onClick={handleToggleRecording}
-              variant={isRecording ? "destructive" : "outline"}
+              variant={audioTranscription.state.isRecording ? "destructive" : "outline"}
               size="md"
               className="flex items-center gap-2"
+              disabled={audioTranscription.state.isProcessing}
             >
-              {isRecording ? (
+              {audioTranscription.state.isProcessing ? (
+                <>
+                  <div className="w-2 h-2 bg-white rounded-full animate-spin"></div>
+                  Procesando...
+                </>
+              ) : audioTranscription.state.isRecording ? (
                 <>
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                   Detener Grabación

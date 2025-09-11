@@ -9,6 +9,8 @@ interface NotasAutomaticasContentProps {
   duracionGrabacion: number;
   transcripcionCompleta: string;
   segmentosTranscripcion: any[];
+  isProcessing?: boolean;
+  error?: string | null;
 }
 
 interface TranscripcionSesion {
@@ -31,7 +33,9 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   isRecording,
   duracionGrabacion,
   transcripcionCompleta,
-  segmentosTranscripcion
+  segmentosTranscripcion,
+  isProcessing = false,
+  error = null
 }) => {
   const [transcripciones, setTranscripciones] = useState<TranscripcionSesion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -122,6 +126,36 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           </div>
           <Typography variant="body2" color="secondary" className="mt-2">
             La transcripción se está generando automáticamente...
+          </Typography>
+        </Card>
+      )}
+
+      {/* Estado de procesamiento */}
+      {isProcessing && (
+        <Card variant="elevated" padding="md" className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-spin"></div>
+            <Typography variant="h5" weight="semibold" className="text-blue-800 dark:text-blue-200">
+              Procesando transcripción
+            </Typography>
+          </div>
+          <Typography variant="body2" color="secondary" className="mt-2">
+            Analizando el audio y generando la transcripción...
+          </Typography>
+        </Card>
+      )}
+
+      {/* Estado de error */}
+      {error && (
+        <Card variant="elevated" padding="md" className="border-red-200 bg-red-50 dark:bg-red-900/20">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <Typography variant="h5" weight="semibold" className="text-red-800 dark:text-red-200">
+              Error en la transcripción
+            </Typography>
+          </div>
+          <Typography variant="body2" color="secondary" className="mt-2">
+            {error}
           </Typography>
         </Card>
       )}
