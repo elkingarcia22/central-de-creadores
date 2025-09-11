@@ -561,11 +561,11 @@ export default function SesionActivaPage() {
       )
     },
     {
-      key: 'categoria',
+      key: 'categoria_nombre',
       label: 'Categoría',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <Chip variant="secondary" size="sm">{dolor?.categoria || 'Sin categoría'}</Chip>
+        <Chip variant="secondary" size="sm">{dolor?.categoria_nombre || 'Sin categoría'}</Chip>
       )
     },
     {
