@@ -5,6 +5,7 @@ import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { AIButton } from '../../components/ui/AIButton';
+import { RecordButton } from '../../components/ui/RecordButton';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
@@ -114,6 +115,13 @@ export default function SesionActivaPage() {
     fecha_creacion_hasta: ''
   });
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  
+  // Estados para transcripción
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcripcionId, setTranscripcionId] = useState<string | null>(null);
+  const [duracionGrabacion, setDuracionGrabacion] = useState(0);
+  const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
+  const [segmentosTranscripcion, setSegmentosTranscripcion] = useState<any[]>([]);
   
   // Estado para opciones de filtro dinámicas
   const [filterOptions, setFilterOptions] = useState({
@@ -483,6 +491,94 @@ export default function SesionActivaPage() {
 
   const handleBackToSessions = () => {
     router.push('/sesiones');
+  };
+
+  const handleToggleRecording = async () => {
+    try {
+      if (isRecording) {
+        // Detener grabación
+        await stopRecording();
+      } else {
+        // Iniciar grabación
+        await startRecording();
+      }
+    } catch (error) {
+      console.error('Error al manejar grabación:', error);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      // Crear nueva transcripción en la base de datos
+      const response = await fetch('/api/transcripciones', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reclutamiento_id: reclutamiento?.id,
+          meet_link: reclutamiento?.meet_link || '',
+          estado: 'procesando',
+          fecha_inicio: new Date().toISOString()
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTranscripcionId(data.id);
+        setIsRecording(true);
+        setDuracionGrabacion(0);
+        
+        // Iniciar timer para duración
+        const timer = setInterval(() => {
+          setDuracionGrabacion(prev => prev + 1);
+        }, 1000);
+        
+        // Guardar timer en el estado para poder limpiarlo después
+        (window as any).recordingTimer = timer;
+        
+        console.log('🎤 Grabación iniciada:', data.id);
+      } else {
+        console.error('Error al crear transcripción');
+      }
+    } catch (error) {
+      console.error('Error al iniciar grabación:', error);
+    }
+  };
+
+  const stopRecording = async () => {
+    try {
+      if (transcripcionId) {
+        // Actualizar transcripción en la base de datos
+        const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            estado: 'completada',
+            fecha_fin: new Date().toISOString(),
+            duracion_total: duracionGrabacion
+          }),
+        });
+
+        if (response.ok) {
+          console.log('🛑 Grabación detenida:', transcripcionId);
+        }
+      }
+      
+      // Limpiar timer
+      if ((window as any).recordingTimer) {
+        clearInterval((window as any).recordingTimer);
+        (window as any).recordingTimer = null;
+      }
+      
+      setIsRecording(false);
+      setDuracionGrabacion(0);
+      
+    } catch (error) {
+      console.error('Error al detener grabación:', error);
+    }
   };
 
   const handleSaveAndViewSession = async () => {
@@ -1518,6 +1614,11 @@ export default function SesionActivaPage() {
             
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
+            <RecordButton 
+              onClick={handleToggleRecording}
+              isRecording={isRecording}
+              size="md"
+            />
             <AIButton 
               onClick={handleSaveAndViewSession}
               size="md"
