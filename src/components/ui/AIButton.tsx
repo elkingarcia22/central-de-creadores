@@ -35,7 +35,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
 
   const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
   
-  const variantClasses = "bg-gradient-to-l from-cyan-600 via-blue-500 to-cyan-600 text-white hover:from-cyan-500 hover:via-blue-400 hover:to-cyan-500";
+  const variantClasses = "bg-gradient-to-l from-cyan-600 via-blue-500 to-cyan-600 text-white hover:from-cyan-500/90 hover:via-blue-400/90 hover:to-cyan-500/90";
   
   const sizeClass = sizeClasses[size];
   const iconSizeClass = iconSizeClasses[size];
@@ -48,15 +48,15 @@ export const AIButton: React.FC<AIButtonProps> = ({
       className={`${baseClasses} ${variantClasses} ${sizeClass} ${className}`}
       {...props}
     >
-            {/* Efecto de brillo animado */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
+      {/* Efecto de brillo animado */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
       
       {/* Efecto de partículas */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute top-1 left-2 w-1 h-1 bg-white/70 rounded-full animate-pulse"></div>
-        <div className="absolute top-2 right-3 w-0.5 h-0.5 bg-white/60 rounded-full animate-pulse delay-100"></div>
-        <div className="absolute bottom-2 left-4 w-0.5 h-0.5 bg-white/60 rounded-full animate-pulse delay-200"></div>
-        <div className="absolute bottom-1 right-2 w-0.5 h-0.5 bg-white/50 rounded-full animate-pulse delay-300"></div>
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
+        <div className="absolute top-1 left-2 w-1 h-1 bg-white/50 rounded-full animate-pulse"></div>
+        <div className="absolute top-2 right-3 w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-100"></div>
+        <div className="absolute bottom-2 left-4 w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-200"></div>
+        <div className="absolute bottom-1 right-2 w-0.5 h-0.5 bg-white/30 rounded-full animate-pulse delay-300"></div>
       </div>
       
       {/* Icono con efecto de brillo */}
@@ -66,7 +66,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
         ) : (
           <>
             <AIIcon className={`${iconSizeClass} text-white group-hover:text-cyan-100 transition-colors duration-300`} />
-            <div className={`absolute inset-0 ${iconSizeClass} bg-gradient-to-r from-white/20 to-cyan-200/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0 ${iconSizeClass} bg-gradient-to-r from-white/10 to-cyan-200/10 rounded-full blur-sm opacity-0 group-hover:opacity-60 transition-opacity duration-300`}></div>
           </>
         )}
       </div>
@@ -74,7 +74,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
       <span className="relative z-10">{children}</span>
       
       {/* Efecto de borde brillante */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-l from-cyan-300/60 via-blue-500/50 to-cyan-300/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+      <div className="absolute inset-0 rounded-full bg-gradient-to-l from-cyan-300/30 via-blue-500/25 to-cyan-300/30 opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur-sm"></div>
     </button>
   );
 };
