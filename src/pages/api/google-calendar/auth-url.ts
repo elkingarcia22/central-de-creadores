@@ -13,11 +13,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'ID de usuario requerido' });
     }
 
+    // Determinar la URI de redirección según el entorno
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                   (process.env.NODE_ENV === 'production' 
+                     ? 'https://central-de-creadores-fl3jqqbly-elkin-garcias-projects-a0b1beb6.vercel.app' 
+                     : 'http://localhost:3000');
+    
+    const redirectUri = `${baseUrl}/api/google-calendar/callback`;
+
     // Configurar OAuth2
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI // Usar el redirect URI configurado en .env
+      redirectUri
     );
 
     // Generar URL de autorización

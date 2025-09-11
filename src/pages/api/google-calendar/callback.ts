@@ -16,11 +16,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('🔄 Procesando callback de Google Calendar para usuario:', userId);
 
+    // Determinar la URI de redirección según el entorno
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                   (process.env.NODE_ENV === 'production' 
+                     ? 'https://central-de-creadores-fl3jqqbly-elkin-garcias-projects-a0b1beb6.vercel.app' 
+                     : 'http://localhost:3000');
+    
+    const redirectUri = `${baseUrl}/api/google-calendar/callback`;
+
     // Configurar OAuth2
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI // Usar el redirect URI configurado en .env
+      redirectUri
     );
 
     // Intercambiar código por tokens
@@ -95,13 +103,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('✅ Evento de prueba eliminado');
 
       // Redirigir a la página de conexiones con parámetros de éxito
-      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
+      const redirectUrl = `${baseUrl}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
       return res.redirect(302, redirectUrl);
 
     } catch (testError) {
       console.error('❌ Error en evento de prueba:', testError);
       // Redirigir a la página de conexiones con parámetros de éxito (aunque falló el evento de prueba)
-      const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
+      const redirectUrl = `${baseUrl}/configuraciones/conexiones?google_calendar_connected=true&user_id=${userId}`;
       return res.redirect(302, redirectUrl);
     }
 
