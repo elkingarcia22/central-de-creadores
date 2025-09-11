@@ -383,13 +383,13 @@ export default function SesionActivaPage() {
 
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
-            <Button 
+            <button 
               onClick={handleSaveAndViewSession} 
-              className="flex items-center gap-2 bg-white border-2 border-blue-500 text-gray-800 hover:bg-blue-50 hover:border-blue-600 transition-all duration-200 rounded-full px-4 py-2 font-medium"
+              className="flex items-center gap-2 bg-white border-2 border-blue-500 text-gray-800 hover:bg-blue-50 hover:border-blue-600 transition-all duration-200 rounded-full px-4 py-2 font-medium shadow-sm hover:shadow-md"
             >
               <AIIcon className="w-4 h-4 text-blue-500" />
               Guardar y Analizar con IA
-            </Button>
+            </button>
           </div>
         </div>
 
