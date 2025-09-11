@@ -4,8 +4,6 @@ import { useRol } from '../../contexts/RolContext';
 import { useUser } from '../../contexts/UserContext';
 import { usePermisos } from '../../hooks/usePermisos';
 import { InlineEditProvider } from '../../contexts/InlineEditContext';
-import { GlobalTranscriptionProvider } from '../../contexts/GlobalTranscriptionContext';
-import GlobalTranscriptionWrapper from '../global/GlobalTranscriptionWrapper';
 
 import { supabase } from '../../api/supabase';
 // import { createClient } from '@supabase/supabase-js'; // Removido - usar cliente existente
@@ -219,7 +217,6 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
   };
 
   return (
-    <GlobalTranscriptionProvider>
       <InlineEditProvider>
         <div className={`min-h-screen bg-gray-50 dark:bg-black flex flex-row ${className}`}>
           {/* Modal de edición de perfil */}
@@ -256,15 +253,12 @@ const Layout: React.FC<LayoutProps> = ({ children, rol, className = '' }) => {
           {/* Contenido de la página */}
           <main className="flex-1 overflow-y-visible">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              {/* Componentes globales de transcripción */}
-              <GlobalTranscriptionWrapper />
               {children}
             </div>
           </main>
         </div>
       </div>
       </InlineEditProvider>
-    </GlobalTranscriptionProvider>
   );
 }; 
 
