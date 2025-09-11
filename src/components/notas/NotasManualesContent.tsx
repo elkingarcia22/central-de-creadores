@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/ui';
+import { Input, Button, Card, EmptyState, SideModal, PageHeader } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
-import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
+import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, AlertTriangleIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 
 interface Nota {
@@ -22,12 +22,10 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 }) => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
-  const [editandoNota, setEditandoNota] = useState<string | null>(null);
-  const [notaEditando, setNotaEditando] = useState('');
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
+  const [notaAEliminar, setNotaAEliminar] = useState<Nota | null>(null);
   const [eliminando, setEliminando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -103,37 +101,8 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const actualizarNota = async (notaId: string, nuevoContenido: string) => {
-    if (!nuevoContenido.trim()) return;
-
-    try {
-      const response = await fetch(`/api/notas-manuales/${notaId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contenido: nuevoContenido.trim()
-        }),
-      });
-
-      if (response.ok) {
-        const notaActualizada = await response.json();
-        setNotas(prev => prev.map(nota => 
-          nota.id === notaId ? notaActualizada : nota
-        ));
-        setEditandoNota(null);
-        setNotaEditando('');
-      } else {
-        console.error('Error actualizando nota:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error actualizando nota:', error);
-    }
-  };
-
-  const confirmarEliminarNota = (notaId: string) => {
-    setNotaAEliminar(notaId);
+  const confirmarEliminarNota = (nota: Nota) => {
+    setNotaAEliminar(nota);
     setShowDeleteModal(true);
   };
 
@@ -142,12 +111,12 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 
     setEliminando(true);
     try {
-      const response = await fetch(`/api/notas-manuales/${notaAEliminar}`, {
+      const response = await fetch(`/api/notas-manuales/${notaAEliminar.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setNotas(prev => prev.filter(nota => nota.id !== notaAEliminar));
+        setNotas(prev => prev.filter(nota => nota.id !== notaAEliminar.id));
         setShowDeleteModal(false);
         setNotaAEliminar(null);
       } else {
@@ -172,28 +141,6 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const handleEditKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (editandoNota) {
-        actualizarNota(editandoNota, notaEditando);
-      }
-    }
-    if (e.key === 'Escape') {
-      setEditandoNota(null);
-      setNotaEditando('');
-    }
-  };
-
-  const iniciarEdicion = (nota: Nota) => {
-    setEditandoNota(nota.id);
-    setNotaEditando(nota.contenido);
-  };
-
-  const cancelarEdicion = () => {
-    setEditandoNota(null);
-    setNotaEditando('');
-  };
 
   return (
     <div className="space-y-6">
@@ -256,90 +203,103 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       ) : (
         <div className="space-y-3">
           {notas.map((nota) => (
-            <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow">
-              {editandoNota === nota.id ? (
-                <div className="space-y-3">
-                  <Input
-                    value={notaEditando}
-                    onChange={(e) => setNotaEditando(e.target.value)}
-                    onKeyPress={handleEditKeyPress}
-                    className="text-base"
-                    autoFocus
-                  />
-                  <div className="flex justify-end space-x-2">
+            <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow group">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    {nota.contenido}
+                  </Typography>
+                  <div className="flex items-center space-x-2 ml-4">
                     <Button
-                      onClick={() => actualizarNota(nota.id, notaEditando)}
+                      onClick={() => confirmarEliminarNota(nota)}
                       size="sm"
-                      variant="primary"
-                      disabled={!notaEditando.trim()}
+                      variant="ghost"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700"
                     >
-                      <CheckIcon className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      onClick={cancelarEdicion}
-                      size="sm"
-                      variant="secondary"
-                    >
-                      <XIcon className="w-4 h-4" />
+                      <TrashIcon className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                      {nota.contenido}
-                    </Typography>
-                    <div className="flex items-center space-x-2 ml-4">
-                      <Button
-                        onClick={() => iniciarEdicion(nota)}
-                        size="sm"
-                        variant="ghost"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <EditIcon className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => confirmarEliminarNota(nota.id)}
-                        size="sm"
-                        variant="ghost"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center space-x-1">
-                      <ClockIcon className="w-4 h-4" />
-                      <span>{formatearFecha(nota.fecha_creacion)}</span>
-                    </div>
-                    {nota.fecha_actualizacion && nota.fecha_actualizacion !== nota.fecha_creacion && (
-                      <div className="flex items-center space-x-1">
-                        <EditIcon className="w-4 h-4" />
-                        <span>Editado {formatearFecha(nota.fecha_actualizacion)}</span>
-                      </div>
-                    )}
+                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center space-x-1">
+                    <ClockIcon className="w-4 h-4" />
+                    <span>{formatearFecha(nota.fecha_creacion)}</span>
                   </div>
                 </div>
-              )}
+              </div>
             </Card>
           ))}
         </div>
       )}
 
       {/* Modal de confirmación para eliminar */}
-      <ConfirmModal
+      <SideModal
         isOpen={showDeleteModal}
         onClose={cancelarEliminar}
-        onConfirm={eliminarNota}
-        title="Eliminar Nota"
-        message="¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer."
-        type="warning"
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-        loading={eliminando}
-      />
+        size="md"
+      >
+        <div className="space-y-6">
+          {/* Header con PageHeader e icono integrado */}
+          <PageHeader
+            title="Confirmar Eliminación"
+            variant="title-only"
+            color="gray"
+            onClose={cancelarEliminar}
+            icon={<AlertTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />}
+          />
+          
+          {/* Espacio adicional después del header */}
+          <div className="pt-8"></div>
+
+          {/* Mensaje principal */}
+          <div className="text-center space-y-2">
+            <Typography variant="h4" className="text-red-600 dark:text-red-400">
+              ¿Eliminar Nota?
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Esta acción no se puede deshacer.
+            </Typography>
+          </div>
+
+          {/* Información de la nota */}
+          {notaAEliminar && (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
+              <Typography variant="subtitle2" weight="medium">
+                Contenido de la nota:
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                {notaAEliminar.contenido}
+              </Typography>
+              <Typography variant="body2" color="secondary">
+                Creada: {formatearFecha(notaAEliminar.fecha_creacion)}
+              </Typography>
+            </div>
+          )}
+
+          {/* Botones */}
+          <div className="flex gap-4 pt-6 border-t border-border">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={cancelarEliminar}
+              disabled={eliminando}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={eliminarNota}
+              disabled={eliminando}
+              className="flex-1 flex items-center justify-center gap-2"
+            >
+              <TrashIcon className="w-4 h-4" />
+              {eliminando ? 'Eliminando...' : 'Eliminar Nota'}
+            </Button>
+          </div>
+        </div>
+      </SideModal>
     </div>
   );
 };
