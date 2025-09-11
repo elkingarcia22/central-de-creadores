@@ -27,7 +27,7 @@ const SesionesPageContent: React.FC = () => {
   // Estados para modales y acciones
   const [showModal, setShowModal] = useState(false);
   const [selectedSesion, setSelectedSesion] = useState<Sesion | null>(null);
-  const [modalActiveTab, setModalActiveTab] = useState('reclutamiento');
+  const [modalActiveTab, setModalActiveTab] = useState('detalles');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sesionToDelete, setSesionToDelete] = useState<Sesion | null>(null);
   const [deletingSesion, setDeletingSesion] = useState(false);
