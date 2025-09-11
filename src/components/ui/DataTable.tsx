@@ -86,6 +86,9 @@ const DataTable: React.FC<DataTableProps> = ({
   rowKey = "id",
   clearSelection = false
 }) => {
+  console.log('🔍 DataTable - Props recibidas:', { data, columns, loading });
+  console.log('🔍 DataTable - data.length:', data?.length);
+  console.log('🔍 DataTable - columns.length:', columns?.length);
   const { theme } = useTheme();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
@@ -350,6 +353,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 </tr>
               ) : (
                 sortedData.map((row, index) => {
+                  console.log('🔍 DataTable - Renderizando fila:', index, row);
                   const rowId = row[rowKey] || row.id || row._id || index;
                   
                   return (

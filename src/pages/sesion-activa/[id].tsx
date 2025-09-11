@@ -217,6 +217,10 @@ export default function SesionActivaPage() {
       if (participanteResponse.ok) {
         const participanteData = await participanteResponse.json();
         setParticipante(participanteData);
+        console.log('🔍 Participante cargado completo:', participanteData);
+        console.log('🔍 Participante tipo:', participanteData?.tipo);
+        console.log('🔍 Participante empresa_id:', participanteData?.empresa_id);
+        console.log('🔍 Participante empresa_nombre:', participanteData?.empresa_nombre);
       }
 
       // Cargar datos del reclutamiento específico de la sesión activa
