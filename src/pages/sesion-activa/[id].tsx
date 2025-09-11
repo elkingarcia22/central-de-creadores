@@ -167,10 +167,33 @@ export default function SesionActivaPage() {
 
   // Listener para transcripción completada
   useEffect(() => {
-    const handleTranscriptionCompleted = (event: any) => {
+    const handleTranscriptionCompleted = async (event: any) => {
       console.log('🎉 Transcripción completada recibida:', event.detail);
       setTranscripcionCompleta(event.detail.transcription);
       setSegmentosTranscripcion(event.detail.segments);
+      
+      // Guardar en la base de datos
+      if (transcripcionId && event.detail.transcription) {
+        console.log('💾 Actualizando transcripción en base de datos...');
+        console.log('📝 Datos a guardar:', {
+          transcripcion_completa: event.detail.transcription,
+          transcripcion_por_segmentos: event.detail.segments,
+          duracion_total: audioTranscription.state.duration,
+          fecha_fin: new Date().toISOString(),
+          estado: 'completada'
+        });
+        
+        await updateTranscripcion(transcripcionId, {
+          transcripcion_completa: event.detail.transcription,
+          transcripcion_por_segmentos: event.detail.segments,
+          duracion_total: audioTranscription.state.duration,
+          fecha_fin: new Date().toISOString(),
+          estado: 'completada'
+        });
+        
+        console.log('✅ Transcripción guardada en BD, recargando lista...');
+        await loadTranscripciones();
+      }
     };
 
     window.addEventListener('transcriptionCompleted', handleTranscriptionCompleted);
@@ -178,7 +201,7 @@ export default function SesionActivaPage() {
     return () => {
       window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
     };
-  }, []);
+  }, [transcripcionId, audioTranscription.state.duration]);
 
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
@@ -541,30 +564,7 @@ export default function SesionActivaPage() {
             if (currentBlob) {
               console.log('🎵 Iniciando transcripción de audio...');
               await audioTranscription.transcribeAudio(currentBlob);
-              
-              console.log('📝 Transcripción completada:', audioTranscription.state.transcription);
-              
-              if (transcripcionId && audioTranscription.state.transcription) {
-                console.log('💾 Actualizando transcripción en base de datos...');
-                console.log('📝 Datos a guardar:', {
-                  transcripcion_completa: audioTranscription.state.transcription,
-                  transcripcion_por_segmentos: audioTranscription.state.segments,
-                  duracion_total: audioTranscription.state.duration,
-                  fecha_fin: new Date().toISOString(),
-                  estado: 'completada'
-                });
-                
-                await updateTranscripcion(transcripcionId, {
-                  transcripcion_completa: audioTranscription.state.transcription,
-                  transcripcion_por_segmentos: audioTranscription.state.segments,
-                  duracion_total: audioTranscription.state.duration,
-                  fecha_fin: new Date().toISOString(),
-                  estado: 'completada'
-                });
-                
-                console.log('✅ Transcripción guardada en BD, recargando lista...');
-                await loadTranscripciones();
-              }
+              console.log('📝 Transcripción completada, el guardado se manejará en el listener del evento');
               return;
             }
             
