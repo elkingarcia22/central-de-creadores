@@ -160,6 +160,9 @@ export default function SesionActivaPage() {
 
   // Cargar opciones de filtro dinámicamente desde los dolores
   useEffect(() => {
+    console.log('🔍 useEffect dolores ejecutándose, dolores.length:', dolores.length);
+    console.log('🔍 Estado dolores actual:', dolores);
+    
     if (dolores.length > 0) {
       console.log('🔍 Cargando opciones de filtro desde dolores:', dolores.length);
       
@@ -200,6 +203,8 @@ export default function SesionActivaPage() {
         severidades: severidadesOptions,
         categorias: categoriasOptions
       });
+    } else {
+      console.log('🔍 No hay dolores para generar opciones de filtro');
     }
   }, [dolores]);
 
@@ -410,8 +415,11 @@ export default function SesionActivaPage() {
       const response = await fetch(`/api/participantes/${id}/dolores`);
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dolores cargados:', data);
+        console.log('🔍 Dolores cargados desde API:', data);
+        console.log('🔍 Cantidad de dolores:', data?.length);
+        console.log('🔍 Primer dolor:', data?.[0]);
         setDolores(data || []);
+        console.log('🔍 Estado dolores actualizado');
       } else {
         console.error('🔍 Error en respuesta de dolores:', response.status);
       }
@@ -1346,6 +1354,11 @@ export default function SesionActivaPage() {
       label: 'Dolores',
       content: (
         <>
+          {(() => {
+            console.log('🔍 Renderizando tab Dolores, dolores.length:', dolores.length);
+            console.log('🔍 Dolores en render:', dolores);
+            return null;
+          })()}
           {dolores.length > 0 ? (
             <DoloresUnifiedContainer
               dolores={dolores}
