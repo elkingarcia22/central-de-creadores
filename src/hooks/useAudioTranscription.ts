@@ -178,6 +178,7 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
       const result = await response.json();
       console.log('✅ Resultado de transcripción:', result);
       
+      // Actualizar transcripción en tiempo real
       setState(prev => ({
         ...prev,
         transcription: result.transcription || '',
@@ -186,6 +187,14 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
       }));
 
       console.log('✅ Transcripción completada y guardada en estado');
+      
+      // Disparar evento personalizado para notificar a otros componentes
+      window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
+        detail: {
+          transcription: result.transcription || '',
+          segments: result.segments || []
+        }
+      }));
 
     } catch (error) {
       console.error('❌ Error en transcripción:', error);

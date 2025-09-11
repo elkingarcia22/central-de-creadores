@@ -165,6 +165,21 @@ export default function SesionActivaPage() {
     }
   }, [reclutamiento?.id]);
 
+  // Listener para transcripción completada
+  useEffect(() => {
+    const handleTranscriptionCompleted = (event: any) => {
+      console.log('🎉 Transcripción completada recibida:', event.detail);
+      setTranscripcionCompleta(event.detail.transcription);
+      setSegmentosTranscripcion(event.detail.segments);
+    };
+
+    window.addEventListener('transcriptionCompleted', handleTranscriptionCompleted);
+
+    return () => {
+      window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
+    };
+  }, []);
+
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
     console.log('🔍 Estado de empresa cambiado:', empresa);

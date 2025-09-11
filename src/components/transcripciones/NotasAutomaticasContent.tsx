@@ -142,6 +142,20 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           <Typography variant="body2" color="secondary" className="mt-2">
             Analizando el audio y generando la transcripción...
           </Typography>
+          
+          {/* Mostrar transcripción en tiempo real si está disponible */}
+          {transcripcionCompleta && (
+            <div className="mt-4">
+              <Typography variant="h6" weight="medium" className="mb-2">
+                Transcripción en tiempo real:
+              </Typography>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
+                <Typography variant="body1" className="whitespace-pre-wrap">
+                  {transcripcionCompleta}
+                </Typography>
+              </div>
+            </div>
+          )}
         </Card>
       )}
 
@@ -157,6 +171,56 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           <Typography variant="body2" color="secondary" className="mt-2">
             {error}
           </Typography>
+        </Card>
+      )}
+
+      {/* Transcripción actual en tiempo real */}
+      {(transcripcionCompleta || segmentosTranscripcion.length > 0) && !isProcessing && (
+        <Card variant="elevated" padding="lg">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Typography variant="h4" weight="semibold">
+                Transcripción Actual
+              </Typography>
+              <Badge variant="success" size="sm">
+                Completada
+              </Badge>
+            </div>
+
+            {transcripcionCompleta && (
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <Typography variant="body1" className="whitespace-pre-wrap">
+                  {transcripcionCompleta}
+                </Typography>
+              </div>
+            )}
+
+            {/* Segmentos de transcripción */}
+            {segmentosTranscripcion && segmentosTranscripcion.length > 0 && (
+              <div className="space-y-3">
+                <Typography variant="h5" weight="medium">
+                  Segmentos de Audio
+                </Typography>
+                <div className="space-y-2">
+                  {segmentosTranscripcion.map((segmento: any, index: number) => (
+                    <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <Typography variant="body2" weight="medium">
+                          {segmento.hablante || 'Desconocido'}
+                        </Typography>
+                        <Typography variant="caption" color="secondary">
+                          {segmento.timestamp_inicio}s - {segmento.timestamp_fin}s
+                        </Typography>
+                      </div>
+                      <Typography variant="body2">
+                        {segmento.texto}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </Card>
       )}
 
