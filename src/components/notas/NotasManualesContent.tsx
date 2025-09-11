@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Card, EmptyState } from '../../components/ui';
+import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
@@ -26,6 +26,9 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const [notaEditando, setNotaEditando] = useState('');
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
+  const [eliminando, setEliminando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Cargar notas al montar el componente
@@ -129,20 +132,37 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const eliminarNota = async (notaId: string) => {
+  const confirmarEliminarNota = (notaId: string) => {
+    setNotaAEliminar(notaId);
+    setShowDeleteModal(true);
+  };
+
+  const eliminarNota = async () => {
+    if (!notaAEliminar) return;
+
+    setEliminando(true);
     try {
-      const response = await fetch(`/api/notas-manuales/${notaId}`, {
+      const response = await fetch(`/api/notas-manuales/${notaAEliminar}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setNotas(prev => prev.filter(nota => nota.id !== notaId));
+        setNotas(prev => prev.filter(nota => nota.id !== notaAEliminar));
+        setShowDeleteModal(false);
+        setNotaAEliminar(null);
       } else {
         console.error('Error eliminando nota:', response.statusText);
       }
     } catch (error) {
       console.error('Error eliminando nota:', error);
+    } finally {
+      setEliminando(false);
     }
+  };
+
+  const cancelarEliminar = () => {
+    setShowDeleteModal(false);
+    setNotaAEliminar(null);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -280,7 +300,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                         <EditIcon className="w-4 h-4" />
                       </Button>
                       <Button
-                        onClick={() => eliminarNota(nota.id)}
+                        onClick={() => confirmarEliminarNota(nota.id)}
                         size="sm"
                         variant="ghost"
                         className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700"
@@ -307,6 +327,19 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
           ))}
         </div>
       )}
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelarEliminar}
+        onConfirm={eliminarNota}
+        title="Eliminar Nota"
+        message="¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer."
+        type="warning"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        loading={eliminando}
+      />
     </div>
   );
 };

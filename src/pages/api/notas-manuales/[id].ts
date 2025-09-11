@@ -46,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       console.log('🗑️ Eliminando nota manual:', id);
 
-      const { error } = await supabase
+      const { error } = await supabaseServer
         .from('notas_manuales')
         .delete()
         .eq('id', id);
