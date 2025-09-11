@@ -169,8 +169,13 @@ export default function SesionActivaPage() {
   useEffect(() => {
     const handleTranscriptionCompleted = async (event: any) => {
       console.log('🎉 Transcripción completada recibida:', event.detail);
+      console.log('🔍 Estado actual transcripcionCompleta:', transcripcionCompleta);
+      console.log('🔍 Estado actual segmentosTranscripcion:', segmentosTranscripcion);
+      
       setTranscripcionCompleta(event.detail.transcription);
       setSegmentosTranscripcion(event.detail.segments);
+      
+      console.log('✅ Estados actualizados en el listener');
       
       // Guardar en la base de datos
       if (transcripcionId && event.detail.transcription) {
@@ -201,7 +206,7 @@ export default function SesionActivaPage() {
     return () => {
       window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
     };
-  }, [transcripcionId, audioTranscription.state.duration]);
+  }, [transcripcionId, audioTranscription.state.duration, transcripcionCompleta, segmentosTranscripcion]);
 
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
