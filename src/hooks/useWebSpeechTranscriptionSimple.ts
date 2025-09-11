@@ -121,30 +121,40 @@ export function useWebSpeechTranscriptionSimple() {
 
     recognition.onend = () => {
       console.log('🛑 [Web Speech] Reconocimiento terminado');
-      setState(prev => ({ 
-        ...prev, 
-        isRecording: false,
-        duration: (Date.now() - startTimeRef.current) / 1000
-      }));
-
-      // Disparar evento de transcripción completada
-      const finalTranscription = state.transcription;
-      const finalSegments = state.segments;
       
-      if (finalTranscription) {
-        console.log('📡 [Web Speech] Disparando evento transcriptionCompleted');
-        window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
-          detail: {
-            transcription: finalTranscription,
-            segments: finalSegments,
-            language: 'es-ES',
-            confidence: 0.9,
-            duration: (Date.now() - startTimeRef.current) / 1000,
-            wordCount: finalTranscription.split(' ').length,
-            speakerCount: 1
-          }
-        }));
-      }
+      // Obtener el estado actual antes de actualizarlo
+      setState(prev => {
+        const finalTranscription = prev.transcription;
+        const finalSegments = prev.segments;
+        const finalDuration = (Date.now() - startTimeRef.current) / 1000;
+        
+        console.log('📡 [Web Speech] Disparando evento transcriptionCompleted con:', {
+          transcription: finalTranscription,
+          segments: finalSegments,
+          duration: finalDuration
+        });
+        
+        // Disparar evento de transcripción completada
+        if (finalTranscription) {
+          window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
+            detail: {
+              transcription: finalTranscription,
+              segments: finalSegments,
+              language: 'es-ES',
+              confidence: 0.9,
+              duration: finalDuration,
+              wordCount: finalTranscription.split(' ').length,
+              speakerCount: 1
+            }
+          }));
+        }
+        
+        return {
+          ...prev,
+          isRecording: false,
+          duration: finalDuration
+        };
+      });
     };
 
     // Iniciar reconocimiento

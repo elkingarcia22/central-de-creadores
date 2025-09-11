@@ -206,7 +206,7 @@ export default function SesionActivaPage() {
         console.log('📝 Datos a guardar:', {
           transcripcion_completa: event.detail.transcription,
           transcripcion_por_segmentos: event.detail.segments,
-          duracion_total: audioTranscription.state.duration,
+          duracion_total: Math.round(event.detail.duration),
           fecha_fin: new Date().toISOString(),
           estado: 'completada'
         });
@@ -214,7 +214,7 @@ export default function SesionActivaPage() {
         await updateTranscripcion(transcripcionId, {
           transcripcion_completa: event.detail.transcription,
           transcripcion_por_segmentos: event.detail.segments,
-          duracion_total: audioTranscription.state.duration,
+          duracion_total: Math.round(event.detail.duration),
           fecha_fin: new Date().toISOString(),
           estado: 'completada'
         });
