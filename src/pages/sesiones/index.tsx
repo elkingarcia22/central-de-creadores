@@ -1150,9 +1150,6 @@ const SesionesPageContent: React.FC = () => {
           }
         ];
 
-        console.log('🔍 DEBUG - modalTabs:', modalTabs);
-        console.log('🔍 DEBUG - modalActiveTab:', modalActiveTab);
-        console.log('🔍 DEBUG - participanteId:', participanteId);
 
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
