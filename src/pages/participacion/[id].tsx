@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
-import { useTheme } from '../../contexts/Thetema de diseño de la paltadactructura dame el sql y te devuelvo el jsont { useToast } from '../../contexts/ToastContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useToast } from '../../contexts/ToastContext';
 import { Layout, PageHeader, InfoContainer, InfoItem } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
