@@ -1,5 +1,6 @@
 // Componentes UI básicos
 export { default as Button } from "./Button";
+export { AIButton } from "./AIButton";
 export { default as Input } from "./Input";
 export { default as Typography } from "./Typography";
 export { default as Badge } from "./Badge";

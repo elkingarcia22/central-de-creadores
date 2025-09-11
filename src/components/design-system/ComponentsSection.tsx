@@ -3,6 +3,7 @@ import {
   Typography, 
   Card, 
   Button, 
+  AIButton,
   Input, 
   Textarea, 
   Select, 
@@ -499,6 +500,149 @@ const ComponentsSection: React.FC = () => {
                 <Button variant="outline" disabled>
                   Deshabilitado
                 </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* AIButton Component */}
+        <Card className="p-6">
+          <Typography variant="h3" weight="bold" className="mb-4">
+            AIButton Component
+          </Typography>
+          <Typography variant="body1" color="secondary" className="mb-4">
+            Un botón especializado con efectos futuristas para acciones relacionadas con IA. 
+            Incluye efectos visuales avanzados como brillo animado, partículas sutiles y micro-interacciones.
+          </Typography>
+          <div className="bg-muted p-4 rounded-lg mb-4">
+            <Typography variant="h5" weight="semibold" className="mb-2">
+              Props disponibles:
+            </Typography>
+            <div className="space-y-1">
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">children</code>
+                <span>: contenido del botón (default: "Guardar y Analizar con IA")</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">onClick</code>
+                <span>: función a ejecutar al hacer click</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">size</code>
+                <span>: sm, md, lg (default: md)</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">loading</code>
+                <span>: boolean para estado de carga</span>
+              </Typography>
+              <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                <span>•</span>
+                <code className="bg-background px-1 rounded">disabled</code>
+                <span>: boolean para estado deshabilitado</span>
+              </Typography>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Uso Básico
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Botón con texto por defecto y efectos de IA.
+              </Typography>
+              <div className="flex flex-wrap gap-4">
+                <AIButton />
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Tamaños
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Diferentes tamaños disponibles para diferentes contextos.
+              </Typography>
+              <div className="flex flex-wrap gap-4 items-center">
+                <AIButton size="sm">Analizar</AIButton>
+                <AIButton size="md">Guardar y Analizar con IA</AIButton>
+                <AIButton size="lg">Procesar con Inteligencia Artificial</AIButton>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Estados
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                Estados de carga y deshabilitado con indicadores visuales.
+              </Typography>
+              <div className="flex flex-wrap gap-4">
+                <AIButton loading>Procesando...</AIButton>
+                <AIButton disabled>No disponible</AIButton>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Efectos Visuales
+              </Typography>
+              <Typography variant="body2" color="secondary" className="mb-3">
+                El botón incluye múltiples efectos visuales:
+              </Typography>
+              <div className="space-y-2">
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Brillo animado que se desliza en hover</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Partículas sutiles que aparecen en hover</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Efecto de escala suave (105% en hover, 95% en click)</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Borde brillante con gradiente azul-púrpura</span>
+                </Typography>
+                <Typography variant="body2" color="muted" className="flex items-center gap-2">
+                  <span>•</span>
+                  <span>Icono de IA con efecto de resplandor</span>
+                </Typography>
+              </div>
+            </div>
+
+            <div>
+              <Typography variant="h4" weight="semibold" className="mb-3">
+                Ejemplo de Uso
+              </Typography>
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-sm text-foreground overflow-x-auto">
+{`import { AIButton } from '@/components/ui/AIButton';
+
+// Uso básico
+<AIButton onClick={handleAnalyze} />
+
+// Con texto personalizado
+<AIButton onClick={handleSave}>
+  Guardar y Procesar
+</AIButton>
+
+// Con estado de carga
+<AIButton 
+  onClick={handleProcess}
+  loading={isProcessing}
+  size="lg"
+>
+  Procesar con IA
+</AIButton>`}
+                </pre>
               </div>
             </div>
           </div>
