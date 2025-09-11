@@ -796,11 +796,6 @@ export default function SesionActivaPage() {
 
   const handleSaveAndViewSession = async () => {
     try {
-      // Abrir el Meet si existe el enlace
-      if (reclutamiento?.meet_link) {
-        window.open(reclutamiento.meet_link, '_blank');
-      }
-      
       // Actualizar el estado del reclutamiento a "En progreso"
       if (reclutamiento?.investigacion_id) {
         try {
