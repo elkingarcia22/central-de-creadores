@@ -33,9 +33,9 @@ export const AIButton: React.FC<AIButtonProps> = ({
     lg: "w-5 h-5"
   };
 
-  const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-lg shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
+  const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
   
-  const variantClasses = "bg-gradient-to-r from-purple-400 to-purple-800 border-4 border-transparent text-white hover:from-purple-300 hover:to-purple-700";
+  const variantClasses = "bg-gradient-to-l from-purple-600 via-purple-500 to-purple-600 border-4 border-transparent text-white hover:from-purple-500 hover:via-purple-400 hover:to-purple-500";
   
   const sizeClass = sizeClasses[size];
   const iconSizeClass = iconSizeClasses[size];
@@ -49,7 +49,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
       {...props}
     >
             {/* Efecto de brillo animado */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-lg"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
       
       {/* Efecto de partículas */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -74,7 +74,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
       <span className="relative z-10">{children}</span>
       
       {/* Efecto de borde brillante */}
-      <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-300/60 via-purple-500/50 to-purple-300/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+      <div className="absolute inset-0 rounded-full bg-gradient-to-l from-purple-300/60 via-purple-500/50 to-purple-300/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
     </button>
   );
 };
