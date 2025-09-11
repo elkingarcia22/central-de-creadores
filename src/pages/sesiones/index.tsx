@@ -1122,34 +1122,32 @@ const SesionesPageContent: React.FC = () => {
               </div>
             )
           },
-          // Mostrar tabs de notas siempre si hay participante
-          ...(participanteId ? [
-            {
-              id: 'notas-manuales',
-              label: 'Notas Manuales',
-              content: (
-                <NotasManualesContent 
-                  participanteId={participanteId}
-                  sesionId={selectedSesion.id}
-                />
-              )
-            },
-            {
-              id: 'notas-automaticas',
-              label: 'Notas Automáticas',
-              content: (
-                <NotasAutomaticasContent
-                  reclutamientoId={selectedSesion.id}
-                  isRecording={false}
-                  duracionGrabacion={0}
-                  transcripcionCompleta=""
-                  segmentosTranscripcion={[]}
-                  isProcessing={false}
-                  error={null}
-                />
-              )
-            }
-          ] : [])
+          // Mostrar tabs de notas siempre
+          {
+            id: 'notas-manuales',
+            label: 'Notas Manuales',
+            content: (
+              <NotasManualesContent 
+                participanteId={participanteId || 'temp-id'}
+                sesionId={selectedSesion.id}
+              />
+            )
+          },
+          {
+            id: 'notas-automaticas',
+            label: 'Notas Automáticas',
+            content: (
+              <NotasAutomaticasContent
+                reclutamientoId={selectedSesion.id}
+                isRecording={false}
+                duracionGrabacion={0}
+                transcripcionCompleta=""
+                segmentosTranscripcion={[]}
+                isProcessing={false}
+                error={null}
+              />
+            )
+          }
         ];
 
         console.log('🔍 DEBUG - modalTabs:', modalTabs);
