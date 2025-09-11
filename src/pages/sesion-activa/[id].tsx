@@ -19,7 +19,7 @@ import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedCont
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
-import { useAudioTranscription } from '../../hooks/useAudioTranscription';
+import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -124,8 +124,8 @@ export default function SesionActivaPage() {
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
   const [segmentosTranscripcion, setSegmentosTranscripcion] = useState<any[]>([]);
   
-  // Hook para transcripción de audio
-  const audioTranscription = useAudioTranscription();
+  // Hook para transcripción de audio con Web Speech API
+  const audioTranscription = useWebSpeechTranscriptionSimple();
   
   // Estado para opciones de filtro dinámicas
   const [filterOptions, setFilterOptions] = useState({
@@ -594,52 +594,33 @@ export default function SesionActivaPage() {
     try {
       if (audioTranscription.state.isRecording) {
         console.log('🛑 Deteniendo grabación...');
-        // Detener grabación
-        await audioTranscription.stopRecording();
+        audioTranscription.stopRecording();
         setIsRecording(false);
-        
-        console.log('🔍 Audio blob después de detener:', audioTranscription.state.audioBlob);
-        
-        // Esperar a que el audioBlob esté disponible
-        const waitForAudioBlob = async () => {
-          let attempts = 0;
-          const maxAttempts = 10;
-          
-          while (attempts < maxAttempts) {
-            const currentBlob = audioTranscription.getCurrentAudioBlob();
-            console.log(`🔍 Intento ${attempts + 1}: Audio blob disponible:`, !!currentBlob);
-            
-            if (currentBlob) {
-              console.log('🎵 Iniciando transcripción de audio...');
-              await audioTranscription.transcribeAudio(currentBlob);
-              console.log('📝 Transcripción completada, el guardado se manejará en el listener del evento');
-              return;
-            }
-            
-            // Esperar 500ms antes del siguiente intento
-            await new Promise(resolve => setTimeout(resolve, 500));
-            attempts++;
-          }
-          
-          console.log('❌ No se pudo obtener el audio blob después de', maxAttempts, 'intentos');
-        };
-        
-        // Ejecutar después de un pequeño delay
-        setTimeout(waitForAudioBlob, 1000);
-        
       } else {
         console.log('🎤 Iniciando grabación...');
-        // Iniciar grabación
-        await audioTranscription.startRecording();
         setIsRecording(true);
         
         // Crear nueva transcripción en la base de datos
         if (reclutamiento?.id) {
-          await createTranscripcion();
+          console.log('📝 Creando nueva transcripción en BD...');
+          const newTranscripcion = await createTranscripcion({
+            reclutamiento_id: reclutamiento.id,
+            meet_link: reclutamiento.meet_link || '',
+            estado: 'grabando'
+          });
+          
+          if (newTranscripcion?.id) {
+            setTranscripcionId(newTranscripcion.id);
+            console.log('✅ Transcripción creada con ID:', newTranscripcion.id);
+          }
         }
+        
+        // Iniciar grabación con Web Speech API
+        audioTranscription.startRecording();
       }
     } catch (error) {
-      console.error('Error al manejar grabación:', error);
+      console.error('❌ Error en grabación:', error);
+      setIsRecording(false);
     }
   };
 
@@ -718,25 +699,28 @@ export default function SesionActivaPage() {
   };
 
   // Función para crear nueva transcripción
-  const createTranscripcion = async () => {
+  const createTranscripcion = async (data?: any) => {
     try {
+      const transcripcionData = data || {
+        reclutamiento_id: reclutamiento?.id,
+        meet_link: reclutamiento?.meet_link || '',
+        estado: 'procesando',
+        fecha_inicio: new Date().toISOString()
+      };
+
       const response = await fetch('/api/transcripciones', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-          reclutamiento_id: reclutamiento?.id,
-          meet_link: reclutamiento?.meet_link || '',
-          estado: 'procesando',
-          fecha_inicio: new Date().toISOString()
-          }),
+          body: JSON.stringify(transcripcionData),
         });
 
       if (response.ok) {
-        const data = await response.json();
-        setTranscripcionId(data.id);
-        console.log('📝 Nueva transcripción creada:', data.id);
+        const result = await response.json();
+        setTranscripcionId(result.id);
+        console.log('📝 Nueva transcripción creada:', result.id);
+        return result;
       }
     } catch (error) {
       console.error('Error creando transcripción:', error);
