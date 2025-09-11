@@ -438,7 +438,7 @@ const SesionesPageContent: React.FC = () => {
     setFilters(newFilters);
   };
 
-  // Función para iniciar sesión con transcripción automática
+  // Función para iniciar sesión
   const handleIniciarSesion = async (sesion: SesionEvent) => {
     try {
       console.log('🎯 Iniciando sesión:', sesion.id);

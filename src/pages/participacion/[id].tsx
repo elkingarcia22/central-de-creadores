@@ -28,19 +28,7 @@ import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../com
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import EditarParticipanteModal from '../../components/ui/EditarParticipanteModal';
-import MeetTranscriptionCapture from '../../components/meet/MeetTranscriptionCapture';
-import TranscriptionViewer from '../../components/meet/TranscriptionViewer';
-import AutoTranscriptionManager from '../../components/meet/AutoTranscriptionManager';
-import SmartTranscriptionManager from '../../components/meet/SmartTranscriptionManager';
-import { useAutoMeetTranscription } from '../../hooks/useAutoMeetTranscription';
-import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
-import AutoMeetTranscription from '../../components/meet/AutoMeetTranscription';
-import UniversalMeetDetector from '../../components/meet/UniversalMeetDetector';
-import SimpleMeetDetector from '../../components/meet/SimpleMeetDetector';
-import MeetLinkEnhancer from '../../components/meet/MeetLinkEnhancer';
 import EditarReclutamientoModal from '../../components/ui/EditarReclutamientoModal';
-import GoogleMeetTranscription from '../../components/meet/GoogleMeetTranscription';
-import OtterIntegration from '../../components/meet/OtterIntegration';
 
 interface Participante {
   id: string;
@@ -192,20 +180,7 @@ export default function VistaParticipacion() {
   const [filtersParticipaciones, setFiltersParticipaciones] = useState<any>({});
   const [showFilterDrawerParticipaciones, setShowFilterDrawerParticipaciones] = useState(false);
 
-  // Hook para transcripción automática de Meet
-  const { isActive: transcriptionActive, isRecording: transcriptionRecording } = useAutoMeetTranscription({
-    reclutamientoId: Array.isArray(id) ? id[0] : id,
-    meetLink: reclutamientoActual?.meet_link,
-    autoStart: false // Deshabilitar inicio automático
-  });
 
-  // Hook para acceso al contexto global de transcripción
-  let globalTranscription = null;
-  try {
-    globalTranscription = useGlobalTranscription();
-  } catch (error) {
-    console.warn('GlobalTranscriptionContext no está disponible:', error);
-  }
 
   // Estados para opciones de filtros
   const [filterOptions, setFilterOptions] = useState<any>({
@@ -1904,21 +1879,7 @@ export default function VistaParticipacion() {
 
   return (
     <Layout rol={rolSeleccionado}>
-      {/* Componente de transcripción automática simple */}
-      {reclutamientoActual?.meet_link && (
-        <SimpleMeetDetector
-          reclutamientoId={Array.isArray(id) ? id[0] : id}
-          meetLink={reclutamientoActual.meet_link}
-        />
-      )}
       
-      {/* Mejorador de enlaces de Meet */}
-      {reclutamientoActual?.meet_link && (
-        <MeetLinkEnhancer
-          reclutamientoId={Array.isArray(id) ? id[0] : id}
-          meetLink={reclutamientoActual.meet_link}
-        />
-      )}
       
       <div className="py-8" data-reclutamiento-id={id}>
         {/* Header */}
