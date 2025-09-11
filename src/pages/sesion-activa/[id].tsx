@@ -129,19 +129,23 @@ export default function SesionActivaPage() {
         setParticipante(participanteData);
       }
 
-      // Cargar datos del reclutamiento actual
-      console.log('🔍 Cargando reclutamiento para participante:', id);
-      const reclutamientoResponse = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
-      if (reclutamientoResponse.ok) {
-        const data = await reclutamientoResponse.json();
-        console.log('🔍 Datos de reclutamiento recibidos:', data);
-        
-        // La API devuelve { reclutamiento: {...} }
-        const reclutamientoData = data.reclutamiento || data;
-        console.log('🔍 Reclutamiento procesado:', reclutamientoData);
-        setReclutamiento(reclutamientoData);
+      // Cargar datos del reclutamiento desde localStorage (sesión activa)
+      console.log('🔍 Cargando reclutamiento desde localStorage para sesión activa');
+      const currentReclutamiento = localStorage.getItem('currentReclutamiento');
+      if (currentReclutamiento) {
+        try {
+          const reclutamientoData = JSON.parse(currentReclutamiento);
+          console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
+          setReclutamiento(reclutamientoData);
+        } catch (error) {
+          console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
+          // Fallback: cargar desde API
+          await loadReclutamientoFromAPI();
+        }
       } else {
-        console.error('🔍 Error en respuesta de reclutamiento:', reclutamientoResponse.status);
+        console.log('🔍 No hay reclutamiento en localStorage, cargando desde API');
+        // Fallback: cargar desde API
+        await loadReclutamientoFromAPI();
       }
 
       // Cargar datos adicionales para los nuevos tabs
@@ -155,6 +159,26 @@ export default function SesionActivaPage() {
       console.error('Error cargando datos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReclutamientoFromAPI = async () => {
+    try {
+      console.log('🔍 Cargando reclutamiento desde API para participante:', id);
+      const reclutamientoResponse = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
+      if (reclutamientoResponse.ok) {
+        const data = await reclutamientoResponse.json();
+        console.log('🔍 Datos de reclutamiento recibidos desde API:', data);
+        
+        // La API devuelve { reclutamiento: {...} }
+        const reclutamientoData = data.reclutamiento || data;
+        console.log('🔍 Reclutamiento procesado desde API:', reclutamientoData);
+        setReclutamiento(reclutamientoData);
+      } else {
+        console.error('🔍 Error en respuesta de reclutamiento desde API:', reclutamientoResponse.status);
+      }
+    } catch (error) {
+      console.error('🔍 Error cargando reclutamiento desde API:', error);
     }
   };
 
