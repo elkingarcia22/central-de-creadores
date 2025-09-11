@@ -513,6 +513,7 @@ const ComponentsSection: React.FC = () => {
           <Typography variant="body1" color="secondary" className="mb-4">
             Un botón especializado con efectos futuristas para acciones relacionadas con IA. 
             Incluye efectos visuales avanzados como brillo animado, partículas sutiles y micro-interacciones.
+            Diseño con colores azul eléctrico y cian para un look tecnológico y moderno.
           </Typography>
           <div className="bg-muted p-4 rounded-lg mb-4">
             <Typography variant="h5" weight="semibold" className="mb-2">
@@ -592,7 +593,7 @@ const ComponentsSection: React.FC = () => {
                 Efectos Visuales
               </Typography>
               <Typography variant="body2" color="secondary" className="mb-3">
-                El botón incluye múltiples efectos visuales:
+                El botón incluye múltiples efectos visuales futuristas:
               </Typography>
               <div className="space-y-2">
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
@@ -609,7 +610,7 @@ const ComponentsSection: React.FC = () => {
                 </Typography>
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
-                  <span>Borde brillante con gradiente azul-púrpura</span>
+                  <span>Degradado centrado azul eléctrico y cian</span>
                 </Typography>
                 <Typography variant="body2" color="muted" className="flex items-center gap-2">
                   <span>•</span>
