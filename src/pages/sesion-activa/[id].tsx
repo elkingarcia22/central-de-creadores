@@ -19,6 +19,7 @@ import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedCont
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
+import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
@@ -93,7 +94,7 @@ export default function SesionActivaPage() {
   const [participante, setParticipante] = useState<Participante | null>(null);
   const [reclutamiento, setReclutamiento] = useState<Reclutamiento | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('informacion');
+  const [activeTab, setActiveTab] = useState('notas-manuales');
   
   // Estados para los nuevos tabs
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
@@ -1459,6 +1460,14 @@ export default function SesionActivaPage() {
   };
 
   const tabs = [
+    {
+      id: 'notas-manuales',
+      label: 'Notas Manuales',
+      content: <NotasManualesContent 
+        participanteId={participante!.id}
+        sesionId={reclutamiento!.id}
+      />
+    },
     {
       id: 'informacion',
       label: 'Información de Participante',
