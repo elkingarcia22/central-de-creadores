@@ -72,13 +72,19 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
         const audioUrl = URL.createObjectURL(audioBlob);
         
         console.log('🎵 Audio blob generado:', audioBlob.size, 'bytes');
+        console.log('🔍 Estado antes de actualizar:', state.audioBlob);
         
-        setState(prev => ({
-          ...prev,
-          audioBlob,
-          audioUrl,
-          isRecording: false
-        }));
+        setState(prev => {
+          console.log('🔍 Estado previo en setState:', prev.audioBlob);
+          const newState = {
+            ...prev,
+            audioBlob,
+            audioUrl,
+            isRecording: false
+          };
+          console.log('🔍 Nuevo estado en setState:', newState.audioBlob);
+          return newState;
+        });
       };
 
       // Iniciar grabación
@@ -208,6 +214,7 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
   }, []);
 
   const getCurrentAudioBlob = useCallback(() => {
+    console.log('🔍 getCurrentAudioBlob llamado, audioBlob:', !!state.audioBlob, 'tamaño:', state.audioBlob?.size);
     return state.audioBlob;
   }, [state.audioBlob]);
 
