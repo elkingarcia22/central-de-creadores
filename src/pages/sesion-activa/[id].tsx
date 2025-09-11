@@ -193,13 +193,14 @@ export default function SesionActivaPage() {
       const response = await fetch(`/api/participantes/${id}/investigaciones`);
       if (response.ok) {
         const data = await response.json();
-        setInvestigaciones(data || []);
+        const investigacionesArray = Array.isArray(data) ? data : [];
+        setInvestigaciones(investigacionesArray);
         
         // Calcular participaciones por mes
         const participacionesPorMes: { [key: string]: number } = {};
-        data?.forEach((inv: any) => {
-          if (inv.fecha_sesion) {
-            const fecha = new Date(inv.fecha_sesion);
+        investigacionesArray.forEach((inv: any) => {
+          if (inv.fecha_sesion || inv.fecha_participacion) {
+            const fecha = new Date(inv.fecha_sesion || inv.fecha_participacion);
             const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
             participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
           }
