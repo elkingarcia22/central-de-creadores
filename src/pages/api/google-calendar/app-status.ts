@@ -7,12 +7,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { userId } = req.query;
-
-    if (!userId) {
-      return res.status(400).json({ error: 'ID de usuario requerido' });
-    }
-
     // Determinar la URI de redirección según el entorno
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                    (process.env.NODE_ENV === 'production' 
@@ -28,33 +22,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       redirectUri
     );
 
-    // Generar URL de autorización
-    const authUrl = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: [
+    // Verificar configuración
+    const config = {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: redirectUri,
+      environment: process.env.NODE_ENV,
+      base_url: baseUrl,
+      scopes: [
         'https://www.googleapis.com/auth/calendar',
         'https://www.googleapis.com/auth/calendar.events'
-      ],
-      state: userId as string, // Pasar el userId en el state
-      prompt: 'consent', // Forzar consentimiento para obtener refresh_token
-      include_granted_scopes: true // Incluir scopes previamente otorgados
+      ]
+    };
+
+    // Generar URL de prueba
+    const testAuthUrl = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: config.scopes,
+      state: 'test-user-id',
+      prompt: 'consent',
+      include_granted_scopes: true
     });
 
     return res.status(200).json({
       success: true,
-      auth_url: authUrl,
-      message: 'URL de autorización generada. Usar esta URL para conectar Google Calendar.',
+      config,
+      test_auth_url: testAuthUrl,
+      message: 'Configuración de Google Calendar verificada',
       instructions: [
-        '1. Copiar la URL de autorización',
-        '2. Abrir en el navegador',
-        '3. Autorizar la aplicación',
-        '4. Copiar el código de autorización de la URL de retorno',
-        '5. Usar el endpoint /api/google-calendar/callback con el código'
+        '1. Verifica que la aplicación esté publicada en Google Cloud Console',
+        '2. Asegúrate de que los dominios estén autorizados',
+        '3. Los usuarios podrán conectar Google Calendar sin ser agregados como usuarios de prueba'
+      ],
+      next_steps: [
+        'Publicar la aplicación en OAuth Consent Screen',
+        'Agregar dominios autorizados: localhost, vercel.app',
+        'Configurar variables de entorno en Vercel'
       ]
     });
 
   } catch (error) {
-    console.error('❌ Error generando URL de autorización:', error);
+    console.error('❌ Error verificando configuración:', error);
     return res.status(500).json({ 
       error: 'Error interno del servidor',
       details: error instanceof Error ? error.message : 'Error desconocido'
