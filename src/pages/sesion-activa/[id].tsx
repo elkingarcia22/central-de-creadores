@@ -154,8 +154,8 @@ export default function SesionActivaPage() {
     try {
       if (participante?.empresa_nombre) {
         const response = await fetch(`/api/empresas/buscar?nombre=${encodeURIComponent(participante.empresa_nombre)}`);
-        if (response.ok) {
-          const data = await response.json();
+      if (response.ok) {
+        const data = await response.json();
           setEmpresa(data);
         }
       }
@@ -256,7 +256,7 @@ export default function SesionActivaPage() {
         // Recargar dolores
         await loadDoloresData();
       }
-    } catch (error) {
+      } catch (error) {
       console.error('Error cambiando estado del dolor:', error);
     }
   };
@@ -278,7 +278,7 @@ export default function SesionActivaPage() {
       label: 'Título',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <div className="font-medium text-gray-900">{dolor.titulo}</div>
+        <div className="font-medium text-gray-900">{dolor?.titulo || 'Sin título'}</div>
       )
     },
     {
@@ -286,7 +286,7 @@ export default function SesionActivaPage() {
       label: 'Categoría',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <Chip variant="secondary" size="sm">{dolor.categoria || 'Sin categoría'}</Chip>
+        <Chip variant="secondary" size="sm">{dolor?.categoria || 'Sin categoría'}</Chip>
       )
     },
     {
@@ -294,8 +294,8 @@ export default function SesionActivaPage() {
       label: 'Severidad',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <Chip variant={getSeveridadVariant(dolor.severidad)} size="sm">
-          {dolor.severidad}
+        <Chip variant={getSeveridadVariant(dolor?.severidad || 'baja')} size="sm">
+          {dolor?.severidad || 'Sin severidad'}
         </Chip>
       )
     },
@@ -304,8 +304,8 @@ export default function SesionActivaPage() {
       label: 'Estado',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <Chip variant={getEstadoDolorVariant(dolor.estado)} size="sm">
-          {getEstadoDolorText(dolor.estado)}
+        <Chip variant={getEstadoDolorVariant(dolor?.estado || 'activo')} size="sm">
+          {getEstadoDolorText(dolor?.estado || 'activo')}
         </Chip>
       )
     },
@@ -315,7 +315,7 @@ export default function SesionActivaPage() {
       sortable: true,
       render: (dolor: DolorParticipante) => (
         <div className="text-sm text-gray-600">
-          {formatearFecha(dolor.fecha_creacion)}
+          {dolor?.fecha_creacion ? formatearFecha(dolor.fecha_creacion) : 'Sin fecha'}
         </div>
       )
     }
@@ -368,15 +368,15 @@ export default function SesionActivaPage() {
             <AlertTriangleIcon className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <Typography variant="h3" className="text-gray-900 mb-2">
               Sesión no encontrada
-            </Typography>
+                  </Typography>
             <Typography variant="body1" className="text-gray-600 mb-4">
               No se pudo cargar la información de la sesión
-            </Typography>
+                  </Typography>
             <Button onClick={handleBackToSessions} variant="secondary">
               Volver a Sesiones
-            </Button>
-          </div>
-        </div>
+                    </Button>
+                  </div>
+                </div>
       </Layout>
     );
   }
@@ -389,178 +389,178 @@ export default function SesionActivaPage() {
     participacionesPorMes: { [key: string]: number };
   }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
     return (
-      <div className="space-y-6">
-        {/* Información básica */}
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <UserIcon className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <Typography variant="h3" className="text-gray-900">
-                Información Básica
-              </Typography>
-              <Typography variant="body2" className="text-gray-600">
-                Datos principales del participante
-              </Typography>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
-                <Typography variant="body1" className="text-gray-900 font-medium">
-                  {participante.nombre}
-                </Typography>
-              </div>
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Email</Typography>
-                <Typography variant="body1" className="text-gray-900">
-                  {participante.email}
-                </Typography>
-              </div>
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Teléfono</Typography>
-                <Typography variant="body1" className="text-gray-900">
-                  {participante.telefono || 'No disponible'}
-                </Typography>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Tipo</Typography>
+        <div className="space-y-6">
+              {/* Información básica */}
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-blue-50 rounded-lg">
+                    <UserIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
+                      Información Básica
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                      Datos principales del participante
+                    </Typography>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {participante.nombre}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Email</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.email}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Teléfono</Typography>
+                      <Typography variant="body1" className="text-gray-900">
+                        {participante.telefono || 'No disponible'}
+                      </Typography>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Tipo</Typography>
                 <Chip variant={getTipoParticipanteVariant(participante.tipo)} size="sm">
-                  {participante.tipo}
-                </Chip>
-              </div>
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
+                        {participante.tipo}
+                      </Chip>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
                 <Chip variant={getEstadoParticipanteVariant(participante.estado)} size="sm">
                   {participante.estado || 'Activo'}
-                </Chip>
-              </div>
+                      </Chip>
+                    </div>
               <div>
                 <Typography variant="body2" className="text-gray-500 mb-1">Fecha de registro</Typography>
                 <Typography variant="body1" className="text-gray-900">
                   {participante.created_at ? formatearFecha(participante.created_at) : 'No disponible'}
                 </Typography>
               </div>
-            </div>
-          </div>
-        </Card>
+                  </div>
+                </div>
+              </Card>
 
         {/* Información de empresa (si aplica) */}
         {empresa && participante.tipo === 'externo' && (
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
+                <Card className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
               <div className="p-2 bg-green-50 rounded-lg">
                 <BuildingIcon className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <Typography variant="h3" className="text-gray-900">
-                  Información de Empresa
-                </Typography>
-                <Typography variant="body2" className="text-gray-600">
+                    </div>
+                    <div>
+                      <Typography variant="h3" className="text-gray-900">
+                        Información de Empresa
+                      </Typography>
+                      <Typography variant="body2" className="text-gray-600">
                   Datos laborales del participante
-                </Typography>
-              </div>
-            </div>
-            
+                      </Typography>
+                    </div>
+                  </div>
+                  
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <div>
-                  <Typography variant="body2" className="text-gray-500 mb-1">Empresa</Typography>
-                  <Typography variant="body1" className="text-gray-900 font-medium">
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Empresa</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
                     {empresa.nombre}
-                  </Typography>
-                </div>
-                <div>
-                  <Typography variant="body2" className="text-gray-500 mb-1">Rol</Typography>
-                  <Typography variant="body1" className="text-gray-900">
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Rol</Typography>
+                      <Typography variant="body1" className="text-gray-900">
                     {participante.rol_empresa || 'No especificado'}
-                  </Typography>
-                </div>
-                <div>
-                  <Typography variant="body2" className="text-gray-500 mb-1">Departamento</Typography>
-                  <Typography variant="body1" className="text-gray-900">
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Departamento</Typography>
+                      <Typography variant="body1" className="text-gray-900">
                     {participante.departamento_nombre || 'No especificado'}
-                  </Typography>
+                      </Typography>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Card>
-        )}
-      </div>
+              </Card>
+          )}
+        </div>
     );
   };
 
   // Componente para el contenido del tab de Información de la Sesión
   const ReclutamientoContent: React.FC<{ reclutamiento: Reclutamiento; participante: Participante }> = ({ reclutamiento, participante }) => {
     return (
-      <div className="space-y-6">
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-6">
+        <div className="space-y-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-purple-50 rounded-lg">
               <CalendarIcon className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <Typography variant="h3" className="text-gray-900">
+                  </div>
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
                 Información de la Sesión
-              </Typography>
-              <Typography variant="body2" className="text-gray-600">
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
                 Detalles del reclutamiento actual
-              </Typography>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </Typography>
+                  </div>
+                </div>
+                
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
-                <Typography variant="body1" className="text-gray-900 font-medium">
-                  {reclutamiento.titulo}
-                </Typography>
-              </div>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
+                      <Typography variant="body1" className="text-gray-900 font-medium">
+                        {reclutamiento.titulo}
+                      </Typography>
+                    </div>
               <div>
                 <Typography variant="body2" className="text-gray-500 mb-1">Fecha</Typography>
                 <Typography variant="body1" className="text-gray-900">
                   {formatearFecha(reclutamiento.fecha)}
                 </Typography>
               </div>
-              <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
                 <Chip variant={getEstadoReclutamientoVariant(reclutamiento.estado)} size="sm">
-                  {reclutamiento.estado}
-                </Chip>
-              </div>
-            </div>
-            
+                        {reclutamiento.estado}
+                      </Chip>
+                    </div>
+                  </div>
+                  
             <div className="space-y-4">
               {reclutamiento.reclutador && (
-                <div>
+                  <div>
                   <Typography variant="body2" className="text-gray-500 mb-1">Reclutador</Typography>
-                  <Typography variant="body1" className="text-gray-900">
+                    <Typography variant="body1" className="text-gray-900">
                     {reclutamiento.reclutador.nombre}
-                  </Typography>
-                </div>
+                    </Typography>
+                  </div>
               )}
               {reclutamiento.meet_link && (
-                <div>
-                  <Typography variant="body2" className="text-gray-500 mb-1">Enlace de Meet</Typography>
-                  <a 
-                    href={reclutamiento.meet_link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                    <div>
+                      <Typography variant="body2" className="text-gray-500 mb-1">Enlace de Meet</Typography>
+                        <a 
+                          href={reclutamiento.meet_link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 underline"
-                  >
+                        >
                     Abrir en Google Meet
-                  </a>
+                        </a>
                 </div>
-              )}
-            </div>
-          </div>
+                      )}
+                    </div>
+                  </div>
           
           {reclutamiento.descripcion && (
             <div className="mt-6">
@@ -568,9 +568,9 @@ export default function SesionActivaPage() {
               <Typography variant="body1" className="text-gray-900">
                 {reclutamiento.descripcion}
               </Typography>
-            </div>
+                </div>
           )}
-        </Card>
+              </Card>
       </div>
     );
   };
@@ -612,22 +612,22 @@ export default function SesionActivaPage() {
               )}
 
               {/* Información básica de la empresa */}
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-6">
+                <Card className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 bg-green-50 rounded-lg">
                     <BuildingIcon className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <Typography variant="h3" className="text-gray-900">
+                    </div>
+                    <div>
+                      <Typography variant="h3" className="text-gray-900">
                       Información de la Empresa
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-600">
+                      </Typography>
+                      <Typography variant="body2" className="text-gray-600">
                       Datos corporativos
-                    </Typography>
+                      </Typography>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
                       <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
@@ -636,12 +636,12 @@ export default function SesionActivaPage() {
                       </Typography>
                     </div>
                     {empresa.tamano && (
-                      <div>
+                    <div>
                         <Typography variant="body2" className="text-gray-500 mb-1">Tamaño</Typography>
-                        <Typography variant="body1" className="text-gray-900">
+                      <Typography variant="body1" className="text-gray-900">
                           {empresa.tamano}
-                        </Typography>
-                      </div>
+                      </Typography>
+                    </div>
                     )}
                   </div>
                   
@@ -772,10 +772,10 @@ export default function SesionActivaPage() {
             >
               <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>
-            <PageHeader
-              title="Sesión Activa"
+          <PageHeader
+            title="Sesión Activa"
               variant="compact"
-              color="blue"
+            color="blue"
               className="mb-0"
               chip={{
                 label: participante.nombre,
@@ -783,8 +783,8 @@ export default function SesionActivaPage() {
                 size: 'sm'
               }}
             />
-          </div>
-
+            </div>
+            
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
             <button 
@@ -794,16 +794,16 @@ export default function SesionActivaPage() {
               <AIIcon className="w-4 h-4 text-blue-500" />
               Guardar y Analizar con IA
             </button>
+            </div>
           </div>
-        </div>
 
         {/* Tabs */}
-        <div className="space-y-6">
-          <Tabs
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
+          <div className="space-y-6">
+            <Tabs
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
         </div>
       </div>
     </Layout>
