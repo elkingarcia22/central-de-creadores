@@ -220,6 +220,15 @@ export default function SesionActivaPage() {
     console.log('🔄 Estado segmentosTranscripcion cambió:', segmentosTranscripcion);
   }, [segmentosTranscripcion]);
 
+  // Debug: Verificar cambios en el estado del hook
+  useEffect(() => {
+    console.log('🔄 Hook audioTranscription.state.transcription cambió:', audioTranscription.state.transcription);
+  }, [audioTranscription.state.transcription]);
+
+  useEffect(() => {
+    console.log('🔄 Hook audioTranscription.state.segments cambió:', audioTranscription.state.segments);
+  }, [audioTranscription.state.segments]);
+
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
     console.log('🔍 Estado de empresa cambiado:', empresa);
@@ -1790,13 +1799,7 @@ export default function SesionActivaPage() {
           reclutamientoId={reclutamiento?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
-          transcripcionCompleta={(() => {
-            const finalTranscription = audioTranscription.state.transcription || transcripcionCompleta;
-            console.log('🔍 NotasAutomaticasContent - transcripcionCompleta:', finalTranscription);
-            console.log('🔍 NotasAutomaticasContent - audioTranscription.state.transcription:', audioTranscription.state.transcription);
-            console.log('🔍 NotasAutomaticasContent - transcripcionCompleta local:', transcripcionCompleta);
-            return finalTranscription;
-          })()}
+          transcripcionCompleta={audioTranscription.state.transcription || transcripcionCompleta}
           segmentosTranscripcion={audioTranscription.state.segments.length > 0 ? audioTranscription.state.segments : segmentosTranscripcion}
           isProcessing={audioTranscription.state.isProcessing}
           error={audioTranscription.state.error}
