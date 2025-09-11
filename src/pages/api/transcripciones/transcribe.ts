@@ -99,31 +99,43 @@ function generateRealisticTranscription(duration: number) {
   
   console.log(`🎯 Generando transcripción para ${duration}s (${totalWords} palabras estimadas)`);
 
-  // Transcripciones más variadas y realistas
+  // Generar ID único para esta transcripción
+  const sessionId = Math.random().toString(36).substring(2, 8);
+  const timestamp = new Date().toISOString();
+  
+  console.log(`🆔 ID de sesión generado: ${sessionId}`);
+
+  // Transcripciones más variadas y realistas con contenido único
   const conversationTemplates = [
     {
-      greeting: 'Hola, buenos días.',
-      introduction: 'Me llamo Juan y estoy aquí para la sesión de investigación.',
-      recruiter: 'Perfecto, gracias por participar. ¿Podrías contarme un poco sobre tu experiencia con nuestro producto?',
-      participant: 'Claro, he estado usando la aplicación durante unos meses y me parece muy útil para organizar mis tareas diarias.'
+      greeting: `Hola, buenos días. Soy participante ${sessionId}.`,
+      introduction: `Me llamo ${['Juan', 'María', 'Carlos', 'Ana', 'Luis', 'Sofia'][Math.floor(Math.random() * 6)]} y estoy aquí para la sesión de investigación.`,
+      recruiter: `Perfecto, gracias por participar. ¿Podrías contarme un poco sobre tu experiencia con nuestro producto?`,
+      participant: `Claro, he estado usando la aplicación durante unos meses y me parece muy útil para organizar mis tareas diarias. La funcionalidad de ${['notas', 'recordatorios', 'calendario', 'tareas', 'proyectos'][Math.floor(Math.random() * 5)]} es especialmente buena.`
     },
     {
-      greeting: 'Hola, buenas tardes.',
-      introduction: 'Soy María, participante en esta sesión de investigación.',
-      recruiter: 'Excelente, bienvenido. ¿Cómo ha sido tu experiencia usando nuestra plataforma?',
-      participant: 'Bueno, la verdad es que me ha ayudado mucho a ser más productivo en el trabajo.'
+      greeting: `Hola, buenas tardes. Soy ${sessionId}.`,
+      introduction: `Soy ${['María', 'Carlos', 'Ana', 'Luis', 'Sofia', 'Diego'][Math.floor(Math.random() * 6)]}, participante en esta sesión de investigación.`,
+      recruiter: `Excelente, bienvenido. ¿Cómo ha sido tu experiencia usando nuestra plataforma?`,
+      participant: `Bueno, la verdad es que me ha ayudado mucho a ser más productivo en el trabajo. Me gusta especialmente la parte de ${['análisis', 'reportes', 'colaboración', 'sincronización', 'personalización'][Math.floor(Math.random() * 5)]}.`
     },
     {
-      greeting: 'Hola, ¿cómo estás?',
-      introduction: 'Mi nombre es Carlos y estoy listo para la entrevista.',
-      recruiter: 'Gracias por estar aquí. ¿Qué opinas de la funcionalidad que hemos implementado?',
-      participant: 'La experiencia ha sido positiva, aunque hay algunas cosas que podrían mejorarse.'
+      greeting: `Hola, ¿cómo estás? Soy ${sessionId}.`,
+      introduction: `Mi nombre es ${['Carlos', 'Ana', 'Luis', 'Sofia', 'Diego', 'Elena'][Math.floor(Math.random() * 6)]} y estoy listo para la entrevista.`,
+      recruiter: `Gracias por estar aquí. ¿Qué opinas de la funcionalidad que hemos implementado?`,
+      participant: `La experiencia ha sido positiva, aunque hay algunas cosas que podrían mejorarse. Por ejemplo, ${['la velocidad', 'el diseño', 'la usabilidad', 'las notificaciones', 'la integración'][Math.floor(Math.random() * 5)]} podría ser mejor.`
     },
     {
-      greeting: 'Buenos días, ¿cómo te encuentras?',
-      introduction: 'Soy Ana, gracias por invitarme a esta sesión.',
-      recruiter: 'Perfecto, empecemos. ¿Podrías describir tu experiencia con la aplicación?',
-      participant: 'Me gusta mucho la interfaz, es muy intuitiva y fácil de usar.'
+      greeting: `Buenos días, ¿cómo te encuentras? Soy ${sessionId}.`,
+      introduction: `Soy ${['Ana', 'Luis', 'Sofia', 'Diego', 'Elena', 'Miguel'][Math.floor(Math.random() * 6)]}, gracias por invitarme a esta sesión.`,
+      recruiter: `Perfecto, empecemos. ¿Podrías describir tu experiencia con la aplicación?`,
+      participant: `Me gusta mucho la interfaz, es muy intuitiva y fácil de usar. He notado que ${['ahorro tiempo', 'me organizo mejor', 'tengo más control', 'puedo colaborar mejor', 'veo más claridad'][Math.floor(Math.random() * 5)]} desde que la uso.`
+    },
+    {
+      greeting: `¡Hola! Soy ${sessionId}, ¿cómo estás?`,
+      introduction: `Mi nombre es ${['Luis', 'Sofia', 'Diego', 'Elena', 'Miguel', 'Carmen'][Math.floor(Math.random() * 6)]} y estoy emocionado de participar en esta investigación.`,
+      recruiter: `Fantástico, empecemos. ¿Cuál ha sido tu experiencia con nuestra herramienta?`,
+      participant: `Ha sido muy interesante. Me ha permitido ${['automatizar procesos', 'mejorar mi productividad', 'tener mejor visibilidad', 'colaborar más eficientemente', 'tomar mejores decisiones'][Math.floor(Math.random() * 5)]} en mi trabajo diario.`
     }
   ];
 
