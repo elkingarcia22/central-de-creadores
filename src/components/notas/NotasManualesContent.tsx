@@ -180,7 +180,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
+          <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
             Notas Manuales
           </Typography>
           <Typography variant="body2" className="text-gray-600 dark:text-gray-400 mt-1">
@@ -267,7 +267,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <Typography variant="body1" className="text-gray-900 dark:text-gray-100 leading-relaxed">
+                    <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
                       {nota.contenido}
                     </Typography>
                     <div className="flex items-center space-x-2 ml-4">
