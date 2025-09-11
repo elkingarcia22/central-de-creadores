@@ -33,9 +33,9 @@ export const AIButton: React.FC<AIButtonProps> = ({
     lg: "w-5 h-5"
   };
 
-  const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
+  const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
   
-  const variantClasses = "bg-gradient-to-l from-purple-600 via-purple-500 to-purple-600 border-4 border-transparent text-white hover:from-purple-500 hover:via-purple-400 hover:to-purple-500";
+  const variantClasses = "bg-gradient-to-l from-cyan-600 via-blue-500 to-cyan-600 border-4 border-transparent text-white hover:from-cyan-500 hover:via-blue-400 hover:to-cyan-500";
   
   const sizeClass = sizeClasses[size];
   const iconSizeClass = iconSizeClasses[size];
@@ -62,11 +62,11 @@ export const AIButton: React.FC<AIButtonProps> = ({
       {/* Icono con efecto de brillo */}
       <div className="relative">
         {loading ? (
-          <div className={`${iconSizeClass} animate-spin rounded-full border-2 border-white border-t-purple-300`}></div>
+          <div className={`${iconSizeClass} animate-spin rounded-full border-2 border-white border-t-cyan-300`}></div>
         ) : (
           <>
-            <AIIcon className={`${iconSizeClass} text-white group-hover:text-purple-100 transition-colors duration-300`} />
-            <div className={`absolute inset-0 ${iconSizeClass} bg-gradient-to-r from-white/20 to-purple-200/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <AIIcon className={`${iconSizeClass} text-white group-hover:text-cyan-100 transition-colors duration-300`} />
+            <div className={`absolute inset-0 ${iconSizeClass} bg-gradient-to-r from-white/20 to-cyan-200/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
           </>
         )}
       </div>
@@ -74,7 +74,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
       <span className="relative z-10">{children}</span>
       
       {/* Efecto de borde brillante */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-l from-purple-300/60 via-purple-500/50 to-purple-300/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+      <div className="absolute inset-0 rounded-full bg-gradient-to-l from-cyan-300/60 via-blue-500/50 to-cyan-300/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
     </button>
   );
 };
