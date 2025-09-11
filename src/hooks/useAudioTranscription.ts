@@ -70,6 +70,8 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
         
+        console.log('🎵 Audio blob generado:', audioBlob.size, 'bytes');
+        
         setState(prev => ({
           ...prev,
           audioBlob,
@@ -148,6 +150,7 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
 
   const transcribeAudio = useCallback(async (audioBlob: Blob) => {
     try {
+      console.log('🎵 Iniciando transcripción con blob de', audioBlob.size, 'bytes');
       setState(prev => ({ ...prev, isProcessing: true, error: null }));
 
       // Crear FormData para enviar el audio
@@ -156,17 +159,24 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
       formData.append('language', 'es-ES');
       formData.append('format', 'webm');
 
+      console.log('📤 Enviando audio a API de transcripción...');
+
       // Llamar a la API de transcripción
       const response = await fetch('/api/transcripciones/transcribe', {
         method: 'POST',
         body: formData
       });
 
+      console.log('📥 Respuesta de API:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error('Error en la transcripción');
+        const errorText = await response.text();
+        console.error('❌ Error en API:', errorText);
+        throw new Error(`Error en la transcripción: ${response.status}`);
       }
 
       const result = await response.json();
+      console.log('✅ Resultado de transcripción:', result);
       
       setState(prev => ({
         ...prev,
@@ -175,13 +185,13 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
         isProcessing: false
       }));
 
-      console.log('✅ Transcripción completada:', result);
+      console.log('✅ Transcripción completada y guardada en estado');
 
     } catch (error) {
-      console.error('Error en transcripción:', error);
+      console.error('❌ Error en transcripción:', error);
       setState(prev => ({ 
         ...prev, 
-        error: 'Error al procesar la transcripción',
+        error: `Error al procesar la transcripción: ${error.message}`,
         isProcessing: false 
       }));
     }

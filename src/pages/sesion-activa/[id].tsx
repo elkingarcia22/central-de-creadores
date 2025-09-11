@@ -507,24 +507,41 @@ export default function SesionActivaPage() {
   const handleToggleRecording = async () => {
     try {
       if (audioTranscription.state.isRecording) {
+        console.log('🛑 Deteniendo grabación...');
         // Detener grabación
         await audioTranscription.stopRecording();
         setIsRecording(false);
         
-        // Procesar transcripción si hay audio
-        if (audioTranscription.state.audioBlob) {
-          await audioTranscription.transcribeAudio(audioTranscription.state.audioBlob);
+        console.log('🔍 Audio blob después de detener:', audioTranscription.state.audioBlob);
+        
+        // Esperar un momento para que el audio blob se genere
+        setTimeout(async () => {
+          console.log('⏰ Ejecutando transcripción después de timeout...');
+          console.log('🔍 Audio blob en timeout:', audioTranscription.state.audioBlob);
           
-          // Actualizar transcripción en la base de datos
-          if (transcripcionId && audioTranscription.state.transcription) {
-            await updateTranscripcion(transcripcionId, {
-              transcripcion_completa: audioTranscription.state.transcription,
-              transcripcion_por_segmentos: audioTranscription.state.segments,
-              estado: 'completada'
-            });
+          // Procesar transcripción si hay audio
+          if (audioTranscription.state.audioBlob) {
+            console.log('🎵 Iniciando transcripción de audio...');
+            await audioTranscription.transcribeAudio(audioTranscription.state.audioBlob);
+            
+            console.log('📝 Transcripción completada:', audioTranscription.state.transcription);
+            
+            // Actualizar transcripción en la base de datos
+            if (transcripcionId && audioTranscription.state.transcription) {
+              console.log('💾 Actualizando transcripción en base de datos...');
+              await updateTranscripcion(transcripcionId, {
+                transcripcion_completa: audioTranscription.state.transcription,
+                transcripcion_por_segmentos: audioTranscription.state.segments,
+                estado: 'completada'
+              });
+            }
+          } else {
+            console.log('❌ No hay audio blob para transcribir');
           }
-        }
+        }, 1000); // Esperar 1 segundo para que se genere el blob
+        
       } else {
+        console.log('🎤 Iniciando grabación...');
         // Iniciar grabación
         await audioTranscription.startRecording();
         setIsRecording(true);
