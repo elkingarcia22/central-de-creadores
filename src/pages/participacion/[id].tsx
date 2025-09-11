@@ -1879,6 +1879,13 @@ export default function VistaParticipacion() {
 
   return (
     <Layout rol={rolSeleccionado}>
+      {/* Componente de transcripción automática simple */}
+      {reclutamientoActual?.meet_link && (
+        <SimpleMeetDetector
+          reclutamientoId={Array.isArray(id) ? id[0] : id}
+          meetLink={reclutamientoActual.meet_link}
+        />
+      )}
       
       
       <div className="py-8" data-reclutamiento-id={id}>

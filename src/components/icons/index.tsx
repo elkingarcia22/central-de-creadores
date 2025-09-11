@@ -638,12 +638,12 @@ export const StarIcon: React.FC<IconProps> = ({ className = "w-6 h-6", size }) =
 // Icono de IA con tres destellos
 export const AIIcon: React.FC<IconProps> = ({ className = "w-6 h-6", size }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    {/* Destello principal (más grande) */}
-    <path d="M12 2L13.5 8.5L20 10L13.5 11.5L12 18L10.5 11.5L4 10L10.5 8.5L12 2Z" fill="currentColor" stroke="currentColor" strokeWidth="0.5"/>
-    {/* Destello pequeño superior derecho */}
-    <path d="M18 6L18.5 7.5L20 8L18.5 8.5L18 10L17.5 8.5L16 8L17.5 7.5L18 6Z" fill="currentColor"/>
+    {/* Destello principal (más grande y centrado) */}
+    <path d="M12 1L14.5 9L22 11L14.5 13L12 21L9.5 13L2 11L9.5 9L12 1Z" fill="currentColor"/>
+    {/* Destello mediano superior derecho */}
+    <path d="M19 4L20 6.5L22.5 7L20 7.5L19 10L18 7.5L15.5 7L18 6.5L19 4Z" fill="currentColor"/>
     {/* Destello pequeño inferior derecho */}
-    <path d="M19 14L19.3 15L20 15.2L19.3 15.4L19 16.4L18.7 15.4L18 15.2L18.7 15L19 14Z" fill="currentColor"/>
+    <path d="M20 16L20.5 17.5L22 18L20.5 18.5L20 20L19.5 18.5L18 18L19.5 17.5L20 16Z" fill="currentColor"/>
   </svg>
 );
 
