@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Card, EmptyState, SideModal, PageHeader } from '../../components/ui';
+import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
-import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, AlertTriangleIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
+import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 
 interface Nota {
@@ -329,73 +329,17 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       )}
 
       {/* Modal de confirmación para eliminar */}
-      <SideModal
+      <ConfirmModal
         isOpen={showDeleteModal}
         onClose={cancelarEliminar}
-        size="md"
-      >
-        <div className="space-y-6">
-          {/* Header con PageHeader e icono integrado */}
-          <PageHeader
-            title="Confirmar Eliminación"
-            variant="title-only"
-            color="gray"
-            onClose={cancelarEliminar}
-            icon={<AlertTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />}
-          />
-          
-          {/* Espacio adicional después del header */}
-          <div className="pt-8"></div>
-
-          {/* Mensaje principal */}
-          <div className="text-center space-y-2">
-            <Typography variant="h4" className="text-red-600 dark:text-red-400">
-              ¿Eliminar Nota?
-            </Typography>
-            <Typography variant="body1" color="secondary">
-              Esta acción no se puede deshacer.
-            </Typography>
-          </div>
-
-          {/* Información de la nota */}
-          {notaAEliminar && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
-              <Typography variant="subtitle2" weight="medium">
-                Contenido de la nota:
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                {notaAEliminar.contenido}
-              </Typography>
-              <Typography variant="body2" color="secondary">
-                Creada: {formatearFecha(notaAEliminar.fecha_creacion)}
-              </Typography>
-            </div>
-          )}
-
-          {/* Botones */}
-          <div className="flex gap-4 pt-6 border-t border-border">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={cancelarEliminar}
-              disabled={eliminando}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={eliminarNota}
-              disabled={eliminando}
-              className="flex-1 flex items-center justify-center gap-2"
-            >
-              <TrashIcon className="w-4 h-4" />
-              {eliminando ? 'Eliminando...' : 'Eliminar Nota'}
-            </Button>
-          </div>
-        </div>
-      </SideModal>
+        onConfirm={eliminarNota}
+        title="Eliminar Nota"
+        message={notaAEliminar ? `¿Estás seguro de que deseas eliminar la nota "${notaAEliminar.contenido}"? Esta acción no se puede deshacer.` : "¿Estás seguro de que deseas eliminar esta nota? Esta acción no se puede deshacer."}
+        type="error"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        loading={eliminando}
+      />
     </div>
   );
 };
