@@ -25,6 +25,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const [editandoNota, setEditandoNota] = useState<string | null>(null);
   const [notaEditando, setNotaEditando] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [guardando, setGuardando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Cargar notas al montar el componente
@@ -60,6 +61,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const guardarNota = async (contenido: string) => {
     if (!contenido.trim()) return;
 
+    setGuardando(true);
     try {
       const response = await fetch('/api/notas-manuales', {
         method: 'POST',
@@ -76,19 +78,25 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       if (response.ok) {
         const nuevaNota = await response.json();
         setNotas(prev => [nuevaNota, ...prev]);
+        
+        // Limpiar el input inmediatamente para flujo continuo
         setNuevaNota('');
         
-        // Enfocar el input después de guardar
+        // Enfocar el input inmediatamente para seguir escribiendo
         setTimeout(() => {
           if (inputRef.current) {
             inputRef.current.focus();
+            // Mover el cursor al final del input
+            inputRef.current.setSelectionRange(0, 0);
           }
-        }, 100);
+        }, 50);
       } else {
         console.error('Error guardando nota:', response.statusText);
       }
     } catch (error) {
       console.error('Error guardando nota:', error);
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -176,7 +184,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             Notas Manuales
           </Typography>
           <Typography variant="body2" className="text-gray-600 mt-1">
-            Escribe tus notas durante la sesión. Presiona Enter para guardar.
+            Escribe tus notas durante la sesión. Presiona Enter para guardar y continuar escribiendo.
           </Typography>
         </div>
         <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -194,18 +202,22 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               value={nuevaNota}
               onChange={(e) => setNuevaNota(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Escribe tu nota aquí... (Enter para guardar)"
-              className="border-0 focus:ring-0 text-base"
+              placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
+              className="border-0 focus:ring-0 text-base placeholder-gray-400"
               disabled={cargando}
             />
           </div>
           <Button
             onClick={() => guardarNota(nuevaNota)}
-            disabled={!nuevaNota.trim() || cargando}
+            disabled={!nuevaNota.trim() || cargando || guardando}
             size="sm"
             className="shrink-0"
           >
-            <PlusIcon className="w-4 h-4" />
+            {guardando ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            ) : (
+              <PlusIcon className="w-4 h-4" />
+            )}
           </Button>
         </div>
       </Card>
