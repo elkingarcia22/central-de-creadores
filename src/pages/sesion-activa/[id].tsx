@@ -535,11 +535,12 @@ export default function SesionActivaPage() {
           const maxAttempts = 10;
           
           while (attempts < maxAttempts) {
-            console.log(`🔍 Intento ${attempts + 1}: Audio blob disponible:`, !!audioTranscription.state.audioBlob);
+            const currentBlob = audioTranscription.getCurrentAudioBlob();
+            console.log(`🔍 Intento ${attempts + 1}: Audio blob disponible:`, !!currentBlob);
             
-            if (audioTranscription.state.audioBlob) {
+            if (currentBlob) {
               console.log('🎵 Iniciando transcripción de audio...');
-              await audioTranscription.transcribeAudio(audioTranscription.state.audioBlob);
+              await audioTranscription.transcribeAudio(currentBlob);
               
               console.log('📝 Transcripción completada:', audioTranscription.state.transcription);
               

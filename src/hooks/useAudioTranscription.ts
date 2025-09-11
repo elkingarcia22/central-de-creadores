@@ -17,6 +17,7 @@ interface UseAudioTranscriptionReturn {
   stopRecording: () => Promise<void>;
   clearRecording: () => void;
   transcribeAudio: (audioBlob: Blob) => Promise<void>;
+  getCurrentAudioBlob: () => Blob | null;
 }
 
 export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
@@ -206,11 +207,16 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
     }
   }, []);
 
+  const getCurrentAudioBlob = useCallback(() => {
+    return state.audioBlob;
+  }, [state.audioBlob]);
+
   return {
     state,
     startRecording,
     stopRecording,
     clearRecording,
-    transcribeAudio
+    transcribeAudio,
+    getCurrentAudioBlob
   };
 };
