@@ -5,7 +5,6 @@ import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { AIButton } from '../../components/ui/AIButton';
-import { RecordButton } from '../../components/ui/RecordButton';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
@@ -1614,11 +1613,24 @@ export default function SesionActivaPage() {
             
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
-            <RecordButton 
+            <Button 
               onClick={handleToggleRecording}
-              isRecording={isRecording}
+              variant={isRecording ? "destructive" : "secondary"}
               size="md"
-            />
+              className="flex items-center gap-2"
+            >
+              {isRecording ? (
+                <>
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  Detener Grabación
+                </>
+              ) : (
+                <>
+                  <div className="w-2 h-2 bg-current rounded-full"></div>
+                  Grabar
+                </>
+              )}
+            </Button>
             <AIButton 
               onClick={handleSaveAndViewSession}
               size="md"
