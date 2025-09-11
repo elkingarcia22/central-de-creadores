@@ -1469,14 +1469,10 @@ export default function SesionActivaPage() {
           <div className="flex flex-wrap gap-3">
             <button 
               onClick={handleSaveAndViewSession} 
-              className="group relative flex items-center gap-3 bg-transparent border-2 border-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-border text-blue-600 hover:text-blue-700 transition-all duration-300 rounded-full px-6 py-3 font-semibold shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transform hover:scale-105 active:scale-95 overflow-hidden"
-              style={{
-                background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #2563eb, #9333ea, #1d4ed8) border-box',
-                border: '2px solid transparent'
-              }}
+              className="group relative flex items-center gap-2 bg-transparent border border-blue-600 text-blue-600 hover:text-blue-700 hover:border-blue-700 transition-all duration-300 rounded-md px-4 py-2 font-medium shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden"
             >
               {/* Efecto de brillo animado */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-md"></div>
               
               {/* Efecto de partículas */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -1485,16 +1481,16 @@ export default function SesionActivaPage() {
                 <div className="absolute bottom-2 left-4 w-0.5 h-0.5 bg-blue-500/50 rounded-full animate-pulse delay-200"></div>
               </div>
               
-              {/* Icono más grande con efecto de brillo */}
+              {/* Icono con efecto de brillo */}
               <div className="relative">
-                <AIIcon className="w-6 h-6 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
-                <div className="absolute inset-0 w-6 h-6 bg-blue-500/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <AIIcon className="w-4 h-4 text-blue-600 group-hover:text-blue-700 transition-colors duration-300" />
+                <div className="absolute inset-0 w-4 h-4 bg-blue-500/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
               
               <span className="relative z-10">Guardar y Analizar con IA</span>
               
               {/* Efecto de borde brillante */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-blue-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
+              <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-blue-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
             </button>
             </div>
           </div>
