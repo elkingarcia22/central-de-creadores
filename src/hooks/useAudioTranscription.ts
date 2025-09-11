@@ -206,6 +206,9 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
 
       console.log('✅ HOOK: Transcripción completada y guardada en estado');
       
+      // Esperar un tick para que el estado se actualice antes de disparar el evento
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
       // Disparar evento personalizado para notificar a otros componentes
       const eventDetail = {
         transcription: result.transcription || '',

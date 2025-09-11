@@ -146,14 +146,21 @@ export const useAudioTranscriptionDebug = (): UseAudioTranscriptionReturn => {
       console.log('🔍 [DEBUG] Resultado completo JSON:', JSON.stringify(result, null, 2));
       
       // Actualizar transcripción en tiempo real
-      setState(prev => ({
-        ...prev,
+      const newState = {
         transcription: result.transcription || '',
         segments: result.segments || [],
         isProcessing: false
+      };
+      
+      setState(prev => ({
+        ...prev,
+        ...newState
       }));
 
       console.log('✅ [DEBUG] Transcripción completada y guardada en estado');
+      
+      // Esperar un tick para que el estado se actualice antes de disparar el evento
+      await new Promise(resolve => setTimeout(resolve, 0));
       
       // Disparar evento personalizado para notificar a otros componentes
       window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
