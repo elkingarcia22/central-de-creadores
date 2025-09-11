@@ -462,12 +462,34 @@ const SesionesPageContent: React.FC = () => {
         window.open(sesion.meet_link, '_blank');
         
         // Redirigir a la página de sesión activa
-        const participanteId = sesion.participante?.id || sesion.participantes_id || sesion.participantes_internos_id || sesion.participantes_friend_family_id;
+        // Intentar obtener el ID del participante de diferentes formas
+        let participanteId = null;
+        
+        // 1. Del objeto participante
+        if (sesion.participante?.id) {
+          participanteId = sesion.participante.id;
+        }
+        // 2. De los campos directos de participantes
+        else if (sesion.participantes_id) {
+          participanteId = sesion.participantes_id;
+        }
+        else if (sesion.participantes_internos_id) {
+          participanteId = sesion.participantes_internos_id;
+        }
+        else if (sesion.participantes_friend_family_id) {
+          participanteId = sesion.participantes_friend_family_id;
+        }
+        // 3. Del array de participantes (tomar el primero)
+        else if (sesion.participantes && sesion.participantes.length > 0) {
+          participanteId = sesion.participantes[0].participante_id;
+        }
+        
         console.log('🔍 Debug - Intentando obtener participanteId:', {
           'sesion.participante?.id': sesion.participante?.id,
           'sesion.participantes_id': sesion.participantes_id,
           'sesion.participantes_internos_id': sesion.participantes_internos_id,
           'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
+          'sesion.participantes[0]?.participante_id': sesion.participantes?.[0]?.participante_id,
           'participanteId final': participanteId
         });
         
