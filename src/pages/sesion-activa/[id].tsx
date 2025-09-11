@@ -96,6 +96,8 @@ export default function SesionActivaPage() {
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [investigaciones, setInvestigaciones] = useState<any[]>([]);
+  const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   
   // Estados para filtros de dolores
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,7 +140,8 @@ export default function SesionActivaPage() {
       await Promise.all([
         loadEmpresaData(),
         loadDoloresData(),
-        loadUsuariosData()
+        loadUsuariosData(),
+        loadInvestigacionesData()
       ]);
     } catch (error) {
       console.error('Error cargando datos:', error);
@@ -182,6 +185,29 @@ export default function SesionActivaPage() {
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+    }
+  };
+
+  const loadInvestigacionesData = async () => {
+    try {
+      const response = await fetch(`/api/participantes/${id}/investigaciones`);
+      if (response.ok) {
+        const data = await response.json();
+        setInvestigaciones(data || []);
+        
+        // Calcular participaciones por mes
+        const participacionesPorMes: { [key: string]: number } = {};
+        data?.forEach((inv: any) => {
+          if (inv.fecha_sesion) {
+            const fecha = new Date(inv.fecha_sesion);
+            const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+            participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
+          }
+        });
+        setParticipacionesPorMes(participacionesPorMes);
+      }
+    } catch (error) {
+      console.error('Error cargando investigaciones:', error);
     }
   };
 
@@ -259,7 +285,7 @@ export default function SesionActivaPage() {
       label: 'Categoría',
       sortable: true,
       render: (dolor: DolorParticipante) => (
-        <Chip variant="secondary" size="sm">{dolor.categoria}</Chip>
+        <Chip variant="secondary" size="sm">{dolor.categoria || 'Sin categoría'}</Chip>
       )
     },
     {
@@ -358,7 +384,9 @@ export default function SesionActivaPage() {
   const InformacionContent: React.FC<{ 
     participante: Participante; 
     empresa?: Empresa;
-  }> = ({ participante, empresa }) => {
+    investigaciones: any[];
+    participacionesPorMes: { [key: string]: number };
+  }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
     return (
       <div className="space-y-6">
         {/* Información básica */}
@@ -467,6 +495,85 @@ export default function SesionActivaPage() {
     );
   };
 
+  // Componente para el contenido del tab de Información de la Sesión
+  const ReclutamientoContent: React.FC<{ reclutamiento: Reclutamiento; participante: Participante }> = ({ reclutamiento, participante }) => {
+    return (
+      <div className="space-y-6">
+        <Card className="p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-purple-50 rounded-lg">
+              <CalendarIcon className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <Typography variant="h3" className="text-gray-900">
+                Información de la Sesión
+              </Typography>
+              <Typography variant="body2" className="text-gray-600">
+                Detalles del reclutamiento actual
+              </Typography>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
+                <Typography variant="body1" className="text-gray-900 font-medium">
+                  {reclutamiento.titulo}
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="body2" className="text-gray-500 mb-1">Fecha</Typography>
+                <Typography variant="body1" className="text-gray-900">
+                  {formatearFecha(reclutamiento.fecha)}
+                </Typography>
+              </div>
+              <div>
+                <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
+                <Chip variant={getEstadoReclutamientoVariant(reclutamiento.estado)} size="sm">
+                  {reclutamiento.estado}
+                </Chip>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              {reclutamiento.reclutador && (
+                <div>
+                  <Typography variant="body2" className="text-gray-500 mb-1">Reclutador</Typography>
+                  <Typography variant="body1" className="text-gray-900">
+                    {reclutamiento.reclutador.nombre}
+                  </Typography>
+                </div>
+              )}
+              {reclutamiento.meet_link && (
+                <div>
+                  <Typography variant="body2" className="text-gray-500 mb-1">Enlace de Meet</Typography>
+                  <a 
+                    href={reclutamiento.meet_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Abrir en Google Meet
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {reclutamiento.descripcion && (
+            <div className="mt-6">
+              <Typography variant="body2" className="text-gray-500 mb-2">Descripción</Typography>
+              <Typography variant="body1" className="text-gray-900">
+                {reclutamiento.descripcion}
+              </Typography>
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  };
+
   const tabs = [
     {
       id: 'informacion',
@@ -474,7 +581,14 @@ export default function SesionActivaPage() {
       content: <InformacionContent 
         participante={participante!} 
         empresa={empresa} 
+        investigaciones={investigaciones}
+        participacionesPorMes={participacionesPorMes}
       />
+    },
+    {
+      id: 'reclutamiento',
+      label: 'Información de la Sesión',
+      content: <ReclutamientoContent reclutamiento={reclutamiento!} participante={participante!} />
     },
     {
       id: 'empresa-informacion',
