@@ -129,14 +129,22 @@ export default function SesionActivaPage() {
         setParticipante(participanteData);
       }
 
-      // Cargar datos del reclutamiento desde localStorage (sesión activa)
-      console.log('🔍 Cargando reclutamiento desde localStorage para sesión activa');
+      // Cargar datos del reclutamiento específico de la sesión activa
+      console.log('🔍 Cargando reclutamiento específico para sesión activa');
       const currentReclutamiento = localStorage.getItem('currentReclutamiento');
       if (currentReclutamiento) {
         try {
           const reclutamientoData = JSON.parse(currentReclutamiento);
           console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
-          setReclutamiento(reclutamientoData);
+          
+          // Si tenemos un reclutamiento_id específico, cargar desde API con ese ID
+          if (reclutamientoData.id) {
+            console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoData.id);
+            await loadReclutamientoSpecifico(reclutamientoData.id);
+          } else {
+            // Si no hay ID, usar los datos del localStorage directamente
+            setReclutamiento(reclutamientoData);
+          }
         } catch (error) {
           console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
           // Fallback: cargar desde API
@@ -159,6 +167,41 @@ export default function SesionActivaPage() {
       console.error('Error cargando datos:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReclutamientoSpecifico = async (reclutamientoId: string) => {
+    try {
+      console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoId);
+      const url = `/api/participantes/${id}/reclutamiento-actual?reclutamiento_id=${reclutamientoId}`;
+      console.log('🔍 URL de API:', url);
+      
+      const reclutamientoResponse = await fetch(url);
+      if (reclutamientoResponse.ok) {
+        const data = await reclutamientoResponse.json();
+        console.log('🔍 Datos de reclutamiento específico recibidos:', data);
+        
+        // La API devuelve { reclutamiento: {...} }
+        const reclutamientoData = data.reclutamiento || data;
+        console.log('🔍 Reclutamiento específico procesado:', reclutamientoData);
+        setReclutamiento(reclutamientoData);
+      } else {
+        console.error('🔍 Error en respuesta de reclutamiento específico:', reclutamientoResponse.status);
+        // Fallback: usar datos del localStorage
+        const currentReclutamiento = localStorage.getItem('currentReclutamiento');
+        if (currentReclutamiento) {
+          const reclutamientoData = JSON.parse(currentReclutamiento);
+          setReclutamiento(reclutamientoData);
+        }
+      }
+    } catch (error) {
+      console.error('🔍 Error cargando reclutamiento específico:', error);
+      // Fallback: usar datos del localStorage
+      const currentReclutamiento = localStorage.getItem('currentReclutamiento');
+      if (currentReclutamiento) {
+        const reclutamientoData = JSON.parse(currentReclutamiento);
+        setReclutamiento(reclutamientoData);
+      }
     }
   };
 
