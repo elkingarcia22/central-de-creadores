@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../api/supabase';
+import { supabaseServer } from '../../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('📝 Actualizando nota manual:', { id, contenido });
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseServer
         .from('notas_manuales')
         .update({
           contenido: contenido.trim(),

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../api/supabase';
+import { supabaseServer } from '../../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('📝 Obteniendo notas manuales para:', { participante_id, sesion_id });
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseServer
         .from('notas_manuales')
         .select('*')
         .eq('participante_id', participante_id)
@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('📝 Creando nueva nota manual:', { participante_id, sesion_id, contenido });
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseServer
         .from('notas_manuales')
         .insert({
           participante_id,
