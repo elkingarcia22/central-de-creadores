@@ -2,12 +2,17 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '../../../api/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('📝 API transcripciones llamada:', req.method, req.body);
+  
   if (req.method === 'POST') {
     try {
       const { reclutamiento_id, meet_link, estado, fecha_inicio } = req.body;
+      
+      console.log('📝 Datos recibidos:', { reclutamiento_id, meet_link, estado, fecha_inicio });
 
       // Validar datos requeridos
       if (!reclutamiento_id) {
+        console.log('❌ Error: reclutamiento_id es requerido');
         return res.status(400).json({ error: 'reclutamiento_id es requerido' });
       }
 
@@ -28,8 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .single();
 
       if (error) {
-        console.error('Error creando transcripción:', error);
-        return res.status(500).json({ error: 'Error al crear transcripción' });
+        console.error('❌ Error creando transcripción:', error);
+        return res.status(500).json({ error: 'Error al crear transcripción', details: error.message });
       }
 
       console.log('✅ Transcripción creada:', data.id);

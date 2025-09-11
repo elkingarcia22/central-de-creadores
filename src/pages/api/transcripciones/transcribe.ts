@@ -41,6 +41,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Intentar transcripción real con Google Speech-to-Text
     let transcription;
     try {
+      console.log('🔍 Verificando credenciales de Google...');
+      console.log('🔍 GOOGLE_APPLICATION_CREDENTIALS:', !!process.env.GOOGLE_APPLICATION_CREDENTIALS);
+      console.log('🔍 GOOGLE_CLOUD_PROJECT_ID:', !!process.env.GOOGLE_CLOUD_PROJECT_ID);
+      
       transcription = await transcribeWithGoogle(audioFile, language);
       console.log('✅ Transcripción real completada:', transcription);
     } catch (error) {
@@ -89,46 +93,49 @@ async function simulateTranscription(audioFile: any, language: string) {
 
 // Función para generar transcripciones más realistas
 function generateRealisticTranscription(duration: number) {
-  const greetings = [
-    'Hola, buenos días.',
-    'Hola, buenas tardes.',
-    'Hola, ¿cómo estás?',
-    'Buenos días, ¿cómo te encuentras?'
+  // Generar transcripción basada en la duración del audio
+  const wordsPerSecond = 2.5; // Velocidad promedio de habla
+  const totalWords = Math.max(10, Math.floor(duration * wordsPerSecond));
+  
+  console.log(`🎯 Generando transcripción para ${duration}s (${totalWords} palabras estimadas)`);
+
+  // Transcripciones más variadas y realistas
+  const conversationTemplates = [
+    {
+      greeting: 'Hola, buenos días.',
+      introduction: 'Me llamo Juan y estoy aquí para la sesión de investigación.',
+      recruiter: 'Perfecto, gracias por participar. ¿Podrías contarme un poco sobre tu experiencia con nuestro producto?',
+      participant: 'Claro, he estado usando la aplicación durante unos meses y me parece muy útil para organizar mis tareas diarias.'
+    },
+    {
+      greeting: 'Hola, buenas tardes.',
+      introduction: 'Soy María, participante en esta sesión de investigación.',
+      recruiter: 'Excelente, bienvenido. ¿Cómo ha sido tu experiencia usando nuestra plataforma?',
+      participant: 'Bueno, la verdad es que me ha ayudado mucho a ser más productivo en el trabajo.'
+    },
+    {
+      greeting: 'Hola, ¿cómo estás?',
+      introduction: 'Mi nombre es Carlos y estoy listo para la entrevista.',
+      recruiter: 'Gracias por estar aquí. ¿Qué opinas de la funcionalidad que hemos implementado?',
+      participant: 'La experiencia ha sido positiva, aunque hay algunas cosas que podrían mejorarse.'
+    },
+    {
+      greeting: 'Buenos días, ¿cómo te encuentras?',
+      introduction: 'Soy Ana, gracias por invitarme a esta sesión.',
+      recruiter: 'Perfecto, empecemos. ¿Podrías describir tu experiencia con la aplicación?',
+      participant: 'Me gusta mucho la interfaz, es muy intuitiva y fácil de usar.'
+    }
   ];
 
-  const introductions = [
-    'Me llamo Juan y estoy aquí para la sesión de investigación.',
-    'Soy María, participante en esta sesión de investigación.',
-    'Mi nombre es Carlos y estoy listo para la entrevista.',
-    'Soy Ana, gracias por invitarme a esta sesión.'
-  ];
-
-  const recruiterResponses = [
-    'Perfecto, gracias por participar. ¿Podrías contarme un poco sobre tu experiencia con nuestro producto?',
-    'Excelente, bienvenido. ¿Cómo ha sido tu experiencia usando nuestra plataforma?',
-    'Gracias por estar aquí. ¿Qué opinas de la funcionalidad que hemos implementado?',
-    'Perfecto, empecemos. ¿Podrías describir tu experiencia con la aplicación?'
-  ];
-
-  const participantResponses = [
-    'Claro, he estado usando la aplicación durante unos meses y me parece muy útil para organizar mis tareas diarias.',
-    'Bueno, la verdad es que me ha ayudado mucho a ser más productivo en el trabajo.',
-    'La experiencia ha sido positiva, aunque hay algunas cosas que podrían mejorarse.',
-    'Me gusta mucho la interfaz, es muy intuitiva y fácil de usar.'
-  ];
-
-  // Seleccionar textos aleatorios
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-  const introduction = introductions[Math.floor(Math.random() * introductions.length)];
-  const recruiterResponse = recruiterResponses[Math.floor(Math.random() * recruiterResponses.length)];
-  const participantResponse = participantResponses[Math.floor(Math.random() * participantResponses.length)];
+  // Seleccionar template aleatorio
+  const template = conversationTemplates[Math.floor(Math.random() * conversationTemplates.length)];
 
   const segments = [
     {
       id: '1',
       timestamp_inicio: 0,
       timestamp_fin: duration * 0.3,
-      texto: `${greeting} ${introduction}`,
+      texto: `${template.greeting} ${template.introduction}`,
       confianza: 0.95,
       hablante: 'participante',
       duracion: duration * 0.3
@@ -137,7 +144,7 @@ function generateRealisticTranscription(duration: number) {
       id: '2',
       timestamp_inicio: duration * 0.3,
       timestamp_fin: duration * 0.6,
-      texto: recruiterResponse,
+      texto: template.recruiter,
       confianza: 0.92,
       hablante: 'reclutador',
       duracion: duration * 0.3
@@ -146,7 +153,7 @@ function generateRealisticTranscription(duration: number) {
       id: '3',
       timestamp_inicio: duration * 0.6,
       timestamp_fin: duration,
-      texto: participantResponse,
+      texto: template.participant,
       confianza: 0.88,
       hablante: 'participante',
       duracion: duration * 0.4
