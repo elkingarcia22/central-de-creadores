@@ -557,35 +557,48 @@ export default function SesionActivaPage() {
       key: 'titulo',
       label: 'Título',
       sortable: true,
-      render: (dolor: DolorParticipante) => (
-        <div className="font-medium text-gray-900">{dolor?.titulo || 'Sin título'}</div>
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="body2" weight="semibold">
+          {row.titulo || '-'}
+        </Typography>
       )
     },
     {
       key: 'categoria_nombre',
       label: 'Categoría',
       sortable: true,
-      render: (dolor: DolorParticipante) => (
-        <Chip variant="secondary" size="sm">{dolor?.categoria_nombre || 'Sin categoría'}</Chip>
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="caption" color="secondary">
+          {row.categoria_nombre || '-'}
+        </Typography>
       )
     },
     {
       key: 'severidad',
       label: 'Severidad',
       sortable: true,
-      render: (dolor: DolorParticipante) => (
-        <Chip variant={getSeveridadVariant(dolor?.severidad || 'baja')} size="sm">
-          {dolor?.severidad || 'Sin severidad'}
+      render: (value: any, row: DolorParticipante) => (
+        <Chip variant={getSeveridadVariant(row.severidad)} size="sm">
+          {row.severidad ? row.severidad.charAt(0).toUpperCase() + row.severidad.slice(1) : '-'}
         </Chip>
+      )
+    },
+    {
+      key: 'descripcion',
+      label: 'Descripción',
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="body2" className="max-w-xs truncate">
+          {row.descripcion || '-'}
+        </Typography>
       )
     },
     {
       key: 'estado',
       label: 'Estado',
       sortable: true,
-      render: (dolor: DolorParticipante) => (
-        <Chip variant={getEstadoDolorVariant(dolor?.estado || 'activo')} size="sm">
-          {getEstadoDolorText(dolor?.estado || 'activo')}
+      render: (value: any, row: DolorParticipante) => (
+        <Chip variant={getEstadoDolorVariant(row.estado)} size="sm">
+          {getEstadoDolorText(row.estado)}
         </Chip>
       )
     },
@@ -593,10 +606,10 @@ export default function SesionActivaPage() {
       key: 'fecha_creacion',
       label: 'Fecha',
       sortable: true,
-      render: (dolor: DolorParticipante) => (
-        <div className="text-sm text-gray-600">
-          {dolor?.fecha_creacion ? formatearFecha(dolor.fecha_creacion) : 'Sin fecha'}
-        </div>
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="body2" color="secondary">
+          {row.fecha_creacion ? formatearFecha(row.fecha_creacion) : '-'}
+        </Typography>
       )
     }
   ];
