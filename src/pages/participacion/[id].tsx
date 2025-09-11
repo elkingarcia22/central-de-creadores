@@ -1887,6 +1887,13 @@ export default function VistaParticipacion() {
         />
       )}
       
+      {/* Mejorador de enlaces de Meet */}
+      {reclutamientoActual?.meet_link && (
+        <MeetLinkEnhancer
+          reclutamientoId={Array.isArray(id) ? id[0] : id}
+          meetLink={reclutamientoActual.meet_link}
+        />
+      )}
       
       <div className="py-8" data-reclutamiento-id={id}>
         {/* Header */}
