@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Card, EmptyState, SideModal, PageHeader } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
-import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, AlertTriangleIcon } from '../../components/icons';
+import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, AlertTriangleIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 
 interface Nota {
@@ -22,6 +22,8 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 }) => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
+  const [editandoNota, setEditandoNota] = useState<string | null>(null);
+  const [notaEditando, setNotaEditando] = useState('');
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -98,6 +100,57 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       console.error('Error guardando nota:', error);
     } finally {
       setGuardando(false);
+    }
+  };
+
+  const actualizarNota = async (notaId: string, nuevoContenido: string) => {
+    if (!nuevoContenido.trim()) return;
+
+    try {
+      const response = await fetch(`/api/notas-manuales/${notaId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contenido: nuevoContenido.trim()
+        }),
+      });
+
+      if (response.ok) {
+        const notaActualizada = await response.json();
+        setNotas(prev => prev.map(nota => 
+          nota.id === notaId ? notaActualizada : nota
+        ));
+        setEditandoNota(null);
+        setNotaEditando('');
+      } else {
+        console.error('Error actualizando nota:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error actualizando nota:', error);
+    }
+  };
+
+  const iniciarEdicion = (nota: Nota) => {
+    setEditandoNota(nota.id);
+    setNotaEditando(nota.contenido);
+  };
+
+  const cancelarEdicion = () => {
+    setEditandoNota(null);
+    setNotaEditando('');
+  };
+
+  const handleEditKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (editandoNota) {
+        actualizarNota(editandoNota, notaEditando);
+      }
+    }
+    if (e.key === 'Escape') {
+      cancelarEdicion();
     }
   };
 
@@ -203,30 +256,73 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       ) : (
         <div className="space-y-3">
           {notas.map((nota) => (
-            <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow group">
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    {nota.contenido}
-                  </Typography>
-                  <div className="flex items-center space-x-2 ml-4">
+            <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow">
+              {editandoNota === nota.id ? (
+                <div className="space-y-3">
+                  <Input
+                    value={notaEditando}
+                    onChange={(e) => setNotaEditando(e.target.value)}
+                    onKeyPress={handleEditKeyPress}
+                    className="text-base"
+                    autoFocus
+                  />
+                  <div className="flex justify-end space-x-2">
                     <Button
-                      onClick={() => confirmarEliminarNota(nota)}
+                      onClick={() => actualizarNota(nota.id, notaEditando)}
                       size="sm"
-                      variant="ghost"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700"
+                      variant="primary"
+                      disabled={!notaEditando.trim()}
                     >
-                      <TrashIcon className="w-4 h-4" />
+                      <CheckIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      onClick={cancelarEdicion}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      <XIcon className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center space-x-1">
-                    <ClockIcon className="w-4 h-4" />
-                    <span>{formatearFecha(nota.fecha_creacion)}</span>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                      {nota.contenido}
+                    </Typography>
+                    <div className="flex items-center space-x-2 ml-4">
+                      <Button
+                        onClick={() => iniciarEdicion(nota)}
+                        size="sm"
+                        variant="ghost"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      >
+                        <EditIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => confirmarEliminarNota(nota)}
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center space-x-1">
+                      <ClockIcon className="w-4 h-4" />
+                      <span>{formatearFecha(nota.fecha_creacion)}</span>
+                    </div>
+                    {nota.fecha_actualizacion && nota.fecha_actualizacion !== nota.fecha_creacion && (
+                      <div className="flex items-center space-x-1">
+                        <EditIcon className="w-4 h-4" />
+                        <span>Editado {formatearFecha(nota.fecha_actualizacion)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
             </Card>
           ))}
         </div>
