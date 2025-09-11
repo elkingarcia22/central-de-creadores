@@ -94,6 +94,9 @@ export default function SesionActivaPage() {
   
   // Estados para los nuevos tabs
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
+  const [empresaData, setEmpresaData] = useState<any>(null);
+  const [loadingEstadisticas, setLoadingEstadisticas] = useState(false);
+  const [errorEstadisticas, setErrorEstadisticas] = useState<string | null>(null);
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [investigaciones, setInvestigaciones] = useState<any[]>([]);
@@ -117,6 +120,16 @@ export default function SesionActivaPage() {
       loadParticipantData();
     }
   }, [id]);
+
+  // Cargar estadísticas de empresa cuando se carga la empresa
+  useEffect(() => {
+    console.log('🔍 Estado de empresa cambiado:', empresa);
+    
+    // Cargar estadísticas de empresa si es un participante externo
+    if (empresa && participante?.tipo === 'externo' && empresa.id) {
+      cargarEstadisticasEmpresa(empresa.id);
+    }
+  }, [empresa, participante?.tipo]);
 
   const loadParticipantData = async () => {
     try {
@@ -227,15 +240,95 @@ export default function SesionActivaPage() {
 
   const loadEmpresaData = async () => {
     try {
-      if (participante?.empresa_nombre) {
-        const response = await fetch(`/api/empresas/buscar?nombre=${encodeURIComponent(participante.empresa_nombre)}`);
-      if (response.ok) {
-        const data = await response.json();
-          setEmpresa(data);
+      console.log('🔍 Cargando datos de empresa para participante:', participante?.tipo);
+      
+      // Solo cargar empresa para participantes externos
+      if (participante?.tipo === 'externo') {
+        if (participante.empresa_id) {
+          console.log('🔍 Cargando empresa por ID:', participante.empresa_id);
+          await cargarEmpresaPorId(participante.empresa_id);
+        } else if (participante.empresa_nombre) {
+          console.log('🔍 Buscando empresa por nombre:', participante.empresa_nombre);
+          await buscarEmpresaPorNombre(participante.empresa_nombre);
+        } else {
+          console.log('🔍 Participante externo sin empresa_id ni empresa_nombre');
         }
+      } else {
+        console.log('🔍 No se cargará empresa - Tipo:', participante?.tipo);
       }
     } catch (error) {
-      console.error('Error cargando empresa:', error);
+      console.error('🔍 Error cargando empresa:', error);
+    }
+  };
+
+  const cargarEmpresaPorId = async (empresaId: string) => {
+    try {
+      console.log('🔍 Cargando empresa por ID:', empresaId);
+      const response = await fetch(`/api/empresas/${empresaId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Empresa cargada por ID:', data);
+        setEmpresa(data);
+      } else {
+        console.error('🔍 Error cargando empresa por ID:', response.status);
+      }
+    } catch (error) {
+      console.error('🔍 Error cargando empresa por ID:', error);
+    }
+  };
+
+  const buscarEmpresaPorNombre = async (empresaNombre: string) => {
+    try {
+      console.log('🔍 Buscando empresa por nombre:', empresaNombre);
+      const response = await fetch('/api/empresas');
+      if (response.ok) {
+        const empresas = await response.json();
+        console.log('🔍 Todas las empresas cargadas:', empresas.length);
+        
+        // Buscar empresa por nombre (ignorando mayúsculas/minúsculas)
+        const empresaEncontrada = empresas.find((empresa: any) => 
+          empresa.nombre && empresa.nombre.toLowerCase() === empresaNombre.toLowerCase()
+        );
+        
+        if (empresaEncontrada) {
+          console.log('🔍 Empresa encontrada por nombre:', empresaEncontrada);
+          setEmpresa(empresaEncontrada);
+        } else {
+          console.log('🔍 No se encontró empresa con el nombre:', empresaNombre);
+        }
+      } else {
+        console.error('🔍 Error cargando empresas:', response.status);
+      }
+    } catch (error) {
+      console.error('🔍 Error buscando empresa por nombre:', error);
+    }
+  };
+
+  const cargarEstadisticasEmpresa = async (empresaId: string) => {
+    setLoadingEstadisticas(true);
+    setErrorEstadisticas(null);
+
+    try {
+      console.log('🔍 Cargando estadísticas de empresa:', empresaId);
+      const response = await fetch(`/api/empresas/${empresaId}/estadisticas`);
+
+      if (!response.ok) {
+        throw new Error('Error al cargar estadísticas');
+      }
+
+      const data = await response.json();
+      console.log('🔍 Estadísticas de empresa cargadas:', data);
+
+      setEmpresaData({
+        ...empresa,
+        estadisticas: data.estadisticas,
+        participantes: data.participantes
+      });
+    } catch (err) {
+      console.error('🔍 Error cargando estadísticas de empresa:', err);
+      setErrorEstadisticas(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoadingEstadisticas(false);
     }
   };
 
@@ -963,78 +1056,233 @@ export default function SesionActivaPage() {
           {empresa && participante?.tipo === 'externo' ? (
             <>
               {/* Descripción */}
-              {empresa.descripcion && (
+              {(empresaData?.descripcion || empresa.descripcion) && (
                 <InfoContainer 
                   title="Descripción"
                   icon={<FileTextIcon className="w-4 h-4" />}
                 >
                   <InfoItem 
                     label="Descripción" 
-                    value={empresa.descripcion}
+                    value={empresaData?.descripcion || empresa.descripcion}
                   />
                 </InfoContainer>
               )}
 
-              {/* Información básica de la empresa */}
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 bg-green-50 rounded-lg">
-                    <BuildingIcon className="w-6 h-6 text-green-600" />
+              {/* Estadísticas principales */}
+              {empresaData && empresaData.estadisticas && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Total Participaciones */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.totalParticipaciones || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Total Participaciones
+                          </Typography>
+                        </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Total Participantes */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.totalParticipantes || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Total Participantes
+                          </Typography>
+                        </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Investigaciones Participadas */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.investigacionesParticipadas || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Investigaciones
+                          </Typography>
+                        </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Tiempo Total */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter 
+                              value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                              suffix="h"
+                            />
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Tiempo Total
+                          </Typography>
+                        </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        </div>
+                      </div>
+                    </Card>
                   </div>
-                  <div>
-                    <Typography variant="h3" className="text-gray-900">
-                      Información de la Empresa
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-600">
-                      Datos corporativos
-                    </Typography>
-                  </div>
-                </div>
-                
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <Typography variant="body2" className="text-gray-500 mb-1">Nombre</Typography>
-                      <Typography variant="body1" className="text-gray-900 font-medium">
-                        {empresa.nombre}
-                      </Typography>
-                    </div>
-                    {empresa.tamano && (
-                    <div>
-                        <Typography variant="body2" className="text-gray-500 mb-1">Tamaño</Typography>
-                      <Typography variant="body1" className="text-gray-900">
-                          {empresa.tamano}
-                      </Typography>
-                    </div>
+
+                  {/* Última participación y resumen del mes */}
+                  <InfoContainer 
+                    title="Resumen de Participación"
+                    icon={<UserIcon className="w-4 h-4" />}
+                  >
+                    {empresaData.estadisticas.fechaUltimaParticipacion && (
+                      <InfoItem 
+                        label="Última Participación" 
+                        value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
+                      />
                     )}
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {empresa.modalidad && (
-                  <div>
-                        <Typography variant="body2" className="text-gray-500 mb-1">Modalidad</Typography>
-                    <Typography variant="body1" className="text-gray-900">
-                          {empresa.modalidad}
-                    </Typography>
-                  </div>
-                    )}
-                    {empresa.relacion && (
-                    <div>
-                        <Typography variant="body2" className="text-gray-500 mb-1">Relación</Typography>
-                      <Typography variant="body1" className="text-gray-900">
-                          {empresa.relacion}
-                      </Typography>
-                    </div>
-                    )}
-                  </div>
-                </div>
-              </Card>
+                    
+                    <InfoItem 
+                      label="Participaciones del Mes" 
+                      value={
+                        (() => {
+                          const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                          const participacionesMesActual = empresaData.estadisticas.participacionesPorMes?.[mesActual] || 0;
+                          const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                          return `${participacionesMesActual} en ${nombreMes}`;
+                        })()
+                      }
+                    />
+                  </InfoContainer>
+                </>
+              )}
+
+              {/* Información básica */}
+              <InfoContainer 
+                title="Información Básica"
+                icon={<BuildingIcon className="w-4 h-4" />}
+              >
+                <InfoItem 
+                  label="Nombre" 
+                  value={empresa.nombre}
+                />
+                {(empresaData?.estado_nombre || empresa.estado_nombre) && (
+                  <InfoItem 
+                    label="Estado" 
+                    value={
+                      <Chip 
+                        variant={getEstadoParticipanteVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        size="sm"
+                      >
+                        {getChipText(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                      </Chip>
+                    }
+                  />
+                )}
+                {(empresaData?.pais_nombre || empresa.pais) && (
+                  <InfoItem label="País" value={empresaData?.pais_nombre || empresa.pais} />
+                )}
+                {(empresaData?.industria_nombre || empresa.industria) && (
+                  <InfoItem label="Industria" value={empresaData?.industria_nombre || empresa.industria} />
+                )}
+                {(empresaData?.modalidad_nombre) && (
+                  <InfoItem label="Modalidad" value={empresaData.modalidad_nombre} />
+                )}
+                {(empresaData?.tamano_nombre || empresa.tamano) && (
+                  <InfoItem label="Tamaño" value={empresaData?.tamano_nombre || empresa.tamano} />
+                )}
+                {(empresaData?.relacion_nombre) && (
+                  <InfoItem 
+                    label="Relación" 
+                    value={
+                      <Chip 
+                        variant={getChipVariant(empresaData.relacion_nombre) as any}
+                        size="sm"
+                      >
+                        {empresaData.relacion_nombre}
+                      </Chip>
+                    }
+                  />
+                )}
+                {(empresaData?.productos_nombres) && (
+                  <InfoItem 
+                    label="Productos" 
+                    value={empresaData.productos_nombres.join(', ')}
+                  />
+                )}
+                {(empresaData?.kam_nombre) && (
+                  <InfoItem 
+                    label="KAM Asignado" 
+                    value={
+                      <div className="flex items-center gap-2">
+                        <SimpleAvatar 
+                          fallbackText={empresaData.kam_nombre}
+                          size="sm"
+                        />
+                        <span>{empresaData.kam_nombre}</span>
+                      </div>
+                    }
+                  />
+                )}
+                {empresa.ciudad && <InfoItem label="Ciudad" value={empresa.ciudad} />}
+                {empresa.direccion && <InfoItem label="Dirección" value={empresa.direccion} />}
+                {empresa.telefono && <InfoItem label="Teléfono" value={empresa.telefono} />}
+                {empresa.email && <InfoItem label="Email" value={empresa.email} />}
+                {empresa.website && <InfoItem label="Website" value={empresa.website} />}
+              </InfoContainer>
+
+              {/* Fechas */}
+              <InfoContainer 
+                title="Fechas"
+                icon={<ClockIcon className="w-4 h-4" />}
+              >
+                {(empresaData?.created_at || empresa.fecha_creacion) && (
+                  <InfoItem 
+                    label="Fecha de Creación" 
+                    value={formatearFecha(empresaData?.created_at || empresa.fecha_creacion)}
+                  />
+                )}
+                {(empresaData?.updated_at || empresa.fecha_actualizacion) && (
+                  <InfoItem 
+                    label="Última Actualización" 
+                    value={formatearFecha(empresaData?.updated_at || empresa.fecha_actualizacion)}
+                  />
+                )}
+              </InfoContainer>
             </>
           ) : (
             <EmptyState
-              icon={<BuildingIcon className="w-12 h-12 text-gray-400" />}
-              title="Sin información de empresa"
-              description="Este participante no tiene información de empresa asociada"
+              icon={<BuildingIcon className="w-8 h-8" />}
+              title="Información de Empresa no disponible"
+              description="Este participante no está asociado a una empresa externa."
             />
           )}
         </div>
