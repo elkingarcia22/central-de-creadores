@@ -140,7 +140,12 @@ function generateRealisticTranscription(duration: number) {
   ];
 
   // Seleccionar template aleatorio
-  const template = conversationTemplates[Math.floor(Math.random() * conversationTemplates.length)];
+  const templateIndex = Math.floor(Math.random() * conversationTemplates.length);
+  const template = conversationTemplates[templateIndex];
+  
+  console.log(`🎲 [API] Template seleccionado: ${templateIndex} de ${conversationTemplates.length}`);
+  console.log(`🎲 [API] Session ID: ${sessionId}`);
+  console.log(`🎲 [API] Template greeting: ${template.greeting}`);
 
   const segments = [
     {

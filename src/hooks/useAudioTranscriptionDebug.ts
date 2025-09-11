@@ -143,6 +143,7 @@ export const useAudioTranscriptionDebug = (): UseAudioTranscriptionReturn => {
       const result = await response.json();
       console.log('📥 [DEBUG] Respuesta de API:', response.status, 'OK');
       console.log('✅ [DEBUG] Resultado de transcripción:', result);
+      console.log('🔍 [DEBUG] Resultado completo JSON:', JSON.stringify(result, null, 2));
       
       // Actualizar transcripción en tiempo real
       setState(prev => ({
