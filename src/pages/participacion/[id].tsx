@@ -18,7 +18,7 @@ import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, 
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
-import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
+import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText, getChipText } from '../../utils/chipUtils';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
@@ -1533,10 +1533,10 @@ export default function VistaParticipacion() {
             label="Estado"
             value={
               <Chip 
-                variant={getEstadoChipVariant(participante.estado_participante)}
+                variant={getEstadoParticipanteVariant(participante.estado_participante || 'disponible')}
                 size="sm"
               >
-                {participante.estado_participante || 'Sin estado'}
+                {getChipText(participante.estado_participante || 'disponible')}
               </Chip>
             }
           />
@@ -1607,10 +1607,10 @@ export default function VistaParticipacion() {
               label="Estado"
               value={
                 <Chip 
-                  variant={getEstadoChipVariant(empresa.estado_nombre || '')}
+                  variant={getEstadoParticipanteVariant(empresa.estado_nombre || 'disponible')}
                   size="sm"
                 >
-                  {empresa.estado_nombre || 'Sin estado'}
+                  {getChipText(empresa.estado_nombre || 'disponible')}
                 </Chip>
               }
             />

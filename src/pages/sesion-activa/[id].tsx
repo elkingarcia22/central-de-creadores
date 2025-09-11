@@ -575,7 +575,7 @@ export default function SesionActivaPage() {
             label="Estado"
             value={
               <Chip 
-                variant={getEstadoChipVariant(participante.estado_participante)}
+                variant={getEstadoParticipanteVariant(participante.estado_participante || 'disponible')}
                 size="sm"
               >
                 {getChipText(participante.estado_participante || 'disponible')}
