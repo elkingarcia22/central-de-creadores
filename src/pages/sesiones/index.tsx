@@ -7,43 +7,15 @@ import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinI
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
 import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
-import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
-import SesionesWithTranscription from '../../components/sesiones/SesionesWithTranscription';
 import { useFastUser } from '../../contexts/FastUserContext';
 
-// Componente que maneja el contexto de transcripción
-const SesionesWithTranscriptionContext: React.FC = () => {
-  let globalTranscription = null;
-  try {
-    globalTranscription = useGlobalTranscription();
-    console.log('✅✅✅ SESIONES WITH CONTEXT - CONTEXTO OBTENIDO:', globalTranscription);
-    console.log('🎯 CONTEXTO DISPONIBLE - FUNCIONES:', {
-      startTranscription: typeof globalTranscription?.startTranscription,
-      stopTranscription: typeof globalTranscription?.stopTranscription,
-      transcriptionState: globalTranscription?.transcriptionState
-    });
-  } catch (error) {
-    console.warn('❌❌❌ SESIONES WITH CONTEXT - CONTEXTO NO DISPONIBLE:', error);
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando transcripción...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  return <SesionesPageContent globalTranscription={globalTranscription} />;
-};
 
-const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription }) => {
+const SesionesPageContent: React.FC = () => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
   
-  console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
@@ -470,7 +442,6 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
   const handleIniciarSesion = async (sesion: SesionEvent) => {
     try {
       console.log('🎯 Iniciando sesión:', sesion.id);
-      console.log('🔍 Debug - globalTranscription:', globalTranscription);
       console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
       
       // Si la sesión tiene enlace de Meet, abrirlo
@@ -1214,10 +1185,9 @@ const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTra
 const SesionesPage: NextPage = () => {
   console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
   
-  // Renderizar el componente que maneja el contexto
   return (
     <Layout>
-      <SesionesWithTranscriptionContext />
+      <SesionesPageContent />
     </Layout>
   );
 };
