@@ -546,6 +546,14 @@ export default function SesionActivaPage() {
               
               if (transcripcionId && audioTranscription.state.transcription) {
                 console.log('💾 Actualizando transcripción en base de datos...');
+                console.log('📝 Datos a guardar:', {
+                  transcripcion_completa: audioTranscription.state.transcription,
+                  transcripcion_por_segmentos: audioTranscription.state.segments,
+                  duracion_total: audioTranscription.state.duration,
+                  fecha_fin: new Date().toISOString(),
+                  estado: 'completada'
+                });
+                
                 await updateTranscripcion(transcripcionId, {
                   transcripcion_completa: audioTranscription.state.transcription,
                   transcripcion_por_segmentos: audioTranscription.state.segments,
@@ -553,6 +561,9 @@ export default function SesionActivaPage() {
                   fecha_fin: new Date().toISOString(),
                   estado: 'completada'
                 });
+                
+                console.log('✅ Transcripción guardada en BD, recargando lista...');
+                await loadTranscripciones();
               }
               return;
             }
