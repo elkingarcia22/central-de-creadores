@@ -1371,6 +1371,7 @@ export default function SesionActivaPage() {
               setShowFilterDrawer={setShowFilterDrawer}
               getActiveFiltersCount={getActiveFiltersCount}
               columns={columnsDolores}
+              filterOptions={filterOptions}
               actions={[
                 {
                   label: 'Ver detalles',
