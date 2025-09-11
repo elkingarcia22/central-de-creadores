@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, EmptyState, Badge } from '../ui';
+import { Card, Typography, Button, EmptyState, Badge, ConfirmModal } from '../ui';
 import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon, TrashIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 
@@ -46,6 +46,9 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   const [transcripciones, setTranscripciones] = useState<TranscripcionSesion[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTranscripcion, setSelectedTranscripcion] = useState<TranscripcionSesion | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [transcripcionAEliminar, setTranscripcionAEliminar] = useState<string | null>(null);
+  const [eliminando, setEliminando] = useState(false);
 
   // Cargar transcripciones existentes
   useEffect(() => {
@@ -75,29 +78,40 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
     }
   };
 
-  const eliminarTranscripcion = async (transcripcionId: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta transcripción?')) {
-      return;
-    }
+  const confirmarEliminarTranscripcion = (transcripcionId: string) => {
+    setTranscripcionAEliminar(transcripcionId);
+    setShowDeleteModal(true);
+  };
 
+  const eliminarTranscripcion = async () => {
+    if (!transcripcionAEliminar) return;
+
+    setEliminando(true);
     try {
-      const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+      const response = await fetch(`/api/transcripciones/${transcripcionAEliminar}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setTranscripciones(prev => prev.filter(t => t.id !== transcripcionId));
-        if (selectedTranscripcion?.id === transcripcionId) {
+        setTranscripciones(prev => prev.filter(t => t.id !== transcripcionAEliminar));
+        if (selectedTranscripcion?.id === transcripcionAEliminar) {
           setSelectedTranscripcion(null);
         }
+        setShowDeleteModal(false);
+        setTranscripcionAEliminar(null);
       } else {
         console.error('Error eliminando transcripción:', response.statusText);
-        alert('Error al eliminar la transcripción');
       }
     } catch (error) {
       console.error('Error eliminando transcripción:', error);
-      alert('Error al eliminar la transcripción');
+    } finally {
+      setEliminando(false);
     }
+  };
+
+  const cancelarEliminar = () => {
+    setShowDeleteModal(false);
+    setTranscripcionAEliminar(null);
   };
 
   const formatDuracion = (segundos: number) => {
@@ -339,7 +353,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        eliminarTranscripcion(transcripcion.id);
+                        confirmarEliminarTranscripcion(transcripcion.id);
                       }}
                       size="sm"
                       variant="ghost"
@@ -417,6 +431,19 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           </div>
         </Card>
       )}
+
+      {/* Modal de confirmación para eliminar transcripción */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelarEliminar}
+        onConfirm={eliminarTranscripcion}
+        title="Eliminar Transcripción"
+        message="¿Estás seguro de que quieres eliminar esta transcripción? Esta acción no se puede deshacer."
+        type="warning"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        loading={eliminando}
+      />
     </div>
   );
 };
