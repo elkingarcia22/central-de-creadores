@@ -37,6 +37,12 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   isProcessing = false,
   error = null
 }) => {
+  console.log('🔍 NotasAutomaticasContent - Props recibidos:', {
+    transcripcionCompleta: transcripcionCompleta ? transcripcionCompleta.substring(0, 50) + '...' : 'VACÍO',
+    segmentosTranscripcion: segmentosTranscripcion.length,
+    isProcessing,
+    isRecording
+  });
   const [transcripciones, setTranscripciones] = useState<TranscripcionSesion[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTranscripcion, setSelectedTranscripcion] = useState<TranscripcionSesion | null>(null);
@@ -175,7 +181,16 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
       )}
 
       {/* Transcripción actual en tiempo real */}
-      {(transcripcionCompleta || segmentosTranscripcion.length > 0) && !isProcessing && (
+      {(() => {
+        const shouldShow = (transcripcionCompleta || segmentosTranscripcion.length > 0) && !isProcessing;
+        console.log('🔍 NotasAutomaticasContent - Condición de renderizado:', {
+          transcripcionCompleta: !!transcripcionCompleta,
+          segmentosTranscripcion: segmentosTranscripcion.length,
+          isProcessing,
+          shouldShow
+        });
+        return shouldShow;
+      })() && (
         <Card variant="elevated" padding="lg">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
