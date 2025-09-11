@@ -321,7 +321,10 @@ export default function SesionActivaPage() {
 
   const loadEmpresaData = async () => {
     try {
-      console.log('🔍 Cargando datos de empresa para participante:', participante?.tipo);
+      console.log('🔍 Cargando datos de empresa para participante:', participante?.id);
+      console.log('🔍 Participante tipo:', participante?.tipo);
+      console.log('🔍 Empresa ID:', participante?.empresa_id);
+      console.log('🔍 Empresa Nombre:', participante?.empresa_nombre);
       
       // Solo cargar empresa para participantes externos
       if (participante?.tipo === 'externo') {
