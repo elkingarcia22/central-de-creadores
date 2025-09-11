@@ -195,22 +195,30 @@ export default function SesionActivaPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('🔍 Datos de investigaciones recibidos:', data);
-        const investigacionesArray = Array.isArray(data) ? data : [];
+        
+        // La API devuelve { investigaciones: [...], total: X, participacionesPorMes: {...} }
+        const investigacionesArray = Array.isArray(data.investigaciones) ? data.investigaciones : [];
         console.log('🔍 Array de investigaciones:', investigacionesArray);
         setInvestigaciones(investigacionesArray);
         
-        // Calcular participaciones por mes
-        const participacionesPorMes: { [key: string]: number } = {};
-        investigacionesArray.forEach((inv: any) => {
-          if (inv.fecha_sesion || inv.fecha_participacion) {
-            const fecha = new Date(inv.fecha_sesion || inv.fecha_participacion);
-            const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-            participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
-          }
-        });
-        console.log('🔍 Participaciones por mes:', participacionesPorMes);
-        setParticipacionesPorMes(participacionesPorMes);
-      } else {
+        // Usar participacionesPorMes de la API si está disponible, sino calcular
+        if (data.participacionesPorMes) {
+          console.log('🔍 Participaciones por mes desde API:', data.participacionesPorMes);
+          setParticipacionesPorMes(data.participacionesPorMes);
+        } else {
+          // Calcular participaciones por mes como fallback
+          const participacionesPorMes: { [key: string]: number } = {};
+          investigacionesArray.forEach((inv: any) => {
+            if (inv.fecha_sesion || inv.fecha_participacion) {
+              const fecha = new Date(inv.fecha_sesion || inv.fecha_participacion);
+              const mes = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
+              participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
+            }
+          });
+          console.log('🔍 Participaciones por mes calculadas:', participacionesPorMes);
+          setParticipacionesPorMes(participacionesPorMes);
+        }
+          } else {
         console.error('🔍 Error en respuesta de investigaciones:', response.status);
       }
     } catch (error) {
@@ -393,8 +401,8 @@ export default function SesionActivaPage() {
             <Button onClick={handleBackToSessions} variant="secondary">
               Volver a Sesiones
                     </Button>
-                  </div>
                 </div>
+              </div>
       </Layout>
     );
   }
@@ -406,6 +414,11 @@ export default function SesionActivaPage() {
     investigaciones: any[];
     participacionesPorMes: { [key: string]: number };
   }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
+    // Debug: Log de datos recibidos
+    console.log('🔍 InformacionContent - investigaciones recibidas:', investigaciones);
+    console.log('🔍 InformacionContent - participacionesPorMes recibidas:', participacionesPorMes);
+    console.log('🔍 InformacionContent - participante recibido:', participante);
+    
     const totalInvestigaciones = investigaciones.length;
     const investigacionesFinalizadas = investigaciones.filter(inv => 
       inv.estado === 'finalizada' || inv.estado === 'completada'
@@ -421,6 +434,13 @@ export default function SesionActivaPage() {
       }
       return total;
     }, 0) / 60; // Convertir minutos a horas
+    
+    console.log('🔍 InformacionContent - Métricas calculadas:', {
+      totalInvestigaciones,
+      investigacionesFinalizadas,
+      investigacionesEnProgreso,
+      tiempoTotalHoras
+    });
 
     return (
       <div className="space-y-6">
@@ -439,8 +459,8 @@ export default function SesionActivaPage() {
                 </Typography>
                 <Typography variant="body2" color="secondary">
                   Total
-                </Typography>
-              </div>
+                    </Typography>
+                  </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <FileTextIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </div>
@@ -457,16 +477,16 @@ export default function SesionActivaPage() {
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
-                </Typography>
+                  </Typography>
                 <Typography variant="body2" color="secondary">
                   Finalizadas
-                </Typography>
+                  </Typography>
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </div>
-            </div>
-          </Card>
+                </div>
+              </Card>
 
           {/* Investigaciones En Progreso */}
           <Card variant="elevated" padding="md">
@@ -478,16 +498,16 @@ export default function SesionActivaPage() {
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
-                </Typography>
+                  </Typography>
                 <Typography variant="body2" color="secondary">
                   En Progreso
-                </Typography>
-              </div>
+                      </Typography>
+                    </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </div>
-            </div>
-          </Card>
+                </div>
+              </Card>
 
           {/* Tiempo Total Estimado */}
           <Card variant="elevated" padding="md">
@@ -510,8 +530,8 @@ export default function SesionActivaPage() {
               </div>
             </div>
           </Card>
-        </div>
-
+              </div>
+              
         {/* Información adicional */}
         <InfoContainer 
           title="Resumen de Participación"
@@ -616,7 +636,7 @@ export default function SesionActivaPage() {
               <Typography variant="body2" color="secondary">
                 {participante.comentarios}
               </Typography>
-            </div>
+                  </div>
           </InfoContainer>
         )}
 
@@ -653,7 +673,7 @@ export default function SesionActivaPage() {
                   size="sm"
                 >
                   {getChipText(empresa.estado_nombre || 'disponible')}
-                </Chip>
+                    </Chip>
               }
             />
             {empresa.descripcion && (
@@ -663,8 +683,8 @@ export default function SesionActivaPage() {
               />
             )}
           </InfoContainer>
-        )}
-      </div>
+                  )}
+                </div>
     );
   };
 
@@ -687,20 +707,20 @@ export default function SesionActivaPage() {
                   </div>
                 </div>
                 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <div>
                       <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
                       <Typography variant="body1" className="text-gray-900 font-medium">
                         {reclutamiento.titulo}
                       </Typography>
                     </div>
-              <div>
+                    <div>
                 <Typography variant="body2" className="text-gray-500 mb-1">Fecha</Typography>
-                <Typography variant="body1" className="text-gray-900">
+                      <Typography variant="body1" className="text-gray-900">
                   {formatearFecha(reclutamiento.fecha)}
-                </Typography>
-              </div>
+                      </Typography>
+                    </div>
                     <div>
                       <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
                 <Chip variant={getEstadoReclutamientoVariant(reclutamiento.estado)} size="sm">
@@ -711,12 +731,12 @@ export default function SesionActivaPage() {
                   
             <div className="space-y-4">
               {reclutamiento.reclutador && (
-                  <div>
+                    <div>
                   <Typography variant="body2" className="text-gray-500 mb-1">Reclutador</Typography>
-                    <Typography variant="body1" className="text-gray-900">
+                      <Typography variant="body1" className="text-gray-900">
                     {reclutamiento.reclutador.nombre}
-                    </Typography>
-                  </div>
+                      </Typography>
+                    </div>
               )}
               {reclutamiento.meet_link && (
                     <div>
@@ -729,21 +749,21 @@ export default function SesionActivaPage() {
                         >
                     Abrir en Google Meet
                         </a>
-                </div>
-                      )}
                     </div>
+                      )}
                   </div>
-          
+                </div>
+                
           {reclutamiento.descripcion && (
             <div className="mt-6">
               <Typography variant="body2" className="text-gray-500 mb-2">Descripción</Typography>
-              <Typography variant="body1" className="text-gray-900">
+                    <Typography variant="body1" className="text-gray-900">
                 {reclutamiento.descripcion}
-              </Typography>
-                </div>
+                    </Typography>
+                  </div>
           )}
               </Card>
-      </div>
+        </div>
     );
   };
 
@@ -784,21 +804,21 @@ export default function SesionActivaPage() {
               )}
 
               {/* Información básica de la empresa */}
-                <Card className="p-6">
-                  <div className="flex items-center gap-3 mb-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 bg-green-50 rounded-lg">
                     <BuildingIcon className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <Typography variant="h3" className="text-gray-900">
-                      Información de la Empresa
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-600">
-                      Datos corporativos
-                      </Typography>
-                    </div>
                   </div>
-                  
+                  <div>
+                    <Typography variant="h3" className="text-gray-900">
+                      Información de la Empresa
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
+                      Datos corporativos
+                    </Typography>
+                  </div>
+                </div>
+                
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
@@ -819,20 +839,20 @@ export default function SesionActivaPage() {
                   
                   <div className="space-y-4">
                     {empresa.modalidad && (
-                      <div>
+                  <div>
                         <Typography variant="body2" className="text-gray-500 mb-1">Modalidad</Typography>
-                        <Typography variant="body1" className="text-gray-900">
+                    <Typography variant="body1" className="text-gray-900">
                           {empresa.modalidad}
-                        </Typography>
-                      </div>
+                    </Typography>
+                  </div>
                     )}
                     {empresa.relacion && (
-                      <div>
+                    <div>
                         <Typography variant="body2" className="text-gray-500 mb-1">Relación</Typography>
-                        <Typography variant="body1" className="text-gray-900">
+                      <Typography variant="body1" className="text-gray-900">
                           {empresa.relacion}
-                        </Typography>
-                      </div>
+                      </Typography>
+                    </div>
                     )}
                   </div>
                 </div>
