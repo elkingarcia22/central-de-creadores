@@ -532,6 +532,8 @@ export default function SesionActivaPage() {
               await updateTranscripcion(transcripcionId, {
                 transcripcion_completa: audioTranscription.state.transcription,
                 transcripcion_por_segmentos: audioTranscription.state.segments,
+                duracion_total: audioTranscription.state.duration,
+                fecha_fin: new Date().toISOString(),
                 estado: 'completada'
               });
             }
@@ -659,6 +661,9 @@ export default function SesionActivaPage() {
   // Función para actualizar transcripción
   const updateTranscripcion = async (id: string, data: any) => {
     try {
+      console.log('💾 Actualizando transcripción con ID:', id);
+      console.log('📝 Datos a actualizar:', data);
+      
       const response = await fetch(`/api/transcripciones/${id}`, {
         method: 'PUT',
         headers: {
@@ -667,35 +672,55 @@ export default function SesionActivaPage() {
         body: JSON.stringify(data),
       });
 
+      console.log('📥 Respuesta de actualización:', response.status, response.statusText);
+
       if (response.ok) {
-        console.log('✅ Transcripción actualizada:', id);
+        const result = await response.json();
+        console.log('✅ Transcripción actualizada exitosamente:', result);
         // Recargar transcripciones
         await loadTranscripciones();
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Error actualizando transcripción:', errorText);
       }
     } catch (error) {
-      console.error('Error actualizando transcripción:', error);
+      console.error('❌ Error actualizando transcripción:', error);
     }
   };
 
   // Función para cargar transcripciones existentes
   const loadTranscripciones = async () => {
-    if (!reclutamiento?.id) return;
+    if (!reclutamiento?.id) {
+      console.log('❌ No hay reclutamiento ID para cargar transcripciones');
+      return;
+    }
     
     try {
+      console.log('📝 Cargando transcripciones para reclutamiento:', reclutamiento.id);
       const response = await fetch(`/api/transcripciones?reclutamiento_id=${reclutamiento.id}`);
+      
+      console.log('📥 Respuesta de carga de transcripciones:', response.status, response.statusText);
+      
       if (response.ok) {
         const data = await response.json();
         console.log('📝 Transcripciones cargadas:', data);
+        console.log('📊 Cantidad de transcripciones:', data.length);
         
         // Si hay transcripciones, cargar la más reciente
         if (data.length > 0) {
           const ultimaTranscripcion = data[0];
+          console.log('📄 Última transcripción:', ultimaTranscripcion);
           setTranscripcionCompleta(ultimaTranscripcion.transcripcion_completa || '');
           setSegmentosTranscripcion(ultimaTranscripcion.transcripcion_por_segmentos || []);
+        } else {
+          console.log('📭 No hay transcripciones disponibles');
         }
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Error cargando transcripciones:', errorText);
       }
     } catch (error) {
-      console.error('Error cargando transcripciones:', error);
+      console.error('❌ Error cargando transcripciones:', error);
     }
   };
 

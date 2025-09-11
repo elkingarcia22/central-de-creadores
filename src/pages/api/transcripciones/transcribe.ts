@@ -40,6 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Por ahora, simular transcripción (reemplazar con API real)
     const mockTranscription = await simulateTranscription(audioFile, language);
+    
+    console.log('✅ Transcripción simulada completada:', mockTranscription);
 
     // Limpiar archivo temporal
     if (fs.existsSync(audioFile.filepath)) {

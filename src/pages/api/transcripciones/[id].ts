@@ -10,6 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PUT') {
     try {
+      console.log('📝 Actualizando transcripción con ID:', id);
+      console.log('📄 Datos recibidos:', req.body);
+      
       const { 
         estado, 
         fecha_fin, 
@@ -31,6 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (transcripcion_por_segmentos !== undefined) updateData.transcripcion_por_segmentos = transcripcion_por_segmentos;
       if (idioma_detectado !== undefined) updateData.idioma_detectado = idioma_detectado;
 
+      console.log('💾 Datos a actualizar en BD:', updateData);
+
       // Actualizar transcripción
       const { data, error } = await supabase
         .from('transcripciones_sesiones')
@@ -40,11 +45,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .single();
 
       if (error) {
-        console.error('Error actualizando transcripción:', error);
+        console.error('❌ Error actualizando transcripción:', error);
         return res.status(500).json({ error: 'Error al actualizar transcripción' });
       }
 
-      console.log('✅ Transcripción actualizada:', id);
+      console.log('✅ Transcripción actualizada exitosamente:', data);
       return res.status(200).json(data);
 
     } catch (error) {
