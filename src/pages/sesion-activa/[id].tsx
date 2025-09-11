@@ -690,80 +690,168 @@ export default function SesionActivaPage() {
 
   // Componente para el contenido del tab de Información de la Sesión
   const ReclutamientoContent: React.FC<{ reclutamiento: Reclutamiento; participante: Participante }> = ({ reclutamiento, participante }) => {
+    // Función para obtener el nombre del usuario por ID
+    const getNombreUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Usuario no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.nombre || usuario.full_name || 'Sin nombre' : 'Usuario no encontrado';
+    };
+
+    // Función para obtener el email del usuario por ID
+    const getEmailUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Email no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.correo || usuario.email || 'Sin email' : 'Email no encontrado';
+    };
+
+    // Función para formatear la duración
+    const formatearDuracion = (duracion: number) => {
+      if (!duracion) return '0 min';
+      if (duracion >= 60) {
+        const horas = Math.floor(duracion / 60);
+        const minutos = duracion % 60;
+        return minutos > 0 ? `${horas}h ${minutos}min` : `${horas}h`;
+      }
+      return `${duracion} min`;
+    };
+
+    if (!reclutamiento) {
+      return (
+        <EmptyState
+          icon={<AlertTriangleIcon className="w-8 h-8" />}
+          title="Sin información de reclutamiento"
+          description="No hay información de reclutamiento disponible para este participante."
+        />
+      );
+    }
+
     return (
-        <div className="space-y-6">
-              <Card className="p-6">
-                <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-purple-50 rounded-lg">
-              <CalendarIcon className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <Typography variant="h3" className="text-gray-900">
-                Información de la Sesión
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-600">
-                Detalles del reclutamiento actual
-                    </Typography>
-                  </div>
+      <div className="space-y-6">
+        {/* Información del Reclutamiento */}
+        <InfoContainer 
+          title="Detalles del Reclutamiento"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="ID del Reclutamiento"
+            value={reclutamiento.id}
+          />
+          <InfoItem 
+            label="Reclutador"
+            value={
+              <div className="flex items-center gap-2">
+                <span>{getNombreUsuario(reclutamiento.reclutador_id)}</span>
+                <Chip variant="secondary" size="sm">
+                  {getEmailUsuario(reclutamiento.reclutador_id)}
+                </Chip>
+              </div>
+            }
+          />
+          <InfoItem 
+            label="Participante"
+            value={participante.nombre}
+          />
+          <InfoItem 
+            label="Email del Participante"
+            value={participante.email || 'Sin email'}
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo as any)}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Fecha de Sesión"
+            value={reclutamiento.fecha_sesion ? 
+              formatearFecha(reclutamiento.fecha_sesion) : 
+              'No programada'
+            }
+          />
+          <InfoItem 
+            label="Hora de Sesión"
+            value={reclutamiento.hora_sesion ? 
+              (() => {
+                try {
+                  let hora = reclutamiento.hora_sesion;
+                  if (hora.match(/^\d{2}:\d{2}:\d{2}$/)) {
+                    hora = `2000-01-01T${hora}`;
+                  }
+                  if (hora.match(/^\d{2}:\d{2}$/)) {
+                    hora = `2000-01-01T${hora}:00`;
+                  }
+                  const fechaHora = new Date(hora);
+                  if (isNaN(fechaHora.getTime())) {
+                    return reclutamiento.hora_sesion;
+                  }
+                  return fechaHora.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  });
+                } catch (error) {
+                  return reclutamiento.hora_sesion;
+                }
+              })() : 
+              'No definida'
+            }
+          />
+          <InfoItem 
+            label="Duración de Sesión"
+            value={formatearDuracion(reclutamiento.duracion_sesion)}
+          />
+          <InfoItem 
+            label="Estado de Agendamiento"
+            value={
+              <Chip 
+                variant={getChipVariant(reclutamiento.estado_reclutamiento_nombre || '') as any}
+                size="sm"
+              >
+                {reclutamiento.estado_reclutamiento_nombre || 'Sin estado'}
+              </Chip>
+            }
+          />
+          {reclutamiento.meet_link && (
+            <InfoItem 
+              label="Enlace de Google Meet"
+              value={
+                <div className="flex items-center gap-2">
+                  <a 
+                    href={reclutamiento.meet_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                  >
+                    {reclutamiento.meet_link}
+                  </a>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigator.clipboard.writeText(reclutamiento.meet_link)}
+                    className="p-1 h-auto"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <Typography variant="body2" className="text-gray-500 mb-1">Título</Typography>
-                      <Typography variant="body1" className="text-gray-900 font-medium">
-                        {reclutamiento.titulo}
-                      </Typography>
-                    </div>
-                    <div>
-                <Typography variant="body2" className="text-gray-500 mb-1">Fecha</Typography>
-                      <Typography variant="body1" className="text-gray-900">
-                  {formatearFecha(reclutamiento.fecha)}
-                      </Typography>
-                    </div>
-                    <div>
-                      <Typography variant="body2" className="text-gray-500 mb-1">Estado</Typography>
-                <Chip variant={getEstadoReclutamientoVariant(reclutamiento.estado)} size="sm">
-                        {reclutamiento.estado}
-                      </Chip>
-                    </div>
-                  </div>
-                  
-            <div className="space-y-4">
-              {reclutamiento.reclutador && (
-                    <div>
-                  <Typography variant="body2" className="text-gray-500 mb-1">Reclutador</Typography>
-                      <Typography variant="body1" className="text-gray-900">
-                    {reclutamiento.reclutador.nombre}
-                      </Typography>
-                    </div>
-              )}
-              {reclutamiento.meet_link && (
-                    <div>
-                      <Typography variant="body2" className="text-gray-500 mb-1">Enlace de Meet</Typography>
-                        <a 
-                          href={reclutamiento.meet_link} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline"
-                        >
-                    Abrir en Google Meet
-                        </a>
-                    </div>
-                      )}
-                  </div>
-                </div>
-                
-          {reclutamiento.descripcion && (
-            <div className="mt-6">
-              <Typography variant="body2" className="text-gray-500 mb-2">Descripción</Typography>
-                    <Typography variant="body1" className="text-gray-900">
-                {reclutamiento.descripcion}
-                    </Typography>
-                  </div>
+              }
+            />
           )}
-              </Card>
-        </div>
+          <InfoItem 
+            label="Última Actualización"
+            value={reclutamiento.updated_at ? 
+              formatearFecha(reclutamiento.updated_at) : 
+              'No disponible'
+            }
+          />
+        </InfoContainer>
+      </div>
     );
   };
 
