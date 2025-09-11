@@ -186,10 +186,19 @@ export default function SesionActivaPage() {
 
   const loadUsuariosData = async () => {
     try {
+      console.log('🔍 Cargando usuarios...');
       const response = await fetch('/api/usuarios');
       if (response.ok) {
         const data = await response.json();
-        setUsuarios(data || []);
+        console.log('🔍 Datos de usuarios recibidos:', data);
+        console.log('🔍 Tipo de datos:', typeof data, 'Es array:', Array.isArray(data));
+        
+        // La API devuelve { usuarios: [...] }
+        const usuariosArray = data.usuarios || data || [];
+        console.log('🔍 Usuarios procesados:', usuariosArray);
+        setUsuarios(usuariosArray);
+      } else {
+        console.error('🔍 Error en respuesta de usuarios:', response.status);
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
