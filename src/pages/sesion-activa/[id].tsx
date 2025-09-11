@@ -161,18 +161,13 @@ export default function SesionActivaPage() {
   // Cargar datos de empresa cuando el participante cambie
   useEffect(() => {
     if (participante && participante.tipo === 'externo') {
-      console.log('🔍 useEffect - Cargando empresa para participante externo:', participante.id);
       loadEmpresaData();
     }
   }, [participante]);
 
   // Cargar opciones de filtro dinámicamente desde los dolores
   useEffect(() => {
-    console.log('🔍 useEffect dolores ejecutándose, dolores.length:', dolores.length);
-    console.log('🔍 Estado dolores actual:', dolores);
-    
     if (dolores.length > 0) {
-      console.log('🔍 Cargando opciones de filtro desde dolores:', dolores.length);
       
       // Extraer categorías únicas
       const categoriasUnicas = [...new Set(dolores.map(dolor => dolor.categoria_nombre).filter(Boolean))];
@@ -199,20 +194,12 @@ export default function SesionActivaPage() {
         { value: 'archivado', label: 'Archivado' }
       ];
       
-      console.log('🔍 Opciones de filtro generadas:', {
-        categorias: categoriasOptions,
-        severidades: severidadesOptions,
-        estados: estadosOptions
-      });
-      
       // Actualizar las opciones de filtro dinámicamente
       setFilterOptions({
         estados: estadosOptions,
         severidades: severidadesOptions,
         categorias: categoriasOptions
       });
-    } else {
-      console.log('🔍 No hay dolores para generar opciones de filtro');
     }
   }, [dolores]);
 
@@ -225,10 +212,6 @@ export default function SesionActivaPage() {
       if (participanteResponse.ok) {
         const participanteData = await participanteResponse.json();
         setParticipante(participanteData);
-        console.log('🔍 Participante cargado completo:', participanteData);
-        console.log('🔍 Participante tipo:', participanteData?.tipo);
-        console.log('🔍 Participante empresa_id:', participanteData?.empresa_id);
-        console.log('🔍 Participante empresa_nombre:', participanteData?.empresa_nombre);
       }
 
       // Cargar datos del reclutamiento específico de la sesión activa
@@ -328,10 +311,6 @@ export default function SesionActivaPage() {
 
   const loadEmpresaData = async () => {
     try {
-      console.log('🔍 Cargando datos de empresa para participante:', participante?.id);
-      console.log('🔍 Participante tipo:', participante?.tipo);
-      console.log('🔍 Empresa ID:', participante?.empresa_id);
-      console.log('🔍 Empresa Nombre:', participante?.empresa_nombre);
       
       // Solo cargar empresa para participantes externos
       if (participante?.tipo === 'externo') {
@@ -1368,11 +1347,6 @@ export default function SesionActivaPage() {
       label: 'Dolores',
       content: (
         <>
-          {(() => {
-            console.log('🔍 Renderizando tab Dolores, dolores.length:', dolores.length);
-            console.log('🔍 Dolores en render:', dolores);
-            return null;
-          })()}
           {dolores.length > 0 ? (
             <DoloresUnifiedContainer
               dolores={dolores}

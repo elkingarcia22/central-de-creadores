@@ -83,8 +83,6 @@ export default function DoloresUnifiedContainer({
 
   // Filtrar dolores basado en searchTerm y filters
   const doloresFiltradas = useMemo(() => {
-    console.log('🔍 DoloresUnifiedContainer - dolores recibidos:', dolores);
-    console.log('🔍 DoloresUnifiedContainer - dolores.length:', dolores?.length);
     let filtradas = dolores;
 
     // Filtrar por término de búsqueda
@@ -112,8 +110,6 @@ export default function DoloresUnifiedContainer({
       filtradas = filtradas.filter(dolor => dolor.categoria_id === filters.categoria);
     }
 
-    console.log('🔍 DoloresUnifiedContainer - dolores filtradas:', filtradas);
-    console.log('🔍 DoloresUnifiedContainer - dolores filtradas.length:', filtradas?.length);
     return filtradas;
   }, [dolores, searchTerm, filters]);
 
@@ -196,12 +192,6 @@ export default function DoloresUnifiedContainer({
       </div>
 
       {/* Tabla de dolores */}
-      {(() => {
-        console.log('🔍 DoloresUnifiedContainer - Renderizando DataTable');
-        console.log('🔍 DoloresUnifiedContainer - doloresFiltradas para DataTable:', doloresFiltradas);
-        console.log('🔍 DoloresUnifiedContainer - columns para DataTable:', columns);
-        return null;
-      })()}
       <DataTable
         data={doloresFiltradas}
         columns={columns}
