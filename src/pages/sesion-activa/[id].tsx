@@ -172,10 +172,13 @@ export default function SesionActivaPage() {
       console.log('🔍 Estado actual transcripcionCompleta:', transcripcionCompleta);
       console.log('🔍 Estado actual segmentosTranscripcion:', segmentosTranscripcion);
       
+      // Actualizar estados locales
       setTranscripcionCompleta(event.detail.transcription);
       setSegmentosTranscripcion(event.detail.segments);
       
       console.log('✅ Estados actualizados en el listener');
+      console.log('🔍 Nuevo valor transcripcionCompleta:', event.detail.transcription);
+      console.log('🔍 Nuevo valor segmentosTranscripcion:', event.detail.segments);
       
       // Guardar en la base de datos
       if (transcripcionId && event.detail.transcription) {
@@ -206,7 +209,16 @@ export default function SesionActivaPage() {
     return () => {
       window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
     };
-  }, [transcripcionId, audioTranscription.state.duration, transcripcionCompleta, segmentosTranscripcion]);
+  }, [transcripcionId, audioTranscription.state.duration]);
+
+  // Debug: Verificar cambios en estados locales
+  useEffect(() => {
+    console.log('🔄 Estado transcripcionCompleta cambió:', transcripcionCompleta);
+  }, [transcripcionCompleta]);
+
+  useEffect(() => {
+    console.log('🔄 Estado segmentosTranscripcion cambió:', segmentosTranscripcion);
+  }, [segmentosTranscripcion]);
 
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
