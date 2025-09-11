@@ -113,6 +113,30 @@ export default function SesionActivaPage() {
     fecha_creacion_hasta: ''
   });
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  
+  // Estado para opciones de filtro dinámicas
+  const [filterOptions, setFilterOptions] = useState({
+    estados: [
+      { value: 'todos', label: 'Todos los estados' },
+      { value: 'activo', label: 'Activo' },
+      { value: 'resuelto', label: 'Resuelto' },
+      { value: 'archivado', label: 'Archivado' }
+    ],
+    severidades: [
+      { value: 'todos', label: 'Todas las severidades' },
+      { value: 'baja', label: 'Baja' },
+      { value: 'media', label: 'Media' },
+      { value: 'alta', label: 'Alta' },
+      { value: 'critica', label: 'Crítica' }
+    ],
+    categorias: [
+      { value: 'todos', label: 'Todas las categorías' },
+      { value: 'funcional', label: 'Funcional' },
+      { value: 'usabilidad', label: 'Usabilidad' },
+      { value: 'rendimiento', label: 'Rendimiento' },
+      { value: 'seguridad', label: 'Seguridad' }
+    ]
+  });
 
   // Cargar datos del participante y reclutamiento
   useEffect(() => {
@@ -130,6 +154,51 @@ export default function SesionActivaPage() {
       cargarEstadisticasEmpresa(empresa.id);
     }
   }, [empresa, participante?.tipo]);
+
+  // Cargar opciones de filtro dinámicamente desde los dolores
+  useEffect(() => {
+    if (dolores.length > 0) {
+      console.log('🔍 Cargando opciones de filtro desde dolores:', dolores.length);
+      
+      // Extraer categorías únicas
+      const categoriasUnicas = [...new Set(dolores.map(dolor => dolor.categoria_nombre).filter(Boolean))];
+      const categoriasOptions = [
+        { value: 'todos', label: 'Todas las categorías' },
+        ...categoriasUnicas.map(categoria => ({ value: categoria, label: categoria }))
+      ];
+      
+      // Extraer severidades únicas
+      const severidadesUnicas = [...new Set(dolores.map(dolor => dolor.severidad).filter(Boolean))];
+      const severidadesOptions = [
+        { value: 'todos', label: 'Todas las severidades' },
+        ...severidadesUnicas.map(severidad => ({ 
+          value: severidad, 
+          label: severidad ? severidad.charAt(0).toUpperCase() + severidad.slice(1) : 'Sin severidad'
+        }))
+      ];
+      
+      // Estados ya están definidos estáticamente
+      const estadosOptions = [
+        { value: 'todos', label: 'Todos los estados' },
+        { value: 'activo', label: 'Activo' },
+        { value: 'resuelto', label: 'Resuelto' },
+        { value: 'archivado', label: 'Archivado' }
+      ];
+      
+      console.log('🔍 Opciones de filtro generadas:', {
+        categorias: categoriasOptions,
+        severidades: severidadesOptions,
+        estados: estadosOptions
+      });
+      
+      // Actualizar las opciones de filtro dinámicamente
+      setFilterOptions({
+        estados: estadosOptions,
+        severidades: severidadesOptions,
+        categorias: categoriasOptions
+      });
+    }
+  }, [dolores]);
 
   const loadParticipantData = async () => {
     try {
@@ -524,29 +593,6 @@ export default function SesionActivaPage() {
     }
   ];
 
-  // Opciones de filtros para dolores
-  const filterOptions = {
-    estados: [
-      { value: 'todos', label: 'Todos los estados' },
-      { value: 'activo', label: 'Activo' },
-      { value: 'resuelto', label: 'Resuelto' },
-      { value: 'archivado', label: 'Archivado' }
-    ],
-    severidades: [
-      { value: 'todos', label: 'Todas las severidades' },
-      { value: 'baja', label: 'Baja' },
-      { value: 'media', label: 'Media' },
-      { value: 'alta', label: 'Alta' },
-      { value: 'critica', label: 'Crítica' }
-    ],
-    categorias: [
-      { value: 'todos', label: 'Todas las categorías' },
-      { value: 'funcional', label: 'Funcional' },
-      { value: 'usabilidad', label: 'Usabilidad' },
-      { value: 'rendimiento', label: 'Rendimiento' },
-      { value: 'seguridad', label: 'Seguridad' }
-    ]
-  };
 
   if (loading) {
     return (
