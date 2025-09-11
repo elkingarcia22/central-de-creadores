@@ -177,21 +177,25 @@ export default function SesionActivaPage() {
       console.log('🔍 Hook state transcription ANTES:', audioTranscription.state.transcription);
       console.log('🔍 Hook state segments ANTES:', audioTranscription.state.segments);
       
-      // Actualizar estados locales
+      // Actualizar estados locales usando función de actualización para evitar closure issues
       console.log('🔄 Llamando setTranscripcionCompleta con:', event.detail.transcription);
-      setTranscripcionCompleta(event.detail.transcription);
+      setTranscripcionCompleta(prev => {
+        console.log('🔍 Estado anterior transcripcionCompleta:', prev);
+        console.log('🔍 Estado nuevo transcripcionCompleta:', event.detail.transcription);
+        return event.detail.transcription;
+      });
       
       console.log('🔄 Llamando setSegmentosTranscripcion con:', event.detail.segments);
-      setSegmentosTranscripcion(event.detail.segments);
+      setSegmentosTranscripcion(prev => {
+        console.log('🔍 Estado anterior segmentosTranscripcion:', prev);
+        console.log('🔍 Estado nuevo segmentosTranscripcion:', event.detail.segments);
+        return event.detail.segments;
+      });
       
       console.log('✅ Estados actualizados en el listener');
-      console.log('🔍 Nuevo valor transcripcionCompleta:', event.detail.transcription);
-      console.log('🔍 Nuevo valor segmentosTranscripcion:', event.detail.segments);
       
       // Verificar inmediatamente después
       setTimeout(() => {
-        console.log('⏰ DESPUÉS DE 100ms - transcripcionCompleta:', transcripcionCompleta);
-        console.log('⏰ DESPUÉS DE 100ms - segmentosTranscripcion:', segmentosTranscripcion);
         console.log('⏰ DESPUÉS DE 100ms - hook transcription:', audioTranscription.state.transcription);
         console.log('⏰ DESPUÉS DE 100ms - hook segments:', audioTranscription.state.segments);
       }, 100);
@@ -227,7 +231,7 @@ export default function SesionActivaPage() {
       console.log('🔧 Removiendo event listener...');
       window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
     };
-  }, [transcripcionId, audioTranscription.state.duration]);
+  }, [transcripcionId]); // Solo transcripcionId para evitar closure issues
 
   // Debug: Verificar cambios en estados locales
   useEffect(() => {
