@@ -35,7 +35,7 @@ export const AIButton: React.FC<AIButtonProps> = ({
 
   const baseClasses = "group relative flex items-center font-medium transition-all duration-300 rounded-lg shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 overflow-hidden focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none";
   
-        const variantClasses = "bg-gradient-to-r from-purple-400 to-purple-800 border-4 border-transparent text-white hover:from-purple-300 hover:to-purple-700";
+  const variantClasses = "bg-gradient-to-r from-purple-400 to-purple-800 border-4 border-transparent text-white hover:from-purple-300 hover:to-purple-700";
   
   const sizeClass = sizeClasses[size];
   const iconSizeClass = iconSizeClasses[size];
