@@ -487,16 +487,26 @@ export default function SesionActivaPage() {
 
   const handleSaveAndViewSession = async () => {
     try {
-      // Redirigir a la vista de la sesión
-      if (participante?.id) {
-        router.push(`/participacion/${participante.id}`);
-      } else {
-        alert('❌ No se pudo obtener el ID del participante');
+      // Abrir el Meet si existe el enlace
+      if (reclutamiento?.meet_link) {
+        window.open(reclutamiento.meet_link, '_blank');
       }
       
+      // Guardar la sesión actual en localStorage para futuras referencias
+      if (participante?.id && reclutamiento?.id) {
+        localStorage.setItem('currentReclutamiento', JSON.stringify({
+          participante_id: participante.id,
+          reclutamiento_id: reclutamiento.id,
+          timestamp: new Date().toISOString()
+        }));
+      }
+      
+      // Mostrar mensaje de confirmación
+      alert('✅ Sesión iniciada y guardada. El Meet se ha abierto en una nueva pestaña.');
+      
     } catch (error) {
-      console.error('❌ Error redirigiendo:', error);
-      alert('❌ Error al redirigir. Intenta nuevamente.');
+      console.error('❌ Error iniciando sesión:', error);
+      alert('❌ Error al iniciar la sesión');
     }
   };
 
