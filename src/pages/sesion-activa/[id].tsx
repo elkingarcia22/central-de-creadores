@@ -11,7 +11,7 @@ import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, 
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
-import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
+import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText, getChipText } from '../../utils/chipUtils';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
@@ -190,10 +190,13 @@ export default function SesionActivaPage() {
 
   const loadInvestigacionesData = async () => {
     try {
+      console.log('🔍 Cargando investigaciones para participante:', id);
       const response = await fetch(`/api/participantes/${id}/investigaciones`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Datos de investigaciones recibidos:', data);
         const investigacionesArray = Array.isArray(data) ? data : [];
+        console.log('🔍 Array de investigaciones:', investigacionesArray);
         setInvestigaciones(investigacionesArray);
         
         // Calcular participaciones por mes
@@ -205,7 +208,10 @@ export default function SesionActivaPage() {
             participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
           }
         });
+        console.log('🔍 Participaciones por mes:', participacionesPorMes);
         setParticipacionesPorMes(participacionesPorMes);
+      } else {
+        console.error('🔍 Error en respuesta de investigaciones:', response.status);
       }
     } catch (error) {
       console.error('Error cargando investigaciones:', error);
@@ -572,7 +578,7 @@ export default function SesionActivaPage() {
                 variant={getEstadoChipVariant(participante.estado_participante)}
                 size="sm"
               >
-                {participante.estado_participante || 'Sin estado'}
+                {getChipText(participante.estado_participante || 'disponible')}
               </Chip>
             }
           />
@@ -646,7 +652,7 @@ export default function SesionActivaPage() {
                   variant={getEstadoChipVariant(empresa.estado_nombre || '')}
                   size="sm"
                 >
-                  {empresa.estado_nombre || 'Sin estado'}
+                  {getChipText(empresa.estado_nombre || 'disponible')}
                 </Chip>
               }
             />
