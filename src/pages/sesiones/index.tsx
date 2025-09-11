@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones } from '../../components/ui';
+import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
+import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { getChipVariant } from '../../utils/chipUtils';
 import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
@@ -26,6 +28,7 @@ const SesionesPageContent: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSesion, setSelectedSesion] = useState<Sesion | null>(null);
   const [modalActiveTab, setModalActiveTab] = useState('reclutamiento');
+  const [sesionAnalizada, setSesionAnalizada] = useState<Set<string>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sesionToDelete, setSesionToDelete] = useState<Sesion | null>(null);
   const [deletingSesion, setDeletingSesion] = useState(false);
@@ -145,6 +148,10 @@ const SesionesPageContent: React.FC = () => {
     cargarSesiones();
     cargarUsuarios();
     checkGoogleCalendarConnection();
+    
+    // Cargar sesiones analizadas desde localStorage
+    const sesionesAnalizadas = JSON.parse(localStorage.getItem('sesionesAnalizadas') || '[]');
+    setSesionAnalizada(new Set(sesionesAnalizadas));
   }, [isAuthenticated, userId]);
 
   // Efecto para cerrar la búsqueda con Escape
@@ -436,6 +443,11 @@ const SesionesPageContent: React.FC = () => {
   // Funciones para manejar filtros
   const handleFiltersChange = (newFilters: FilterValuesSesiones) => {
     setFilters(newFilters);
+  };
+
+  // Función para marcar sesión como analizada
+  const marcarSesionAnalizada = (sesionId: string) => {
+    setSesionAnalizada(prev => new Set([...prev, sesionId]));
   };
 
   // Función para iniciar sesión
@@ -1055,67 +1067,121 @@ const SesionesPageContent: React.FC = () => {
       )}
 
       {/* Modal de detalles de sesión */}
-      {showModal && selectedSesion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-foreground">
-                Detalles de la Sesión
-              </h2>
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setSelectedSesion(null);
-                }}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  {selectedSesion.investigacion_nombre}
-                </h3>
-                <p className="text-muted-foreground">
-                  {selectedSesion.titulo}
-                </p>
+      {showModal && selectedSesion && (() => {
+        const isAnalizada = sesionAnalizada.has(selectedSesion.id);
+        const participanteId = selectedSesion.participante?.id || selectedSesion.participantes?.[0]?.participante_id;
+        
+        // Tabs del modal
+        const modalTabs = [
+          {
+            id: 'detalles',
+            label: 'Detalles',
+            content: (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    {selectedSesion.investigacion_nombre}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {selectedSesion.titulo}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Fecha y Hora</p>
+                    <p className="text-sm text-muted-foreground">{formatFecha(selectedSesion.fecha_programada)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Participante</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedSesion.titulo?.split(' - ')[0] || 'Sin participante'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Estado</p>
+                    <Chip 
+                      variant={getChipVariant(selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado')}
+                      size="sm"
+                    >
+                      {selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado'}
+                    </Chip>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Duración</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedSesion.duracion_minutos ? `${Math.floor(selectedSesion.duracion_minutos / 60)}h ${selectedSesion.duracion_minutos % 60}m` : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          // Solo mostrar tabs de notas si la sesión fue analizada
+          ...(isAnalizada && participanteId ? [
+            {
+              id: 'notas-manuales',
+              label: 'Notas Manuales',
+              content: (
+                <NotasManualesContent 
+                  participanteId={participanteId}
+                  sesionId={selectedSesion.id}
+                />
+              )
+            },
+            {
+              id: 'notas-automaticas',
+              label: 'Notas Automáticas',
+              content: (
+                <NotasAutomaticasContent
+                  reclutamientoId={selectedSesion.id}
+                  isRecording={false}
+                  duracionGrabacion={0}
+                  transcripcionCompleta=""
+                  segmentosTranscripcion={[]}
+                  isProcessing={false}
+                  error={null}
+                />
+              )
+            }
+          ] : [])
+        ];
+
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-foreground">
+                  Detalles de la Sesión
+                  {isAnalizada && (
+                    <Badge variant="success" size="sm" className="ml-2">
+                      Analizada con IA
+                    </Badge>
+                  )}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedSesion(null);
+                    setModalActiveTab('detalles');
+                  }}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Fecha y Hora</p>
-                  <p className="text-sm text-muted-foreground">{formatFecha(selectedSesion.fecha_programada)}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Participante</p>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedSesion.titulo?.split(' - ')[0] || 'Sin participante'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Estado</p>
-                  <Chip 
-                    variant={getChipVariant(selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado')}
-                    size="sm"
-                  >
-                    {selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado'}
-                  </Chip>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Duración</p>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedSesion.duracion_minutos ? `${Math.floor(selectedSesion.duracion_minutos / 60)}h ${selectedSesion.duracion_minutos % 60}m` : 'N/A'}
-                  </p>
-                </div>
-              </div>
+              <Tabs
+                tabs={modalTabs}
+                activeTab={modalActiveTab}
+                onTabChange={setModalActiveTab}
+              />
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Modal de edición de reclutamiento */}
       {sesionToEdit && (() => {

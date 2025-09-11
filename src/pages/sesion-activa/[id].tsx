@@ -846,12 +846,17 @@ export default function SesionActivaPage() {
         }));
       }
       
-      // Redirigir a la página de sesión activa
-      if (participante?.id) {
-        router.push(`/sesion-activa/${participante.id}`);
-      } else {
-        alert('❌ No se pudo obtener el ID del participante para redirigir');
+      // Marcar sesión como analizada en localStorage
+      if (reclutamiento?.id) {
+        const sesionesAnalizadas = JSON.parse(localStorage.getItem('sesionesAnalizadas') || '[]');
+        if (!sesionesAnalizadas.includes(reclutamiento.id)) {
+          sesionesAnalizadas.push(reclutamiento.id);
+          localStorage.setItem('sesionesAnalizadas', JSON.stringify(sesionesAnalizadas));
+        }
       }
+      
+      // Redirigir a la página de sesiones
+      router.push('/sesiones');
       
     } catch (error) {
       console.error('❌ Error iniciando sesión:', error);
