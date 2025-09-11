@@ -152,7 +152,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           {/* Mostrar transcripción en tiempo real si está disponible */}
           {transcripcionCompleta && (
             <div className="mt-4">
-              <Typography variant="h6" weight="medium" className="mb-2">
+              <Typography variant="h6" weight="medium" className="mb-2 text-gray-800 dark:text-gray-200">
                 Transcripción en tiempo real:
               </Typography>
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border">
@@ -194,7 +194,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
         <Card variant="elevated" padding="lg">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Typography variant="h4" weight="semibold">
+              <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
                 Transcripción Actual
               </Typography>
               <Badge variant="success" size="sm">
@@ -213,7 +213,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
             {/* Segmentos de transcripción */}
             {segmentosTranscripcion && segmentosTranscripcion.length > 0 && (
               <div className="space-y-3">
-                <Typography variant="h5" weight="medium">
+                <Typography variant="h5" weight="medium" className="text-gray-800 dark:text-gray-200">
                   Segmentos de Audio
                 </Typography>
                 <div className="space-y-2">
@@ -242,7 +242,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
       {/* Lista de transcripciones */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Typography variant="h4" weight="semibold">
+          <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
             Transcripciones de la Sesión
           </Typography>
           <Button
@@ -285,7 +285,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
                   <div className="flex items-center gap-3">
                     <MicIcon className="w-5 h-5 text-gray-500" />
                     <div>
-                      <Typography variant="h5" weight="medium">
+                      <Typography variant="h5" weight="medium" className="text-gray-800 dark:text-gray-200">
                         Transcripción #{transcripcion.id.slice(-8)}
                       </Typography>
                       <div className="flex items-center gap-4 mt-1">
@@ -328,7 +328,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
         <Card variant="elevated" padding="lg">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Typography variant="h4" weight="semibold">
+              <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
                 Contenido de la Transcripción
               </Typography>
               <Badge variant={getEstadoVariant(selectedTranscripcion.estado)} size="sm">
@@ -354,7 +354,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
             {selectedTranscripcion.transcripcion_por_segmentos && 
              selectedTranscripcion.transcripcion_por_segmentos.length > 0 && (
               <div className="space-y-3">
-                <Typography variant="h5" weight="medium">
+                <Typography variant="h5" weight="medium" className="text-gray-800 dark:text-gray-200">
                   Segmentos de Audio
                 </Typography>
                 <div className="space-y-2">

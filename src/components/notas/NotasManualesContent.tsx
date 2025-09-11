@@ -178,16 +178,16 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <Typography variant="h3" className="text-gray-900">
+          <Typography variant="h4" weight="semibold" className="text-gray-900 dark:text-gray-100">
             Notas Manuales
           </Typography>
-          <Typography variant="body2" className="text-gray-600 mt-1">
+          <Typography variant="body2" className="text-gray-600 dark:text-gray-400 mt-1">
             Escribe tus notas durante la sesión. Presiona Enter para guardar y continuar escribiendo.
           </Typography>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
+        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <MessageIcon className="w-4 h-4" />
           <span>{notas.length} notas</span>
         </div>
@@ -203,7 +203,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               onChange={(e) => setNuevaNota(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
-              className="border-0 focus:ring-0 text-base placeholder-gray-400"
+              className="border-0 focus:ring-0 text-base placeholder-gray-400 dark:placeholder-gray-500"
               disabled={cargando}
             />
           </div>
@@ -267,7 +267,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <Typography variant="body1" className="text-gray-900 leading-relaxed">
+                    <Typography variant="body1" className="text-gray-900 dark:text-gray-100 leading-relaxed">
                       {nota.contenido}
                     </Typography>
                     <div className="flex items-center space-x-2 ml-4">
@@ -289,7 +289,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       </Button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                     <div className="flex items-center space-x-1">
                       <ClockIcon className="w-4 h-4" />
                       <span>{formatearFecha(nota.fecha_creacion)}</span>
