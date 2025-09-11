@@ -116,7 +116,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })}
       </nav>
 
-      <div className={`py-2 border-t border-slate-100 dark:border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-3 delay-0'}`}>
+      <div className={`py-2 border-t border-zinc-700 space-y-2 transition-all duration-200 ease-out overflow-hidden ${isExpanded ? 'px-2 delay-50' : 'px-3 delay-0'}`}>
         {/* Elementos de utilidad */}
         {utilityItems.map((item) => {
           const navItem = (
@@ -184,7 +184,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               isCollapsed={!isExpanded}
               onClick={onLogout}
               asButton={true}
-              className="text-red-500 hover:text-red-600"
             />
           );
 
