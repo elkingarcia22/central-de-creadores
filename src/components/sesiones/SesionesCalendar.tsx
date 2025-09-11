@@ -259,10 +259,89 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     // Aquí puedes implementar la lógica de exportación
   }, []);
 
-  const handleSideModalIniciar = useCallback((sesion: SesionEvent) => {
-    console.log('Iniciar sesión:', sesion.id);
-    // Aquí puedes implementar la lógica de iniciar sesión
-    // Por ejemplo, cambiar el estado a "en_curso" o abrir la sesión
+  const handleSideModalIniciar = useCallback(async (sesion: SesionEvent) => {
+    try {
+      console.log('🎯 Iniciando sesión desde SideModal:', sesion.id);
+      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
+      
+      // Si la sesión tiene enlace de Meet, abrirlo
+      if (sesion.meet_link) {
+        console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
+        
+        // Guardar información del reclutamiento en localStorage para el detector global
+        const reclutamientoData = {
+          id: sesion.id,
+          meet_link: sesion.meet_link,
+          titulo: sesion.titulo,
+          fecha: sesion.start
+        };
+        localStorage.setItem('currentReclutamiento', JSON.stringify(reclutamientoData));
+        console.log('💾 Información del reclutamiento guardada en localStorage:', reclutamientoData);
+        
+        // Abrir Meet en nueva pestaña
+        window.open(sesion.meet_link, '_blank');
+        
+        // Redirigir a la página de sesión activa
+        // Intentar obtener el ID del participante de diferentes formas
+        let participanteId = null;
+        
+        // 1. Del objeto participante
+        if (sesion.participante?.id) {
+          participanteId = sesion.participante.id;
+        }
+        // 2. De los campos directos de participantes
+        else if (sesion.participantes_id) {
+          participanteId = sesion.participantes_id;
+        }
+        else if (sesion.participantes_internos_id) {
+          participanteId = sesion.participantes_internos_id;
+        }
+        else if (sesion.participantes_friend_family_id) {
+          participanteId = sesion.participantes_friend_family_id;
+        }
+        // 3. Del array de participantes (tomar el primero)
+        else if (sesion.participantes && sesion.participantes.length > 0) {
+          participanteId = sesion.participantes[0].participante_id;
+        }
+        
+        console.log('🔍 Debug - Intentando obtener participanteId:', {
+          'sesion.participante?.id': sesion.participante?.id,
+          'sesion.participantes_id': sesion.participantes_id,
+          'sesion.participantes_internos_id': sesion.participantes_internos_id,
+          'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
+          'sesion.participantes[0]?.participante_id': sesion.participantes?.[0]?.participante_id,
+          'participanteId final': participanteId
+        });
+        
+        if (participanteId) {
+          console.log('🚀 Redirigiendo a sesión activa para participante:', participanteId);
+          // Usar router.push para redirigir
+          if (typeof window !== 'undefined') {
+            window.location.href = `/sesion-activa/${participanteId}`;
+          }
+        } else {
+          console.log('❌ No se puede redirigir: No hay ID de participante');
+          console.log('🔍 Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
+          // Mostrar error usando toast si está disponible
+          if (typeof window !== 'undefined' && window.alert) {
+            alert('No se pudo encontrar el ID del participante');
+          }
+        }
+        
+      } else {
+        // Si no hay enlace de Meet, solo mostrar mensaje
+        console.log('⚠️ No hay enlace de Meet en la sesión');
+        if (typeof window !== 'undefined' && window.alert) {
+          alert('Esta sesión no tiene enlace de Meet configurado');
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error iniciando sesión:', error);
+      if (typeof window !== 'undefined' && window.alert) {
+        alert('Error al iniciar la sesión');
+      }
+    }
   }, []);
 
   // Funciones wrapper para convertir CalendarEvent a SesionEvent
