@@ -28,7 +28,6 @@ const SesionesPageContent: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSesion, setSelectedSesion] = useState<Sesion | null>(null);
   const [modalActiveTab, setModalActiveTab] = useState('reclutamiento');
-  const [sesionAnalizada, setSesionAnalizada] = useState<Set<string>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sesionToDelete, setSesionToDelete] = useState<Sesion | null>(null);
   const [deletingSesion, setDeletingSesion] = useState(false);
@@ -149,9 +148,6 @@ const SesionesPageContent: React.FC = () => {
     cargarUsuarios();
     checkGoogleCalendarConnection();
     
-    // Cargar sesiones analizadas desde localStorage
-    const sesionesAnalizadas = JSON.parse(localStorage.getItem('sesionesAnalizadas') || '[]');
-    setSesionAnalizada(new Set(sesionesAnalizadas));
   }, [isAuthenticated, userId]);
 
   // Efecto para cerrar la búsqueda con Escape
@@ -445,10 +441,6 @@ const SesionesPageContent: React.FC = () => {
     setFilters(newFilters);
   };
 
-  // Función para marcar sesión como analizada
-  const marcarSesionAnalizada = (sesionId: string) => {
-    setSesionAnalizada(prev => new Set([...prev, sesionId]));
-  };
 
   // Función para iniciar sesión
   const handleIniciarSesion = async (sesion: SesionEvent) => {
@@ -1068,7 +1060,6 @@ const SesionesPageContent: React.FC = () => {
 
       {/* Modal de detalles de sesión */}
       {showModal && selectedSesion && (() => {
-        const isAnalizada = sesionAnalizada.has(selectedSesion.id);
         const participanteId = selectedSesion.participante?.id || selectedSesion.participantes?.[0]?.participante_id;
         
         // Tabs del modal
@@ -1117,8 +1108,8 @@ const SesionesPageContent: React.FC = () => {
               </div>
             )
           },
-          // Solo mostrar tabs de notas si la sesión fue analizada
-          ...(isAnalizada && participanteId ? [
+          // Mostrar tabs de notas siempre si hay participante
+          ...(participanteId ? [
             {
               id: 'notas-manuales',
               label: 'Notas Manuales',
@@ -1153,11 +1144,6 @@ const SesionesPageContent: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-foreground">
                   Detalles de la Sesión
-                  {isAnalizada && (
-                    <Badge variant="success" size="sm" className="ml-2">
-                      Analizada con IA
-                    </Badge>
-                  )}
                 </h2>
                 <button
                   onClick={() => {

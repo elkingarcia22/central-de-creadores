@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, EmptyState, Badge } from '../ui';
-import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon } from '../icons';
+import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon, TrashIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 
 interface NotasAutomaticasContentProps {
@@ -72,6 +72,31 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
       console.error('Error cargando transcripciones:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const eliminarTranscripcion = async (transcripcionId: string) => {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta transcripción?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setTranscripciones(prev => prev.filter(t => t.id !== transcripcionId));
+        if (selectedTranscripcion?.id === transcripcionId) {
+          setSelectedTranscripcion(null);
+        }
+      } else {
+        console.error('Error eliminando transcripción:', response.statusText);
+        alert('Error al eliminar la transcripción');
+      }
+    } catch (error) {
+      console.error('Error eliminando transcripción:', error);
+      alert('Error al eliminar la transcripción');
     }
   };
 
@@ -307,9 +332,22 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
                       </div>
                     </div>
                   </div>
-                  <Badge variant={getEstadoVariant(transcripcion.estado)} size="sm">
-                    {getEstadoText(transcripcion.estado)}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={getEstadoVariant(transcripcion.estado)} size="sm">
+                      {getEstadoText(transcripcion.estado)}
+                    </Badge>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        eliminarTranscripcion(transcripcion.id);
+                      }}
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}

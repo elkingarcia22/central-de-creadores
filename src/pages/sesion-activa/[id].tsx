@@ -846,15 +846,6 @@ export default function SesionActivaPage() {
         }));
       }
       
-      // Marcar sesión como analizada en localStorage
-      if (reclutamiento?.id) {
-        const sesionesAnalizadas = JSON.parse(localStorage.getItem('sesionesAnalizadas') || '[]');
-        if (!sesionesAnalizadas.includes(reclutamiento.id)) {
-          sesionesAnalizadas.push(reclutamiento.id);
-          localStorage.setItem('sesionesAnalizadas', JSON.stringify(sesionesAnalizadas));
-        }
-      }
-      
       // Redirigir a la página de sesiones
       router.push('/sesiones');
       
