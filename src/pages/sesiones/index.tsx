@@ -463,11 +463,20 @@ const SesionesPageContent: React.FC = () => {
         
         // Redirigir a la página de sesión activa
         const participanteId = sesion.participante?.id || sesion.participantes_id || sesion.participantes_internos_id || sesion.participantes_friend_family_id;
+        console.log('🔍 Debug - Intentando obtener participanteId:', {
+          'sesion.participante?.id': sesion.participante?.id,
+          'sesion.participantes_id': sesion.participantes_id,
+          'sesion.participantes_internos_id': sesion.participantes_internos_id,
+          'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
+          'participanteId final': participanteId
+        });
+        
         if (participanteId) {
           console.log('🚀 Redirigiendo a sesión activa para participante:', participanteId);
           router.push(`/sesion-activa/${participanteId}`);
         } else {
           console.log('❌ No se puede redirigir: No hay ID de participante');
+          console.log('🔍 Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
           showError('No se pudo encontrar el ID del participante');
         }
         
