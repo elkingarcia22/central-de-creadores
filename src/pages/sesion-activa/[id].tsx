@@ -358,28 +358,46 @@ export default function SesionActivaPage() {
 
   return (
     <Layout>
-      <PageHeader
-        title="Sesión Activa"
-        subtitle={`Participante: ${participante.nombre}`}
-      />
+      <div className="py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBackToSessions}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title="Sesión Activa"
+              variant="compact"
+              color="blue"
+              className="mb-0"
+              chip={{
+                label: `Participante: ${participante.nombre}`,
+                variant: "secondary",
+                size: 'sm'
+              }}
+            />
+          </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <Button onClick={handleBackToSessions} variant="secondary" className="flex items-center gap-2">
-          <ArrowLeftIcon className="w-4 h-4" />
-          Volver a Sesiones
-        </Button>
-        <Button onClick={handleSaveAndViewSession} variant="primary" className="flex items-center gap-2">
-          <EyeIcon className="w-4 h-4" />
-          Ver Participación
-        </Button>
-      </div>
+          {/* Acciones principales */}
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={handleSaveAndViewSession} variant="primary" className="flex items-center gap-2">
+              <CheckIcon className="w-4 h-4" />
+              Guardar y Analizar
+            </Button>
+          </div>
+        </div>
 
-      <div className="space-y-6">
-        <Tabs
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        {/* Tabs */}
+        <div className="space-y-6">
+          <Tabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </div>
       </div>
     </Layout>
   );
