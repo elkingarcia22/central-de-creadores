@@ -8,7 +8,7 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import { SideModal, Input, Textarea, Select, ConfirmModal, EmptyState } from '../../components/ui';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -374,8 +374,8 @@ export default function SesionActivaPage() {
               color="blue"
               className="mb-0"
               chip={{
-                label: `Participante: ${participante.nombre}`,
-                variant: "secondary",
+                label: participante.nombre,
+                variant: getTipoParticipanteVariant(participante.tipo),
                 size: 'sm'
               }}
             />
@@ -383,9 +383,12 @@ export default function SesionActivaPage() {
 
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
-            <Button onClick={handleSaveAndViewSession} variant="primary" className="flex items-center gap-2">
-              <CheckIcon className="w-4 h-4" />
-              Guardar y Analizar
+            <Button 
+              onClick={handleSaveAndViewSession} 
+              className="flex items-center gap-2 bg-white border-2 border-blue-500 text-gray-800 hover:bg-blue-50 hover:border-blue-600 transition-all duration-200 rounded-full px-4 py-2 font-medium"
+            >
+              <AIIcon className="w-4 h-4 text-blue-500" />
+              Guardar y Analizar con IA
             </Button>
           </div>
         </div>
