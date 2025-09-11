@@ -846,8 +846,13 @@ export default function SesionActivaPage() {
         }));
       }
       
-      // Redirigir a la página de sesiones
-      router.push('/sesiones');
+      // Redirigir a la vista de la sesión (vista completa con tabs)
+      if (participante?.id && reclutamiento?.id) {
+        router.push(`/participacion/${participante.id}?reclutamiento_id=${reclutamiento.id}`);
+      } else {
+        // Fallback a la página de sesiones si no hay datos suficientes
+        router.push('/sesiones');
+      }
       
     } catch (error) {
       console.error('❌ Error iniciando sesión:', error);
