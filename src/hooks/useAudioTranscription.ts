@@ -189,22 +189,34 @@ export const useAudioTranscription = (): UseAudioTranscriptionReturn => {
       console.log('✅ Resultado de transcripción:', result);
       
       // Actualizar transcripción en tiempo real
-      setState(prev => ({
-        ...prev,
-        transcription: result.transcription || '',
-        segments: result.segments || [],
-        isProcessing: false
-      }));
+      console.log('🔄 HOOK: Actualizando estado con transcripción:', result.transcription);
+      console.log('🔄 HOOK: Actualizando estado con segmentos:', result.segments);
+      
+      setState(prev => {
+        const newState = {
+          ...prev,
+          transcription: result.transcription || '',
+          segments: result.segments || [],
+          isProcessing: false
+        };
+        console.log('🔄 HOOK: Estado anterior:', prev);
+        console.log('🔄 HOOK: Estado nuevo:', newState);
+        return newState;
+      });
 
-      console.log('✅ Transcripción completada y guardada en estado');
+      console.log('✅ HOOK: Transcripción completada y guardada en estado');
       
       // Disparar evento personalizado para notificar a otros componentes
+      const eventDetail = {
+        transcription: result.transcription || '',
+        segments: result.segments || []
+      };
+      
+      console.log('📡 HOOK: Disparando evento transcriptionCompleted con:', eventDetail);
       window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
-        detail: {
-          transcription: result.transcription || '',
-          segments: result.segments || []
-        }
+        detail: eventDetail
       }));
+      console.log('📡 HOOK: Evento disparado exitosamente');
 
     } catch (error) {
       console.error('❌ Error en transcripción:', error);

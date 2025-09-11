@@ -167,18 +167,34 @@ export default function SesionActivaPage() {
 
   // Listener para transcripción completada
   useEffect(() => {
+    console.log('🔧 Configurando listener de transcripción...');
+    
     const handleTranscriptionCompleted = async (event: any) => {
-      console.log('🎉 Transcripción completada recibida:', event.detail);
-      console.log('🔍 Estado actual transcripcionCompleta:', transcripcionCompleta);
-      console.log('🔍 Estado actual segmentosTranscripcion:', segmentosTranscripcion);
+      console.log('🎉 TRANSCRIPCIÓN COMPLETADA - INICIO DEL LISTENER');
+      console.log('🎉 Event detail completo:', JSON.stringify(event.detail, null, 2));
+      console.log('🔍 Estado actual transcripcionCompleta ANTES:', transcripcionCompleta);
+      console.log('🔍 Estado actual segmentosTranscripcion ANTES:', segmentosTranscripcion);
+      console.log('🔍 Hook state transcription ANTES:', audioTranscription.state.transcription);
+      console.log('🔍 Hook state segments ANTES:', audioTranscription.state.segments);
       
       // Actualizar estados locales
+      console.log('🔄 Llamando setTranscripcionCompleta con:', event.detail.transcription);
       setTranscripcionCompleta(event.detail.transcription);
+      
+      console.log('🔄 Llamando setSegmentosTranscripcion con:', event.detail.segments);
       setSegmentosTranscripcion(event.detail.segments);
       
       console.log('✅ Estados actualizados en el listener');
       console.log('🔍 Nuevo valor transcripcionCompleta:', event.detail.transcription);
       console.log('🔍 Nuevo valor segmentosTranscripcion:', event.detail.segments);
+      
+      // Verificar inmediatamente después
+      setTimeout(() => {
+        console.log('⏰ DESPUÉS DE 100ms - transcripcionCompleta:', transcripcionCompleta);
+        console.log('⏰ DESPUÉS DE 100ms - segmentosTranscripcion:', segmentosTranscripcion);
+        console.log('⏰ DESPUÉS DE 100ms - hook transcription:', audioTranscription.state.transcription);
+        console.log('⏰ DESPUÉS DE 100ms - hook segments:', audioTranscription.state.segments);
+      }, 100);
       
       // Guardar en la base de datos
       if (transcripcionId && event.detail.transcription) {
@@ -204,9 +220,11 @@ export default function SesionActivaPage() {
       }
     };
 
+    console.log('🔧 Agregando event listener...');
     window.addEventListener('transcriptionCompleted', handleTranscriptionCompleted);
 
     return () => {
+      console.log('🔧 Removiendo event listener...');
       window.removeEventListener('transcriptionCompleted', handleTranscriptionCompleted);
     };
   }, [transcripcionId, audioTranscription.state.duration]);
