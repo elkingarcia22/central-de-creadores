@@ -1615,7 +1615,7 @@ export default function SesionActivaPage() {
           <div className="flex flex-wrap gap-3">
             <Button 
               onClick={handleToggleRecording}
-              variant={isRecording ? "destructive" : "secondary"}
+              variant={isRecording ? "destructive" : "outline"}
               size="md"
               className="flex items-center gap-2"
             >
@@ -1626,7 +1626,7 @@ export default function SesionActivaPage() {
                 </>
               ) : (
                 <>
-                  <div className="w-2 h-2 bg-current rounded-full"></div>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                   Grabar
                 </>
               )}
