@@ -492,6 +492,42 @@ export default function SesionActivaPage() {
         window.open(reclutamiento.meet_link, '_blank');
       }
       
+      // Actualizar el estado del reclutamiento a "En progreso"
+      if (reclutamiento?.investigacion_id) {
+        try {
+          // Primero obtener el ID del estado "En progreso"
+          const estadosResponse = await fetch('/api/estados-reclutamiento');
+          const estadosData = await estadosResponse.json();
+          
+          const estadoEnProgreso = estadosData.estados?.find((estado: any) => 
+            estado.nombre?.toLowerCase().includes('progreso') || 
+            estado.nombre?.toLowerCase().includes('activa') ||
+            estado.nombre?.toLowerCase().includes('iniciada')
+          );
+          
+          if (estadoEnProgreso) {
+            const updateResponse = await fetch('/api/actualizar-estado-reclutamiento', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                investigacion_id: reclutamiento.investigacion_id,
+                estado_reclutamiento_id: estadoEnProgreso.id
+              }),
+            });
+            
+            if (updateResponse.ok) {
+              console.log('✅ Estado del reclutamiento actualizado a "En progreso"');
+            } else {
+              console.error('❌ Error actualizando estado del reclutamiento');
+            }
+          }
+        } catch (updateError) {
+          console.error('❌ Error actualizando estado:', updateError);
+        }
+      }
+      
       // Guardar la sesión actual en localStorage para futuras referencias
       if (participante?.id && reclutamiento?.id) {
         localStorage.setItem('currentReclutamiento', JSON.stringify({
