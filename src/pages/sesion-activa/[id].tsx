@@ -18,6 +18,7 @@ import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import FilterDrawer from '../../components/ui/FilterDrawer';
+import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -152,6 +153,13 @@ export default function SesionActivaPage() {
       loadParticipantData();
     }
   }, [id]);
+
+  // Cargar transcripciones cuando se carga el reclutamiento
+  useEffect(() => {
+    if (reclutamiento?.id) {
+      loadTranscripciones();
+    }
+  }, [reclutamiento?.id]);
 
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
@@ -577,6 +585,28 @@ export default function SesionActivaPage() {
       
     } catch (error) {
       console.error('Error al detener grabación:', error);
+    }
+  };
+
+  // Función para cargar transcripciones existentes
+  const loadTranscripciones = async () => {
+    if (!reclutamiento?.id) return;
+    
+    try {
+      const response = await fetch(`/api/transcripciones?reclutamiento_id=${reclutamiento.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📝 Transcripciones cargadas:', data);
+        
+        // Si hay transcripciones, cargar la más reciente
+        if (data.length > 0) {
+          const ultimaTranscripcion = data[0];
+          setTranscripcionCompleta(ultimaTranscripcion.transcripcion_completa || '');
+          setSegmentosTranscripcion(ultimaTranscripcion.transcripcion_por_segmentos || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error cargando transcripciones:', error);
     }
   };
 
@@ -1581,6 +1611,19 @@ export default function SesionActivaPage() {
           participanteId={id as string}
           participanteNombre={participante?.nombre || ''}
           usuarios={usuarios}
+        />
+      )
+    },
+    {
+      id: 'notas-automaticas',
+      label: 'Notas Automáticas',
+      content: (
+        <NotasAutomaticasContent
+          reclutamientoId={reclutamiento?.id}
+          isRecording={isRecording}
+          duracionGrabacion={duracionGrabacion}
+          transcripcionCompleta={transcripcionCompleta}
+          segmentosTranscripcion={segmentosTranscripcion}
         />
       )
     }
