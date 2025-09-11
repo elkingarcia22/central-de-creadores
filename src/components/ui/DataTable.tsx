@@ -395,6 +395,7 @@ const DataTable: React.FC<DataTableProps> = ({
                       {/* Celdas de datos */}
                       {columns.map(column => {
                         const value = getNestedValue(row, column.key);
+                        console.log('🔍 DataTable - Renderizando celda:', column.key, 'value:', value, 'row:', row);
                         
                         return (
                           <td key={column.key} className={`px-4 py-3 text-sm text-foreground ${column.width || ''}`}>

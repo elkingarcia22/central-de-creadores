@@ -158,6 +158,14 @@ export default function SesionActivaPage() {
     }
   }, [empresa, participante?.tipo]);
 
+  // Cargar datos de empresa cuando el participante cambie
+  useEffect(() => {
+    if (participante && participante.tipo === 'externo') {
+      console.log('🔍 useEffect - Cargando empresa para participante externo:', participante.id);
+      loadEmpresaData();
+    }
+  }, [participante]);
+
   // Cargar opciones de filtro dinámicamente desde los dolores
   useEffect(() => {
     console.log('🔍 useEffect dolores ejecutándose, dolores.length:', dolores.length);
@@ -252,7 +260,6 @@ export default function SesionActivaPage() {
 
       // Cargar datos adicionales para los nuevos tabs
       await Promise.all([
-        loadEmpresaData(),
         loadDoloresData(),
         loadUsuariosData(),
         loadInvestigacionesData()
