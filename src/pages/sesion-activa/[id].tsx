@@ -130,10 +130,18 @@ export default function SesionActivaPage() {
       }
 
       // Cargar datos del reclutamiento actual
+      console.log('🔍 Cargando reclutamiento para participante:', id);
       const reclutamientoResponse = await fetch(`/api/participantes/${id}/reclutamiento-actual`);
       if (reclutamientoResponse.ok) {
-        const reclutamientoData = await reclutamientoResponse.json();
+        const data = await reclutamientoResponse.json();
+        console.log('🔍 Datos de reclutamiento recibidos:', data);
+        
+        // La API devuelve { reclutamiento: {...} }
+        const reclutamientoData = data.reclutamiento || data;
+        console.log('🔍 Reclutamiento procesado:', reclutamientoData);
         setReclutamiento(reclutamientoData);
+      } else {
+        console.error('🔍 Error en respuesta de reclutamiento:', reclutamientoResponse.status);
       }
 
       // Cargar datos adicionales para los nuevos tabs
