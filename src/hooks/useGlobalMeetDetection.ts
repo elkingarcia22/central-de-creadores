@@ -65,7 +65,12 @@ export const useGlobalMeetDetection = () => {
           
           // Detener transcripción si no hay más sesiones activas
           if (activeMeetSessionsRef.current.size === 0 && transcriptionState.isRecording) {
+            console.log('🛑 Deteniendo transcripción - no hay más sesiones activas');
             stopTranscription();
+            
+            // Limpiar localStorage
+            localStorage.removeItem('currentReclutamiento');
+            console.log('🧹 localStorage limpiado');
           }
         });
         

@@ -9,20 +9,41 @@ import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
 import { useGlobalTranscription } from '../../contexts/GlobalTranscriptionContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
+import SesionesWithTranscription from '../../components/sesiones/SesionesWithTranscription';
 import { useFastUser } from '../../contexts/FastUserContext';
 
-const SesionesPage: NextPage = () => {
+// Componente que maneja el contexto de transcripción
+const SesionesWithTranscriptionContext: React.FC = () => {
+  let globalTranscription = null;
+  try {
+    globalTranscription = useGlobalTranscription();
+    console.log('✅✅✅ SESIONES WITH CONTEXT - CONTEXTO OBTENIDO:', globalTranscription);
+    console.log('🎯 CONTEXTO DISPONIBLE - FUNCIONES:', {
+      startTranscription: typeof globalTranscription?.startTranscription,
+      stopTranscription: typeof globalTranscription?.stopTranscription,
+      transcriptionState: globalTranscription?.transcriptionState
+    });
+  } catch (error) {
+    console.warn('❌❌❌ SESIONES WITH CONTEXT - CONTEXTO NO DISPONIBLE:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando transcripción...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return <SesionesPageContent globalTranscription={globalTranscription} />;
+};
+
+const SesionesPageContent: React.FC<{ globalTranscription: any }> = ({ globalTranscription }) => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
   
-  // Hook para acceso al contexto global de transcripción
-  let globalTranscription = null;
-  try {
-    globalTranscription = useGlobalTranscription();
-  } catch (error) {
-    console.warn('GlobalTranscriptionContext no está disponible:', error);
-  }
+  console.log('🔍 SesionesPageContent - Usando globalTranscription:', globalTranscription);
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
@@ -282,18 +303,44 @@ const SesionesPage: NextPage = () => {
   };
 
   // Función para manejar "Ver más" - navegar a vista específica de la sesión
-  const handleVerMas = (sesion: Sesion) => {
+  const handleVerMas = (sesion: SesionEvent) => {
     console.log('🚀 [CORRECCIÓN APLICADA] handleVerMas ejecutándose');
     console.log('🚀 [CORRECCIÓN APLICADA] Sesión recibida:', sesion);
+    console.log('🚀 [CORRECCIÓN APLICADA] Participante completo:', sesion.participante);
+    console.log('🚀 [CORRECCIÓN APLICADA] Tipo participante:', sesion.tipo_participante);
     
     // Obtener el ID del participante desde los datos de la sesión
-    const participanteId = sesion.participante?.id;
+    let participanteId = sesion.participante?.id;
+    
+    // Si no hay participante en el objeto, intentar obtenerlo de los campos directos
+    if (!participanteId) {
+      console.log('🔍 [DEBUG] Participante no encontrado en objeto, buscando en campos directos...');
+      
+      // Buscar en los campos directos del reclutamiento
+      if (sesion.participantes_id) {
+        participanteId = sesion.participantes_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_id:', participanteId);
+      } else if (sesion.participantes_internos_id) {
+        participanteId = sesion.participantes_internos_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_internos_id:', participanteId);
+      } else if (sesion.participantes_friend_family_id) {
+        participanteId = sesion.participantes_friend_family_id;
+        console.log('🔍 [DEBUG] Encontrado en participantes_friend_family_id:', participanteId);
+      }
+    }
     
     console.log('🚀 [CORRECCIÓN APLICADA] ID del participante extraído:', participanteId);
     console.log('🚀 [CORRECCIÓN APLICADA] ID de reclutamiento:', sesion.id);
     
     if (!participanteId) {
       console.error('❌ No se encontró ID del participante en la sesión:', sesion);
+      console.error('❌ Campos disponibles:', {
+        participante: sesion.participante,
+        participantes_id: sesion.participantes_id,
+        participantes_internos_id: sesion.participantes_internos_id,
+        participantes_friend_family_id: sesion.participantes_friend_family_id,
+        tipo_participante: sesion.tipo_participante
+      });
       showError('Error: No se pudo obtener la información del participante');
       return;
     }
@@ -423,25 +470,39 @@ const SesionesPage: NextPage = () => {
   const handleIniciarSesion = async (sesion: SesionEvent) => {
     try {
       console.log('🎯 Iniciando sesión:', sesion.id);
+      console.log('🔍 Debug - globalTranscription:', globalTranscription);
+      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
       
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
         console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
         
+        // Guardar información del reclutamiento en localStorage para el detector global
+        const reclutamientoData = {
+          id: sesion.id,
+          meet_link: sesion.meet_link,
+          titulo: sesion.titulo,
+          fecha: sesion.start
+        };
+        localStorage.setItem('currentReclutamiento', JSON.stringify(reclutamientoData));
+        console.log('💾 Información del reclutamiento guardada en localStorage:', reclutamientoData);
+        
         // Abrir Meet en nueva pestaña
         window.open(sesion.meet_link, '_blank');
         
-        // Iniciar transcripción automáticamente después de un breve delay
-        setTimeout(() => {
-          if (globalTranscription && !globalTranscription.transcriptionState?.isRecording) {
-            console.log('🎤 Iniciando transcripción automática...');
-            globalTranscription.startTranscription(sesion.id, sesion.meet_link);
-            showSuccess('🎤 Transcripción automática iniciada!');
-          }
-        }, 2000);
+        // Redirigir a la página de sesión activa
+        const participanteId = sesion.participante?.id || sesion.participantes_id || sesion.participantes_internos_id || sesion.participantes_friend_family_id;
+        if (participanteId) {
+          console.log('🚀 Redirigiendo a sesión activa para participante:', participanteId);
+          router.push(`/sesion-activa/${participanteId}`);
+        } else {
+          console.log('❌ No se puede redirigir: No hay ID de participante');
+          showError('No se pudo encontrar el ID del participante');
+        }
         
       } else {
         // Si no hay enlace de Meet, solo mostrar mensaje
+        console.log('⚠️ No hay enlace de Meet en la sesión');
         showWarning('Esta sesión no tiene enlace de Meet configurado');
       }
       
@@ -614,7 +675,7 @@ const SesionesPage: NextPage = () => {
   };
 
   return (
-    <Layout>
+    <>
       <div className="py-8">
         {/* Header */}
         <PageHeader
@@ -968,7 +1029,6 @@ const SesionesPage: NextPage = () => {
           )}
 
         </div>
-      </div>
 
       {/* Modal de confirmación para eliminar sesión */}
       {showDeleteModal && sesionToDelete && (
@@ -1088,13 +1148,11 @@ const SesionesPage: NextPage = () => {
           responsable_pre_cargado: sesionToEdit.reclutador ? {
             id: sesionToEdit.reclutador.id,
             full_name: sesionToEdit.reclutador.full_name || sesionToEdit.reclutador.email || '',
-            email: sesionToEdit.reclutador.email || '',
-            avatar_url: sesionToEdit.reclutador.avatar_url || ''
+            email: sesionToEdit.reclutador.email || ''
           } : (sesionToEdit.reclutador_id ? {
             id: sesionToEdit.reclutador_id,
             full_name: 'Usuario',
-            email: '',
-            avatar_url: ''
+            email: ''
           } : null),
           // Agregar información adicional para el modal
           participante: sesionToEdit.participante,
@@ -1148,6 +1206,18 @@ const SesionesPage: NextPage = () => {
           usuarios: usuarios
         }}
       />
+      </div>
+    </>
+  );
+};
+
+const SesionesPage: NextPage = () => {
+  console.log('🚀🚀🚀 SESIONES PAGE - COMPONENTE PRINCIPAL INICIANDO 🚀🚀🚀');
+  
+  // Renderizar el componente que maneja el contexto
+  return (
+    <Layout>
+      <SesionesWithTranscriptionContext />
     </Layout>
   );
 };

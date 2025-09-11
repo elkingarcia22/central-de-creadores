@@ -52,6 +52,8 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
     currentReclutamientoId: null,
     currentMeetLink: null
   });
+  
+  const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -103,6 +105,14 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
       recognitionRef.current.onerror = (event) => {
         console.error('Error en reconocimiento de voz:', event.error);
         showError(`Error en transcripción: ${event.error}`);
+        
+        // Si es un error crítico, detener la transcripción
+        if (event.error === 'aborted' || event.error === 'network' || event.error === 'not-allowed') {
+          console.log('🛑 Error crítico detectado, deteniendo transcripción automáticamente');
+          setTimeout(() => {
+            stopTranscription();
+          }, 1000);
+        }
       };
       
       recognitionRef.current.onend = () => {
@@ -125,14 +135,20 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
 
   const startTranscription = async (reclutamientoId: string, meetLink: string) => {
     try {
+      console.log('🚀 [DEBUG] startTranscription llamado con:', { reclutamientoId, meetLink });
+      console.log('🚀 [DEBUG] Estado actual:', transcriptionState);
+      
       if (transcriptionState.isRecording) {
-        console.log('Ya hay una transcripción en progreso');
+        console.log('⚠️ [DEBUG] Ya hay una transcripción en progreso');
         return;
       }
 
+      console.log('🎤 [DEBUG] Solicitando permisos de micrófono...');
       // Solicitar permisos de micrófono
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log('✅ [DEBUG] Permisos de micrófono obtenidos');
       
+      console.log('🎤 [DEBUG] Configurando MediaRecorder...');
       // Configurar MediaRecorder
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
@@ -143,13 +159,16 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
         }
       };
       
+      console.log('🎤 [DEBUG] Iniciando MediaRecorder...');
       mediaRecorderRef.current.start(1000);
       
       // Iniciar reconocimiento
       if (recognitionRef.current) {
+        console.log('🎤 [DEBUG] Iniciando reconocimiento de voz...');
         startTimeRef.current = Date.now();
         recognitionRef.current.start();
         
+        console.log('🎤 [DEBUG] Actualizando estado de transcripción...');
         setTranscriptionState({
           isActive: true,
           isRecording: true,
@@ -161,18 +180,31 @@ export const GlobalTranscriptionProvider: React.FC<GlobalTranscriptionProviderPr
           currentMeetLink: meetLink
         });
         
+        // Timeout de seguridad para detener automáticamente después de 2 horas
+        safetyTimeoutRef.current = setTimeout(() => {
+          console.log('⏰ Timeout de seguridad alcanzado, deteniendo transcripción');
+          stopTranscription();
+        }, 2 * 60 * 60 * 1000); // 2 horas
+        
+        console.log('🎤 [DEBUG] Mostrando notificación de éxito...');
         showSuccess('🎤 Transcripción automática iniciada');
-        console.log('🎤 Transcripción global iniciada para:', reclutamientoId);
+        console.log('🎤 [DEBUG] Transcripción global iniciada para:', reclutamientoId);
       }
       
     } catch (error) {
-      console.error('Error iniciando transcripción global:', error);
+      console.error('❌ [DEBUG] Error iniciando transcripción global:', error);
       showError('Error al acceder al micrófono');
     }
   };
 
   const stopTranscription = async () => {
     try {
+      // Limpiar timeout de seguridad
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+      
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }

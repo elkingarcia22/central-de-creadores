@@ -10,6 +10,7 @@ interface SmartTranscriptionManagerProps {
   reclutamientoId: string;
   onTranscriptionComplete?: (transcription: string) => void;
   onError?: (error: string) => void;
+  autoStart?: boolean;
 }
 
 interface TranscriptionSegment {
@@ -22,7 +23,8 @@ const SmartTranscriptionManager: React.FC<SmartTranscriptionManagerProps> = ({
   meetLink,
   reclutamientoId,
   onTranscriptionComplete,
-  onError
+  onError,
+  autoStart = true
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -116,7 +118,7 @@ const SmartTranscriptionManager: React.FC<SmartTranscriptionManagerProps> = ({
 
   // Efecto para iniciar automáticamente cuando se detecta una sesión activa
   useEffect(() => {
-    if (sessionActive && isSupported && !isRecording && !error && !autoStartAttempted) {
+    if (autoStart && sessionActive && isSupported && !isRecording && !error && !autoStartAttempted) {
       console.log('🎯 Sesión de Meet detectada - iniciando transcripción automáticamente...');
       setAutoStartAttempted(true);
       
@@ -125,7 +127,7 @@ const SmartTranscriptionManager: React.FC<SmartTranscriptionManagerProps> = ({
         startTranscription();
       }, 2000);
     }
-  }, [sessionActive, isSupported, isRecording, error, autoStartAttempted]);
+  }, [autoStart, sessionActive, isSupported, isRecording, error, autoStartAttempted]);
 
   // Efecto para detener automáticamente cuando se termina la sesión
   useEffect(() => {
