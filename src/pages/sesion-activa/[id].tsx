@@ -537,8 +537,12 @@ export default function SesionActivaPage() {
         }));
       }
       
-      // Mostrar mensaje de confirmación
-      alert('✅ Sesión iniciada y guardada. El Meet se ha abierto en una nueva pestaña.');
+      // Redirigir a la página de sesión activa
+      if (participante?.id) {
+        router.push(`/sesion-activa/${participante.id}`);
+      } else {
+        alert('❌ No se pudo obtener el ID del participante para redirigir');
+      }
       
     } catch (error) {
       console.error('❌ Error iniciando sesión:', error);
