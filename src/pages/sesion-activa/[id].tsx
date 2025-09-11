@@ -1817,8 +1817,8 @@ export default function SesionActivaPage() {
           reclutamientoId={reclutamiento?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
-          transcripcionCompleta={audioTranscription.state.transcription || transcripcionCompleta}
-          segmentosTranscripcion={audioTranscription.state.segments.length > 0 ? audioTranscription.state.segments : segmentosTranscripcion}
+          transcripcionCompleta={audioTranscription.state.transcription}
+          segmentosTranscripcion={audioTranscription.state.segments}
           isProcessing={audioTranscription.state.isProcessing}
           error={audioTranscription.state.error}
         />
