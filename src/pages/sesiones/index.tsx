@@ -1060,10 +1060,6 @@ const SesionesPageContent: React.FC = () => {
 
       {/* Modal de detalles de sesión */}
       {showModal && selectedSesion && (() => {
-        console.log('🔍 DEBUG - selectedSesion:', selectedSesion);
-        console.log('🔍 DEBUG - selectedSesion.participante:', selectedSesion.participante);
-        console.log('🔍 DEBUG - selectedSesion.participantes:', selectedSesion.participantes);
-        
         // Obtener el ID del participante usando la misma lógica que en otras partes
         let participanteId = selectedSesion.participante?.id;
         
@@ -1079,8 +1075,6 @@ const SesionesPageContent: React.FC = () => {
             participanteId = selectedSesion.participantes[0].participante_id;
           }
         }
-        
-        console.log('🔍 DEBUG - participanteId final:', participanteId);
         
         // Tabs del modal
         const modalTabs = [
@@ -1158,8 +1152,6 @@ const SesionesPageContent: React.FC = () => {
           ] : [])
         ];
 
-        console.log('🔍 DEBUG - modalTabs length:', modalTabs.length);
-        console.log('🔍 DEBUG - modalTabs:', modalTabs.map(t => t.id));
 
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
