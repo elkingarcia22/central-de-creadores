@@ -291,8 +291,8 @@ export default function SesionActivaPage() {
             await loadReclutamientoSpecifico(reclutamientoData.id);
           } else {
             // Si no hay ID, usar los datos del localStorage directamente
-            setReclutamiento(reclutamientoData);
-          }
+        setReclutamiento(reclutamientoData);
+      }
         } catch (error) {
           console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
           // Fallback: cargar desde API
@@ -383,7 +383,7 @@ export default function SesionActivaPage() {
         } else if (participante.empresa_nombre) {
           console.log('🔍 Buscando empresa por nombre:', participante.empresa_nombre);
           await buscarEmpresaPorNombre(participante.empresa_nombre);
-        } else {
+      } else {
           console.log('🔍 Participante externo sin empresa_id ni empresa_nombre');
         }
       } else {
@@ -497,7 +497,7 @@ export default function SesionActivaPage() {
         const usuariosArray = data.usuarios || data || [];
         console.log('🔍 Usuarios procesados:', usuariosArray);
         setUsuarios(usuariosArray);
-      } else {
+          } else {
         console.error('🔍 Error en respuesta de usuarios:', response.status);
       }
     } catch (error) {
@@ -678,17 +678,17 @@ export default function SesionActivaPage() {
   const createTranscripcion = async () => {
     try {
       const response = await fetch('/api/transcripciones', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
           reclutamiento_id: reclutamiento?.id,
           meet_link: reclutamiento?.meet_link || '',
           estado: 'procesando',
           fecha_inicio: new Date().toISOString()
-        }),
-      });
+          }),
+        });
 
       if (response.ok) {
         const data = await response.json();
@@ -725,7 +725,7 @@ export default function SesionActivaPage() {
         const errorText = await response.text();
         console.error('❌ Error actualizando transcripción:', errorText);
       }
-    } catch (error) {
+      } catch (error) {
       console.error('❌ Error actualizando transcripción:', error);
     }
   };
@@ -788,16 +788,16 @@ export default function SesionActivaPage() {
           
           if (estadoEnProgreso) {
             const updateResponse = await fetch('/api/actualizar-estado-reclutamiento', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
                 investigacion_id: reclutamiento.investigacion_id,
                 estado_reclutamiento_id: estadoEnProgreso.id
-              }),
-            });
-            
+          }),
+        });
+
             if (updateResponse.ok) {
               console.log('✅ Estado del reclutamiento actualizado a "En progreso"');
             } else {
@@ -1032,16 +1032,16 @@ export default function SesionActivaPage() {
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
-                </Typography>
+                    </Typography>
                 <Typography variant="body2" color="secondary">
                   Total
-                    </Typography>
-                  </div>
+                  </Typography>
+                </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <FileTextIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              </div>
-            </div>
-          </Card>
+                </div>
+                </div>
+              </Card>
 
           {/* Investigaciones Finalizadas */}
           <Card variant="elevated" padding="md">
@@ -1053,42 +1053,42 @@ export default function SesionActivaPage() {
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
-                  </Typography>
+                </Typography>
                 <Typography variant="body2" color="secondary">
                   Finalizadas
-                  </Typography>
-              </div>
+              </Typography>
+                  </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              </div>
                 </div>
-              </Card>
+              </div>
+            </Card>
 
           {/* Investigaciones En Progreso */}
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
-              <div>
+                  <div>
                 <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                   <AnimatedCounter
                     value={investigacionesEnProgreso}
                     duration={2000}
                     className="text-gray-700 dark:text-gray-200"
                   />
-                  </Typography>
+                    </Typography>
                 <Typography variant="body2" color="secondary">
                   En Progreso
-                      </Typography>
-                    </div>
+                    </Typography>
+                  </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              </div>
+                </div>
                 </div>
               </Card>
-
+                
           {/* Tiempo Total Estimado */}
           <Card variant="elevated" padding="md">
             <div className="flex items-center justify-between">
-              <div>
+                    <div>
                 <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                   <AnimatedCounter 
                     value={tiempoTotalHoras} 
@@ -1096,18 +1096,18 @@ export default function SesionActivaPage() {
                     className="text-gray-700 dark:text-gray-200"
                     suffix="h"
                   />
-                </Typography>
+                      </Typography>
                 <Typography variant="body2" color="secondary">
                   Tiempo Total
-                </Typography>
-              </div>
+                      </Typography>
+                    </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                 <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              </div>
+                    </div>
             </div>
           </Card>
-              </div>
-              
+                  </div>
+                  
         {/* Información adicional */}
         <InfoContainer 
           title="Resumen de Participación"
@@ -1164,7 +1164,7 @@ export default function SesionActivaPage() {
               >
                 {participante.tipo === 'externo' ? 'Externo' : 
                  participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
-              </Chip>
+                      </Chip>
             }
           />
           <InfoItem 
@@ -1175,7 +1175,7 @@ export default function SesionActivaPage() {
                 size="sm"
               >
                 {getChipText(participante.estado_participante || 'disponible')}
-              </Chip>
+                      </Chip>
             }
           />
           <InfoItem 
@@ -1211,8 +1211,8 @@ export default function SesionActivaPage() {
             <div className="col-span-full">
               <Typography variant="body2" color="secondary">
                 {participante.comentarios}
-              </Typography>
-                  </div>
+                      </Typography>
+                    </div>
           </InfoContainer>
         )}
 
@@ -1226,8 +1226,8 @@ export default function SesionActivaPage() {
             <div className="col-span-full">
               <Typography variant="body2" color="secondary">
                 {participante.doleres_necesidades}
-              </Typography>
-            </div>
+                      </Typography>
+                    </div>
           </InfoContainer>
         )}
 
@@ -1260,7 +1260,7 @@ export default function SesionActivaPage() {
             )}
           </InfoContainer>
                   )}
-                </div>
+                  </div>
     );
   };
 
@@ -1320,7 +1320,7 @@ export default function SesionActivaPage() {
                 <Chip variant="secondary" size="sm">
                   {getEmailUsuario(reclutamiento.reclutador_id)}
                 </Chip>
-              </div>
+                  </div>
             }
           />
           <InfoItem 
@@ -1415,7 +1415,7 @@ export default function SesionActivaPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                   </Button>
-                </div>
+                  </div>
               }
             />
           )}
@@ -1427,7 +1427,7 @@ export default function SesionActivaPage() {
             }
           />
         </InfoContainer>
-      </div>
+        </div>
     );
   };
 
@@ -1474,28 +1474,28 @@ export default function SesionActivaPage() {
                     {/* Total Participaciones */}
                     <Card variant="elevated" padding="md">
                       <div className="flex items-center justify-between">
-                        <div>
+                  <div>
                           <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                             <AnimatedCounter
                               value={empresaData.estadisticas.totalParticipaciones || 0}
                               duration={2000}
                               className="text-gray-700 dark:text-gray-200"
                             />
-                          </Typography>
+                    </Typography>
                           <Typography variant="body2" color="secondary">
                             Total Participaciones
-                          </Typography>
-                        </div>
+                    </Typography>
+                  </div>
                         <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                           <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        </div>
+                </div>
                       </div>
                     </Card>
-
+                
                     {/* Total Participantes */}
                     <Card variant="elevated" padding="md">
                       <div className="flex items-center justify-between">
-                        <div>
+                    <div>
                           <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                             <AnimatedCounter
                               value={empresaData.estadisticas.totalParticipantes || 0}
@@ -1505,39 +1505,39 @@ export default function SesionActivaPage() {
                           </Typography>
                           <Typography variant="body2" color="secondary">
                             Total Participantes
-                          </Typography>
-                        </div>
+                      </Typography>
+                    </div>
                         <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                           <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        </div>
-                      </div>
+                    </div>
+                  </div>
                     </Card>
-
+                  
                     {/* Investigaciones Participadas */}
                     <Card variant="elevated" padding="md">
                       <div className="flex items-center justify-between">
-                        <div>
+                  <div>
                           <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                             <AnimatedCounter
                               value={empresaData.estadisticas.investigacionesParticipadas || 0}
                               duration={2000}
                               className="text-gray-700 dark:text-gray-200"
                             />
-                          </Typography>
+                    </Typography>
                           <Typography variant="body2" color="secondary">
                             Investigaciones
-                          </Typography>
-                        </div>
+                      </Typography>
+                    </div>
                         <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                           <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        </div>
-                      </div>
-                    </Card>
+                  </div>
+                </div>
+              </Card>
 
                     {/* Tiempo Total */}
                     <Card variant="elevated" padding="md">
                       <div className="flex items-center justify-between">
-                        <div>
+                    <div>
                           <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
                             <AnimatedCounter 
                               value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
@@ -1545,17 +1545,17 @@ export default function SesionActivaPage() {
                               className="text-gray-700 dark:text-gray-200"
                               suffix="h"
                             />
-                          </Typography>
+                      </Typography>
                           <Typography variant="body2" color="secondary">
                             Tiempo Total
-                          </Typography>
-                        </div>
+                      </Typography>
+                    </div>
                         <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
                           <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        </div>
-                      </div>
-                    </Card>
                   </div>
+                    </div>
+                    </Card>
+                    </div>
 
                   {/* Última participación y resumen del mes */}
                   <InfoContainer 
@@ -1647,7 +1647,7 @@ export default function SesionActivaPage() {
                           size="sm"
                         />
                         <span>{empresaData.kam_nombre}</span>
-                      </div>
+                  </div>
                     }
                   />
                 )}
@@ -1778,7 +1778,13 @@ export default function SesionActivaPage() {
           reclutamientoId={reclutamiento?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
-          transcripcionCompleta={audioTranscription.state.transcription || transcripcionCompleta}
+          transcripcionCompleta={(() => {
+            const finalTranscription = audioTranscription.state.transcription || transcripcionCompleta;
+            console.log('🔍 NotasAutomaticasContent - transcripcionCompleta:', finalTranscription);
+            console.log('🔍 NotasAutomaticasContent - audioTranscription.state.transcription:', audioTranscription.state.transcription);
+            console.log('🔍 NotasAutomaticasContent - transcripcionCompleta local:', transcripcionCompleta);
+            return finalTranscription;
+          })()}
           segmentosTranscripcion={audioTranscription.state.segments.length > 0 ? audioTranscription.state.segments : segmentosTranscripcion}
           isProcessing={audioTranscription.state.isProcessing}
           error={audioTranscription.state.error}
