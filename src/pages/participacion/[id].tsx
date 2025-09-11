@@ -23,6 +23,8 @@ import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import ParticipacionesUnifiedContainer from '../../components/participantes/ParticipacionesUnifiedContainer';
+import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
+import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores, FilterValuesParticipaciones } from '../../components/ui/FilterDrawer';
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
@@ -2322,6 +2324,31 @@ export default function VistaParticipacion() {
                  </div>
                )
              },
+             {
+               id: 'notas-manuales',
+               label: 'Notas Manuales',
+               content: (
+                 <NotasManualesContent 
+                   participanteId={id as string}
+                   sesionId={reclutamiento_id as string}
+                 />
+               )
+             },
+             {
+               id: 'notas-automaticas',
+               label: 'Notas Automáticas',
+               content: (
+                 <NotasAutomaticasContent
+                   reclutamientoId={reclutamiento_id as string}
+                   isRecording={false}
+                   duracionGrabacion={0}
+                   transcripcionCompleta=""
+                   segmentosTranscripcion={[]}
+                   isProcessing={false}
+                   error={null}
+                 />
+               )
+             }
 
           ]}
           activeTab={activeTab}
