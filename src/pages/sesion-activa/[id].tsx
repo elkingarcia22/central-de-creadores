@@ -148,9 +148,12 @@ export default function SesionActivaPage() {
   // Cargar estadísticas de empresa cuando se carga la empresa
   useEffect(() => {
     console.log('🔍 Estado de empresa cambiado:', empresa);
+    console.log('🔍 Participante tipo:', participante?.tipo);
+    console.log('🔍 Empresa ID:', empresa?.id);
     
     // Cargar estadísticas de empresa si es un participante externo
     if (empresa && participante?.tipo === 'externo' && empresa.id) {
+      console.log('🔍 Cargando estadísticas de empresa...');
       cargarEstadisticasEmpresa(empresa.id);
     }
   }, [empresa, participante?.tipo]);
@@ -403,13 +406,17 @@ export default function SesionActivaPage() {
 
   const loadDoloresData = async () => {
     try {
+      console.log('🔍 Cargando dolores para participante:', id);
       const response = await fetch(`/api/participantes/${id}/dolores`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Dolores cargados:', data);
         setDolores(data || []);
+      } else {
+        console.error('🔍 Error en respuesta de dolores:', response.status);
       }
     } catch (error) {
-      console.error('Error cargando dolores:', error);
+      console.error('🔍 Error cargando dolores:', error);
     }
   };
 
