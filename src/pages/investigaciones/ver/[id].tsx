@@ -838,56 +838,60 @@ const VerInvestigacion: NextPage = () => {
             <InfoContainer 
               title="Problema y Objetivos"
               icon={<CheckCircleIcon className="w-4 h-4" />}
+              className="[&>div:last-child]:grid-cols-1 [&>div:last-child]:gap-6"
             >
-              <InfoItem 
-                label="Problema o Situación"
-                value={
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.problema_situacion || 'No especificado'}
-                    </Typography>
-                  </div>
-                }
-              />
-              
-              <InfoItem 
-                label="Hipótesis"
-                value={
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.hipotesis || 'No especificado'}
-                    </Typography>
-                  </div>
-                }
-              />
-              
-              <InfoItem 
-                label="Objetivos"
-                value={
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.objetivos || 'No especificado'}
-                    </Typography>
-                  </div>
-                }
-              />
-              
-              <InfoItem 
-                label="Resultado Esperado"
-                value={
-                  <div className="p-4 bg-muted rounded-lg">
-                    <Typography variant="body2">
-                      {libreto.resultado_esperado || 'No especificado'}
-                    </Typography>
-                  </div>
-                }
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InfoItem 
+                  label="Problema o Situación"
+                  value={
+                    <div className="p-4 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        {libreto.problema_situacion || 'No especificado'}
+                      </Typography>
+                    </div>
+                  }
+                />
+                
+                <InfoItem 
+                  label="Objetivos"
+                  value={
+                    <div className="p-4 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        {libreto.objetivos || 'No especificado'}
+                      </Typography>
+                    </div>
+                  }
+                />
+                
+                <InfoItem 
+                  label="Hipótesis"
+                  value={
+                    <div className="p-4 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        {libreto.hipotesis || 'No especificado'}
+                      </Typography>
+                    </div>
+                  }
+                />
+                
+                <InfoItem 
+                  label="Resultado Esperado"
+                  value={
+                    <div className="p-4 bg-muted rounded-lg">
+                      <Typography variant="body2">
+                        {libreto.resultado_esperado || 'No especificado'}
+                      </Typography>
+                    </div>
+                  }
+                />
+              </div>
             </InfoContainer>
 
             {/* Configuración de la Sesión */}
             <InfoContainer 
               title="Configuración de la Sesión"
               icon={<SettingsIcon className="w-4 h-4" />}
+              className="[&>div:last-child]:grid-cols-1 [&>div:last-child]:gap-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InfoItem 
@@ -940,10 +944,61 @@ const VerInvestigacion: NextPage = () => {
               </div>
             </InfoContainer>
 
+            {/* Usuarios en la Sesión */}
+            <InfoContainer 
+              title="Usuarios en la Sesión"
+              icon={<UserIcon className="w-4 h-4" />}
+              className="[&>div:last-child]:grid-cols-1 [&>div:last-child]:gap-6"
+            >
+              <InfoItem 
+                label="Equipo que participará en las sesiones"
+                value={(() => {
+                  if (!libreto.usuarios_participantes || libreto.usuarios_participantes.length === 0) {
+                    return 'No especificado';
+                  }
+                  
+                  // Buscar los usuarios en la lista cargada
+                  const usuariosSeleccionados = libreto.usuarios_participantes
+                    .map((userId: string) => usuarios.find(u => u.id === userId))
+                    .filter(Boolean);
+                  
+                  if (usuariosSeleccionados.length === 0) {
+                    return 'Usuarios no encontrados';
+                  }
+                  
+                  return (
+                    <div className="flex flex-wrap gap-3">
+                      {usuariosSeleccionados.map((usuario: any) => (
+                        <div key={usuario.id} className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            {usuario.avatar_url ? (
+                              <img 
+                                src={usuario.avatar_url} 
+                                alt={usuario.full_name || usuario.email}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-sm font-medium text-primary">
+                                {(usuario.full_name || usuario.email || 'U').charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium">
+                            {usuario.full_name || usuario.email || 'Usuario sin nombre'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              />
+            </InfoContainer>
+
             {/* Perfil de Participantes */}
             <InfoContainer 
               title="Perfil de Participantes"
               icon={<UsersIcon className="w-4 h-4" />}
+              className="[&>div:last-child]:grid-cols-1 [&>div:last-child]:gap-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InfoItem 

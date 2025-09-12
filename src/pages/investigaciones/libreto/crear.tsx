@@ -5,6 +5,7 @@ import { useRol } from '../../../contexts/RolContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { Layout, Typography, Card, Button, Input, Select, Textarea, MultiSelect, PageHeader, EmptyState, FormContainer, FormItem, Subtitle } from '../../../components/ui';
+import MultiUserSelector from '../../../components/ui/MultiUserSelector';
 import { 
   ArrowLeftIcon, 
   FileTextIcon, 
@@ -21,7 +22,7 @@ import {
   obtenerModalidades,
   obtenerTamanosEmpresa
 } from '../../../api/supabase-libretos';
-import { obtenerInvestigacionPorId } from '../../../api/supabase-investigaciones';
+import { obtenerInvestigacionPorId, obtenerUsuarios } from '../../../api/supabase-investigaciones';
 import type { LibretoFormData } from '../../../types/libretos';
 
 const CrearLibretoPage: NextPage = () => {
@@ -44,15 +45,41 @@ const CrearLibretoPage: NextPage = () => {
     tamanosEmpresa: []
   });
   
+  // Usuarios del equipo
+  const [usuarios, setUsuarios] = useState([]);
+  const [loadingUsuarios, setLoadingUsuarios] = useState(false);
+  
   // Form data
   const [formData, setFormData] = useState<LibretoFormData>({
-    investigacion_id: typeof investigacion === 'string' ? investigacion : ''
+    investigacion_id: ''
   });
+
+  // Actualizar investigacion_id cuando el router esté listo
+  useEffect(() => {
+    if (router.isReady && investigacion && typeof investigacion === 'string') {
+      setFormData(prev => ({
+        ...prev,
+        investigacion_id: investigacion
+      }));
+    }
+  }, [router.isReady, investigacion]);
 
   // Cargar datos
   useEffect(() => {
     const cargarDatos = async () => {
+      console.log('🔍 Parámetro investigacion:', investigacion);
+      console.log('🔍 Tipo de investigacion:', typeof investigacion);
+      console.log('🔍 Ancho de ventana:', window.innerWidth);
+      console.log('🔍 Breakpoint md (768px):', window.innerWidth >= 768);
+      
+      // Esperar a que el router esté listo
+      if (!router.isReady) {
+        console.log('⏳ Router no está listo, esperando...');
+        return;
+      }
+      
       if (!investigacion || typeof investigacion !== 'string') {
+        console.error('❌ ID de investigación no válido:', investigacion);
         showError('ID de investigación requerido');
         router.push('/investigaciones');
         return;
@@ -62,13 +89,14 @@ const CrearLibretoPage: NextPage = () => {
         setLoading(true);
         
         // Cargar investigación y catálogos
-        const [investigacionRes, plataformasRes, rolesRes, industriasRes, modalidadesRes, tamanosRes] = await Promise.all([
+        const [investigacionRes, plataformasRes, rolesRes, industriasRes, modalidadesRes, tamanosRes, usuariosRes] = await Promise.all([
           obtenerInvestigacionPorId(investigacion),
           obtenerPlataformas(),
           obtenerRolesEmpresa(),
           obtenerIndustrias(),
           obtenerModalidades(),
-          obtenerTamanosEmpresa()
+          obtenerTamanosEmpresa(),
+          obtenerUsuarios()
         ]);
         
         if (investigacionRes.error) {
@@ -87,6 +115,9 @@ const CrearLibretoPage: NextPage = () => {
           modalidades: modalidadesRes.data || [],
           tamanosEmpresa: tamanosRes.data || []
         });
+        
+        // Cargar usuarios
+        setUsuarios(usuariosRes.data || []);
         
         // Inicializar form data
         setFormData({
@@ -120,7 +151,18 @@ const CrearLibretoPage: NextPage = () => {
     };
 
     cargarDatos();
-  }, [investigacion]);
+  }, [investigacion, router.isReady]);
+
+  // Monitorear cambios en el tamaño de la ventana
+  useEffect(() => {
+    const handleResize = () => {
+      console.log('🔍 Ventana redimensionada - Ancho:', window.innerWidth);
+      console.log('🔍 Breakpoint md (768px):', window.innerWidth >= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleInputChange = (field: keyof LibretoFormData, value: any) => {
     setFormData(prev => ({
@@ -130,7 +172,16 @@ const CrearLibretoPage: NextPage = () => {
   };
 
   const handleSave = async () => {
+    console.log('🔍 === INICIANDO GUARDAR LIBRETO ===');
+    console.log('🔍 formData completo:', formData);
+    console.log('🔍 investigacion_id:', formData.investigacion_id);
+    
     // Validaciones básicas
+    if (!formData.investigacion_id) {
+      showError('ID de investigación es requerido');
+      return;
+    }
+    
     if (!formData.problema_situacion?.trim()) {
       showError('El problema o situación es requerido');
       return;
@@ -222,6 +273,14 @@ const CrearLibretoPage: NextPage = () => {
             ]}
           />
         </div>
+        
+        {/* Debug info */}
+        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+          <Typography variant="caption" className="text-yellow-800">
+            🔍 Debug: Ancho ventana: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px | 
+            Breakpoint md: {typeof window !== 'undefined' ? (window.innerWidth >= 768 ? 'SÍ' : 'NO') : 'N/A'}
+          </Typography>
+        </div>
 
         {/* Contenido */}
         <div className="space-y-8">
@@ -234,8 +293,13 @@ const CrearLibretoPage: NextPage = () => {
               </Subtitle>
             </div>
             
-            <div className="space-y-6">
-              <FormItem>
+            {(() => {
+              console.log('🔍 Renderizando sección Problema y Objetivos con FormItem layout="half"');
+              return null;
+            })()}
+            
+            <FormItem layout="half">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Problema o Situación *
                 </Typography>
@@ -248,23 +312,9 @@ const CrearLibretoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-              </FormItem>
-
-              <FormItem>
-                <Typography variant="subtitle2" weight="medium" className="mb-2">
-                  Hipótesis
-                </Typography>
-                <Textarea
-                  value={formData.hipotesis || ''}
-                  onChange={(e) => handleInputChange('hipotesis', e.target.value)}
-                  placeholder="Describe la hipótesis que se quiere validar"
-                  rows={3}
-                  disabled={saving}
-                  fullWidth
-                />
-              </FormItem>
-
-              <FormItem>
+              </div>
+              
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Objetivos *
                 </Typography>
@@ -277,9 +327,25 @@ const CrearLibretoPage: NextPage = () => {
                   required
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
 
-              <FormItem>
+            <FormItem layout="half">
+              <div>
+                <Typography variant="subtitle2" weight="medium" className="mb-2">
+                  Hipótesis
+                </Typography>
+                <Textarea
+                  value={formData.hipotesis || ''}
+                  onChange={(e) => handleInputChange('hipotesis', e.target.value)}
+                  placeholder="Describe la hipótesis que se quiere validar"
+                  rows={3}
+                  disabled={saving}
+                  fullWidth
+                />
+              </div>
+              
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Resultado Esperado
                 </Typography>
@@ -291,8 +357,8 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
-            </div>
+              </div>
+            </FormItem>
           </FormContainer>
 
           {/* Configuración de la Sesión */}
@@ -304,8 +370,8 @@ const CrearLibretoPage: NextPage = () => {
               </Subtitle>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormItem>
+            <FormItem layout="half">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Nombre de la Sesión
                 </Typography>
@@ -316,9 +382,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem>
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Duración Estimada (minutos)
                 </Typography>
@@ -330,9 +396,11 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
 
-              <FormItem>
+            <FormItem layout="half">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Número de Participantes
                 </Typography>
@@ -344,9 +412,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem>
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Plataforma
                 </Typography>
@@ -361,9 +429,11 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
 
-              <FormItem className="md:col-span-2">
+            <FormItem layout="full">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Link del Prototipo
                 </Typography>
@@ -374,9 +444,11 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
 
-              <FormItem className="md:col-span-2">
+            <FormItem layout="full">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Descripción General
                 </Typography>
@@ -388,8 +460,43 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
+          </FormContainer>
+
+          {/* Usuarios en la Sesión */}
+          <FormContainer>
+            <div className="flex items-center gap-2 mb-6">
+              <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Subtitle>
+                Usuarios en la Sesión
+              </Subtitle>
             </div>
+            
+            {(() => {
+              console.log('🔍 Renderizando sección Usuarios en la Sesión con FormItem layout="full"');
+              return null;
+            })()}
+            
+            <FormItem layout="full">
+              <MultiUserSelector
+                label="Equipo que participará en las sesiones"
+                placeholder="Seleccionar usuarios del equipo"
+                value={formData.usuarios_participantes || []}
+                onChange={(userIds) => handleInputChange('usuarios_participantes', userIds)}
+                users={usuarios.map(usuario => ({
+                  id: usuario.id,
+                  full_name: usuario.full_name,
+                  email: usuario.email || undefined,
+                  avatar_url: usuario.avatar_url
+                }))}
+                loading={loadingUsuarios}
+                disabled={saving}
+              />
+              <Typography variant="caption" color="secondary" className="mt-2">
+                Selecciona los miembros del equipo que participarán en las sesiones de esta investigación (moderadores, observadores, etc.)
+              </Typography>
+            </FormItem>
           </FormContainer>
 
           {/* Perfil de Participantes */}
@@ -401,8 +508,8 @@ const CrearLibretoPage: NextPage = () => {
               </Subtitle>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormItem>
+            <FormItem layout="half">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Rol en Empresa
                 </Typography>
@@ -417,9 +524,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem>
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Industria
                 </Typography>
@@ -434,9 +541,11 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
+            </FormItem>
 
-              <FormItem>
+            <FormItem layout="half">
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Modalidad
                 </Typography>
@@ -451,9 +560,9 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
+              </div>
 
-              <FormItem>
+              <div>
                 <Typography variant="subtitle2" weight="medium" className="mb-2">
                   Tamaño de Empresa
                 </Typography>
@@ -468,8 +577,8 @@ const CrearLibretoPage: NextPage = () => {
                   disabled={saving}
                   fullWidth
                 />
-              </FormItem>
-            </div>
+              </div>
+            </FormItem>
           </FormContainer>
         </div>
       </div>

@@ -19,7 +19,6 @@ import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
 import { UsersIcon, CheckCircleIcon, RefreshIcon } from '../icons';
-import { obtenerUsuariosDelLibreto, combinarUsuarios, UsuarioLibreto } from '../../utils/libretoUsuarios';
 
 interface AgregarParticipanteModalProps {
   isOpen: boolean;
@@ -76,7 +75,6 @@ export default function AgregarParticipanteModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
-  const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<Participante[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<Participante[]>([]);
@@ -128,19 +126,13 @@ export default function AgregarParticipanteModal({
     }
   };
 
-  // Log al recibir el reclutamiento y inicializar investigacionId
+  // Log al recibir el reclutamiento
   useEffect(() => {
     if (isOpen && reclutamiento) {
       console.log('🔍 AgregarParticipanteModal - reclutamiento recibido:', reclutamiento);
       console.log('🔍 Responsable pre-cargado:', reclutamiento.responsable_pre_cargado);
-      
-      // Inicializar investigacionId desde el reclutamiento si no hay selector
-      if (!showInvestigacionSelector && reclutamiento.investigacion_id) {
-        console.log('🔍 Inicializando investigacionId desde reclutamiento:', reclutamiento.investigacion_id);
-        setInvestigacionId(reclutamiento.investigacion_id);
-      }
     }
-  }, [isOpen, reclutamiento, showInvestigacionSelector]);
+  }, [isOpen, reclutamiento]);
 
   // Carga inicial de catálogos y valores
   useEffect(() => {
@@ -157,52 +149,6 @@ export default function AgregarParticipanteModal({
       showError('Error al cargar los datos necesarios. Por favor, intenta de nuevo.');
     });
   }, [isOpen]);
-
-  // Recargar usuarios cuando cambie la investigación seleccionada
-  useEffect(() => {
-    if (isOpen && investigacionId && responsables.length > 0) {
-      console.log('🔄 Investigación cambiada, recargando usuarios del libreto:', investigacionId);
-      cargarUsuariosDelLibreto();
-    }
-  }, [investigacionId, isOpen, responsables.length]);
-
-  // Cargar usuarios del libreto cuando se inicialice investigacionId
-  useEffect(() => {
-    if (isOpen && investigacionId && responsables.length > 0) {
-      console.log('🔄 Investigación inicializada, cargando usuarios del libreto:', investigacionId);
-      cargarUsuariosDelLibreto();
-    }
-  }, [investigacionId, isOpen, responsables.length]);
-
-  // Función para cargar usuarios del libreto
-  const cargarUsuariosDelLibreto = async () => {
-    if (!investigacionId) return;
-    
-    try {
-      console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionId);
-      const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
-      setUsuariosDelLibreto(usuariosLibreto);
-      
-      // Obtener todos los usuarios para combinar
-      const resp = await fetch('/api/usuarios');
-      if (resp.ok) {
-        const data = await resp.json();
-        const todosLosUsuarios = data.usuarios || [];
-        
-        // Combinar usuarios del libreto con todos los usuarios
-        const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
-        setResponsables(usuariosCombinados);
-        
-        console.log('✅ Usuarios del libreto recargados:', {
-          delLibreto: usuariosLibreto.length,
-          total: todosLosUsuarios.length,
-          combinados: usuariosCombinados.length
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error recargando usuarios del libreto:', error);
-    }
-  };
 
   // Establecer responsable pre-cargado después de cargar los responsables
   useEffect(() => {
@@ -293,26 +239,7 @@ export default function AgregarParticipanteModal({
           const data = await resp.json();
           console.log('✅ Responsables cargados:', data);
           console.log('📊 Total responsables:', data.usuarios?.length || 0);
-          const todosLosUsuarios = data.usuarios || [];
-          
-          // Cargar usuarios del libreto si hay una investigación seleccionada
-          if (investigacionId) {
-            console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionId);
-            const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
-            setUsuariosDelLibreto(usuariosLibreto);
-            
-            // Combinar usuarios del libreto con todos los usuarios
-            const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
-            setResponsables(usuariosCombinados);
-            
-            console.log('✅ Usuarios combinados:', {
-              delLibreto: usuariosLibreto.length,
-              total: todosLosUsuarios.length,
-              combinados: usuariosCombinados.length
-            });
-          } else {
-            setResponsables(todosLosUsuarios);
-          }
+          setResponsables(data.usuarios || []);
         } else {
           console.error('❌ Error cargando responsables:', resp.status);
           const errorText = await resp.text();
@@ -777,47 +704,6 @@ export default function AgregarParticipanteModal({
               disabled={loading}
               required
             />
-            
-            {/* Indicación de usuarios del libreto */}
-            {usuariosDelLibreto.length > 0 && (
-              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-2">
-                  <UsersIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
-                    <strong>Usuarios del equipo configurados en el libreto:</strong>
-                  </Typography>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {usuariosDelLibreto.map((usuario) => (
-                    <Chip
-                      key={usuario.id}
-                      variant="secondary"
-                      className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
-                    >
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center">
-                          {usuario.avatar_url ? (
-                            <img 
-                              src={usuario.avatar_url} 
-                              alt={usuario.full_name || usuario.email}
-                              className="w-4 h-4 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                              {(usuario.full_name || usuario.email || 'U').charAt(0).toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                        <span>{usuario.full_name || usuario.email}</span>
-                      </div>
-                    </Chip>
-                  ))}
-                </div>
-                <Typography variant="caption" className="text-blue-600 dark:text-blue-400 mt-1 block">
-                  Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
-                </Typography>
-              </div>
-            )}
           </div>
 
           {/* Selector de Investigación (solo si se requiere) */}

@@ -16,7 +16,6 @@ import { getUserTimezone, getCurrentDateTime, debugTimezone, getMinDate, createU
 import { getEstadoParticipanteVariant, getEstadoParticipanteText } from '../../utils/estadoUtils';
 import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
 import { UserIcon } from '../icons';
-import { obtenerUsuariosDelLibreto, combinarUsuarios, UsuarioLibreto } from '../../utils/libretoUsuarios';
 
 interface EditarReclutamientoModalProps {
   isOpen: boolean;
@@ -60,7 +59,6 @@ export default function EditarReclutamientoModal({
   const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
-  const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<Participante[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<Participante[]>([]);
@@ -285,26 +283,7 @@ export default function EditarReclutamientoModal({
         console.log('🔍 Muestra de usuarios:', data.usuarios?.slice(0, 3));
         console.log('🔍 Estructura completa del primer usuario:', data.usuarios?.[0]);
         console.log('🔍 Campos disponibles:', data.usuarios?.[0] ? Object.keys(data.usuarios[0]) : 'No hay usuarios');
-        const todosLosUsuarios = data.usuarios || [];
-        
-        // Cargar usuarios del libreto si hay una investigación
-        if (reclutamiento?.investigacion_id) {
-          console.log('🔍 Cargando usuarios del libreto para investigación:', reclutamiento.investigacion_id);
-          const usuariosLibreto = await obtenerUsuariosDelLibreto(reclutamiento.investigacion_id);
-          setUsuariosDelLibreto(usuariosLibreto);
-          
-          // Combinar usuarios del libreto con todos los usuarios
-          const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
-          setResponsables(usuariosCombinados);
-          
-          console.log('✅ Usuarios combinados:', {
-            delLibreto: usuariosLibreto.length,
-            total: todosLosUsuarios.length,
-            combinados: usuariosCombinados.length
-          });
-        } else {
-          setResponsables(todosLosUsuarios);
-        }
+        setResponsables(data.usuarios || []);
       } else {
         console.log('❌ Error cargando usuarios:', resp.status, resp.statusText);
       }
@@ -505,41 +484,6 @@ export default function EditarReclutamientoModal({
                 disabled={loading}
                 required
               />
-              
-              {/* Indicación de usuarios del libreto */}
-              {usuariosDelLibreto.length > 0 && (
-                <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
-                      <strong>Usuarios del equipo configurados en el libreto:</strong>
-                    </Typography>
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {usuariosDelLibreto.map((usuario) => (
-                      <div key={usuario.id} className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center">
-                          {usuario.avatar_url ? (
-                            <img
-                              src={usuario.avatar_url}
-                              alt={usuario.full_name || usuario.email}
-                              className="w-4 h-4 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                              {(usuario.full_name || usuario.email || 'U').charAt(0).toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-sm">{usuario.full_name || usuario.email}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Typography variant="caption" className="text-blue-600 dark:text-blue-400 mt-1 block">
-                    Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
-                  </Typography>
-                </div>
-              )}
             </div>
 
             {/* Fecha de sesión */}

@@ -28,7 +28,6 @@ import {
   UsersIcon,
   SaveIcon
 } from '../icons';
-import { obtenerUsuariosDelLibreto, combinarUsuarios, UsuarioLibreto } from '../../utils/libretoUsuarios';
 
 interface CrearReclutamientoModalProps {
   isOpen: boolean;
@@ -112,7 +111,6 @@ export default function CrearReclutamientoModal({
 
   // Estados para datos de catálogo
   const [responsables, setResponsables] = useState<Usuario[]>([]);
-  const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<ParticipanteInterno[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<ParticipanteFriendFamily[]>([]);
@@ -146,14 +144,6 @@ export default function CrearReclutamientoModal({
       }
     }
   }, [isOpen, investigacionId, investigacionNombre, responsablePreAsignado]);
-
-  // Recargar responsables cuando cambie la investigación seleccionada
-  useEffect(() => {
-    if (isOpen && investigacionSeleccionada?.id) {
-      console.log('🔄 Investigación cambiada, recargando responsables:', investigacionSeleccionada.id);
-      cargarResponsables();
-    }
-  }, [investigacionSeleccionada?.id, isOpen]);
 
   // Calcular estado de enfriamiento cuando se selecciona un participante externo
   useEffect(() => {
@@ -211,26 +201,7 @@ export default function CrearReclutamientoModal({
     try {
       const response = await obtenerUsuarios();
       if (response.data) {
-        const todosLosUsuarios = response.data;
-        
-        // Cargar usuarios del libreto si hay una investigación seleccionada
-        if (investigacionSeleccionada?.id) {
-          console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionSeleccionada.id);
-          const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionSeleccionada.id);
-          setUsuariosDelLibreto(usuariosLibreto);
-          
-          // Combinar usuarios del libreto con todos los usuarios
-          const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
-          setResponsables(usuariosCombinados);
-          
-          console.log('✅ Usuarios combinados:', {
-            delLibreto: usuariosLibreto.length,
-            total: todosLosUsuarios.length,
-            combinados: usuariosCombinados.length
-          });
-        } else {
-          setResponsables(todosLosUsuarios);
-        }
+        setResponsables(response.data);
       } else {
         console.error('Error cargando responsables:', response.error);
       }
@@ -632,41 +603,6 @@ export default function CrearReclutamientoModal({
               disabled={loading}
               required
             />
-            
-            {/* Indicación de usuarios del libreto */}
-            {usuariosDelLibreto.length > 0 && (
-              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-2">
-                  <UsersIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
-                    <strong>Usuarios del equipo configurados en el libreto:</strong>
-                  </Typography>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {usuariosDelLibreto.map((usuario) => (
-                    <div key={usuario.id} className="flex items-center gap-1">
-                      <div className="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center">
-                        {usuario.avatar_url ? (
-                          <img
-                            src={usuario.avatar_url}
-                            alt={usuario.full_name || usuario.email}
-                            className="w-4 h-4 rounded-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                            {(usuario.full_name || usuario.email || 'U').charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-sm">{usuario.full_name || usuario.email}</span>
-                    </div>
-                  ))}
-                </div>
-                <Typography variant="caption" className="text-blue-600 dark:text-blue-400 mt-1 block">
-                  Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
-                </Typography>
-              </div>
-            )}
           </div>
 
           {/* Fecha de la sesión */}
