@@ -72,7 +72,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad,
         investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
-        sesion_relacionada_id: dolor.sesion_relacionada_id
+        sesion_relacionada_id: dolor.sesion_relacionada_id || ''
       };
       console.log('🔍 Nuevo formData configurado:', newFormData);
       setFormData(newFormData);
