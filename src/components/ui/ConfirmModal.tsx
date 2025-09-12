@@ -86,21 +86,34 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       closeOnEscape={!loading}
       showCloseButton={false}
     >
-      <div className="flex flex-col items-start w-full">
-        {/* Header con PageHeader e icono integrado */}
+      <div className="flex flex-col w-full">
+        {/* Header personalizado */}
         {title && (
-          <PageHeader
-            title={title}
-            variant="title-only"
-            color="gray"
-            className="mb-4"
-            icon={getIcon()}
-            onClose={onClose}
-          />
+          <div className="flex items-center justify-between w-full py-4 px-6 border-b border-border">
+            <div className="flex items-center gap-3">
+              {getIcon()}
+              <Typography
+                variant="h4"
+                color="default"
+                weight="semibold"
+                className="!text-gray-500 dark:!text-gray-400"
+              >
+                {title}
+              </Typography>
+            </div>
+            <button
+              onClick={onClose}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         )}
         
         {/* Contenido del modal */}
-        <div className="flex flex-col items-start w-full px-6">
+        <div className="flex flex-col items-start w-full px-6 py-6">
           <Typography variant="body1" color="secondary" className="text-muted-foreground text-left w-full">
             {message}
           </Typography>
