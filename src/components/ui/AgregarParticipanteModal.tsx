@@ -74,12 +74,47 @@ export default function AgregarParticipanteModal({
   esDesdeAgendamientoPendiente = false,
   showInvestigacionSelector = false
 }: AgregarParticipanteModalProps) {
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
+
+  // Función para actualizar usuarios del libreto
+  const actualizarUsuariosDelLibreto = async (investigacionId: string) => {
+    if (!investigacionId || usuariosSeleccionadosLibreto.length === 0) {
+      return;
+    }
+
+    try {
+      console.log('🔄 Actualizando usuarios del libreto:', usuariosSeleccionadosLibreto);
+      
+      const libretoResponse = await fetch('/api/libretos/actualizar-usuarios', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          investigacion_id: investigacionId,
+          usuarios_participantes: usuariosSeleccionadosLibreto
+        }),
+      });
+
+      if (!libretoResponse.ok) {
+        const errorData = await libretoResponse.json();
+        console.warn('⚠️ Error actualizando libreto:', errorData.error);
+        // No lanzar error aquí, solo mostrar advertencia
+        showWarning('Participante agregado, pero hubo un problema actualizando el libreto');
+      } else {
+        console.log('✅ Usuarios del libreto actualizados exitosamente');
+      }
+    } catch (libretoError) {
+      console.warn('⚠️ Error actualizando libreto:', libretoError);
+      // No lanzar error aquí, solo mostrar advertencia
+      showWarning('Participante agregado, pero hubo un problema actualizando el libreto');
+    }
+  };
   const [investigacionData, setInvestigacionData] = useState<any>(null);
   
   // Log cuando cambie usuariosDelLibreto
@@ -739,6 +774,12 @@ export default function AgregarParticipanteModal({
       });
 
       if (response.ok) {
+        // Actualizar usuarios del libreto si han cambiado
+        const investigacionIdFinal = investigacionId || reclutamiento?.investigacion_id;
+        if (investigacionIdFinal) {
+          await actualizarUsuariosDelLibreto(investigacionIdFinal);
+        }
+        
         showSuccess('Participante agregado exitosamente');
         onClose();
         if (onSuccess) {

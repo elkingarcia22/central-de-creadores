@@ -58,7 +58,7 @@ export default function EditarReclutamientoModal({
   onSave
 }: EditarReclutamientoModalProps) {
   console.log('🔍 Modal: onSave recibido:', !!onSave);
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const [loading, setLoading] = useState(false);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
@@ -364,6 +364,41 @@ export default function EditarReclutamientoModal({
     ? responsables
     : (responsables as any)?.data || (responsables as any)?.usuarios || [];
 
+  // Función para actualizar usuarios del libreto
+  const actualizarUsuariosDelLibreto = async () => {
+    if (!reclutamiento?.investigacion_id || usuariosSeleccionadosLibreto.length === 0) {
+      return;
+    }
+
+    try {
+      console.log('🔄 Actualizando usuarios del libreto:', usuariosSeleccionadosLibreto);
+      
+      const libretoResponse = await fetch('/api/libretos/actualizar-usuarios', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          investigacion_id: reclutamiento.investigacion_id,
+          usuarios_participantes: usuariosSeleccionadosLibreto
+        }),
+      });
+
+      if (!libretoResponse.ok) {
+        const errorData = await libretoResponse.json();
+        console.warn('⚠️ Error actualizando libreto:', errorData.error);
+        // No lanzar error aquí, solo mostrar advertencia
+        showWarning('Reclutamiento actualizado, pero hubo un problema actualizando el libreto');
+      } else {
+        console.log('✅ Usuarios del libreto actualizados exitosamente');
+      }
+    } catch (libretoError) {
+      console.warn('⚠️ Error actualizando libreto:', libretoError);
+      // No lanzar error aquí, solo mostrar advertencia
+      showWarning('Reclutamiento actualizado, pero hubo un problema actualizando el libreto');
+    }
+  };
+
   // Handler para guardar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -412,6 +447,10 @@ export default function EditarReclutamientoModal({
         // Usar la función de guardado de la página principal
         await onSave(reclutamientoData);
         console.log('🔍 Modal: onSave completado exitosamente');
+        
+        // Actualizar usuarios del libreto si han cambiado
+        await actualizarUsuariosDelLibreto();
+        
         showSuccess('Reclutamiento actualizado exitosamente');
         onClose();
         if (onSuccess) {
@@ -436,6 +475,9 @@ export default function EditarReclutamientoModal({
         });
 
         if (response.ok) {
+          // Actualizar usuarios del libreto si han cambiado
+          await actualizarUsuariosDelLibreto();
+          
           showSuccess('Reclutamiento actualizado exitosamente');
           onClose();
           if (onSuccess) {

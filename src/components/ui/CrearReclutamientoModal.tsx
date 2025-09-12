@@ -100,6 +100,41 @@ export default function CrearReclutamientoModal({
   const { theme } = useTheme();
   const { showSuccess, showError, showWarning } = useToast();
 
+  // Función para actualizar usuarios del libreto
+  const actualizarUsuariosDelLibreto = async (investigacionId: string) => {
+    if (!investigacionId || usuariosSeleccionadosLibreto.length === 0) {
+      return;
+    }
+
+    try {
+      console.log('🔄 Actualizando usuarios del libreto:', usuariosSeleccionadosLibreto);
+      
+      const libretoResponse = await fetch('/api/libretos/actualizar-usuarios', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          investigacion_id: investigacionId,
+          usuarios_participantes: usuariosSeleccionadosLibreto
+        }),
+      });
+
+      if (!libretoResponse.ok) {
+        const errorData = await libretoResponse.json();
+        console.warn('⚠️ Error actualizando libreto:', errorData.error);
+        // No lanzar error aquí, solo mostrar advertencia
+        showWarning('Reclutamiento creado, pero hubo un problema actualizando el libreto');
+      } else {
+        console.log('✅ Usuarios del libreto actualizados exitosamente');
+      }
+    } catch (libretoError) {
+      console.warn('⚠️ Error actualizando libreto:', libretoError);
+      // No lanzar error aquí, solo mostrar advertencia
+      showWarning('Reclutamiento creado, pero hubo un problema actualizando el libreto');
+    }
+  };
+
   // Estados del formulario
   const [loading, setLoading] = useState(false);
   const [responsableId, setResponsableId] = useState('');
@@ -113,6 +148,7 @@ export default function CrearReclutamientoModal({
   // Estados para datos de catálogo
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
+  const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<ParticipanteInterno[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<ParticipanteFriendFamily[]>([]);
@@ -505,6 +541,15 @@ export default function CrearReclutamientoModal({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `Error al ${isUpdate ? 'actualizar' : 'crear'} participante`);
+      }
+
+      // Actualizar usuarios del libreto si han cambiado
+      const investigacionIdParaLibreto = esInvestigacionEspecifica 
+        ? investigacionId 
+        : investigacionSeleccionada?.investigacion_id;
+      
+      if (investigacionIdParaLibreto) {
+        await actualizarUsuariosDelLibreto(investigacionIdParaLibreto);
       }
 
       showSuccess(`Participante ${isUpdate ? 'actualizado' : 'agregado'} exitosamente`);
