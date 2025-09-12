@@ -23,23 +23,26 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
     // Obtener información del usuario actual desde los headers o query params
     const userId = req.headers['x-user-id'] as string || req.query.userId as string;
+    const rolSeleccionado = req.headers['x-rol-seleccionado'] as string || req.query.rolSeleccionado as string;
+    
     console.log('🔄 Obteniendo sesiones de reclutamiento para usuario:', userId);
+    console.log('🎭 Rol seleccionado:', rolSeleccionado);
 
-    // Verificar si el usuario es administrador
+    // Verificar si el usuario es administrador basado en el rol seleccionado
     let esAdmin = false;
-    if (userId) {
-      // TEMPORAL: Tratar a alison@gmail.com como administrador
+    if (rolSeleccionado) {
+      esAdmin = rolSeleccionado.toLowerCase().includes('admin') || 
+                rolSeleccionado.toLowerCase().includes('administrador');
+      console.log('🔑 Usuario es administrador según rol seleccionado:', esAdmin);
+    } else if (userId) {
+      // Fallback: verificar en base de datos si no se proporciona rol
       const { data: usuarioData } = await supabaseServer
         .from('usuarios_con_roles')
         .select('email, roles')
         .eq('id', userId)
         .single();
       
-      // Si es alison@gmail.com, tratarlo como administrador
-      if (usuarioData?.email === 'alison@gmail.com') {
-        esAdmin = true;
-        console.log('🔑 Usuario alison@gmail.com tratado como administrador');
-      } else if (usuarioData?.roles) {
+      if (usuarioData?.roles) {
         // Verificar si tiene rol de administrador
         const { data: rolesData } = await supabaseServer
           .from('roles')

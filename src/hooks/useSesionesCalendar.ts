@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Sesion, SesionEvent } from '../types/sesiones';
 import { getTipoParticipanteVariant } from '../utils/tipoParticipanteUtils';
 import { supabase } from '../api/supabase';
+import { useRol } from '../contexts/RolContext';
 
 interface SesionesStats {
   total: number;
@@ -36,6 +37,7 @@ interface UseSesionesCalendarOptions {
 
 export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) => {
   const { investigacionId, autoLoad = true } = options;
+  const { rolSeleccionado } = useRol();
   
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,11 +164,15 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       if (userId) {
         url.searchParams.append('userId', userId);
       }
+      if (rolSeleccionado) {
+        url.searchParams.append('rolSeleccionado', rolSeleccionado);
+      }
       
       const response = await fetch(url.toString(), {
         headers: {
           'Content-Type': 'application/json',
-          ...(userId && { 'x-user-id': userId })
+          ...(userId && { 'x-user-id': userId }),
+          ...(rolSeleccionado && { 'x-rol-seleccionado': rolSeleccionado })
         }
       });
       
@@ -296,7 +302,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
     if (autoLoad) {
       loadSesiones();
     }
-  }, [investigacionId, autoLoad]);
+  }, [investigacionId, autoLoad, rolSeleccionado]);
 
   return {
     sesiones,
