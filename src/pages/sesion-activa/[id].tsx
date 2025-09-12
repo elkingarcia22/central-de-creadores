@@ -165,6 +165,9 @@ export default function SesionActivaPage() {
   // Estado para menú de 3 puntos
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   
+  // Estado para la investigación actual de la sesión
+  const [investigacionActual, setInvestigacionActual] = useState<any>(null);
+  
   // Hook para transcripción de audio con Web Speech API
   const audioTranscription = useWebSpeechTranscriptionSimple();
   
@@ -366,6 +369,13 @@ export default function SesionActivaPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showActionsMenu]);
+
+  // Cargar investigación actual cuando se carga el reclutamiento
+  useEffect(() => {
+    if (reclutamiento?.investigacion_id) {
+      loadInvestigacionActual();
+    }
+  }, [reclutamiento?.investigacion_id]);
 
   const loadParticipantData = async () => {
     try {
@@ -641,6 +651,25 @@ export default function SesionActivaPage() {
       }
     } catch (error) {
       console.error('Error cargando investigaciones:', error);
+    }
+  };
+
+  const loadInvestigacionActual = async () => {
+    if (reclutamiento?.investigacion_id) {
+      try {
+        console.log('🔍 Cargando investigación actual:', reclutamiento.investigacion_id);
+        const response = await fetch(`/api/investigaciones/${reclutamiento.investigacion_id}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('🔍 Investigación actual cargada:', data);
+          setInvestigacionActual(data);
+        } else {
+          console.error('🔍 Error cargando investigación actual:', response.status);
+        }
+      } catch (error) {
+        console.error('🔍 Error cargando investigación actual:', error);
+      }
     }
   };
 
@@ -987,7 +1016,9 @@ export default function SesionActivaPage() {
         },
         body: JSON.stringify({
           ...data,
-          participante_externo_id: participante?.id
+          participante_externo_id: participante?.id,
+          investigacion_id: investigacionActual?.id || reclutamiento?.investigacion_id,
+          responsable_id: investigacionActual?.responsable_id || data.responsable_id
         }),
       });
 
@@ -2179,10 +2210,11 @@ export default function SesionActivaPage() {
           isOpen={showSeguimientoModal}
           onClose={() => setShowSeguimientoModal(false)}
           onSave={handleCrearSeguimiento}
-          investigacionId={reclutamiento?.id || ''}
+          investigacionId={investigacionActual?.id || reclutamiento?.investigacion_id || ''}
           usuarios={usuarios}
           participanteExternoPrecargado={participante}
           investigaciones={investigaciones}
+          responsablePrecargado={investigacionActual?.responsable_id}
         />
       )}
 
