@@ -114,8 +114,19 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                   ? 'opacity-50 cursor-not-allowed' 
                   : 'hover:bg-accent'
                 }
-                ${action.className || '!text-popover-foreground'}
               `}
+              style={action.className?.includes('text-red') ? {
+                color: 'rgb(220 38 38) !important', // red-600
+                backgroundColor: 'transparent !important'
+              } : {
+                color: 'rgb(var(--popover-foreground)) !important'
+              }}
+              onMouseEnter={action.className?.includes('text-red') ? (e) => {
+                e.currentTarget.style.color = 'rgb(185 28 28) !important'; // red-700
+              } : undefined}
+              onMouseLeave={action.className?.includes('text-red') ? (e) => {
+                e.currentTarget.style.color = 'rgb(220 38 38) !important'; // red-600
+              } : undefined}
             >
               <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-current">
                 {action.icon}
