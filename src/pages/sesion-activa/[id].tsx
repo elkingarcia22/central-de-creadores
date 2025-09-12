@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useToast } from '../../contexts/ToastContext';
 import { Layout, PageHeader, SideModal, Input, Textarea, Select, ConfirmModal, EmptyState, InfoContainer, InfoItem } from '../../components/ui';
-import { DolorSideModal } from '../../components/dolores/DolorSideModal';
+import { DolorSideModal } from '../../components/ui/DolorSideModal';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
