@@ -2174,8 +2174,11 @@ export default function SesionActivaPage() {
             setShowVerDolorModal(false);
             setDolorSeleccionado(null);
           }}
+          participanteId={participante?.id || ''}
+          participanteNombre={participante?.nombre || ''}
           dolor={dolorSeleccionado}
-          mode="view"
+          onSave={() => {}} // No se usa en modo view
+          readOnly={true}
         />
       )}
 
