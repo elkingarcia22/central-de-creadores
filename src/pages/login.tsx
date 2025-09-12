@@ -366,18 +366,6 @@ export default function Login() {
               {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </Button>
 
-            {/* Mensaje de ayuda para desarrollo */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                <Typography variant="body2" className="text-blue-800 font-medium mb-2">
-                  💡 Credenciales de prueba:
-                </Typography>
-                <Typography variant="body2" className="text-blue-700 text-sm">
-                  <strong>Email:</strong> tefa@gmail.com<br/>
-                  <strong>Contraseña:</strong> 123456
-                </Typography>
-              </div>
-            )}
           </form>
         </Card>
       </div>
