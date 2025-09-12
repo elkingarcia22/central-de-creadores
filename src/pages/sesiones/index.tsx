@@ -11,12 +11,14 @@ import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
 import SesionesCalendar, { SesionesCalendarRef } from '../../components/sesiones/SesionesCalendar';
 import { useFastUser } from '../../contexts/FastUserContext';
+import { useRol } from '../../contexts/RolContext';
 
 
 const SesionesPageContent: React.FC = () => {
   const router = useRouter();
   const { showError, showSuccess, showWarning } = useToast();
   const { userId, isAuthenticated } = useFastUser();
+  const { rolSeleccionado } = useRol();
   
   const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
@@ -113,8 +115,25 @@ const SesionesPageContent: React.FC = () => {
       
       try {
         console.log('🔄 Cargando sesiones de reclutamiento...');
+        console.log('👤 Usuario ID:', userId);
+        console.log('🎭 Rol seleccionado:', rolSeleccionado);
         
-        const response = await fetch('/api/sesiones-reclutamiento');
+        // Construir URL con parámetros de usuario y rol
+        const url = new URL('/api/sesiones-reclutamiento', window.location.origin);
+        if (userId) {
+          url.searchParams.append('userId', userId);
+        }
+        if (rolSeleccionado) {
+          url.searchParams.append('rolSeleccionado', rolSeleccionado);
+        }
+        
+        const response = await fetch(url.toString(), {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(userId && { 'x-user-id': userId }),
+            ...(rolSeleccionado && { 'x-rol-seleccionado': rolSeleccionado })
+          }
+        });
         
         if (!response.ok) {
         const errorText = await response.text();
@@ -148,7 +167,7 @@ const SesionesPageContent: React.FC = () => {
     cargarUsuarios();
     checkGoogleCalendarConnection();
     
-  }, [isAuthenticated, userId]);
+  }, [isAuthenticated, userId, rolSeleccionado]);
 
   // Efecto para cerrar la búsqueda con Escape
   useEffect(() => {
