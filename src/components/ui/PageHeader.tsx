@@ -165,7 +165,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           )}
         </div>
         {/* Línea separadora de lado a lado */}
-        <div className="border-b border-border -mx-6"></div>
+        <div className="relative">
+          <div className="absolute left-0 right-0 border-b border-border"></div>
+        </div>
       </div>
     );
   }
