@@ -207,8 +207,6 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
           canceladas: sesionesEnriquecidas.filter((s: Sesion) => s.estado === 'cancelada').length
         };
         
-        console.log('📊 Estadísticas calculadas:', newStats);
-        console.log('📊 Estados de sesiones:', sesionesEnriquecidas.map(s => ({ id: s.id, estado: s.estado })));
         setStats(newStats);
       } else {
         setSesiones([]);
