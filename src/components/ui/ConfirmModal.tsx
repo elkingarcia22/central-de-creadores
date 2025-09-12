@@ -93,14 +93,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             title={title}
             variant="title-only"
             color="gray"
-            className="mb-0"
+            className="mb-4"
             icon={getIcon()}
             onClose={onClose}
           />
         )}
-        
-        {/* Línea divisoria después del header - sin padding para ir de lado a lado */}
-        <div className="w-full border-b border-border mb-4 -mx-6"></div>
         
         {/* Contenido del modal */}
         <div className="flex flex-col items-start w-full px-6">
