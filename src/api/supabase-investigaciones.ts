@@ -279,9 +279,29 @@ export const obtenerInvestigaciones = async (usuarioId?: string, esAdmin: boolea
     // Aplicar filtros de asignación si no es administrador
     if (!esAdmin && usuarioId) {
       console.log('🔒 Aplicando filtros de asignación para usuario:', usuarioId);
-      console.log('🔍 Filtro SQL:', `responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
-      // Los investigadores solo ven investigaciones donde son responsables o implementadores, NO como creadores
-      query = query.or(`responsable_id.eq.${usuarioId},implementador_id.eq.${usuarioId}`);
+      
+      // Obtener investigaciones donde el usuario está en el libreto
+      const { data: libretosUsuario } = await supabase
+        .from('libretos_investigacion')
+        .select('investigacion_id')
+        .contains('usuarios_participantes', [usuarioId]);
+
+      const libretosInvestigacionIds = libretosUsuario?.map(lib => lib.investigacion_id) || [];
+      console.log('📊 Investigaciones del usuario en libretos:', libretosInvestigacionIds);
+      
+      // Combinar filtros: responsable, implementador, o en libreto
+      const filtros = [
+        `responsable_id.eq.${usuarioId}`,
+        `implementador_id.eq.${usuarioId}`
+      ];
+      
+      // Agregar filtro para investigaciones en libretos si las hay
+      if (libretosInvestigacionIds.length > 0) {
+        filtros.push(`id.in.(${libretosInvestigacionIds.join(',')})`);
+      }
+      
+      console.log('🔍 Filtros aplicados:', filtros);
+      query = query.or(filtros.join(','));
     } else {
       console.log('🔓 Sin filtros de asignación - Es admin o no hay usuarioId');
     }
