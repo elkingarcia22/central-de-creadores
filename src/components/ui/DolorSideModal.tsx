@@ -200,6 +200,13 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       } else {
         onSave(formData);
       }
+      
+      // Resetear estado después de llamar onSave
+      setTimeout(() => {
+        setIsSubmitting(false);
+        isSubmittingRef.current = false;
+        submissionIdRef.current = null;
+      }, 100);
     } catch (error) {
       console.error('❌ Error en handleSubmit:', error);
       setIsSubmitting(false);
