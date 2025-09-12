@@ -86,7 +86,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       closeOnEscape={!loading}
       showCloseButton={false}
     >
-      <div className="flex flex-col items-start w-full -m-6">
+      <div className="flex flex-col items-start w-full">
         {/* Header con PageHeader e icono integrado */}
         {title && (
           <PageHeader
@@ -100,7 +100,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         )}
         
         {/* Contenido del modal */}
-        <div className="flex flex-col items-start w-full px-6 pt-6">
+        <div className="flex flex-col items-start w-full px-6">
           <Typography variant="body1" color="secondary" className="text-muted-foreground text-left w-full">
             {message}
           </Typography>

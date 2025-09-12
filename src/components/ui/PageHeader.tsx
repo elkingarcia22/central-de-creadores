@@ -127,9 +127,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       <div className={cn(className)}>
         <div className="flex items-center justify-between w-full py-4 px-6">
           {/* Título e icono a la izquierda */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             {icon && (
-              <div className={cn("flex items-center justify-center mr-2", selectedColor?.icon)}>
+              <div className={cn("flex items-center justify-center", selectedColor?.icon)}>
                 {icon}
               </div>
             )}
