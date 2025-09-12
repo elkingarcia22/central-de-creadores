@@ -567,6 +567,14 @@ const SesionesPageContent: React.FC = () => {
     const enCurso = sesiones.filter(s => s.estado === 'en_curso' || s.estado_agendamiento === 'en_curso').length;
     const canceladas = sesiones.filter(s => s.estado === 'cancelada' || s.estado_agendamiento === 'cancelada').length;
     
+    console.log('📊 [SESIONES PAGE] Calculando estadísticas:');
+    console.log('📊 Total sesiones:', total);
+    console.log('📊 Estados de sesiones:', sesiones.map(s => ({ id: s.id, estado: s.estado, estado_agendamiento: s.estado_agendamiento })));
+    console.log('📊 Programadas:', programadas);
+    console.log('📊 Completadas:', completadas);
+    console.log('📊 En curso:', enCurso);
+    console.log('📊 Canceladas:', canceladas);
+    
     // Calcular sesiones de esta semana
     const hoy = new Date();
     const inicioSemana = new Date(hoy);
