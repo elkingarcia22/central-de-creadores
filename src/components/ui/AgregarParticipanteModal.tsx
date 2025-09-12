@@ -178,13 +178,7 @@ export default function AgregarParticipanteModal({
     });
   }, [isOpen]);
 
-  // Auto-seleccionar primera investigación cuando se abra el modal con selector
-  useEffect(() => {
-    if (isOpen && showInvestigacionSelector && investigaciones.length > 0 && !investigacionId) {
-      console.log('🔍 Auto-seleccionando primera investigación:', investigaciones[0]);
-      setInvestigacionId(investigaciones[0].id);
-    }
-  }, [isOpen, showInvestigacionSelector, investigaciones, investigacionId]);
+  // No auto-seleccionar investigación - el usuario debe seleccionarla manualmente
 
   // Recargar usuarios cuando cambie la investigación seleccionada
   // Cargar usuarios del libreto cuando se seleccione una investigación
