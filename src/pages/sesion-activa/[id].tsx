@@ -2112,7 +2112,7 @@ export default function SesionActivaPage() {
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
           onClose={() => setShowPerfilamientoModal(false)}
-          onSelectCategoria={(categoria) => {
+          onCategoriaSeleccionada={(categoria) => {
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
