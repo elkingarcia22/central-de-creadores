@@ -2111,7 +2111,7 @@ export default function SesionActivaPage() {
                 onClick={() => setShowActionsMenu(!showActionsMenu)}
                 variant="outline"
                 size="md"
-                className="flex items-center justify-center"
+                className="flex items-center justify-center px-3"
               >
                 <MoreVerticalIcon className="w-4 h-4" />
               </Button>
