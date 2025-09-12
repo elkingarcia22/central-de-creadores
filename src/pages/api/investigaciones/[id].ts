@@ -14,6 +14,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     console.log('🔍 Obteniendo investigación:', id);
+    console.log('🔍 supabaseServer disponible:', !!supabaseServer);
+
+    if (!supabaseServer) {
+      console.error('❌ supabaseServer no está disponible');
+      return res.status(500).json({ error: 'Error de configuración del servidor' });
+    }
 
     // Buscar la investigación por ID
     const { data: investigacion, error: errorInvestigacion } = await supabaseServer
