@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon, SearchIcon, CheckIcon } from '../icons';
 import { useSmartPositioning } from '../../hooks/useSmartPositioning';
@@ -61,17 +61,19 @@ const Select: React.FC<SelectProps> = ({
   const { calculatePosition } = useSmartPositioning();
 
   // Filtrar opciones basado en el término de búsqueda
-  const filteredOptions = (options || []).filter(option =>
-    searchable && searchTerm
-      ? option.label.toLowerCase().includes(searchTerm.toLowerCase())
-      : true
-  );
+  const filteredOptions = useMemo(() => {
+    return (options || []).filter(option =>
+      searchable && searchTerm
+        ? option.label.toLowerCase().includes(searchTerm.toLowerCase())
+        : true
+    );
+  }, [options, searchable, searchTerm]);
 
-  // Log para debug
-  console.log('🔍 Select options:', (options || []).length, 'filtered:', filteredOptions.length, 'isOpen:', isOpen);
 
   // Obtener la opción seleccionada
-  const selectedOption = (options || []).find(option => option.value === value);
+  const selectedOption = useMemo(() => {
+    return (options || []).find(option => option.value === value);
+  }, [options, value]);
 
   // Calcular posición inteligente del dropdown
   const getDropdownPosition = useCallback(() => {
@@ -175,11 +177,10 @@ const Select: React.FC<SelectProps> = ({
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen, filteredOptions, onChange]);
+  }, [isOpen, filteredOptions.length, onChange]);
 
   // Cerrar dropdown cuando se selecciona una opción
   const handleOptionClick = (optionValue: string) => {
-    console.log('🔍 Option clicked:', optionValue);
     onChange?.(optionValue);
     if (!multiple) {
       setIsOpen(false);
@@ -226,10 +227,8 @@ const Select: React.FC<SelectProps> = ({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log('🔍 Select clicked, disabled:', disabled, 'loading:', loading, 'isOpen:', isOpen);
           if (!disabled && !loading) {
             const newIsOpen = !isOpen;
-            console.log('🔍 Setting isOpen to:', newIsOpen);
             setIsOpen(newIsOpen);
             if (newIsOpen) {
               onFocus?.();
@@ -308,7 +307,6 @@ const Select: React.FC<SelectProps> = ({
               </div>
             ) : (
               filteredOptions.map((option) => {
-                console.log('🔍 Rendering option:', option.value, 'disabled:', option.disabled, 'label:', option.label);
                 return (
                 <button
                   key={option.value}
@@ -319,7 +317,6 @@ const Select: React.FC<SelectProps> = ({
                     value === option.value && 'bg-primary/10 text-primary'
                   )}
                   onClick={(e) => {
-                    console.log('🔍 Select - Option button clicked:', option.value);
                     if (!option.disabled) {
                       e.stopPropagation();
                       handleOptionClick(option.value);
