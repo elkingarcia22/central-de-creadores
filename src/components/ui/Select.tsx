@@ -321,6 +321,17 @@ const Select: React.FC<SelectProps> = ({
             style={{
               backgroundColor: 'rgb(var(--background))'
             }}
+            ref={(el) => {
+              if (el && isOpen) {
+                setTimeout(() => {
+                  const computedStyle = window.getComputedStyle(el);
+                  console.log('🔍 [Select] Options container - estilos computados:');
+                  console.log('🔍 [Select] Options backgroundColor:', computedStyle.backgroundColor);
+                  console.log('🔍 [Select] Options color:', computedStyle.color);
+                  console.log('🔍 [Select] Options clases:', el.className);
+                }, 100);
+              }
+            }}
           >
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-muted-foreground">
@@ -337,6 +348,17 @@ const Select: React.FC<SelectProps> = ({
                     option.disabled && 'opacity-50 cursor-not-allowed',
                     value === option.value && 'bg-primary/10 text-primary'
                   )}
+                  ref={(el) => {
+                    if (el && isOpen && option.value === filteredOptions[0]?.value) {
+                      setTimeout(() => {
+                        const computedStyle = window.getComputedStyle(el);
+                        console.log('🔍 [Select] First option - estilos computados:');
+                        console.log('🔍 [Select] Option backgroundColor:', computedStyle.backgroundColor);
+                        console.log('🔍 [Select] Option color:', computedStyle.color);
+                        console.log('🔍 [Select] Option clases:', el.className);
+                      }, 150);
+                    }
+                  }}
                   onClick={(e) => {
                     if (!option.disabled) {
                       e.stopPropagation();
