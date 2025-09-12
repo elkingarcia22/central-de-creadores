@@ -2114,14 +2114,14 @@ export default function SesionActivaPage() {
               
               {/* Menú desplegable */}
               {showActionsMenu && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50">
                   <div className="py-1">
                     <button
                       onClick={() => {
                         setShowSeguimientoModal(true);
                         setShowActionsMenu(false);
                       }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
                     >
                       <MessageIcon className="w-4 h-4" />
                       Crear Seguimiento
@@ -2131,7 +2131,7 @@ export default function SesionActivaPage() {
                         setShowPerfilamientoModal(true);
                         setShowActionsMenu(false);
                       }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
                     >
                       <UserIcon className="w-4 h-4" />
                       Crear Perfilamiento
@@ -2141,7 +2141,7 @@ export default function SesionActivaPage() {
                         setShowCrearDolorModal(true);
                         setShowActionsMenu(false);
                       }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
                     >
                       <AlertTriangleIcon className="w-4 h-4" />
                       Crear Dolor
