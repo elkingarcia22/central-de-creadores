@@ -159,6 +159,12 @@ export default function SesionActivaPage() {
   const [showCrearPerfilamientoModal, setShowCrearPerfilamientoModal] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
   
+  // Estados para crear dolor
+  const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  
+  // Estado para menú de 3 puntos
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  
   // Hook para transcripción de audio con Web Speech API
   const audioTranscription = useWebSpeechTranscriptionSimple();
   
@@ -343,6 +349,23 @@ export default function SesionActivaPage() {
       });
     }
   }, [dolores]);
+
+  // Cerrar menú de acciones cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showActionsMenu) {
+        const target = event.target as Element;
+        if (!target.closest('.relative')) {
+          setShowActionsMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActionsMenu]);
 
   const loadParticipantData = async () => {
     try {
@@ -1006,6 +1029,32 @@ export default function SesionActivaPage() {
     } catch (error) {
       console.error('Error al crear perfilamiento:', error);
       showError('Error al crear el perfilamiento');
+    }
+  };
+
+  // Funciones para manejar dolores
+  const handleCrearDolor = async (data: any) => {
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor creado exitosamente');
+        setShowCrearDolorModal(false);
+        // Recargar dolores
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al crear el dolor');
+      }
+    } catch (error) {
+      console.error('Error al crear dolor:', error);
+      showError('Error al crear el dolor');
     }
   };
 
@@ -2019,25 +2068,56 @@ export default function SesionActivaPage() {
               Guardar
             </Button>
             
-            <Button 
-              onClick={() => setShowSeguimientoModal(true)}
-              variant="outline"
-              size="md"
-              className="flex items-center gap-2"
-            >
-              <MessageIcon className="w-4 h-4" />
-              Crear Seguimiento
-            </Button>
-            
-            <Button 
-              onClick={() => setShowPerfilamientoModal(true)}
-              variant="outline"
-              size="md"
-              className="flex items-center gap-2"
-            >
-              <UserIcon className="w-4 h-4" />
-              Crear Perfilamiento
-            </Button>
+            {/* Menú de acciones con 3 puntos */}
+            <div className="relative">
+              <Button 
+                onClick={() => setShowActionsMenu(!showActionsMenu)}
+                variant="outline"
+                size="md"
+                className="flex items-center gap-2"
+              >
+                <MoreVerticalIcon className="w-4 h-4" />
+                Acciones
+              </Button>
+              
+              {/* Menú desplegable */}
+              {showActionsMenu && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowSeguimientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <MessageIcon className="w-4 h-4" />
+                      Crear Seguimiento
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPerfilamientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                      Crear Perfilamiento
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCrearDolorModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <AlertTriangleIcon className="w-4 h-4" />
+                      Crear Dolor
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
             </div>
           </div>
 
@@ -2138,6 +2218,17 @@ export default function SesionActivaPage() {
             setCategoriaSeleccionada(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}
+        />
+      )}
+
+      {/* Modal de crear dolor */}
+      {showCrearDolorModal && participante && (
+        <DolorSideModal
+          isOpen={showCrearDolorModal}
+          onClose={() => setShowCrearDolorModal(false)}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          onSave={handleCrearDolor}
         />
       )}
     </Layout>
