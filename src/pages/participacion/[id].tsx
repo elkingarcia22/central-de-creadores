@@ -596,6 +596,9 @@ export default function VistaParticipacion() {
     } catch (error) {
       console.error('Error al eliminar dolor:', error);
       showError('Error al eliminar el dolor');
+    } finally {
+      setShowDeleteConfirmModal(false);
+      setDolorParaEliminar(null);
     }
   };
 
