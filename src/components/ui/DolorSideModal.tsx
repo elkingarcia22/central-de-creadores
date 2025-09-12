@@ -67,7 +67,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     if (dolor && isOpen) {
       console.log('🔍 Configurando formulario para edición con dolor:', dolor);
       const newFormData = {
-        categoria_id: dolor.categoria_id,
+        categoria_id: dolor.categoria_id || '',
         titulo: dolor.titulo,
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad || SeveridadDolor.MEDIA,
