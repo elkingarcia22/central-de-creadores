@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import { useToast } from '../../contexts/ToastContext';
 import { Layout, PageHeader, SideModal, Input, Textarea, Select, ConfirmModal, EmptyState, InfoContainer, InfoItem } from '../../components/ui';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
+import { SeguimientoSideModal } from '../../components/ui/SeguimientoSideModal';
+import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
+import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -10,7 +13,7 @@ import { AIButton } from '../../components/ui/AIButton';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon, MicIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon, MicIcon, UserPlusIcon, FileTextIcon as FileTextIconAlt } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -90,6 +93,21 @@ interface Usuario {
   activo: boolean;
 }
 
+interface SeguimientoFormData {
+  investigacion_id: string;
+  fecha_seguimiento: string;
+  notas: string;
+  responsable_id: string;
+  estado: string;
+  participante_externo_id?: string;
+}
+
+interface CategoriaPerfilamiento {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+}
+
 export default function SesionActivaPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -134,6 +152,12 @@ export default function SesionActivaPage() {
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
   const [segmentosTranscripcion, setSegmentosTranscripcion] = useState<any[]>([]);
+  
+  // Estados para modales de seguimiento y perfilamiento
+  const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
+  const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
+  const [showCrearPerfilamientoModal, setShowCrearPerfilamientoModal] = useState(false);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
   
   // Hook para transcripción de audio con Web Speech API
   const audioTranscription = useWebSpeechTranscriptionSimple();
@@ -927,6 +951,61 @@ export default function SesionActivaPage() {
     } finally {
       setShowDeleteConfirmModal(false);
       setDolorParaEliminar(null);
+    }
+  };
+
+  // Funciones para manejar seguimientos
+  const handleCrearSeguimiento = async (data: SeguimientoFormData) => {
+    try {
+      const response = await fetch('/api/seguimientos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_externo_id: participante?.id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Seguimiento creado exitosamente');
+        setShowSeguimientoModal(false);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || 'Error al crear el seguimiento');
+      }
+    } catch (error) {
+      console.error('Error al crear seguimiento:', error);
+      showError('Error al crear el seguimiento');
+    }
+  };
+
+  // Funciones para manejar perfilamientos
+  const handleCrearPerfilamiento = async (data: any) => {
+    try {
+      const response = await fetch('/api/perfilamientos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_id: participante?.id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Perfilamiento creado exitosamente');
+        setShowCrearPerfilamientoModal(false);
+        setCategoriaSeleccionada(null);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || 'Error al crear el perfilamiento');
+      }
+    } catch (error) {
+      console.error('Error al crear perfilamiento:', error);
+      showError('Error al crear el perfilamiento');
     }
   };
 
@@ -1939,6 +2018,26 @@ export default function SesionActivaPage() {
             >
               Guardar
             </Button>
+            
+            <Button 
+              onClick={() => setShowSeguimientoModal(true)}
+              variant="outline"
+              size="md"
+              className="flex items-center gap-2"
+            >
+              <MessageIcon className="w-4 h-4" />
+              Crear Seguimiento
+            </Button>
+            
+            <Button 
+              onClick={() => setShowPerfilamientoModal(true)}
+              variant="outline"
+              size="md"
+              className="flex items-center gap-2"
+            >
+              <UserPlusIcon className="w-4 h-4" />
+              Crear Perfilamiento
+            </Button>
             </div>
           </div>
 
@@ -1992,6 +2091,53 @@ export default function SesionActivaPage() {
           confirmText="Eliminar"
           cancelText="Cancelar"
           size="md"
+        />
+      )}
+
+      {/* Modal de crear seguimiento */}
+      {showSeguimientoModal && participante && (
+        <SeguimientoSideModal
+          isOpen={showSeguimientoModal}
+          onClose={() => setShowSeguimientoModal(false)}
+          onSave={handleCrearSeguimiento}
+          investigacionId={reclutamiento?.id || ''}
+          usuarios={usuarios}
+          participanteExternoPrecargado={participante}
+          investigaciones={investigaciones}
+        />
+      )}
+
+      {/* Modal de seleccionar categoría de perfilamiento */}
+      {showPerfilamientoModal && participante && (
+        <SeleccionarCategoriaPerfilamientoModal
+          isOpen={showPerfilamientoModal}
+          onClose={() => setShowPerfilamientoModal(false)}
+          onSelectCategoria={(categoria) => {
+            setCategoriaSeleccionada(categoria);
+            setShowPerfilamientoModal(false);
+            setShowCrearPerfilamientoModal(true);
+          }}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+        />
+      )}
+
+      {/* Modal de crear perfilamiento específico */}
+      {showCrearPerfilamientoModal && categoriaSeleccionada && participante && (
+        <CrearPerfilamientoModal
+          isOpen={showCrearPerfilamientoModal}
+          onClose={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+          }}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          categoria={categoriaSeleccionada}
+          onSuccess={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            showSuccess('Perfilamiento creado exitosamente');
+          }}
         />
       )}
     </Layout>
