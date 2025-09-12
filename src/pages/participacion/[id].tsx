@@ -2535,7 +2535,7 @@ export default function VistaParticipacion() {
         onClose={() => setShowCrearDolorModal(false)}
         participanteId={id as string}
         participanteNombre={participante?.nombre || ''}
-        onSave={handleDolorGuardado}
+        onSave={handleCrearDolor}
       />
 
       <DolorSideModal
