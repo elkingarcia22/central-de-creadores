@@ -2615,16 +2615,16 @@ export default function VistaParticipacion() {
         size="md"
       />
 
-      <DolorSideModal
-        isOpen={showModalCrearDolor}
-        onClose={() => {
-          setShowModalCrearDolor(false);
-          setParticipanteParaCrearDolor(null);
-        }}
-        participanteId={participanteParaCrearDolor?.id || ''}
-        participanteNombre={participanteParaCrearDolor?.nombre || ''}
-        onSave={handleDolorGuardado}
-      />
+      {/* Modal de crear dolor (igual que sesión activa) */}
+      {showModalCrearDolor && participante && (
+        <DolorSideModal
+          isOpen={showModalCrearDolor}
+          onClose={() => setShowModalCrearDolor(false)}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          onSave={handleDolorGuardado}
+        />
+      )}
 
       <SeleccionarCategoriaPerfilamientoModal
         isOpen={showModalPerfilamiento}
