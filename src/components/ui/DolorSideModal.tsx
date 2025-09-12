@@ -9,7 +9,7 @@ interface DolorSideModalProps {
   participanteId: string;
   participanteNombre?: string;
   dolor?: DolorParticipanteCompleto | null;
-  onSave: (dolor: CrearDolorRequest | ActualizarDolorRequest) => void;
+  onSave: (dolor: CrearDolorRequest | ActualizarDolorRequest) => Promise<void>;
   loading?: boolean;
   readOnly?: boolean; // Nueva prop para modo solo lectura
   onEdit?: () => void; // Nueva prop para cambiar a modo edición
@@ -161,7 +161,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const currentSubmissionId = new Date().toISOString() + Math.random().toString(36).substr(2, 9);
     
     console.log('🔍 handleSubmit llamado');
@@ -193,20 +193,18 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     
     try {
       if (isEditing && dolor) {
-        onSave({
+        await onSave({
           id: dolor.id || '',
           ...formData
         } as ActualizarDolorRequest);
       } else {
-        onSave(formData);
+        await onSave(formData);
       }
       
-      // Resetear estado después de llamar onSave
-      setTimeout(() => {
-        setIsSubmitting(false);
-        isSubmittingRef.current = false;
-        submissionIdRef.current = null;
-      }, 100);
+      // Resetear estado después de que onSave termine
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
+      submissionIdRef.current = null;
     } catch (error) {
       console.error('❌ Error en handleSubmit:', error);
       setIsSubmitting(false);
