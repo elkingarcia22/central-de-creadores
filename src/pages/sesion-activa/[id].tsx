@@ -977,7 +977,7 @@ export default function SesionActivaPage() {
         showSuccess('Dolor actualizado exitosamente');
         setShowEditarDolorModal(false);
         setDolorSeleccionado(null);
-        await cargarDolores();
+        await loadDoloresData();
       } else {
         const errorData = await response.json();
         showError(errorData.error || 'Error al actualizar el dolor');
@@ -998,7 +998,7 @@ export default function SesionActivaPage() {
 
       if (response.ok) {
         showSuccess('Dolor eliminado exitosamente');
-        await cargarDolores();
+        await loadDoloresData();
       } else {
         const errorData = await response.json();
         showError(errorData.error || 'Error al eliminar el dolor');
