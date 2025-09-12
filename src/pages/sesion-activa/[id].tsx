@@ -1073,8 +1073,11 @@ export default function SesionActivaPage() {
   // Funciones para manejar dolores
   const handleCrearDolor = async (data: any) => {
     try {
+      console.log('🔍 [SesionActiva] handleCrearDolor llamado con data:', data);
+      
       // Obtener el usuario actual
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('🔍 [SesionActiva] Usuario obtenido:', user?.id);
       
       const response = await fetch(`/api/participantes/${id}/dolores`, {
         method: 'POST',
@@ -1084,6 +1087,8 @@ export default function SesionActivaPage() {
         },
         body: JSON.stringify(data),
       });
+      
+      console.log('🔍 [SesionActiva] Response status:', response.status);
 
       if (response.ok) {
         showSuccess('Dolor creado exitosamente');
