@@ -2112,9 +2112,8 @@ export default function SesionActivaPage() {
                 variant="outline"
                 size="md"
                 iconOnly
-              >
-                <MoreVerticalIcon className="w-4 h-4" />
-              </Button>
+                icon={<MoreVerticalIcon className="w-4 h-4" />}
+              />
               
               {/* Menú desplegable */}
               {showActionsMenu && (
