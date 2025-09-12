@@ -77,6 +77,11 @@ export default function AgregarParticipanteModal({
   const [error, setError] = useState<string | null>(null);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
+  
+  // Log cuando cambie usuariosDelLibreto
+  useEffect(() => {
+    console.log('🔍 usuariosDelLibreto cambió:', usuariosDelLibreto);
+  }, [usuariosDelLibreto]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<Participante[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<Participante[]>([]);
@@ -102,6 +107,11 @@ export default function AgregarParticipanteModal({
   const [meetLink, setMeetLink] = useState('');
   const [generatingMeetLink, setGeneratingMeetLink] = useState(false);
   const [investigacionId, setInvestigacionId] = useState('');
+  
+  // Log cuando cambie investigacionId
+  useEffect(() => {
+    console.log('🔍 investigacionId cambió:', investigacionId);
+  }, [investigacionId]);
 
   // Estados para modales de crear participantes
   const [mostrarModalExterno, setMostrarModalExterno] = useState(false);
@@ -133,11 +143,17 @@ export default function AgregarParticipanteModal({
     if (isOpen && reclutamiento) {
       console.log('🔍 AgregarParticipanteModal - reclutamiento recibido:', reclutamiento);
       console.log('🔍 Responsable pre-cargado:', reclutamiento.responsable_pre_cargado);
+      console.log('🔍 showInvestigacionSelector:', showInvestigacionSelector);
+      console.log('🔍 reclutamiento.investigacion_id:', reclutamiento.investigacion_id);
       
       // Inicializar investigacionId desde el reclutamiento si no hay selector
       if (!showInvestigacionSelector && reclutamiento.investigacion_id) {
         console.log('🔍 Inicializando investigacionId desde reclutamiento:', reclutamiento.investigacion_id);
         setInvestigacionId(reclutamiento.investigacion_id);
+      } else if (showInvestigacionSelector) {
+        console.log('🔍 Modal con selector de investigación - no inicializando investigacionId desde reclutamiento');
+      } else {
+        console.log('🔍 No hay investigacion_id en reclutamiento o showInvestigacionSelector es false');
       }
     }
   }, [isOpen, reclutamiento, showInvestigacionSelector]);
@@ -176,21 +192,29 @@ export default function AgregarParticipanteModal({
 
   // Función para cargar usuarios del libreto
   const cargarUsuariosDelLibreto = async () => {
-    if (!investigacionId) return;
+    console.log('🔍 cargarUsuariosDelLibreto - investigacionId:', investigacionId);
+    if (!investigacionId) {
+      console.log('❌ No hay investigacionId, saliendo de cargarUsuariosDelLibreto');
+      return;
+    }
     
     try {
       console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionId);
       const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
+      console.log('🔍 Usuarios del libreto obtenidos:', usuariosLibreto);
       setUsuariosDelLibreto(usuariosLibreto);
       
       // Obtener todos los usuarios para combinar
+      console.log('🔍 Obteniendo todos los usuarios...');
       const resp = await fetch('/api/usuarios');
       if (resp.ok) {
         const data = await resp.json();
         const todosLosUsuarios = data.usuarios || [];
+        console.log('🔍 Todos los usuarios obtenidos:', todosLosUsuarios.length);
         
         // Combinar usuarios del libreto con todos los usuarios
         const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
+        console.log('🔍 Usuarios combinados:', usuariosCombinados);
         setResponsables(usuariosCombinados);
         
         console.log('✅ Usuarios del libreto recargados:', {
@@ -198,6 +222,8 @@ export default function AgregarParticipanteModal({
           total: todosLosUsuarios.length,
           combinados: usuariosCombinados.length
         });
+      } else {
+        console.error('❌ Error obteniendo todos los usuarios:', resp.status);
       }
     } catch (error) {
       console.error('❌ Error recargando usuarios del libreto:', error);
@@ -296,13 +322,16 @@ export default function AgregarParticipanteModal({
           const todosLosUsuarios = data.usuarios || [];
           
           // Cargar usuarios del libreto si hay una investigación seleccionada
+          console.log('🔍 cargarCatalogos - investigacionId:', investigacionId);
           if (investigacionId) {
             console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionId);
             const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
+            console.log('🔍 Usuarios del libreto obtenidos en cargarCatalogos:', usuariosLibreto);
             setUsuariosDelLibreto(usuariosLibreto);
             
             // Combinar usuarios del libreto con todos los usuarios
             const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
+            console.log('🔍 Usuarios combinados en cargarCatalogos:', usuariosCombinados);
             setResponsables(usuariosCombinados);
             
             console.log('✅ Usuarios combinados:', {
@@ -311,6 +340,7 @@ export default function AgregarParticipanteModal({
               combinados: usuariosCombinados.length
             });
           } else {
+            console.log('🔍 No hay investigacionId, usando todos los usuarios');
             setResponsables(todosLosUsuarios);
           }
         } else {
@@ -778,8 +808,13 @@ export default function AgregarParticipanteModal({
               required
             />
             
-            {/* Indicación de usuarios del libreto */}
-            {usuariosDelLibreto.length > 0 && (
+              {/* Indicación de usuarios del libreto */}
+              {(() => {
+                console.log('🔍 Renderizando sección usuarios del libreto - usuariosDelLibreto.length:', usuariosDelLibreto.length);
+                console.log('🔍 usuariosDelLibreto:', usuariosDelLibreto);
+                return null;
+              })()}
+              {usuariosDelLibreto.length > 0 && (
               <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center gap-2">
                   <UsersIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
