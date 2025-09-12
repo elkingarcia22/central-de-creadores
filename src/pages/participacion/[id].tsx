@@ -15,7 +15,7 @@ import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subti
 import { DolorParticipanteCompleto } from '../../types/dolores';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon, UserPlusIcon, ClipboardListIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon, ClipboardListIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -1973,7 +1973,7 @@ export default function VistaParticipacion() {
                 },
                 {
                   label: 'Crear Perfilamiento',
-                  icon: <UserPlusIcon className="w-4 h-4" />,
+                  icon: <PlusIcon className="w-4 h-4" />,
                   onClick: () => setShowModalPerfilamiento(true)
                 },
                 {
