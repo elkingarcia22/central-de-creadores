@@ -167,6 +167,16 @@ export default function VistaParticipacion() {
   const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
   const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
   const [dolorParaEditar, setDolorParaEditar] = useState<DolorParticipante | null>(null);
+
+  // Debug: Monitorear cambios en estados de modales
+  useEffect(() => {
+    console.log('🔍 [Participacion] Estados de modales cambiaron:', {
+      showVerDolorModal,
+      showEditarDolorModal,
+      dolorSeleccionado: dolorSeleccionado?.id,
+      dolorParaEditar: dolorParaEditar?.id
+    });
+  }, [showVerDolorModal, showEditarDolorModal, dolorSeleccionado, dolorParaEditar]);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<Participante | null>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<Participante | null>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<Participante | null>(null);
@@ -2389,9 +2399,12 @@ export default function VistaParticipacion() {
         loading={false}
         readOnly={true}
         onEdit={() => {
+          console.log('🔍 [Participacion] onEdit llamado con dolor:', dolorSeleccionado);
           if (dolorSeleccionado) {
+            console.log('🔍 [Participacion] Estableciendo dolorParaEditar:', dolorSeleccionado);
             setDolorParaEditar(dolorSeleccionado);
           }
+          console.log('🔍 [Participacion] Cerrando modal de ver y abriendo modal de editar');
           setShowVerDolorModal(false);
           setShowEditarDolorModal(true);
         }}
@@ -2400,6 +2413,7 @@ export default function VistaParticipacion() {
       <DolorSideModal
         isOpen={showEditarDolorModal}
         onClose={() => {
+          console.log('🔍 [Participacion] Cerrando modal de editar');
           setShowEditarDolorModal(false);
           setDolorParaEditar(null);
         }}
