@@ -174,6 +174,14 @@ export default function AgregarParticipanteModal({
     });
   }, [isOpen]);
 
+  // Auto-seleccionar primera investigación cuando se abra el modal con selector
+  useEffect(() => {
+    if (isOpen && showInvestigacionSelector && investigaciones.length > 0 && !investigacionId) {
+      console.log('🔍 Auto-seleccionando primera investigación:', investigaciones[0]);
+      setInvestigacionId(investigaciones[0].id);
+    }
+  }, [isOpen, showInvestigacionSelector, investigaciones, investigacionId]);
+
   // Recargar usuarios cuando cambie la investigación seleccionada
   useEffect(() => {
     if (isOpen && investigacionId && responsables.length > 0) {
