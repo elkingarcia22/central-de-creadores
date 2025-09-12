@@ -89,18 +89,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <div className="flex flex-col items-start w-full">
         {/* Header con PageHeader e icono integrado */}
         {title && (
-          <>
-            <PageHeader
-              title={title}
-              variant="title-only"
-              color="gray"
-              className="mb-0"
-              icon={getIcon()}
-              onClose={onClose}
-            />
-            {/* Línea separadora de lado a lado */}
-            <div className="w-full border-b border-border mb-4"></div>
-          </>
+          <PageHeader
+            title={title}
+            variant="title-only"
+            color="gray"
+            className="mb-4"
+            icon={getIcon()}
+            onClose={onClose}
+          />
         )}
         
         {/* Contenido del modal */}
