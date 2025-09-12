@@ -2414,21 +2414,23 @@ export default function VistaParticipacion() {
         }}
       />
 
-      <DolorSideModal
-        isOpen={showEditarDolorModal}
-        onClose={() => {
-          console.log('🔍 [Participacion] Cerrando modal de editar');
-          setShowEditarDolorModal(false);
-          setDolorParaEditar(null);
-        }}
-        participanteId={id as string}
-        participanteNombre={participante?.nombre || ''}
-        dolor={dolorParaEditar as DolorParticipanteCompleto}
-        onSave={handleActualizarDolor}
-        loading={false}
-        readOnly={false}
-        key={`editar-${dolorParaEditar?.id}-${showEditarDolorModal}`}
-      />
+      {showEditarDolorModal && dolorParaEditar && (
+        <DolorSideModal
+          isOpen={showEditarDolorModal}
+          onClose={() => {
+            console.log('🔍 [Participacion] Cerrando modal de editar');
+            setShowEditarDolorModal(false);
+            setDolorParaEditar(null);
+          }}
+          participanteId={id as string}
+          participanteNombre={participante?.nombre || ''}
+          dolor={dolorParaEditar as DolorParticipanteCompleto}
+          onSave={handleActualizarDolor}
+          loading={false}
+          readOnly={false}
+          key={`editar-${dolorParaEditar?.id}-${showEditarDolorModal}`}
+        />
+      )}
 
       <ConfirmModal
         isOpen={showDeleteConfirmModal}
