@@ -99,7 +99,9 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
               onClose={onClose}
             />
             {/* Línea separadora de lado a lado */}
-            <div className="border-b border-border mb-4"></div>
+            <div className="relative -mx-6 mb-4">
+              <div className="absolute inset-0 border-b border-border"></div>
+            </div>
           </>
         )}
         
