@@ -116,22 +116,22 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                 }
               `}
               style={action.label.toLowerCase().includes('eliminar') ? {
-                color: 'rgb(220 38 38) !important', // red-600
+                color: 'rgb(239 68 68) !important', // red-500 (más claro)
                 backgroundColor: 'transparent !important'
               } : {
                 color: 'rgb(var(--popover-foreground)) !important'
               }}
               onMouseEnter={action.label.toLowerCase().includes('eliminar') ? (e) => {
-                e.currentTarget.style.color = 'rgb(185 28 28) !important'; // red-700
+                e.currentTarget.style.color = 'rgb(220 38 38) !important'; // red-600 (hover)
               } : undefined}
               onMouseLeave={action.label.toLowerCase().includes('eliminar') ? (e) => {
-                e.currentTarget.style.color = 'rgb(220 38 38) !important'; // red-600
+                e.currentTarget.style.color = 'rgb(239 68 68) !important'; // red-500 (normal)
               } : undefined}
               ref={(el) => {
                 if (el && action.label.toLowerCase().includes('eliminar')) {
                   // Forzar color rojo después del render
                   setTimeout(() => {
-                    el.style.setProperty('color', 'rgb(220 38 38)', 'important');
+                    el.style.setProperty('color', 'rgb(239 68 68)', 'important'); // red-500 (más claro)
                   }, 0);
                 }
               }}
