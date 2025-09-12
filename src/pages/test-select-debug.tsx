@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Select } from '../components/ui/Select';
 
 const TestSelectDebug: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState('');
+  const [debugInfo, setDebugInfo] = useState({
+    bodyClassName: '',
+    isDarkMode: false,
+    isClient: false
+  });
 
   const testOptions = [
     { value: 'opcion1', label: 'Opción 1' },
@@ -10,6 +15,14 @@ const TestSelectDebug: React.FC = () => {
     { value: 'opcion3', label: 'Opción 3' },
     { value: 'opcion4', label: 'Opción 4' },
   ];
+
+  useEffect(() => {
+    setDebugInfo({
+      bodyClassName: document.body.className,
+      isDarkMode: document.documentElement.classList.contains('dark'),
+      isClient: true
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -152,8 +165,9 @@ const TestSelectDebug: React.FC = () => {
         <div className="bg-card border border-border rounded-lg p-4">
           <h2 className="text-xl font-semibold mb-4">Debug Info</h2>
           <div className="text-sm space-y-2">
-            <div><strong>Clase del body:</strong> <code>{document.body.className}</code></div>
-            <div><strong>Modo oscuro activo:</strong> <code>{document.documentElement.classList.contains('dark') ? 'Sí' : 'No'}</code></div>
+            <div><strong>Cliente renderizado:</strong> <code>{debugInfo.isClient ? 'Sí' : 'No'}</code></div>
+            <div><strong>Clase del body:</strong> <code>{debugInfo.bodyClassName || 'Cargando...'}</code></div>
+            <div><strong>Modo oscuro activo:</strong> <code>{debugInfo.isDarkMode ? 'Sí' : 'No'}</code></div>
             <div><strong>Variable --background computada:</strong> 
               <span 
                 className="ml-2 px-2 py-1 rounded text-xs"
