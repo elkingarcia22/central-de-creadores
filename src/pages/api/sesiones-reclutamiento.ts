@@ -21,10 +21,36 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Cliente de Supabase no configurado' });
     }
 
-    console.log('🔄 Obteniendo todas las sesiones de reclutamiento...');
+    // Obtener información del usuario actual desde los headers o query params
+    const userId = req.headers['x-user-id'] as string || req.query.userId as string;
+    console.log('🔄 Obteniendo sesiones de reclutamiento para usuario:', userId);
 
-    // Obtener todos los reclutamientos con información completa
-    const { data: reclutamientos, error } = await supabaseServer
+    // Verificar si el usuario es administrador
+    let esAdmin = false;
+    if (userId) {
+      const { data: usuarioData } = await supabaseServer
+        .from('usuarios_con_roles')
+        .select('roles')
+        .eq('id', userId)
+        .single();
+      
+      if (usuarioData?.roles) {
+        // Verificar si tiene rol de administrador
+        const { data: rolesData } = await supabaseServer
+          .from('roles')
+          .select('id, name')
+          .in('id', usuarioData.roles);
+        
+        esAdmin = rolesData?.some(rol => 
+          rol.name?.toLowerCase().includes('admin') || 
+          rol.name?.toLowerCase().includes('administrador')
+        ) || false;
+      }
+    }
+
+    console.log('👤 Usuario es administrador:', esAdmin);
+
+    let query = supabaseServer
       .from('reclutamientos')
       .select(`
         id,
@@ -40,8 +66,47 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         fecha_asignado,
         reclutador_id,
         meet_link
-      `)
-      .order('fecha_sesion', { ascending: false });
+      `);
+
+    // Si no es administrador, filtrar por usuario
+    if (!esAdmin && userId) {
+      console.log('🔍 Aplicando filtros para usuario no-admin:', userId);
+      
+      // Obtener investigaciones donde el usuario está asignado
+      const { data: investigacionesUsuario } = await supabaseServer
+        .from('investigaciones')
+        .select('id')
+        .or(`responsable_id.eq.${userId},implementador_id.eq.${userId}`);
+
+      const investigacionIds = investigacionesUsuario?.map(inv => inv.id) || [];
+      console.log('📊 Investigaciones del usuario:', investigacionIds);
+
+      // Obtener libretos donde el usuario está en el equipo
+      const { data: libretosUsuario } = await supabaseServer
+        .from('libretos_investigacion')
+        .select('investigacion_id')
+        .contains('usuarios_participantes', [userId]);
+
+      const libretosInvestigacionIds = libretosUsuario?.map(lib => lib.investigacion_id) || [];
+      console.log('📊 Libretos del usuario:', libretosInvestigacionIds);
+
+      // Combinar todas las investigaciones relevantes
+      const todasLasInvestigaciones = [...new Set([...investigacionIds, ...libretosInvestigacionIds])];
+      console.log('📊 Todas las investigaciones relevantes:', todasLasInvestigaciones);
+
+      if (todasLasInvestigaciones.length > 0) {
+        // Filtrar reclutamientos por investigaciones relevantes O por reclutador asignado
+        query = query.or(`
+          investigacion_id.in.(${todasLasInvestigaciones.join(',')}),
+          reclutador_id.eq.${userId}
+        `);
+      } else {
+        // Si no tiene investigaciones asignadas, solo mostrar donde es reclutador
+        query = query.eq('reclutador_id', userId);
+      }
+    }
+
+    const { data: reclutamientos, error } = await query.order('fecha_sesion', { ascending: false });
 
     if (error) {
       console.error('❌ Error obteniendo reclutamientos:', error);

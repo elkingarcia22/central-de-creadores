@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Sesion, SesionEvent } from '../types/sesiones';
 import { getTipoParticipanteVariant } from '../utils/tipoParticipanteUtils';
+import { supabase } from '../api/supabase';
 
 interface SesionesStats {
   total: number;
@@ -152,7 +153,22 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
     try {
       console.log('🔄 Cargando sesiones para calendario...');
       
-      const response = await fetch('/api/sesiones-reclutamiento');
+      // Obtener información del usuario actual
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
+      // Construir URL con parámetros
+      const url = new URL('/api/sesiones-reclutamiento', window.location.origin);
+      if (userId) {
+        url.searchParams.append('userId', userId);
+      }
+      
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(userId && { 'x-user-id': userId })
+        }
+      });
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
