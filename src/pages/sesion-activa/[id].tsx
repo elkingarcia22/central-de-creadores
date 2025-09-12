@@ -2074,10 +2074,9 @@ export default function SesionActivaPage() {
                 onClick={() => setShowActionsMenu(!showActionsMenu)}
                 variant="outline"
                 size="md"
-                className="flex items-center gap-2"
+                className="flex items-center justify-center p-2"
               >
                 <MoreVerticalIcon className="w-4 h-4" />
-                Acciones
               </Button>
               
               {/* Menú desplegable */}
