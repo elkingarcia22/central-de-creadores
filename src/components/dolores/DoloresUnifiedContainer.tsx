@@ -127,7 +127,7 @@ export default function DoloresUnifiedContainer({
   }, [setFilters]);
 
   return (
-    <Card variant="elevated" padding="lg" className="space-y-6">
+    <Card variant="elevated" padding="lg" className="space-y-6 bg-background dark:bg-gray-900">
       {/* Header del contenedor con iconos integrados */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
