@@ -95,17 +95,6 @@ const Select: React.FC<SelectProps> = ({
       const position = getDropdownPosition();
       setDropdownPosition(position);
       
-      // Debug: verificar estilos del dropdown
-      setTimeout(() => {
-        if (dropdownRef.current) {
-          const computedStyle = window.getComputedStyle(dropdownRef.current);
-          console.log('🔍 [Select] Dropdown abierto - estilos computados:');
-          console.log('🔍 [Select] backgroundColor:', computedStyle.backgroundColor);
-          console.log('🔍 [Select] color:', computedStyle.color);
-          console.log('🔍 [Select] borderColor:', computedStyle.borderColor);
-          console.log('🔍 [Select] clases aplicadas:', dropdownRef.current.className);
-        }
-      }, 100);
     }
   }, [isOpen, getDropdownPosition]);
 
@@ -289,10 +278,6 @@ const Select: React.FC<SelectProps> = ({
             backgroundColor: 'rgb(var(--background)) !important',
             border: '1px solid rgb(var(--border)) !important'
           }}
-          onLoad={() => {
-            console.log('🔍 [Select] Dropdown cargado, clases:', 'bg-background border border-border rounded-md overflow-hidden shadow-lg');
-            console.log('🔍 [Select] Estilos computados:', window.getComputedStyle(dropdownRef.current || document.createElement('div')));
-          }}
           onClick={(e) => {
             // Asegurar que los clics dentro del dropdown no se propaguen
             e.stopPropagation();
@@ -320,17 +305,6 @@ const Select: React.FC<SelectProps> = ({
             className="max-h-60 overflow-y-auto"
             style={{
               backgroundColor: 'rgb(var(--background)) !important'
-            }}
-            ref={(el) => {
-              if (el && isOpen) {
-                setTimeout(() => {
-                  const computedStyle = window.getComputedStyle(el);
-                  console.log('🔍 [Select] Options container - estilos computados:');
-                  console.log('🔍 [Select] Options backgroundColor:', computedStyle.backgroundColor);
-                  console.log('🔍 [Select] Options color:', computedStyle.color);
-                  console.log('🔍 [Select] Options clases:', el.className);
-                }, 100);
-              }
             }}
           >
             {filteredOptions.length === 0 ? (
@@ -364,17 +338,6 @@ const Select: React.FC<SelectProps> = ({
                       // Forzar estilos iniciales
                       el.style.setProperty('background-color', 'transparent', 'important');
                       el.style.setProperty('color', 'rgb(var(--foreground))', 'important');
-                      
-                      if (option.value === filteredOptions[0]?.value) {
-                        setTimeout(() => {
-                          const computedStyle = window.getComputedStyle(el);
-                          console.log('🔍 [Select] First option - estilos computados:');
-                          console.log('🔍 [Select] Option backgroundColor:', computedStyle.backgroundColor);
-                          console.log('🔍 [Select] Option color:', computedStyle.color);
-                          console.log('🔍 [Select] Option clases:', el.className);
-                          console.log('🔍 [Select] Option style attribute:', el.getAttribute('style'));
-                        }, 150);
-                      }
                     }
                   }}
                   onClick={(e) => {
