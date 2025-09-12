@@ -60,12 +60,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   // Cargar datos del dolor si estamos editando
   useEffect(() => {
-    console.log('🔍 DolorSideModal useEffect - dolor:', dolor);
-    console.log('🔍 DolorSideModal useEffect - isOpen:', isOpen);
-    console.log('🔍 DolorSideModal useEffect - readOnly:', readOnly);
     
     if (dolor && isOpen) {
-      console.log('🔍 Configurando formulario para edición con dolor:', dolor);
       const newFormData = {
         categoria_id: dolor.categoria_id || '',
         titulo: dolor.titulo || '',
@@ -74,10 +70,8 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
         sesion_relacionada_id: dolor.sesion_relacionada_id || ''
       };
-      console.log('🔍 Nuevo formData configurado:', newFormData);
       setFormData(newFormData);
     } else if (!dolor && isOpen) {
-      console.log('🔍 Configurando formulario para nuevo dolor');
       // Resetear formulario para nuevo dolor
       setFormData({
         categoria_id: '',
@@ -104,7 +98,6 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
 
   const cargarInvestigaciones = async () => {
     try {
-      console.log('🔍 Cargando investigaciones para participante:', participanteId);
       
       // Por ahora, usar una lista vacía para evitar errores
       // TODO: Implementar carga de investigaciones cuando la API esté estable
@@ -115,8 +108,6 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
         if (response.ok) {
           const data = await response.json();
-          console.log('🔍 Respuesta completa del API:', data);
-          console.log('🔍 Investigaciones encontradas:', data.investigaciones?.length || 0);
           
           // Extraer solo las investigaciones del participante
           const investigacionesParticipante = data.investigaciones?.map((inv: any) => ({
@@ -124,14 +115,11 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
             nombre: inv.nombre
           })) || [];
           
-          console.log('🔍 Investigaciones procesadas:', investigacionesParticipante);
           setInvestigaciones(investigacionesParticipante);
         } else {
-          console.log('⚠️ API de investigaciones no disponible, usando lista vacía');
           setInvestigaciones([]);
         }
       } catch (error) {
-        console.log('⚠️ Error cargando investigaciones, usando lista vacía:', error);
         setInvestigaciones([]);
       }
     } catch (error) {
@@ -141,22 +129,17 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   };
 
   const validateForm = () => {
-    console.log('🔍 validateForm llamado');
-    console.log('🔍 formData en validación:', formData);
     
     const newErrors: {[key: string]: string} = {};
     
     if (!formData.categoria_id) {
       newErrors.categoria_id = 'La categoría es requerida';
-      console.log('❌ Error: categoría requerida');
     }
     
     if (!formData.titulo.trim()) {
       newErrors.titulo = 'El título es requerido';
-      console.log('❌ Error: título requerido');
     }
     
-    console.log('🔍 Errores encontrados:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -164,27 +147,15 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   const handleSubmit = async () => {
     const currentSubmissionId = new Date().toISOString() + Math.random().toString(36).substr(2, 9);
     
-    console.log('🔍 handleSubmit llamado');
-    console.log('🔍 Timestamp:', new Date().toISOString());
-    console.log('🔍 Submission ID:', currentSubmissionId);
-    console.log('🔍 formData:', formData);
-    console.log('🔍 isEditing:', isEditing);
-    console.log('🔍 isSubmitting:', isSubmitting);
-    console.log('🔍 isSubmittingRef.current:', isSubmittingRef.current);
-    console.log('🔍 submissionIdRef.current:', submissionIdRef.current);
     
     // PROTECCIÓN SIMPLE: Si ya se está enviando, NO HACER NADA
     if (isSubmitting || isSubmittingRef.current) {
-      console.log('❌ PROTECCIÓN: Ya se está enviando, IGNORANDO');
       return;
     }
     
     if (!validateForm()) {
-      console.log('❌ Validación falló');
       return;
     }
-
-    console.log('✅ Validación exitosa, llamando onSave');
     
     // BLOQUEAR INMEDIATAMENTE
     setIsSubmitting(true);
@@ -260,11 +231,6 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     }))
   ], [investigaciones]);
 
-  console.log('🔍 Opciones de investigación generadas:', investigacionOptions);
-  console.log('🔍 DolorSideModal render - readOnly:', readOnly);
-  console.log('🔍 DolorSideModal render - isEditing:', isEditing);
-  console.log('🔍 DolorSideModal render - dolor:', dolor);
-  console.log('🔍 DolorSideModal render - formData:', formData);
 
 
 
