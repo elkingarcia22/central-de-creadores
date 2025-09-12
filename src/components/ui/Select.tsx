@@ -286,8 +286,8 @@ const Select: React.FC<SelectProps> = ({
             ...dropdownPosition,
             borderRadius: '6px',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-            backgroundColor: 'rgb(var(--background))',
-            border: '1px solid rgb(var(--border))'
+            backgroundColor: 'rgb(var(--background)) !important',
+            border: '1px solid rgb(var(--border)) !important'
           }}
           onLoad={() => {
             console.log('🔍 [Select] Dropdown cargado, clases:', 'bg-background border border-border rounded-md overflow-hidden shadow-lg');
@@ -319,7 +319,7 @@ const Select: React.FC<SelectProps> = ({
           <div 
             className="max-h-60 overflow-y-auto"
             style={{
-              backgroundColor: 'rgb(var(--background))'
+              backgroundColor: 'rgb(var(--background)) !important'
             }}
             ref={(el) => {
               if (el && isOpen) {
@@ -348,6 +348,10 @@ const Select: React.FC<SelectProps> = ({
                     option.disabled && 'opacity-50 cursor-not-allowed',
                     value === option.value && 'bg-primary/10 text-primary'
                   )}
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: 'rgb(var(--foreground))'
+                  }}
                   ref={(el) => {
                     if (el && isOpen && option.value === filteredOptions[0]?.value) {
                       setTimeout(() => {
