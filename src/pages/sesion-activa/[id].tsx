@@ -2107,13 +2107,13 @@ export default function SesionActivaPage() {
             
             {/* Menú de acciones con 3 puntos */}
             <div className="relative">
-              <Button 
+              <button
                 onClick={() => setShowActionsMenu(!showActionsMenu)}
-                variant="outline"
-                size="md"
-                iconOnly
-                icon={<MoreVerticalIcon className="w-4 h-4" />}
-              />
+                className="w-10 h-10 rounded-md border border-border bg-card text-card-foreground hover:bg-accent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
+                aria-label="Más opciones"
+              >
+                <MoreVerticalIcon className="w-4 h-4" />
+              </button>
               
               {/* Menú desplegable */}
               {showActionsMenu && (
