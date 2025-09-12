@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useToast } from '../../contexts/ToastContext';
+import { supabase } from '../../api/supabase';
 import { Layout, PageHeader, SideModal, Input, Textarea, Select, ConfirmModal, EmptyState, InfoContainer, InfoItem } from '../../components/ui';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
 import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
@@ -1072,10 +1073,14 @@ export default function SesionActivaPage() {
   // Funciones para manejar dolores
   const handleCrearDolor = async (data: any) => {
     try {
+      // Obtener el usuario actual
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const response = await fetch(`/api/participantes/${id}/dolores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'user-id': user?.id || '',
         },
         body: JSON.stringify(data),
       });
