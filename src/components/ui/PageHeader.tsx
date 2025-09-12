@@ -164,10 +164,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </button>
           )}
         </div>
-        {/* Línea separadora de lado a lado */}
-        <div className="relative">
-          <div className="absolute left-0 right-0 border-b border-border"></div>
-        </div>
+        {/* Línea separadora */}
+        <div className="w-full border-b border-border"></div>
       </div>
     );
   }
