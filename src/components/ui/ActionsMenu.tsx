@@ -115,16 +115,16 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                   : 'hover:bg-accent'
                 }
               `}
-              style={action.className?.includes('text-red') ? {
+              style={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? {
                 color: 'rgb(220 38 38) !important', // red-600
                 backgroundColor: 'transparent !important'
               } : {
                 color: 'rgb(var(--popover-foreground)) !important'
               }}
-              onMouseEnter={action.className?.includes('text-red') ? (e) => {
+              onMouseEnter={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? (e) => {
                 e.currentTarget.style.color = 'rgb(185 28 28) !important'; // red-700
               } : undefined}
-              onMouseLeave={action.className?.includes('text-red') ? (e) => {
+              onMouseLeave={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? (e) => {
                 e.currentTarget.style.color = 'rgb(220 38 38) !important'; // red-600
               } : undefined}
             >
