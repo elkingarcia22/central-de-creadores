@@ -21,23 +21,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Error de configuración del servidor' });
     }
 
-    // Buscar la investigación por ID
+    // Buscar la investigación por ID - consulta simplificada
+    console.log('🔍 Ejecutando consulta a investigaciones...');
     const { data: investigacion, error: errorInvestigacion } = await supabaseServer
       .from('investigaciones')
-      .select(`
-        id,
-        nombre,
-        descripcion,
-        estado,
-        fecha_inicio,
-        fecha_fin,
-        tipo_sesion,
-        riesgo_automatico,
-        responsable_id,
-        creado_por,
-        fecha_creacion,
-        fecha_actualizacion
-      `)
+      .select('*')
       .eq('id', id)
       .single();
 
