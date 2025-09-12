@@ -697,6 +697,35 @@ export default function VistaParticipacion() {
     setShowModalPerfilamiento(true);
   };
 
+  // Funciones para manejar seguimientos (igual que sesión activa)
+  const handleCrearSeguimiento = async (data: any) => {
+    try {
+      const response = await fetch('/api/seguimientos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_externo_id: participante?.id,
+          investigacion_id: reclutamientoActual?.investigacion_id,
+          responsable_id: reclutamientoActual?.responsable_id || data.responsable_id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Seguimiento creado exitosamente');
+        setShowSeguimientoModal(false);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || 'Error al crear el seguimiento');
+      }
+    } catch (error) {
+      console.error('Error al crear seguimiento:', error);
+      showError('Error al crear el seguimiento');
+    }
+  };
+
   // Funciones para manejar perfilamiento
   const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
     try {
@@ -2603,12 +2632,15 @@ export default function VistaParticipacion() {
       )}
 
       {/* Modal de crear seguimiento (igual que sesión activa) */}
-      {showSeguimientoModal && (
+      {showSeguimientoModal && participante && (
         <SeguimientoSideModal
           isOpen={showSeguimientoModal}
           onClose={() => setShowSeguimientoModal(false)}
+          onSave={handleCrearSeguimiento}
           investigacionId={reclutamientoActual?.investigacion_id || ''}
           usuarios={usuarios}
+          participanteExternoPrecargado={participante}
+          investigaciones={investigaciones}
           responsablePorDefecto={reclutamientoActual?.responsable_id}
         />
       )}
