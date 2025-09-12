@@ -65,7 +65,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         estado_agendamiento_cat!inner(nombre),
         fecha_asignado,
         reclutador_id,
-        meet_link
+        meet_link,
+        usuarios_libreto
       `);
 
     // Si no es administrador, filtrar por usuario

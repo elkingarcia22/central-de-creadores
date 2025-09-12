@@ -433,6 +433,43 @@ export const crearLibreto = async (datos: LibretoFormData): Promise<RespuestaAPI
       console.log('✅ Investigación actualizada con el ID del libreto y estado por_agendar:', data.id);
     }
 
+    // Si se crearon usuarios_participantes, sincronizar con las sesiones existentes
+    if (datos.usuarios_participantes && datos.usuarios_participantes.length > 0) {
+      try {
+        console.log('🔄 Sincronizando usuarios del libreto con las sesiones existentes...');
+        
+        // Obtener todas las sesiones de reclutamiento para esta investigación
+        const { data: sesiones, error: sesionesError } = await supabase
+          .from('reclutamientos')
+          .select('id')
+          .eq('investigacion_id', datos.investigacion_id);
+
+        if (sesionesError) {
+          console.warn('⚠️ Error obteniendo sesiones para sincronizar:', sesionesError);
+        } else if (sesiones && sesiones.length > 0) {
+          // Actualizar cada sesión con los usuarios del libreto
+          const { error: updateError } = await supabase
+            .from('reclutamientos')
+            .update({ 
+              usuarios_libreto: datos.usuarios_participantes,
+              actualizado_el: new Date().toISOString()
+            })
+            .eq('investigacion_id', datos.investigacion_id);
+
+          if (updateError) {
+            console.warn('⚠️ Error actualizando sesiones con usuarios del libreto:', updateError);
+          } else {
+            console.log(`✅ ${sesiones.length} sesiones sincronizadas exitosamente`);
+          }
+        } else {
+          console.log('ℹ️ No hay sesiones existentes para sincronizar');
+        }
+      } catch (syncError) {
+        console.warn('⚠️ Error en sincronización de sesiones:', syncError);
+        // No lanzar error aquí, solo logear, porque el libreto ya se creó
+      }
+    }
+
     return {
       data: data,
       mensaje: 'Libreto creado, vinculado y investigación marcada como por agendar'
@@ -525,6 +562,44 @@ export const actualizarLibreto = async (id: string, datos: Partial<LibretoFormDa
     if (error) throw error;
 
     console.log('✅ Libreto actualizado exitosamente:', data);
+
+    // Si se actualizaron los usuarios_participantes, sincronizar con las sesiones
+    if (datos.usuarios_participantes !== undefined) {
+      try {
+        console.log('🔄 Sincronizando usuarios del libreto con las sesiones...');
+        
+        // Obtener todas las sesiones de reclutamiento para esta investigación
+        const { data: sesiones, error: sesionesError } = await supabase
+          .from('reclutamientos')
+          .select('id')
+          .eq('investigacion_id', data.investigacion_id);
+
+        if (sesionesError) {
+          console.warn('⚠️ Error obteniendo sesiones para sincronizar:', sesionesError);
+        } else if (sesiones && sesiones.length > 0) {
+          // Actualizar cada sesión con los usuarios del libreto
+          const { error: updateError } = await supabase
+            .from('reclutamientos')
+            .update({ 
+              usuarios_libreto: datos.usuarios_participantes || null,
+              actualizado_el: new Date().toISOString()
+            })
+            .eq('investigacion_id', data.investigacion_id);
+
+          if (updateError) {
+            console.warn('⚠️ Error actualizando sesiones con usuarios del libreto:', updateError);
+          } else {
+            console.log(`✅ ${sesiones.length} sesiones sincronizadas exitosamente`);
+          }
+        } else {
+          console.log('ℹ️ No hay sesiones para sincronizar');
+        }
+      } catch (syncError) {
+        console.warn('⚠️ Error en sincronización de sesiones:', syncError);
+        // No lanzar error aquí, solo logear, porque el libreto ya se actualizó
+      }
+    }
+
     return {
       data: data,
       mensaje: 'Libreto actualizado exitosamente'
