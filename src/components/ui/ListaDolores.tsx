@@ -190,7 +190,7 @@ export const ListaDolores: React.FC<ListaDoloresProps> = ({
       icon: <DeleteIcon className="w-4 h-4" />,
       onClick: (row: DolorParticipanteCompleto) => handleEliminarDolor(row.id),
       title: 'Eliminar dolor',
-      className: 'text-red-600 hover:text-red-700'
+      className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300'
     }
   ];
 
