@@ -37,7 +37,7 @@ const SelectSimple: React.FC<SelectSimpleProps> = ({
       {/* Trigger */}
       <button
         type="button"
-        className="flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
+        className="flex items-center justify-between w-full px-3 py-2 text-sm bg-background border border-border rounded-md cursor-pointer hover:bg-accent"
         onClick={() => {
           console.log('🔍 Simple Select - Button clicked, isOpen:', isOpen);
           setIsOpen(!isOpen);
@@ -54,14 +54,12 @@ const SelectSimple: React.FC<SelectSimpleProps> = ({
       {/* Dropdown */}
       {isOpen && (
         <div 
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg"
+          className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg"
           style={{
             position: 'absolute',
             zIndex: 999999,
             width: '100%',
             marginTop: '4px',
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
             borderRadius: '6px',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
           }}
@@ -72,7 +70,7 @@ const SelectSimple: React.FC<SelectSimpleProps> = ({
               <button
                 key={option.value}
                 type="button"
-                className="w-full px-3 py-2 text-left text-sm hover:bg-blue-100 cursor-pointer"
+                className="w-full px-3 py-2 text-left text-sm hover:bg-accent cursor-pointer"
                 style={{
                   width: '100%',
                   padding: '8px 12px',
