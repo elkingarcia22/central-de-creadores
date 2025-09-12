@@ -63,6 +63,13 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
     investigacionesData: investigaciones
   });
   
+  // Log específico para el responsable
+  console.log('🔍 [SeguimientoSideModal] DEBUG RESPONSABLE:', {
+    responsablePorDefecto,
+    tipo: typeof responsablePorDefecto,
+    usuariosDisponibles: usuarios?.map(u => ({ id: u.id, nombre: u.full_name })) || []
+  });
+  
   const { theme } = useTheme();
   const { showSuccess, showError } = useToast();
   
@@ -206,6 +213,14 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
 
   // Efecto para actualizar responsable cuando se carguen los usuarios en modo creación
   useEffect(() => {
+    console.log('🔍 [SeguimientoSideModal] useEffect responsable - condiciones:', {
+      isOpen,
+      tieneSeguimiento: !!seguimiento,
+      usuariosLength: usuarios.length,
+      responsablePorDefecto,
+      responsableActual: formData.responsable_id
+    });
+    
     if (isOpen && !seguimiento && usuarios.length > 0 && responsablePorDefecto) {
       console.log('🔍 [SeguimientoSideModal] Modo creación - usuarios cargados, verificando responsable precargado');
       console.log('🔍 [SeguimientoSideModal] responsablePorDefecto:', responsablePorDefecto);
@@ -221,6 +236,10 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
           ...prev,
           responsable_id: responsablePorDefecto
         }));
+      } else if (!responsableExiste) {
+        console.log('⚠️ [SeguimientoSideModal] El responsable precargado no existe en la lista de usuarios');
+      } else if (formData.responsable_id === responsablePorDefecto) {
+        console.log('✅ [SeguimientoSideModal] El responsable ya está precargado correctamente');
       }
     }
   }, [isOpen, seguimiento, usuarios, responsablePorDefecto, formData.responsable_id]);

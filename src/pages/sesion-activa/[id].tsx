@@ -663,13 +663,19 @@ export default function SesionActivaPage() {
         if (response.ok) {
           const data = await response.json();
           console.log('🔍 Investigación actual cargada:', data);
+          console.log('🔍 Investigación actual - responsable_id:', data.responsable_id);
+          console.log('🔍 Investigación actual - nombre:', data.nombre);
           setInvestigacionActual(data);
         } else {
           console.error('🔍 Error cargando investigación actual:', response.status);
+          const errorText = await response.text();
+          console.error('🔍 Error response:', errorText);
         }
       } catch (error) {
         console.error('🔍 Error cargando investigación actual:', error);
       }
+    } else {
+      console.log('⚠️ No hay investigacion_id en el reclutamiento:', reclutamiento);
     }
   };
 
@@ -2214,7 +2220,15 @@ export default function SesionActivaPage() {
           usuarios={usuarios}
           participanteExternoPrecargado={participante}
           investigaciones={investigaciones}
-          responsablePorDefecto={investigacionActual?.responsable_id}
+          responsablePorDefecto={(() => {
+            const responsableId = investigacionActual?.responsable_id;
+            console.log('🔍 [SesionActiva] Pasando responsable al modal:', {
+              investigacionActual: investigacionActual,
+              responsableId: responsableId,
+              tipo: typeof responsableId
+            });
+            return responsableId;
+          })()}
         />
       )}
 
