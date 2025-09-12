@@ -167,11 +167,17 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
         const today = new Date().toISOString().split('T')[0];
         console.log('🔍 [SeguimientoSideModal] Modo creación - investigacionId:', investigacionId);
         console.log('🔍 [SeguimientoSideModal] Modo creación - investigaciones disponibles:', investigaciones);
+        console.log('🔍 [SeguimientoSideModal] Modo creación - responsablePorDefecto:', responsablePorDefecto);
+        console.log('🔍 [SeguimientoSideModal] Modo creación - usuarios disponibles:', usuarios?.length || 0);
+        
+        const responsableId = responsablePorDefecto || '';
+        console.log('🔍 [SeguimientoSideModal] Modo creación - responsable_id final:', responsableId);
+        
         setFormData({
           investigacion_id: investigacionId,
           fecha_seguimiento: today,
           notas: '',
-          responsable_id: responsablePorDefecto || '',
+          responsable_id: responsableId,
           estado: 'pendiente', // Siempre pendiente al crear
           participante_externo_id: participanteExternoPrecargado?.id || ''
         });
@@ -197,6 +203,27 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
       }
     }
   }, [isOpen, seguimiento, usuarios]);
+
+  // Efecto para actualizar responsable cuando se carguen los usuarios en modo creación
+  useEffect(() => {
+    if (isOpen && !seguimiento && usuarios.length > 0 && responsablePorDefecto) {
+      console.log('🔍 [SeguimientoSideModal] Modo creación - usuarios cargados, verificando responsable precargado');
+      console.log('🔍 [SeguimientoSideModal] responsablePorDefecto:', responsablePorDefecto);
+      console.log('🔍 [SeguimientoSideModal] usuarios disponibles:', usuarios);
+      
+      // Verificar si el responsable precargado existe en los usuarios
+      const responsableExiste = usuarios.find(user => user.id === responsablePorDefecto);
+      console.log('🔍 [SeguimientoSideModal] responsable precargado existe en usuarios:', responsableExiste);
+      
+      if (responsableExiste && formData.responsable_id !== responsablePorDefecto) {
+        console.log('🔍 [SeguimientoSideModal] Actualizando responsable_id a:', responsablePorDefecto);
+        setFormData(prev => ({
+          ...prev,
+          responsable_id: responsablePorDefecto
+        }));
+      }
+    }
+  }, [isOpen, seguimiento, usuarios, responsablePorDefecto, formData.responsable_id]);
 
   const handleInputChange = (field: keyof SeguimientoFormData, value: string) => {
     setFormData(prev => ({

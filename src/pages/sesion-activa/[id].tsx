@@ -2214,7 +2214,7 @@ export default function SesionActivaPage() {
           usuarios={usuarios}
           participanteExternoPrecargado={participante}
           investigaciones={investigaciones}
-          responsablePrecargado={investigacionActual?.responsable_id}
+          responsablePorDefecto={investigacionActual?.responsable_id}
         />
       )}
 
