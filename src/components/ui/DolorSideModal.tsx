@@ -27,8 +27,6 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   onEdit
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isSubmittingRef = useRef(false);
-  const submissionIdRef = useRef<string | null>(null);
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
   const [investigaciones, setInvestigaciones] = useState<Array<{id: string, nombre: string}>>([]);
   const [formData, setFormData] = useState<CrearDolorRequest>({
@@ -47,14 +45,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     if (isOpen) {
       cargarCategorias();
       cargarInvestigaciones();
-      setIsSubmitting(false); // Resetear estado de envío al abrir
-      isSubmittingRef.current = false; // Resetear ref al abrir
-      submissionIdRef.current = null; // Resetear submission ID al abrir
-    } else {
-      // Resetear estado cuando se cierre el modal
       setIsSubmitting(false);
-      isSubmittingRef.current = false;
-      submissionIdRef.current = null;
     }
   }, [isOpen, participanteId]);
 
@@ -145,11 +136,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    const currentSubmissionId = new Date().toISOString() + Math.random().toString(36).substr(2, 9);
-    
-    
-    // PROTECCIÓN SIMPLE: Si ya se está enviando, NO HACER NADA
-    if (isSubmitting || isSubmittingRef.current) {
+    if (isSubmitting) {
       return;
     }
     
@@ -157,10 +144,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       return;
     }
     
-    // BLOQUEAR INMEDIATAMENTE
     setIsSubmitting(true);
-    isSubmittingRef.current = true;
-    submissionIdRef.current = currentSubmissionId;
     
     try {
       if (isEditing && dolor) {
@@ -171,16 +155,10 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
       } else {
         await onSave(formData);
       }
-      
-      // Resetear estado después de que onSave termine
-      setIsSubmitting(false);
-      isSubmittingRef.current = false;
-      submissionIdRef.current = null;
     } catch (error) {
-      console.error('❌ Error en handleSubmit:', error);
+      console.error('Error en handleSubmit:', error);
+    } finally {
       setIsSubmitting(false);
-      isSubmittingRef.current = false;
-      submissionIdRef.current = null;
     }
   };
 
