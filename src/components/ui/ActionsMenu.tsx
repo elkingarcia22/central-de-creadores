@@ -75,7 +75,7 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
           ref={buttonRef}
           onClick={() => setIsOpen(!isOpen)}
           className={`
-            p-2 rounded-md transition-colors duration-200
+            px-4 py-2 rounded-full transition-colors duration-200
             hover:bg-muted focus:outline-none focus:outline-none
             text-muted-foreground
           `}
