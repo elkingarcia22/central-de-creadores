@@ -194,7 +194,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     try {
       if (isEditing && dolor) {
         onSave({
-          id: dolor.id,
+          id: dolor.id || '',
           ...formData
         } as ActualizarDolorRequest);
       } else {
