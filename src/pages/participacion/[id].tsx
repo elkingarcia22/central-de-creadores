@@ -12,6 +12,7 @@ import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
 import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
+import { DolorParticipanteCompleto } from '../../types/dolores';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon } from '../../components/icons';
@@ -2422,7 +2423,7 @@ export default function VistaParticipacion() {
         }}
         participanteId={id as string}
         participanteNombre={participante?.nombre || ''}
-        dolor={dolorParaEditar as any}
+        dolor={dolorParaEditar as DolorParticipanteCompleto}
         onSave={handleActualizarDolor}
         loading={false}
         readOnly={false}
