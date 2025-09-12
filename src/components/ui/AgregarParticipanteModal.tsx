@@ -811,6 +811,29 @@ export default function AgregarParticipanteModal({
             </Typography>
           </div>
         )}
+
+        {/* Selector de Investigación (solo si se requiere) - Movido al comienzo */}
+        {showInvestigacionSelector && (
+          <div className="space-y-2">
+            <FilterLabel>Investigación *</FilterLabel>
+            <Select
+              value={investigacionId}
+              onChange={setInvestigacionId}
+              placeholder="Seleccionar investigación"
+              disabled={loading}
+              required
+              className="w-full"
+              options={(() => {
+                const options = investigaciones.map((investigacion) => ({
+                  value: investigacion.id,
+                  label: investigacion.nombre
+                }));
+                console.log('🔍 Opciones del selector de investigación:', options);
+                return options;
+              })()}
+            />
+          </div>
+        )}
         
         {/* Información del agendamiento */}
         <div className="space-y-4">
@@ -860,28 +883,6 @@ export default function AgregarParticipanteModal({
               )}
           </div>
 
-          {/* Selector de Investigación (solo si se requiere) */}
-          {showInvestigacionSelector && (
-            <div className="space-y-2">
-              <FilterLabel>Investigación *</FilterLabel>
-              <Select
-                value={investigacionId}
-                onChange={setInvestigacionId}
-                placeholder="Seleccionar investigación"
-                disabled={loading}
-                required
-                className="w-full"
-                options={(() => {
-                  const options = investigaciones.map((investigacion) => ({
-                    value: investigacion.id,
-                    label: investigacion.nombre
-                  }));
-                  console.log('🔍 Opciones del selector de investigación:', options);
-                  return options;
-                })()}
-              />
-            </div>
-          )}
         </div>
 
         {/* Información de la sesión */}
