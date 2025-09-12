@@ -90,7 +90,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     // Obtener reclutadores
     console.log('🔍 Reclutador IDs a buscar:', Array.from(reclutadorIds));
     const { data: reclutadores, error: reclutadoresError } = await supabaseServer
-      .from('usuarios')
+      .from('usuarios_con_roles')
       .select('id, full_name, email, avatar_url')
       .in('id', Array.from(reclutadorIds));
     
