@@ -162,6 +162,9 @@ export default function VistaParticipacion() {
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
   
+  // Estado para la investigación actual (igual que sesión activa)
+  const [investigacionActual, setInvestigacionActual] = useState<any>(null);
+  
   // Estados para modales de participación
   const [showEditarParticipacionModal, setShowEditarParticipacionModal] = useState(false);
   const [showEliminarParticipacionModal, setShowEliminarParticipacionModal] = useState(false);
@@ -200,6 +203,14 @@ export default function VistaParticipacion() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showActionsMenu]);
+
+  // Cargar investigación actual cuando se carga el reclutamiento (igual que sesión activa)
+  useEffect(() => {
+    if (reclutamientoActual?.investigacion_id) {
+      loadInvestigacionActual();
+    }
+  }, [reclutamientoActual?.investigacion_id]);
+
   const [participanteParaEditar, setParticipanteParaEditar] = useState<Participante | null>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<Participante | null>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<Participante | null>(null);
@@ -697,6 +708,30 @@ export default function VistaParticipacion() {
     setShowModalPerfilamiento(true);
   };
 
+  // Cargar investigación actual (igual que sesión activa)
+  const loadInvestigacionActual = async () => {
+    if (reclutamientoActual?.investigacion_id) {
+      try {
+        console.log('🔍 [Participacion] Cargando investigación actual:', reclutamientoActual.investigacion_id);
+        const response = await fetch(`/api/investigaciones/${reclutamientoActual.investigacion_id}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('🔍 [Participacion] Investigación actual cargada:', data);
+          console.log('🔍 [Participacion] Investigación actual - responsable_id:', data.responsable_id);
+          console.log('🔍 [Participacion] Investigación actual - nombre:', data.nombre);
+          setInvestigacionActual(data);
+        } else {
+          console.error('🔍 [Participacion] Error cargando investigación actual:', response.status);
+          const errorText = await response.text();
+          console.error('🔍 [Participacion] Error response:', errorText);
+        }
+      } catch (error) {
+        console.error('🔍 [Participacion] Error cargando investigación actual:', error);
+      }
+    }
+  };
+
   // Funciones para manejar seguimientos (igual que sesión activa)
   const handleCrearSeguimiento = async (data: any) => {
     try {
@@ -708,8 +743,8 @@ export default function VistaParticipacion() {
         body: JSON.stringify({
           ...data,
           participante_externo_id: participante?.id,
-          investigacion_id: reclutamientoActual?.investigacion_id,
-          responsable_id: reclutamientoActual?.responsable_id || data.responsable_id
+          investigacion_id: investigacionActual?.id || reclutamientoActual?.investigacion_id,
+          responsable_id: investigacionActual?.responsable_id || data.responsable_id
         }),
       });
 
@@ -2637,11 +2672,19 @@ export default function VistaParticipacion() {
           isOpen={showSeguimientoModal}
           onClose={() => setShowSeguimientoModal(false)}
           onSave={handleCrearSeguimiento}
-          investigacionId={reclutamientoActual?.investigacion_id || ''}
+          investigacionId={investigacionActual?.id || reclutamientoActual?.investigacion_id || ''}
           usuarios={usuarios}
           participanteExternoPrecargado={participante}
           investigaciones={investigaciones}
-          responsablePorDefecto={reclutamientoActual?.responsable_id}
+          responsablePorDefecto={(() => {
+            const responsableId = investigacionActual?.responsable_id;
+            console.log('🔍 [Participacion] Pasando responsable al modal:', {
+              investigacionActual: investigacionActual,
+              responsableId: responsableId,
+              tipo: typeof responsableId
+            });
+            return responsableId;
+          })()}
         />
       )}
 
