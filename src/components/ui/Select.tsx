@@ -360,14 +360,21 @@ const Select: React.FC<SelectProps> = ({
                     e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                   ref={(el) => {
-                    if (el && isOpen && option.value === filteredOptions[0]?.value) {
-                      setTimeout(() => {
-                        const computedStyle = window.getComputedStyle(el);
-                        console.log('🔍 [Select] First option - estilos computados:');
-                        console.log('🔍 [Select] Option backgroundColor:', computedStyle.backgroundColor);
-                        console.log('🔍 [Select] Option color:', computedStyle.color);
-                        console.log('🔍 [Select] Option clases:', el.className);
-                      }, 150);
+                    if (el && isOpen) {
+                      // Forzar estilos iniciales
+                      el.style.setProperty('background-color', 'transparent', 'important');
+                      el.style.setProperty('color', 'rgb(var(--foreground))', 'important');
+                      
+                      if (option.value === filteredOptions[0]?.value) {
+                        setTimeout(() => {
+                          const computedStyle = window.getComputedStyle(el);
+                          console.log('🔍 [Select] First option - estilos computados:');
+                          console.log('🔍 [Select] Option backgroundColor:', computedStyle.backgroundColor);
+                          console.log('🔍 [Select] Option color:', computedStyle.color);
+                          console.log('🔍 [Select] Option clases:', el.className);
+                          console.log('🔍 [Select] Option style attribute:', el.getAttribute('style'));
+                        }, 150);
+                      }
                     }
                   }}
                   onClick={(e) => {
