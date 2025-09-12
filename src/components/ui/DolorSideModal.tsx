@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SideModal, Typography, Button, Input, Textarea, Select, Chip, PageHeader, FilterLabel } from './index';
 import { CategoriaDolor, DolorParticipanteCompleto, CrearDolorRequest, ActualizarDolorRequest, SeveridadDolor, EstadoDolor } from '../../types/dolores';
 import { SaveIcon, XIcon } from '../icons';
@@ -218,18 +218,18 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     { value: SeveridadDolor.ALTA, label: 'Alta' }
   ];
 
-  const categoriaOptions = useMemo(() => categorias.map(cat => ({
+  const categoriaOptions = categorias.map(cat => ({
     value: cat.id,
     label: cat.nombre
-  })), [categorias]);
+  }));
 
-  const investigacionOptions = useMemo(() => [
+  const investigacionOptions = [
     { value: '', label: 'Sin investigación específica' },
     ...investigaciones.map(inv => ({
       value: inv.id,
       label: inv.nombre
     }))
-  ], [investigaciones]);
+  ];
 
 
 
