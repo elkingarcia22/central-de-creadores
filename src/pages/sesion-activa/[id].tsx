@@ -1073,7 +1073,7 @@ export default function SesionActivaPage() {
   // Funciones para manejar dolores
   const handleCrearDolor = async (data: any) => {
     try {
-      console.log('🔍 [SesionActiva] handleCrearDolor llamado con data:', data);
+      console.log('✅ [SesionActiva] handleCrearDolor ejecutándose');
       
       // Obtener el usuario actual
       const { data: { user } } = await supabase.auth.getUser();
