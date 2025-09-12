@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Button } from './Button';
 
 interface ActionItem {
   label: string;
@@ -72,19 +71,16 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
     <>
       <div className={`relative ${className}`} data-inline-edit="true">
         {/* Botón de tres puntos */}
-        <Button
+        <button
           ref={buttonRef}
           onClick={() => setIsOpen(!isOpen)}
-          variant="outline"
-          size="md"
-          iconOnly
-          icon={
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
-          }
+          className="w-10 h-10 rounded-md border border-border bg-card text-card-foreground hover:bg-accent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
           aria-label="Más opciones"
-        />
+        >
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </button>
       </div>
 
       {/* Menú desplegable usando Portal */}
