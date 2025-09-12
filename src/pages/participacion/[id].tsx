@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Layout, PageHeader, InfoContainer, InfoItem } from '../../components/ui';
+import { Layout, PageHeader, InfoContainer, InfoItem, AIButton } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -1944,6 +1944,15 @@ export default function VistaParticipacion() {
 
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
+            <AIButton 
+              onClick={() => {
+                // Aquí puedes agregar la lógica para analizar con IA
+                console.log('Analizar sesión con IA:', reclutamientoActual?.id);
+              }}
+              size="md"
+            >
+              Analizar con IA
+            </AIButton>
             <ActionsMenu
               actions={[
                 {
