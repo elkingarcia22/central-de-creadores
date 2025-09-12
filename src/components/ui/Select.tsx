@@ -269,11 +269,9 @@ const Select: React.FC<SelectProps> = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="bg-white border border-gray-300 rounded-md overflow-hidden shadow-lg"
+          className="bg-background border border-border rounded-md overflow-hidden shadow-lg"
           style={{
             ...dropdownPosition,
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
             borderRadius: '6px',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
           }}
@@ -300,7 +298,7 @@ const Select: React.FC<SelectProps> = ({
           )}
 
           {/* Options */}
-          <div className="max-h-60 overflow-y-auto bg-white">
+          <div className="max-h-60 overflow-y-auto bg-background">
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-muted-foreground">
                 No se encontraron opciones
