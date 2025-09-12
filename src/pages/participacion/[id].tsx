@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useRol } from '../../contexts/RolContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
+import { supabase } from '../../api/supabase';
 import { Layout, PageHeader, InfoContainer, InfoItem, AIButton } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
@@ -503,17 +504,29 @@ export default function VistaParticipacion() {
   };
 
   // Funciones para manejar dolores
-  const handleDolorGuardado = useCallback(async (dolorData: any) => {
+  const handleCrearDolor = async (data: any) => {
     try {
+      console.log('🚀 [Participacion] handleCrearDolor INICIANDO');
+      
+      // Obtener el usuario actual
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('🔍 [Participacion] Usuario obtenido:', user?.id);
+      
       const response = await fetch(`/api/participantes/${id}/dolores`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dolorData),
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id || '',
+        },
+        body: JSON.stringify(data),
       });
+      
+      console.log('🔍 [Participacion] Response status:', response.status);
 
       if (response.ok) {
-        setShowCrearDolorModal(false);
-        showSuccess('Dolor registrado exitosamente');
+        showSuccess('Dolor creado exitosamente');
+        setShowModalCrearDolor(false);
+        // Recargar dolores
         await cargarDolores();
       } else {
         const errorData = await response.json();
@@ -523,7 +536,7 @@ export default function VistaParticipacion() {
       console.error('Error al crear dolor:', error);
       showError('Error al crear el dolor');
     }
-  }, [id, showSuccess, showError]);
+  };
 
   const handleVerDolor = (dolor: DolorParticipante) => {
     setDolorSeleccionado(dolor);
@@ -698,8 +711,7 @@ export default function VistaParticipacion() {
     }
   };
 
-  const handleCrearDolor = (participante: Participante) => {
-    setParticipanteParaCrearDolor(participante);
+  const handleCrearDolorClick = () => {
     setShowModalCrearDolor(true);
   };
 
@@ -2622,7 +2634,7 @@ export default function VistaParticipacion() {
           onClose={() => setShowModalCrearDolor(false)}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
-          onSave={handleDolorGuardado}
+          onSave={handleCrearDolor}
         />
       )}
 
