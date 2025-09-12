@@ -70,7 +70,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         categoria_id: dolor.categoria_id,
         titulo: dolor.titulo,
         descripcion: dolor.descripcion || '',
-        severidad: dolor.severidad,
+        severidad: dolor.severidad || SeveridadDolor.MEDIA,
         investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
         sesion_relacionada_id: dolor.sesion_relacionada_id || ''
       };
