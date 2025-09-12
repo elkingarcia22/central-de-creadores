@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useToast } from '../../contexts/ToastContext';
 import { Layout, PageHeader, SideModal, Input, Textarea, Select, ConfirmModal, EmptyState, InfoContainer, InfoItem } from '../../components/ui';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
-import { SeguimientoSideModal } from '../../components/ui/SeguimientoSideModal';
+import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import Typography from '../../components/ui/Typography';
@@ -13,7 +13,7 @@ import { AIButton } from '../../components/ui/AIButton';
 import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon, MicIcon, UserPlusIcon, FileTextIcon as FileTextIconAlt } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon, MicIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -2035,7 +2035,7 @@ export default function SesionActivaPage() {
               size="md"
               className="flex items-center gap-2"
             >
-              <UserPlusIcon className="w-4 h-4" />
+              <UserIcon className="w-4 h-4" />
               Crear Perfilamiento
             </Button>
             </div>
