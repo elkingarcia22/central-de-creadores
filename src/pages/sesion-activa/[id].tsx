@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useToast } from '../../contexts/ToastContext';
 import { supabase } from '../../api/supabase';
@@ -172,29 +172,6 @@ export default function SesionActivaPage() {
   // Hook para transcripción de audio con Web Speech API
   const audioTranscription = useWebSpeechTranscriptionSimple();
   
-  // Estado para opciones de filtro dinámicas
-  const [filterOptions, setFilterOptions] = useState({
-    estados: [
-      { value: 'todos', label: 'Todos los estados' },
-      { value: 'activo', label: 'Activo' },
-      { value: 'resuelto', label: 'Resuelto' },
-      { value: 'archivado', label: 'Archivado' }
-    ],
-    severidades: [
-      { value: 'todos', label: 'Todas las severidades' },
-      { value: 'baja', label: 'Baja' },
-      { value: 'media', label: 'Media' },
-      { value: 'alta', label: 'Alta' },
-      { value: 'critica', label: 'Crítica' }
-    ],
-    categorias: [
-      { value: 'todos', label: 'Todas las categorías' },
-      { value: 'funcional', label: 'Funcional' },
-      { value: 'usabilidad', label: 'Usabilidad' },
-      { value: 'rendimiento', label: 'Rendimiento' },
-      { value: 'seguridad', label: 'Seguridad' }
-    ]
-  });
 
   // Cargar datos del participante y reclutamiento
   useEffect(() => {
@@ -316,42 +293,58 @@ export default function SesionActivaPage() {
     }
   }, [participante]);
 
-  // Cargar opciones de filtro dinámicamente desde los dolores
-  useEffect(() => {
-    if (dolores.length > 0) {
-      
-      // Extraer categorías únicas
-      const categoriasUnicas = [...new Set(dolores.map(dolor => dolor.categoria_nombre).filter(Boolean))];
-      const categoriasOptions = [
-        { value: 'todos', label: 'Todas las categorías' },
-        ...categoriasUnicas.map(categoria => ({ value: categoria, label: categoria }))
-      ];
-      
-      // Extraer severidades únicas
-      const severidadesUnicas = [...new Set(dolores.map(dolor => dolor.severidad).filter(Boolean))];
-      const severidadesOptions = [
-        { value: 'todos', label: 'Todas las severidades' },
-        ...severidadesUnicas.map(severidad => ({ 
-          value: severidad, 
-          label: severidad ? severidad.charAt(0).toUpperCase() + severidad.slice(1) : 'Sin severidad'
-        }))
-      ];
-      
-      // Estados ya están definidos estáticamente
-      const estadosOptions = [
-        { value: 'todos', label: 'Todos los estados' },
-        { value: 'activo', label: 'Activo' },
-        { value: 'resuelto', label: 'Resuelto' },
-        { value: 'archivado', label: 'Archivado' }
-      ];
-      
-      // Actualizar las opciones de filtro dinámicamente
-      setFilterOptions({
-        estados: estadosOptions,
-        severidades: severidadesOptions,
-        categorias: categoriasOptions
-      });
+  // Memoizar opciones de filtro para evitar re-renders infinitos
+  const filterOptions = useMemo(() => {
+    if (dolores.length === 0) {
+      return {
+        estados: [
+          { value: 'todos', label: 'Todos los estados' },
+          { value: 'activo', label: 'Activo' },
+          { value: 'resuelto', label: 'Resuelto' },
+          { value: 'archivado', label: 'Archivado' }
+        ],
+        severidades: [
+          { value: 'todos', label: 'Todas las severidades' },
+          { value: 'baja', label: 'Baja' },
+          { value: 'media', label: 'Media' },
+          { value: 'alta', label: 'Alta' }
+        ],
+        categorias: [
+          { value: 'todos', label: 'Todas las categorías' }
+        ]
+      };
     }
+
+    // Extraer categorías únicas
+    const categoriasUnicas = [...new Set(dolores.map(dolor => dolor.categoria_nombre).filter(Boolean))];
+    const categoriasOptions = [
+      { value: 'todos', label: 'Todas las categorías' },
+      ...categoriasUnicas.map(categoria => ({ value: categoria, label: categoria }))
+    ];
+    
+    // Extraer severidades únicas
+    const severidadesUnicas = [...new Set(dolores.map(dolor => dolor.severidad).filter(Boolean))];
+    const severidadesOptions = [
+      { value: 'todos', label: 'Todas las severidades' },
+      ...severidadesUnicas.map(severidad => ({ 
+        value: severidad, 
+        label: severidad ? severidad.charAt(0).toUpperCase() + severidad.slice(1) : 'Sin severidad'
+      }))
+    ];
+    
+    // Estados ya están definidos estáticamente
+    const estadosOptions = [
+      { value: 'todos', label: 'Todos los estados' },
+      { value: 'activo', label: 'Activo' },
+      { value: 'resuelto', label: 'Resuelto' },
+      { value: 'archivado', label: 'Archivado' }
+    ];
+    
+    return {
+      estados: estadosOptions,
+      severidades: severidadesOptions,
+      categorias: categoriasOptions
+    };
   }, [dolores]);
 
   // Cerrar menú de acciones cuando se hace clic fuera
@@ -579,20 +572,15 @@ export default function SesionActivaPage() {
 
   const loadDoloresData = async () => {
     try {
-      console.log('🔍 Cargando dolores para participante:', id);
       const response = await fetch(`/api/participantes/${id}/dolores`);
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 Dolores cargados desde API:', data);
-        console.log('🔍 Cantidad de dolores:', data?.length);
-        console.log('🔍 Primer dolor:', data?.[0]);
         setDolores(data || []);
-        console.log('🔍 Estado dolores actualizado');
       } else {
-        console.error('🔍 Error en respuesta de dolores:', response.status);
+        console.error('Error en respuesta de dolores:', response.status);
       }
     } catch (error) {
-      console.error('🔍 Error cargando dolores:', error);
+      console.error('Error cargando dolores:', error);
     }
   };
 
@@ -2016,7 +2004,6 @@ export default function SesionActivaPage() {
                   title: 'Eliminar dolor'
                 }
               ]}
-              filterOptions={filterOptions}
             />
           ) : (
             <EmptyState
