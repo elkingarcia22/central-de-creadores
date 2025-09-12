@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_sesion: r.duracion_sesion,
         reclutador_id: r.reclutador_id,
         participantes_id: r.participantes_id,
-        estado_agendamiento: r.estado_agendamiento_cat?.nombre
+        estado_agendamiento: (r.estado_agendamiento_cat && typeof r.estado_agendamiento_cat === 'object' && 'nombre' in r.estado_agendamiento_cat) ? r.estado_agendamiento_cat.nombre : 'Desconocido'
       })));
       
       // Ordenar reclutamientos por fecha más reciente para mostrar la participación actual
@@ -100,7 +100,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('🔍 Ordenados por fecha:', reclutamientosOrdenados.map(r => ({
         id: r.id,
         fecha_sesion: r.fecha_sesion,
-        estado: r.estado_agendamiento_cat?.nombre
+        estado: (r.estado_agendamiento_cat && typeof r.estado_agendamiento_cat === 'object' && 'nombre' in r.estado_agendamiento_cat) ? r.estado_agendamiento_cat.nombre : 'Desconocido'
       })));
       
       investigaciones = reclutamientosOrdenados.map(r => ({
@@ -113,7 +113,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         tipo_sesion: 'remota',
         riesgo_automatico: 'bajo',
         fecha_participacion: r.fecha_sesion, // Esta es la fecha real de participación
-        estado_agendamiento: r.estado_agendamiento_cat?.nombre || 'Desconocido',
+        estado_agendamiento: (r.estado_agendamiento_cat && typeof r.estado_agendamiento_cat === 'object' && 'nombre' in r.estado_agendamiento_cat) ? r.estado_agendamiento_cat.nombre : 'Desconocido',
         duracion_sesion: r.duracion_sesion,
         // Agregar propiedades faltantes para la tabla
         tipo_investigacion: 'Sesión de investigación',
@@ -204,31 +204,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log('⚠️ Error obteniendo nombres de responsables:', error);
         // Continuar con los IDs si hay error
       }
-    } else if (estadisticas && estadisticas.length > 0) {
-      // Fallback: usar estadísticas si no hay reclutamientos
-      console.log('🔍 Usando estadísticas como fallback');
-      investigaciones = estadisticas.map(est => ({
-        id: est.investigacion_id || est.id,
-        nombre: est.nombre_investigacion || est.nombre,
-        descripcion: est.descripcion_investigacion || est.descripcion,
-        estado: est.estado_investigacion || est.estado,
-        fecha_inicio: est.fecha_inicio,
-        fecha_fin: est.fecha_fin,
-        tipo_sesion: est.tipo_sesion,
-        riesgo_automatico: est.riesgo_automatico,
-        fecha_participacion: est.fecha_sesion || est.fecha_participacion,
-        estado_agendamiento: est.estado_agendamiento,
-        duracion_sesion: est.duracion_sesion,
-        // Agregar propiedades faltantes para la tabla
-        tipo_investigacion: est.tipo_investigacion || est.tipo_sesion || 'Sesión de investigación',
-        responsable: est.responsable || est.creado_por || 'No asignado',
-        // Campos adicionales para reclutamiento (si están disponibles)
-        reclutamiento_id: est.reclutamiento_id,
-        reclutador_id: est.reclutador_id,
-        participantes_id: est.participantes_id,
-        participantes_internos_id: est.participantes_internos_id,
-        participantes_friend_family_id: est.participantes_friend_family_id
-      }));
+    } else {
+      // Fallback: no hay reclutamientos ni estadísticas
+      console.log('🔍 No hay reclutamientos ni estadísticas disponibles');
+      investigaciones = [];
     }
 
     console.log('✅ Investigaciones procesadas:', investigaciones.length);
@@ -297,7 +276,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('🔍 Debug - Reclutamientos originales:', reclutamientos.map(r => ({
         id: r.id,
         fecha_sesion: r.fecha_sesion,
-        estado_agendamiento: r.estado_agendamiento_cat?.nombre
+        estado_agendamiento: (r.estado_agendamiento_cat && typeof r.estado_agendamiento_cat === 'object' && 'nombre' in r.estado_agendamiento_cat) ? r.estado_agendamiento_cat.nombre : 'Desconocido'
       })));
     }
 
