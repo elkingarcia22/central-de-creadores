@@ -28,13 +28,18 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     // Verificar si el usuario es administrador
     let esAdmin = false;
     if (userId) {
+      // TEMPORAL: Tratar a alison@gmail.com como administrador
       const { data: usuarioData } = await supabaseServer
         .from('usuarios_con_roles')
-        .select('roles')
+        .select('email, roles')
         .eq('id', userId)
         .single();
       
-      if (usuarioData?.roles) {
+      // Si es alison@gmail.com, tratarlo como administrador
+      if (usuarioData?.email === 'alison@gmail.com') {
+        esAdmin = true;
+        console.log('🔑 Usuario alison@gmail.com tratado como administrador');
+      } else if (usuarioData?.roles) {
         // Verificar si tiene rol de administrador
         const { data: rolesData } = await supabaseServer
           .from('roles')
