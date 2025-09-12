@@ -1084,7 +1084,7 @@ export default function SesionActivaPage() {
         showSuccess('Dolor creado exitosamente');
         setShowCrearDolorModal(false);
         // Recargar dolores
-        await cargarDolores();
+        await loadDoloresData();
       } else {
         const errorData = await response.json();
         showError(errorData.error || 'Error al crear el dolor');
