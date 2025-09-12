@@ -2641,16 +2641,15 @@ export default function VistaParticipacion() {
         }}
       />
 
-      {showModalCrearPerfilamiento && categoriaSeleccionada && participantePerfilamientoTemp && (
+      {showModalCrearPerfilamiento && categoriaSeleccionada && participante && (
         <CrearPerfilamientoModal
           isOpen={true}
           onClose={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
-            setParticipantePerfilamientoTemp(null);
           }}
-          participanteId={participantePerfilamientoTemp.id}
-          participanteNombre={participantePerfilamientoTemp.nombre}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
           onBack={() => {
             setShowModalCrearPerfilamiento(false);
@@ -2660,7 +2659,6 @@ export default function VistaParticipacion() {
           onSuccess={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
-            setParticipantePerfilamientoTemp(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}
         />
