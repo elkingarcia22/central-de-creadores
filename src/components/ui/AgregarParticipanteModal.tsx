@@ -21,6 +21,7 @@ import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
 import CrearParticipanteFriendFamilyModal from './CrearParticipanteFriendFamilyModal';
 import { UsersIcon, CheckCircleIcon, RefreshIcon } from '../icons';
 import { obtenerUsuariosDelLibreto, combinarUsuarios, UsuarioLibreto } from '../../utils/libretoUsuarios';
+import { obtenerInvestigacionPorId } from '../../api/supabase-investigaciones';
 
 interface AgregarParticipanteModalProps {
   isOpen: boolean;
@@ -79,6 +80,7 @@ export default function AgregarParticipanteModal({
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
+  const [investigacionData, setInvestigacionData] = useState<any>(null);
   
   // Log cuando cambie usuariosDelLibreto
   useEffect(() => {
@@ -200,7 +202,7 @@ export default function AgregarParticipanteModal({
     }
   }, [investigacionId, isOpen, responsables.length]);
 
-  // Función para cargar usuarios del libreto
+  // Función para cargar usuarios del libreto y datos de la investigación
   const cargarUsuariosDelLibreto = async () => {
     console.log('🔍 cargarUsuariosDelLibreto - investigacionId:', investigacionId);
     if (!investigacionId) {
@@ -209,6 +211,21 @@ export default function AgregarParticipanteModal({
     }
     
     try {
+      // Cargar datos de la investigación
+      console.log('🔍 Cargando datos de la investigación:', investigacionId);
+      const investigacionResponse = await obtenerInvestigacionPorId(investigacionId);
+      if (investigacionResponse.data) {
+        setInvestigacionData(investigacionResponse.data);
+        console.log('🔍 Datos de la investigación cargados:', investigacionResponse.data);
+        
+        // Precargar responsable del agendamiento (responsable o implementador)
+        const responsableId = investigacionResponse.data.responsable_id || investigacionResponse.data.implementador_id;
+        if (responsableId) {
+          setResponsableId(responsableId);
+          console.log('🔍 Responsable del agendamiento precargado:', responsableId);
+        }
+      }
+      
       console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionId);
       const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
       console.log('🔍 Usuarios del libreto obtenidos:', usuariosLibreto);
