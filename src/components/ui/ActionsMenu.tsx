@@ -115,18 +115,26 @@ const ActionsMenu: React.FC<ActionsMenuProps> = ({ actions, className = '' }) =>
                   : 'hover:bg-accent'
                 }
               `}
-              style={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? {
+              style={action.label.toLowerCase().includes('eliminar') ? {
                 color: 'rgb(220 38 38) !important', // red-600
                 backgroundColor: 'transparent !important'
               } : {
                 color: 'rgb(var(--popover-foreground)) !important'
               }}
-              onMouseEnter={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? (e) => {
+              onMouseEnter={action.label.toLowerCase().includes('eliminar') ? (e) => {
                 e.currentTarget.style.color = 'rgb(185 28 28) !important'; // red-700
               } : undefined}
-              onMouseLeave={(action.className?.includes('text-red') || action.label.toLowerCase().includes('eliminar')) ? (e) => {
+              onMouseLeave={action.label.toLowerCase().includes('eliminar') ? (e) => {
                 e.currentTarget.style.color = 'rgb(220 38 38) !important'; // red-600
               } : undefined}
+              ref={(el) => {
+                if (el && action.label.toLowerCase().includes('eliminar')) {
+                  // Forzar color rojo después del render
+                  setTimeout(() => {
+                    el.style.setProperty('color', 'rgb(220 38 38)', 'important');
+                  }, 0);
+                }
+              }}
             >
               <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center text-current">
                 {action.icon}
