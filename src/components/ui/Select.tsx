@@ -94,6 +94,18 @@ const Select: React.FC<SelectProps> = ({
     if (isOpen && containerRef.current) {
       const position = getDropdownPosition();
       setDropdownPosition(position);
+      
+      // Debug: verificar estilos del dropdown
+      setTimeout(() => {
+        if (dropdownRef.current) {
+          const computedStyle = window.getComputedStyle(dropdownRef.current);
+          console.log('🔍 [Select] Dropdown abierto - estilos computados:');
+          console.log('🔍 [Select] backgroundColor:', computedStyle.backgroundColor);
+          console.log('🔍 [Select] color:', computedStyle.color);
+          console.log('🔍 [Select] borderColor:', computedStyle.borderColor);
+          console.log('🔍 [Select] clases aplicadas:', dropdownRef.current.className);
+        }
+      }, 100);
     }
   }, [isOpen, getDropdownPosition]);
 
@@ -269,11 +281,17 @@ const Select: React.FC<SelectProps> = ({
       {isOpen && createPortal(
         <div
           ref={dropdownRef}
-          className="bg-background border border-border rounded-md overflow-hidden shadow-lg"
+          className="rounded-md overflow-hidden shadow-lg"
           style={{
             ...dropdownPosition,
             borderRadius: '6px',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+            backgroundColor: 'rgb(var(--background))',
+            border: '1px solid rgb(var(--border))'
+          }}
+          onLoad={() => {
+            console.log('🔍 [Select] Dropdown cargado, clases:', 'bg-background border border-border rounded-md overflow-hidden shadow-lg');
+            console.log('🔍 [Select] Estilos computados:', window.getComputedStyle(dropdownRef.current || document.createElement('div')));
           }}
           onClick={(e) => {
             // Asegurar que los clics dentro del dropdown no se propaguen
@@ -298,7 +316,12 @@ const Select: React.FC<SelectProps> = ({
           )}
 
           {/* Options */}
-          <div className="max-h-60 overflow-y-auto bg-background">
+          <div 
+            className="max-h-60 overflow-y-auto"
+            style={{
+              backgroundColor: 'rgb(var(--background))'
+            }}
+          >
             {filteredOptions.length === 0 ? (
               <div className="px-3 py-2 text-sm text-muted-foreground">
                 No se encontraron opciones
