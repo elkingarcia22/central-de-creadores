@@ -96,10 +96,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
       if (todasLasInvestigaciones.length > 0) {
         // Filtrar reclutamientos por investigaciones relevantes O por reclutador asignado
-        query = query.or(`
-          investigacion_id.in.(${todasLasInvestigaciones.join(',')}),
-          reclutador_id.eq.${userId}
-        `);
+        query = query.or(`investigacion_id.in.(${todasLasInvestigaciones.join(',')}),reclutador_id.eq.${userId}`);
       } else {
         // Si no tiene investigaciones asignadas, solo mostrar donde es reclutador
         query = query.eq('reclutador_id', userId);
