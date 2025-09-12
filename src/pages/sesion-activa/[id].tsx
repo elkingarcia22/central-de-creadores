@@ -1870,10 +1870,13 @@ export default function SesionActivaPage() {
                 </>
               )}
             </Button>
-            <AIButton 
+            <Button 
               onClick={handleSaveAndViewSession}
+              variant="primary"
               size="md"
-            />
+            >
+              Guardar
+            </Button>
             </div>
           </div>
 

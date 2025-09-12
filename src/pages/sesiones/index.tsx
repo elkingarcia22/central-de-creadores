@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones } from '../../components/ui';
+import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones, AIButton } from '../../components/ui';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -1178,18 +1178,29 @@ const SesionesPageContent: React.FC = () => {
                 <h2 className="text-xl font-semibold text-foreground">
                   Detalles de la Sesión
                 </h2>
-                <button
-                  onClick={() => {
-                    setShowModal(false);
-                    setSelectedSesion(null);
-                    setModalActiveTab('detalles');
-                  }}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div className="flex items-center gap-3">
+                  <AIButton 
+                    onClick={() => {
+                      // Aquí puedes agregar la lógica para analizar con IA
+                      console.log('Analizar sesión con IA:', selectedSesion.id);
+                    }}
+                    size="sm"
+                  >
+                    Analizar con IA
+                  </AIButton>
+                  <button
+                    onClick={() => {
+                      setShowModal(false);
+                      setSelectedSesion(null);
+                      setModalActiveTab('detalles');
+                    }}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               
               <Tabs
