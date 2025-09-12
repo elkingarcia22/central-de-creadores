@@ -15,7 +15,7 @@ import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subti
 import { DolorParticipanteCompleto } from '../../types/dolores';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
-import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon } from '../../components/icons';
+import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, MicIcon, UserPlusIcon, ClipboardListIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
@@ -1966,6 +1966,24 @@ export default function VistaParticipacion() {
             </AIButton>
             <ActionsMenu
               actions={[
+                {
+                  label: 'Crear Dolor',
+                  icon: <AlertTriangleIcon className="w-4 h-4" />,
+                  onClick: () => setShowModalCrearDolor(true)
+                },
+                {
+                  label: 'Crear Perfilamiento',
+                  icon: <UserPlusIcon className="w-4 h-4" />,
+                  onClick: () => setShowModalPerfilamiento(true)
+                },
+                {
+                  label: 'Crear Seguimiento',
+                  icon: <ClipboardListIcon className="w-4 h-4" />,
+                  onClick: () => {
+                    // TODO: Implementar crear seguimiento
+                    console.log('Crear seguimiento - por implementar');
+                  }
+                },
                 {
                   label: 'Editar Participación',
                   icon: <EditIcon className="w-4 h-4" />,
