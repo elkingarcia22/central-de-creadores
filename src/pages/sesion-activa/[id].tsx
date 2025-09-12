@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useToast } from '../../contexts/ToastContext';
 import { Layout, PageHeader, SideModal, Input, Textarea, Select, ConfirmModal, EmptyState, InfoContainer, InfoItem } from '../../components/ui';
+import { DolorSideModal } from '../../components/dolores/DolorSideModal';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -91,6 +93,7 @@ interface Usuario {
 export default function SesionActivaPage() {
   const router = useRouter();
   const { id } = router.query;
+  const { showSuccess, showError } = useToast();
   const [participante, setParticipante] = useState<Participante | null>(null);
   const [reclutamiento, setReclutamiento] = useState<Reclutamiento | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,6 +108,13 @@ export default function SesionActivaPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [investigaciones, setInvestigaciones] = useState<any[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
+  
+  // Estados para modales de dolores
+  const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
+  const [showVerDolorModal, setShowVerDolorModal] = useState(false);
+  const [showEditarDolorModal, setShowEditarDolorModal] = useState(false);
+  const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   
   // Estados para filtros de dolores
   const [searchTerm, setSearchTerm] = useState('');
@@ -857,15 +867,67 @@ export default function SesionActivaPage() {
 
   // Funciones para dolores
   const handleVerDolor = (dolor: DolorParticipante) => {
-    console.log('Ver dolor:', dolor);
+    setDolorSeleccionado(dolor);
+    setShowVerDolorModal(true);
   };
 
   const handleEditarDolor = (dolor: DolorParticipante) => {
-    console.log('Editar dolor:', dolor);
+    setDolorSeleccionado(dolor);
+    setShowEditarDolorModal(true);
   };
 
   const handleEliminarDolor = (dolor: DolorParticipante) => {
-    console.log('Eliminar dolor:', dolor);
+    setDolorParaEliminar(dolor);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleActualizarDolor = async (dolorData: any) => {
+    if (!dolorSeleccionado) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dolorData),
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor actualizado exitosamente');
+        setShowEditarDolorModal(false);
+        setDolorSeleccionado(null);
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al actualizar el dolor');
+      }
+    } catch (error) {
+      console.error('Error al actualizar dolor:', error);
+      showError('Error al actualizar el dolor');
+    }
+  };
+
+  const confirmarEliminarDolor = async () => {
+    if (!dolorParaEliminar) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor eliminado exitosamente');
+        await cargarDolores();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al eliminar el dolor');
+      }
+    } catch (error) {
+      console.error('Error al eliminar dolor:', error);
+      showError('Error al eliminar el dolor');
+    } finally {
+      setShowDeleteConfirmModal(false);
+      setDolorParaEliminar(null);
+    }
   };
 
   const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
@@ -1889,6 +1951,48 @@ export default function SesionActivaPage() {
             />
         </div>
       </div>
+
+      {/* Modales para dolores */}
+      {showVerDolorModal && dolorSeleccionado && (
+        <DolorSideModal
+          isOpen={showVerDolorModal}
+          onClose={() => {
+            setShowVerDolorModal(false);
+            setDolorSeleccionado(null);
+          }}
+          dolor={dolorSeleccionado}
+          mode="view"
+        />
+      )}
+
+      {showEditarDolorModal && dolorSeleccionado && (
+        <DolorSideModal
+          isOpen={showEditarDolorModal}
+          onClose={() => {
+            setShowEditarDolorModal(false);
+            setDolorSeleccionado(null);
+          }}
+          dolor={dolorSeleccionado}
+          mode="edit"
+          onSave={handleActualizarDolor}
+        />
+      )}
+
+      {showDeleteConfirmModal && dolorParaEliminar && (
+        <ConfirmModal
+          isOpen={showDeleteConfirmModal}
+          onClose={() => {
+            setShowDeleteConfirmModal(false);
+            setDolorParaEliminar(null);
+          }}
+          onConfirm={confirmarEliminarDolor}
+          title="Eliminar Dolor"
+          message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar.titulo}"?`}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+          variant="destructive"
+        />
+      )}
     </Layout>
   );
 }
