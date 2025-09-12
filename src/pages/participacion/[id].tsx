@@ -2403,10 +2403,13 @@ export default function VistaParticipacion() {
           if (dolorSeleccionado) {
             console.log('🔍 [Participacion] Estableciendo dolorParaEditar:', dolorSeleccionado);
             setDolorParaEditar(dolorSeleccionado);
+            // Usar setTimeout para asegurar que el estado se actualice antes de abrir el modal
+            setTimeout(() => {
+              console.log('🔍 [Participacion] Cerrando modal de ver y abriendo modal de editar');
+              setShowVerDolorModal(false);
+              setShowEditarDolorModal(true);
+            }, 0);
           }
-          console.log('🔍 [Participacion] Cerrando modal de ver y abriendo modal de editar');
-          setShowVerDolorModal(false);
-          setShowEditarDolorModal(true);
         }}
       />
 
