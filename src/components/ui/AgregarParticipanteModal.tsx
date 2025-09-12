@@ -187,17 +187,10 @@ export default function AgregarParticipanteModal({
   }, [isOpen, showInvestigacionSelector, investigaciones, investigacionId]);
 
   // Recargar usuarios cuando cambie la investigación seleccionada
+  // Cargar usuarios del libreto cuando se seleccione una investigación
   useEffect(() => {
     if (isOpen && investigacionId && responsables.length > 0) {
-      console.log('🔄 Investigación cambiada, recargando usuarios del libreto:', investigacionId);
-      cargarUsuariosDelLibreto();
-    }
-  }, [investigacionId, isOpen, responsables.length]);
-
-  // Cargar usuarios del libreto cuando se inicialice investigacionId
-  useEffect(() => {
-    if (isOpen && investigacionId && responsables.length > 0) {
-      console.log('🔄 Investigación inicializada, cargando usuarios del libreto:', investigacionId);
+      console.log('🔄 Investigación seleccionada, cargando usuarios del libreto:', investigacionId);
       cargarUsuariosDelLibreto();
     }
   }, [investigacionId, isOpen, responsables.length]);
@@ -218,8 +211,8 @@ export default function AgregarParticipanteModal({
         setInvestigacionData(investigacionResponse.data);
         console.log('🔍 Datos de la investigación cargados:', investigacionResponse.data);
         
-        // Precargar responsable del agendamiento (responsable o implementador)
-        const responsableId = investigacionResponse.data.responsable_id || investigacionResponse.data.implementador_id;
+        // Precargar responsable del agendamiento (implementador o responsable)
+        const responsableId = investigacionResponse.data.implementador_id || investigacionResponse.data.responsable_id;
         if (responsableId) {
           setResponsableId(responsableId);
           console.log('🔍 Responsable del agendamiento precargado:', responsableId);
@@ -268,14 +261,17 @@ export default function AgregarParticipanteModal({
       console.log('🔍 Debug AgregarParticipanteModal - reclutamiento:', reclutamiento);
       console.log('🔍 Responsables cargados:', responsables);
       console.log('🔍 Es desde agendamiento pendiente:', esDesdeAgendamientoPendiente);
+      console.log('🔍 ResponsableId actual:', responsableId);
       
-      // Solo pre-cargar responsable si viene de "Agendamiento Pendiente"
-      if (esDesdeAgendamientoPendiente && reclutamiento.responsable_pre_cargado) {
+      // Solo pre-cargar responsable si viene de "Agendamiento Pendiente" Y no hay responsable ya precargado desde la investigación
+      if (esDesdeAgendamientoPendiente && reclutamiento.responsable_pre_cargado && !responsableId) {
         console.log('🔍 Usando responsable pre-cargado desde agendamiento pendiente:', reclutamiento.responsable_pre_cargado);
         setResponsableId(reclutamiento.responsable_pre_cargado.id || '');
-      } else {
-        console.log('🔍 No pre-cargando responsable (no es desde agendamiento pendiente o no hay responsable pre-cargado)');
+      } else if (!esDesdeAgendamientoPendiente && !responsableId) {
+        console.log('🔍 No pre-cargando responsable (no es desde agendamiento pendiente y no hay responsable precargado desde investigación)');
         setResponsableId(''); // Dejar vacío para que el usuario seleccione
+      } else {
+        console.log('🔍 Manteniendo responsable actual:', responsableId);
       }
       
       // Usar fecha y hora actual
@@ -284,7 +280,7 @@ export default function AgregarParticipanteModal({
       setHoraSesion(time);
       setDuracionSesion('60');
     }
-  }, [isOpen, reclutamiento, responsables, esDesdeAgendamientoPendiente]);
+  }, [isOpen, reclutamiento, responsables, esDesdeAgendamientoPendiente, responsableId]);
 
   // Calcular estado de enfriamiento cuando se selecciona un participante externo
   useEffect(() => {
