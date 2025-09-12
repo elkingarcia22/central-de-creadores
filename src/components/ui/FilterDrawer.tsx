@@ -504,10 +504,13 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       <div 
         className={`
           absolute right-0 top-0 h-full w-full max-w-md
-          bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700
-          transform transition-transform
+          shadow-xl transform transition-transform
           ${className}
         `}
+        style={{
+          backgroundColor: 'rgb(var(--background)) !important',
+          borderLeft: '1px solid rgb(var(--border)) !important'
+        }}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -1399,7 +1402,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div 
+            className="p-4"
+            style={{
+              borderTop: '1px solid rgb(var(--border)) !important'
+            }}
+          >
             <div className="flex gap-2">
               <Button
                 variant="outline"
