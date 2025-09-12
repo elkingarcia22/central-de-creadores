@@ -6,6 +6,7 @@ import Typography from './Typography';
 import Button from './Button';
 import Select from './Select';
 import UserSelectorWithAvatar from './UserSelectorWithAvatar';
+import MultiUserSelector from './MultiUserSelector';
 import DatePicker from './DatePicker';
 import { TimePicker } from './TimePicker';
 import Input from './Input';
@@ -77,6 +78,7 @@ export default function AgregarParticipanteModal({
   const [error, setError] = useState<string | null>(null);
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
+  const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
   
   // Log cuando cambie usuariosDelLibreto
   useEffect(() => {
@@ -211,6 +213,11 @@ export default function AgregarParticipanteModal({
       const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionId);
       console.log('🔍 Usuarios del libreto obtenidos:', usuariosLibreto);
       setUsuariosDelLibreto(usuariosLibreto);
+      
+      // Precargar los usuarios del libreto como seleccionados
+      const idsUsuariosLibreto = usuariosLibreto.map(u => u.id);
+      setUsuariosSeleccionadosLibreto(idsUsuariosLibreto);
+      console.log('🔍 Usuarios del libreto precargados como seleccionados:', idsUsuariosLibreto);
       
       // Obtener todos los usuarios para combinar
       console.log('🔍 Obteniendo todos los usuarios...');
@@ -816,51 +823,34 @@ export default function AgregarParticipanteModal({
               required
             />
             
-              {/* Indicación de usuarios del libreto */}
+              {/* Usuarios del equipo en el libreto - Editable */}
               {(() => {
                 console.log('🔍 Renderizando sección usuarios del libreto - usuariosDelLibreto.length:', usuariosDelLibreto.length);
                 console.log('🔍 usuariosDelLibreto:', usuariosDelLibreto);
+                console.log('🔍 usuariosSeleccionadosLibreto:', usuariosSeleccionadosLibreto);
                 return null;
               })()}
               {usuariosDelLibreto.length > 0 && (
-              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center gap-2">
-                  <UsersIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  <Typography variant="body2" className="text-blue-800 dark:text-blue-200">
-                    <strong>Usuarios del equipo configurados en el libreto:</strong>
+                <div className="mt-2">
+                  <MultiUserSelector
+                    label="Usuarios del equipo configurados en el libreto"
+                    placeholder="Seleccionar usuarios del equipo"
+                    value={usuariosSeleccionadosLibreto}
+                    onChange={setUsuariosSeleccionadosLibreto}
+                    users={responsables.map(r => ({
+                      id: r.id,
+                      full_name: r.full_name || 'Sin nombre',
+                      email: r.email || undefined,
+                      avatar_url: r.avatar_url
+                    }))}
+                    loading={loading}
+                    disabled={loading}
+                  />
+                  <Typography variant="caption" color="secondary" className="mt-2 block">
+                    Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
                   </Typography>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {usuariosDelLibreto.map((usuario) => (
-                    <Chip
-                      key={usuario.id}
-                      variant="secondary"
-                      className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
-                    >
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-4 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center">
-                          {usuario.avatar_url ? (
-                            <img 
-                              src={usuario.avatar_url} 
-                              alt={usuario.full_name || usuario.email}
-                              className="w-4 h-4 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xs font-medium text-blue-800 dark:text-blue-200">
-                              {(usuario.full_name || usuario.email || 'U').charAt(0).toUpperCase()}
-                            </span>
-                          )}
-                        </div>
-                        <span>{usuario.full_name || usuario.email}</span>
-                      </div>
-                    </Chip>
-                  ))}
-                </div>
-                <Typography variant="caption" className="text-blue-600 dark:text-blue-400 mt-1 block">
-                  Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
-                </Typography>
-              </div>
-            )}
+              )}
           </div>
 
           {/* Selector de Investigación (solo si se requiere) */}
