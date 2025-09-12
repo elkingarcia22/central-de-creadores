@@ -1987,10 +1987,11 @@ export default function SesionActivaPage() {
           }}
           onConfirm={confirmarEliminarDolor}
           title="Eliminar Dolor"
-          message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar.titulo}"?`}
+          message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar.titulo}"? Esta acción no se puede deshacer.`}
+          type="error"
           confirmText="Eliminar"
           cancelText="Cancelar"
-          variant="destructive"
+          size="md"
         />
       )}
     </Layout>
