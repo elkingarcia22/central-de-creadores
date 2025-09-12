@@ -11,7 +11,7 @@ import Tabs from '../../components/ui/Tabs';
 import Badge from '../../components/ui/Badge';
 import Chip from '../../components/ui/Chip';
 import DataTable from '../../components/ui/DataTable';
-import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState } from '../../components/ui';
+import { SideModal, Input, Textarea, Select, DolorSideModal, ConfirmModal, Subtitle, EmptyState, SeguimientoSideModal } from '../../components/ui';
 import { DolorParticipanteCompleto } from '../../types/dolores';
 import ActionsMenu from '../../components/ui/ActionsMenu';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
@@ -157,6 +157,11 @@ export default function VistaParticipacion() {
   const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
   
+  // Estados para menú de acciones (igual que sesión activa)
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
+  const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
+  
   // Estados para modales de participación
   const [showEditarParticipacionModal, setShowEditarParticipacionModal] = useState(false);
   const [showEliminarParticipacionModal, setShowEliminarParticipacionModal] = useState(false);
@@ -178,6 +183,23 @@ export default function VistaParticipacion() {
       dolorParaEditar: dolorParaEditar?.id
     });
   }, [showVerDolorModal, showEditarDolorModal, dolorSeleccionado, dolorParaEditar]);
+
+  // Cerrar menú de acciones cuando se hace clic fuera (igual que sesión activa)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showActionsMenu) {
+        const target = event.target as Element;
+        if (!target.closest('.relative')) {
+          setShowActionsMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActionsMenu]);
   const [participanteParaEditar, setParticipanteParaEditar] = useState<Participante | null>(null);
   const [participanteParaEliminar, setParticipanteParaEliminar] = useState<Participante | null>(null);
   const [participanteParaCrearDolor, setParticipanteParaCrearDolor] = useState<Participante | null>(null);
@@ -1964,39 +1986,54 @@ export default function VistaParticipacion() {
             >
               Analizar con IA
             </AIButton>
-            <ActionsMenu
-              actions={[
-                {
-                  label: 'Crear Dolor',
-                  icon: <AlertTriangleIcon className="w-4 h-4" />,
-                  onClick: () => setShowModalCrearDolor(true)
-                },
-                {
-                  label: 'Crear Perfilamiento',
-                  icon: <PlusIcon className="w-4 h-4" />,
-                  onClick: () => setShowModalPerfilamiento(true)
-                },
-                {
-                  label: 'Crear Seguimiento',
-                  icon: <ClipboardListIcon className="w-4 h-4" />,
-                  onClick: () => {
-                    // TODO: Implementar crear seguimiento
-                    console.log('Crear seguimiento - por implementar');
-                  }
-                },
-                {
-                  label: 'Editar Participación',
-                  icon: <EditIcon className="w-4 h-4" />,
-                  onClick: () => handleEditarParticipacion()
-                },
-                {
-                  label: 'Eliminar Participación',
-                  icon: <TrashIcon className="w-4 h-4" />,
-                  onClick: () => handleEliminarParticipacion(),
-                  className: 'text-red-600 hover:text-red-700'
-                }
-              ]}
-            />
+            {/* Menú de acciones con 3 puntos (igual que sesión activa) */}
+            <div className="relative">
+              <button
+                onClick={() => setShowActionsMenu(!showActionsMenu)}
+                className="w-10 h-10 rounded-md border border-border bg-card text-card-foreground hover:bg-accent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
+                aria-label="Más opciones"
+              >
+                <MoreVerticalIcon className="w-4 h-4" />
+              </button>
+              
+              {/* Menú desplegable */}
+              {showActionsMenu && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowSeguimientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <MessageIcon className="w-4 h-4" />
+                      Crear Seguimiento
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPerfilamientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                      Crear Perfilamiento
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowModalCrearDolor(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                    >
+                      <AlertTriangleIcon className="w-4 h-4" />
+                      Crear Dolor
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -2541,6 +2578,30 @@ export default function VistaParticipacion() {
             setCategoriaSeleccionada(null);
             setParticipantePerfilamientoTemp(null);
             showSuccess('Perfilamiento creado exitosamente');
+          }}
+        />
+      )}
+
+      {/* Modal de crear seguimiento (igual que sesión activa) */}
+      {showSeguimientoModal && (
+        <SeguimientoSideModal
+          isOpen={showSeguimientoModal}
+          onClose={() => setShowSeguimientoModal(false)}
+          investigacionId={reclutamientoActual?.investigacion_id || ''}
+          usuarios={usuarios}
+          responsablePorDefecto={reclutamientoActual?.responsable_id}
+        />
+      )}
+
+      {/* Modal de crear perfilamiento (igual que sesión activa) */}
+      {showPerfilamientoModal && (
+        <SeleccionarCategoriaPerfilamientoModal
+          isOpen={showPerfilamientoModal}
+          onClose={() => setShowPerfilamientoModal(false)}
+          onCategoriaSeleccionada={(categoria) => {
+            setCategoriaSeleccionada(categoria);
+            setShowPerfilamientoModal(false);
+            setShowModalCrearPerfilamiento(true);
           }}
         />
       )}
