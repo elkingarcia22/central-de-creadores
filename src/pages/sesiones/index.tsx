@@ -762,6 +762,7 @@ const SesionesPageContent: React.FC = () => {
 
   // Componente de card simple con sistema de diseño
   const SesionCardSimple = ({ sesion }: { sesion: Sesion }) => {
+    const sesionData = sesion as any;
 
     return (
       <Card className="" padding="lg">
@@ -770,7 +771,10 @@ const SesionesPageContent: React.FC = () => {
         <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-lg font-semibold text-foreground">
-            {sesion.investigacion_nombre || 'Sin investigación'}
+            {sesionData.tipo === 'apoyo' 
+              ? (sesionData.objetivo_sesion || 'Sesión de Apoyo')
+              : (sesion.investigacion_nombre || 'Sin investigación')
+            }
           </h3>
               <Chip 
                 variant={getChipVariant(sesion.estado_agendamiento || 'Sin estado') as any}
@@ -826,16 +830,26 @@ const SesionesPageContent: React.FC = () => {
             <p className="text-sm font-medium text-foreground">{formatFecha(sesion.fecha_programada)}</p>
         </div>
         <div>
-            <p className="text-xs text-muted-foreground mb-1">Participante</p>
+            <p className="text-xs text-muted-foreground mb-1">
+              {sesionData.tipo === 'apoyo' ? 'Moderador' : 'Participante'}
+            </p>
             <p className="text-sm font-medium text-foreground">
-            {sesion.titulo?.split(' - ')[0] || 'Sin participante'}
-          </p>
+              {sesionData.tipo === 'apoyo' 
+                ? (sesionData.moderador_nombre || 'Sin moderador')
+                : (sesion.titulo?.split(' - ')[0] || 'Sin participante')
+              }
+            </p>
         </div>
         <div>
-            <p className="text-xs text-muted-foreground mb-1">Empresa</p>
+            <p className="text-xs text-muted-foreground mb-1">
+              {sesionData.tipo === 'apoyo' ? 'Objetivo' : 'Empresa'}
+            </p>
             <p className="text-sm font-medium text-foreground">
-            {sesion.ubicacion || 'Sin empresa'}
-          </p>
+              {sesionData.tipo === 'apoyo' 
+                ? (sesionData.objetivo_sesion || 'Sin objetivo')
+                : (sesion.ubicacion || 'Sin empresa')
+              }
+            </p>
         </div>
         <div>
             <p className="text-xs text-muted-foreground mb-1">Duración</p>
