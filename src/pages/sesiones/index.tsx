@@ -7,7 +7,7 @@ import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { getChipVariant } from '../../utils/chipUtils';
-import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon } from '../../components/icons';
+import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon, HelpIcon } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
 import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useToast } from '../../contexts/ToastContext';
@@ -869,17 +869,13 @@ const SesionesPageContent: React.FC = () => {
         {/* Header con PageHeader estándar y dropdown integrado */}
         <div className="relative">
           <PageHeader
-            title={
-              <div className="flex items-center gap-3">
-                <span>Sesiones</span>
-                {googleCalendarConnected && (
-                  <Chip variant="terminada" size="sm">
-                    <CheckCircleIcon className="w-3 h-3 mr-1" />
-                    Conectado
-                  </Chip>
-                )}
-              </div>
-            }
+            title="Sesiones"
+            chip={googleCalendarConnected ? {
+              label: "Conectado",
+              variant: "success",
+              size: "sm",
+              icon: <CheckCircleIcon className="w-3 h-3" />
+            } : undefined}
             subtitle="Gestiona y programa sesiones de investigación y testing"
             color="blue"
             primaryAction={{
@@ -1047,6 +1043,7 @@ const SesionesPageContent: React.FC = () => {
             { 
               id: 'lista_apoyo', 
               label: 'Lista Apoyo', 
+              icon: <HelpIcon className="w-4 h-4" />,
               content: null
             }
           ]}
