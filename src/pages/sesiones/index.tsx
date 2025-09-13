@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, FilterValuesSesiones, AIButton } from '../../components/ui';
+import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, AIButton } from '../../components/ui';
+import { FilterValuesSesiones } from '../../components/ui/FilterDrawer';
+import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -36,6 +38,8 @@ const SesionesPageContent: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [sesionToEdit, setSesionToEdit] = useState<Sesion | null>(null);
   const [showAgregarParticipanteModal, setShowAgregarParticipanteModal] = useState(false);
+  const [showAgregarSesionApoyoModal, setShowAgregarSesionApoyoModal] = useState(false);
+  const [showSesionTypeDropdown, setShowSesionTypeDropdown] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | null>(null);
   
   // Ref para el calendario
@@ -185,6 +189,21 @@ const SesionesPageContent: React.FC = () => {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [isSearchExpanded]);
+
+  // Cerrar dropdown de tipo de sesión al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showSesionTypeDropdown && !target.closest('.dropdown-container')) {
+        setShowSesionTypeDropdown(false);
+      }
+    };
+
+    if (showSesionTypeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showSesionTypeDropdown]);
 
   // Efecto para verificar conexión cuando se regresa de configuraciones
   useEffect(() => {
@@ -373,18 +392,62 @@ const SesionesPageContent: React.FC = () => {
     setDeletingSesion(true);
     try {
       console.log('🗑️ Eliminando sesión:', sesionToDelete.id);
+      console.log('🔍 Datos completos de la sesión:', sesionToDelete);
+      
+      // Determinar qué API usar basado en el tipo de sesión
+      const isSesionApoyo = (sesionToDelete as any).tipo === 'apoyo';
+      const apiEndpoint = isSesionApoyo 
+        ? `/api/sesiones-apoyo/${sesionToDelete.id}`
+        : `/api/sesiones-reclutamiento/${sesionToDelete.id}`;
+      
+      console.log('🔍 Tipo de sesión detectado:', isSesionApoyo ? 'apoyo' : 'reclutamiento');
+      console.log('🔗 Endpoint seleccionado:', apiEndpoint);
       
       // Llamada real a la API para eliminar la sesión
-      const response = await fetch(`/api/sesiones-reclutamiento/${sesionToDelete.id}`, {
+      const response = await fetch(apiEndpoint, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       });
       
+      console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+      
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al eliminar la sesión');
+        console.error('❌ Error del servidor:', errorData);
+        
+        // Si es 404, intentar con la otra API como fallback
+        if (response.status === 404) {
+          console.log('🔄 Sesión no encontrada en la API actual, intentando con la otra API...');
+          
+          const fallbackEndpoint = isSesionApoyo 
+            ? `/api/sesiones-reclutamiento/${sesionToDelete.id}`
+            : `/api/sesiones-apoyo/${sesionToDelete.id}`;
+          
+          console.log('🔄 Endpoint de fallback:', fallbackEndpoint);
+          
+          const fallbackResponse = await fetch(fallbackEndpoint, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          console.log('📡 Respuesta del fallback:', fallbackResponse.status, fallbackResponse.statusText);
+          
+          if (!fallbackResponse.ok) {
+            const fallbackErrorData = await fallbackResponse.json();
+            console.error('❌ Error en fallback:', fallbackErrorData);
+            throw new Error(`Sesión no encontrada en ninguna API. Error original: ${errorData.error || 'Error desconocido'}`);
+          }
+          
+          console.log('✅ Sesión eliminada exitosamente con API de fallback');
+        } else {
+          throw new Error(errorData.error || 'Error al eliminar la sesión');
+        }
+      } else {
+        console.log('✅ Sesión eliminada exitosamente');
       }
       
       showSuccess('Sesión eliminada correctamente');
@@ -458,6 +521,33 @@ const SesionesPageContent: React.FC = () => {
   // Funciones para manejar filtros
   const handleFiltersChange = (newFilters: FilterValuesSesiones) => {
     setFilters(newFilters);
+  };
+
+  // Funciones para manejar sesiones de apoyo
+  const handleSesionInvestigacion = () => {
+    setFechaSeleccionada(null);
+    setShowAgregarParticipanteModal(true);
+  };
+
+  const handleSesionApoyo = () => {
+    setFechaSeleccionada(null);
+    setShowAgregarSesionApoyoModal(true);
+  };
+
+  const handleCloseAgregarSesionApoyoModal = () => {
+    setShowAgregarSesionApoyoModal(false);
+    setFechaSeleccionada(null);
+  };
+
+  const handleAgregarSesionApoyoSuccess = () => {
+    showSuccess('Sesión de apoyo creada exitosamente');
+    setShowAgregarSesionApoyoModal(false);
+    // Recargar las sesiones
+    cargarSesiones();
+    // Actualizar el calendario también
+    if (calendarRef.current) {
+      calendarRef.current.refresh();
+    }
   };
 
 
@@ -704,50 +794,81 @@ const SesionesPageContent: React.FC = () => {
     <>
       <div className="py-8">
         {/* Header */}
-        <PageHeader
-          title={
-            <div className="flex items-center gap-3">
-              <span>Sesiones</span>
-              {googleCalendarConnected && (
-                <Chip variant="terminada" size="sm">
-                  <CheckCircleIcon className="w-3 h-3 mr-1" />
-                  Conectado
-                </Chip>
-              )}
+        {/* Header con PageHeader estándar y dropdown integrado */}
+        <div className="relative">
+          <PageHeader
+            title={
+              <div className="flex items-center gap-3">
+                <span>Sesiones</span>
+                {googleCalendarConnected && (
+                  <Chip variant="terminada" size="sm">
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
+                    Conectado
+                  </Chip>
+                )}
+              </div>
+            }
+            subtitle="Gestiona y programa sesiones de investigación y testing"
+            color="blue"
+            primaryAction={{
+              label: "Nueva Sesión",
+              onClick: () => setShowSesionTypeDropdown(!showSesionTypeDropdown),
+              variant: "primary" as const,
+              icon: <PlusIcon className="w-4 h-4" />
+            }}
+            secondaryActions={
+              !googleCalendarConnected ? [
+                {
+                  label: "Conectar Google Calendar",
+                  onClick: () => {
+                    router.push('/configuraciones/conexiones');
+                  },
+                  variant: "secondary",
+                  icon: (
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                  )
+                }
+              ] : []
+            }
+          />
+          
+          {/* Dropdown integrado en el header - posicionamiento preciso */}
+          {showSesionTypeDropdown && (
+            <div 
+              className="dropdown-container absolute right-0 top-14 w-64 bg-background border border-border rounded-lg shadow-lg z-50"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <button
+                onClick={() => {
+                  handleSesionInvestigacion();
+                  setShowSesionTypeDropdown(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-foreground hover:bg-accent transition-colors duration-200 first:rounded-t-lg"
+              >
+                <ClipboardListIcon className="w-4 h-4 text-muted-foreground" />
+                <span>Sesión de Investigación</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  handleSesionApoyo();
+                  setShowSesionTypeDropdown(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-foreground hover:bg-accent transition-colors duration-200 last:rounded-b-lg"
+              >
+                <UserIcon className="w-4 h-4 text-muted-foreground" />
+                <span>Sesión de Apoyo</span>
+              </button>
             </div>
-          }
-          subtitle="Gestiona y programa sesiones de investigación y testing"
-          color="blue"
-          primaryAction={{
-            label: "Nueva Sesión",
-            onClick: () => {
-              setFechaSeleccionada(null);
-              setShowAgregarParticipanteModal(true);
-            },
-            variant: "primary",
-            icon: <PlusIcon className="w-4 h-4" />,
-            className: "bg-blue-600 hover:bg-blue-700 text-white"
-          }}
-          secondaryActions={
-            !googleCalendarConnected ? [
-              {
-                label: "Conectar Google Calendar",
-                onClick: () => {
-                  router.push('/configuraciones/conexiones');
-                },
-                variant: "secondary",
-                icon: (
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                )
-              }
-            ] : []
-          }
-        />
+          )}
+        </div>
 
         {/* Estadísticas del Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -1279,6 +1400,16 @@ const SesionesPageContent: React.FC = () => {
           onSuccess={handleAgregarParticipanteSuccess}
           showInvestigacionSelector={true}
           reclutamiento={null}
+          fechaPredefinida={fechaSeleccionada || undefined}
+        />
+      )}
+
+      {/* Modal de Agregar Sesión de Apoyo */}
+      {showAgregarSesionApoyoModal && (
+        <AgregarSesionApoyoModal
+          isOpen={showAgregarSesionApoyoModal}
+          onClose={handleCloseAgregarSesionApoyoModal}
+          onSuccess={handleAgregarSesionApoyoSuccess}
           fechaPredefinida={fechaSeleccionada || undefined}
         />
       )}

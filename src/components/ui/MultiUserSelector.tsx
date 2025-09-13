@@ -129,15 +129,15 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
           relative w-full min-h-[42px] px-3 py-2 border rounded-lg cursor-pointer
           transition-colors duration-200
           ${error 
-            ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-900/20' 
-            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+            ? 'border-destructive bg-destructive/10' 
+            : 'border-border bg-background'
           }
           ${disabled 
             ? 'opacity-50 cursor-not-allowed' 
-            : 'hover:border-gray-400 dark:hover:border-gray-500'
+            : 'hover:border-border/80'
           }
           ${isOpen 
-            ? 'border-blue-500 dark:border-blue-400 ring-1 ring-blue-500 dark:ring-blue-400' 
+            ? 'border-primary ring-1 ring-primary' 
             : ''
           }
         `}
@@ -148,7 +148,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
           {selectedUsers.map(user => (
             <div
               key={user.id}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-md text-sm"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-accent text-accent-foreground rounded-md text-sm"
             >
               <span>{getUserName(user)}</span>
               {!disabled && (
@@ -158,7 +158,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
                     e.stopPropagation();
                     removeUser(user.id);
                   }}
-                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-full p-0.5"
+                  className="hover:bg-accent/80 rounded-full p-0.5"
                 >
                   <XIcon className="w-3 h-3" />
                 </button>
@@ -169,7 +169,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
 
         {/* Placeholder cuando no hay usuarios seleccionados */}
         {selectedUsers.length === 0 && (
-          <div className="text-gray-500 dark:text-gray-400 text-sm">
+          <div className="text-muted-foreground text-sm">
             {placeholder}
           </div>
         )}
@@ -177,7 +177,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
         {/* Indicador de dropdown */}
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           <svg
-            className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+            className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
               isOpen ? 'rotate-180' : ''
             }`}
             fill="none"
@@ -198,15 +198,15 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-lg max-h-60 overflow-hidden">
           {/* Barra de búsqueda */}
-          <div className="p-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-2 border-b border-border">
             <input
               type="text"
               placeholder="Buscar usuarios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               autoFocus
             />
           </div>
@@ -214,11 +214,11 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
           {/* Lista de usuarios */}
           <div className="max-h-48 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="p-4 text-center text-muted-foreground">
                 Cargando usuarios...
               </div>
             ) : filteredUsers.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <div className="p-4 text-center text-muted-foreground">
                 {searchTerm ? 'No se encontraron usuarios' : 'No hay usuarios disponibles'}
               </div>
             ) : (
@@ -230,8 +230,8 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
                     className={`
                       flex items-center gap-3 px-3 py-2 cursor-pointer transition-colors duration-150
                       ${isSelected 
-                        ? 'bg-blue-50 dark:bg-blue-900/20' 
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                        ? 'bg-accent' 
+                        : 'hover:bg-accent'
                       }
                     `}
                     onClick={() => handleUserToggle(user.id)}
@@ -245,8 +245,8 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                          <span className="text-xs font-medium text-muted-foreground">
                             {getInitials(getUserName(user), user.email)}
                           </span>
                         </div>
@@ -268,7 +268,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
                     {/* Indicador de selección */}
                     {isSelected && (
                       <div className="flex-shrink-0">
-                        <CheckIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <CheckIcon className="w-4 h-4 text-primary" />
                       </div>
                     )}
                   </div>
@@ -279,7 +279,7 @@ const MultiUserSelector: React.FC<MultiUserSelectorProps> = ({
 
           {/* Información de selección */}
           {selectedUsers.length > 0 && (
-            <div className="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+            <div className="p-2 border-t border-border bg-muted/50">
               <Typography variant="caption" color="secondary">
                 {selectedUsers.length} usuario{selectedUsers.length !== 1 ? 's' : ''} seleccionado{selectedUsers.length !== 1 ? 's' : ''}
               </Typography>

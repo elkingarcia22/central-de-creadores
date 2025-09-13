@@ -2,8 +2,8 @@ import React, { forwardRef } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 export interface DatePickerProps {
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: Date | string | null;
+  onChange?: (date: Date | null) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -11,8 +11,8 @@ export interface DatePickerProps {
   required?: boolean;
   disabled?: boolean;
   className?: string;
-  min?: string;
-  max?: string;
+  minDate?: Date;
+  maxDate?: Date;
   error?: string;
   helperText?: string;
   size?: 'sm' | 'md' | 'lg';
@@ -32,8 +32,8 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(({
   required = false,
   disabled = false,
   className = '',
-  min,
-  max,
+  minDate,
+  maxDate,
   error,
   helperText,
   size = 'md',
@@ -44,6 +44,60 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(({
   ...props
 }, ref) => {
   const { theme } = useTheme();
+
+  // Convertir value a string para el input
+  const getInputValue = () => {
+    if (!value) return '';
+    if (value instanceof Date) {
+      return value.toISOString().split('T')[0];
+    }
+    if (typeof value === 'string') {
+      // Si es un string, intentar convertirlo a Date y luego a formato YYYY-MM-DD
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    }
+    return '';
+  };
+
+  // Manejar el cambio del input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    if (onChange) {
+      if (inputValue) {
+        const date = new Date(inputValue + 'T00:00:00');
+        onChange(date);
+      } else {
+        onChange(null);
+      }
+    }
+  };
+
+  // Convertir minDate y maxDate a strings
+  const getMinValue = () => {
+    if (!minDate) return undefined;
+    try {
+      const date = minDate instanceof Date ? minDate : new Date(minDate);
+      if (isNaN(date.getTime())) return undefined;
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.warn('Error al procesar minDate:', error);
+      return undefined;
+    }
+  };
+
+  const getMaxValue = () => {
+    if (!maxDate) return undefined;
+    try {
+      const date = maxDate instanceof Date ? maxDate : new Date(maxDate);
+      if (isNaN(date.getTime())) return undefined;
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.warn('Error al procesar maxDate:', error);
+      return undefined;
+    }
+  };
 
   const baseClasses = 'block w-full rounded-lg border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent/50';
   
@@ -86,15 +140,15 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(({
         type="date"
         id={id || name}
         name={name}
-        value={value || ''}
+        value={getInputValue()}
         placeholder={placeholder}
-        onChange={onChange}
+        onChange={handleChange}
         onBlur={onBlur}
         onFocus={onFocus}
         disabled={disabled}
         required={required}
-        min={min}
-        max={max}
+        min={getMinValue()}
+        max={getMaxValue()}
         className={inputClasses}
         style={{
           colorScheme: theme === 'dark' ? 'dark' : 'light'

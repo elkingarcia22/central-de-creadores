@@ -164,3 +164,64 @@ export interface SesionesStats {
   esta_semana: number;
   este_mes: number;
 }
+
+// ====================================
+// INTERFACES PARA SESIONES DE APOYO
+// ====================================
+
+export interface SesionApoyo {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  fecha_programada: Date | null;
+  duracion_minutos: number;
+  estado: 'programada' | 'en_curso' | 'completada' | 'cancelada' | 'reprogramada';
+  tipo_sesion: 'virtual' | 'presencial' | 'hibrida';
+  ubicacion?: string;
+  sala?: string;
+  moderador_id?: string;
+  moderador_nombre?: string;
+  observadores?: string[];
+  grabacion_permitida: boolean;
+  notas_publicas?: string;
+  notas_privadas?: string;
+  configuracion?: Record<string, any>;
+  fecha_inicio_real?: Date;
+  fecha_fin_real?: Date;
+  resultados?: Record<string, any>;
+  archivos_adjuntos?: string[];
+  google_calendar_id?: string;
+  google_event_id?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface SesionApoyoParticipante {
+  id: string;
+  sesion_apoyo_id: string;
+  participante_id: string;
+  participante_nombre?: string;
+  participante_email?: string;
+  estado: 'invitado' | 'confirmado' | 'presente' | 'ausente' | 'cancelado';
+  fecha_confirmacion?: Date;
+  hora_llegada?: Date;
+  hora_salida?: Date;
+  asistencia_completa: boolean;
+  puntuacion?: number;
+  comentarios?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface SesionApoyoFormData {
+  titulo: string;
+  descripcion?: string;
+  fecha_programada: Date | null;
+  hora_sesion?: string;
+  duracion_minutos: number;
+  moderador_id?: string;
+  observadores?: string[];
+  objetivo_sesion?: string;
+  participantes_ids?: string[];
+  meet_link?: string;
+}

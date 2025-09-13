@@ -44,6 +44,7 @@ export interface PageHeaderProps {
     label: string;
     variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet';
     size?: 'sm' | 'md' | 'lg';
+    icon?: React.ReactNode;
   };
   /** Función para cerrar el modal/side panel */
   onClose?: () => void;
@@ -220,6 +221,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               variant={chip.variant || 'default'}
               size={variant === 'small' ? 'sm' : (chip.size || 'sm')}
             >
+              {chip.icon && <span className="mr-1">{chip.icon}</span>}
               {chip.label}
             </Chip>
           )}

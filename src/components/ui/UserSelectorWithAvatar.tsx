@@ -35,6 +35,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
   error
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Buscar usuario seleccionado de forma segura
@@ -50,19 +51,33 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
     return found;
   }, [value, users]);
 
-  // Lista de usuarios a mostrar con validación
+  // Lista de usuarios a mostrar con validación y filtrado por búsqueda
   const usersToShow = React.useMemo(() => {
     console.log('🔍 UserSelectorWithAvatar - users recibidos:', users);
     if (!users || !Array.isArray(users)) return [];
-    const filtered = users.filter(user => user && user.id && (user.full_name || user.email));
+    
+    // Filtrar usuarios válidos
+    let filtered = users.filter(user => user && user.id && (user.full_name || user.email));
+    
+    // Aplicar filtro de búsqueda si hay término
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(user => {
+        const name = (user.full_name || '').toLowerCase();
+        const email = (user.email || '').toLowerCase();
+        return name.includes(searchLower) || email.includes(searchLower);
+      });
+    }
+    
     console.log('🔍 UserSelectorWithAvatar - usuarios filtrados:', filtered);
     return filtered;
-  }, [users]);
+  }, [users, searchTerm]);
 
   // Función para manejar selección de "Todos"
   const handleSelectAll = () => {
     onChange('todos');
     setIsOpen(false);
+    setSearchTerm(''); // Limpiar búsqueda
   };
 
   // Manejo de clic fuera del componente
@@ -70,6 +85,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setSearchTerm(''); // Limpiar búsqueda al cerrar
       }
     };
 
@@ -109,6 +125,7 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
     if (user && user.id) {
       onChange(user.id);
       setIsOpen(false);
+      setSearchTerm(''); // Limpiar búsqueda
     }
   };
 
@@ -248,9 +265,18 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
             <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl  overflow-hidden transition-all duration-200 ease-in-out transform origin-top">
               {/* Header de la lista */}
               <div className="sticky top-0 bg-muted-solid px-4 py-2 border-b border-border">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
                   Usuarios disponibles ({usersToShow.length})
                 </p>
+                {/* Campo de búsqueda */}
+                <input
+                  type="text"
+                  placeholder="Buscar usuarios..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  autoFocus
+                />
               </div>
 
               {/* Lista de usuarios */}
@@ -343,7 +369,9 @@ const UserSelectorWithAvatar: React.FC<UserSelectorWithAvatarProps> = ({
           <div className="absolute z-50 w-full mt-2 bg-popover-solid border border-border rounded-xl  overflow-hidden">
             <div className="px-4 py-6 text-center">
               <UserIcon className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No hay usuarios disponibles</p>
+              <p className="text-sm text-muted-foreground">
+                {searchTerm.trim() ? 'No se encontraron usuarios' : 'No hay usuarios disponibles'}
+              </p>
             </div>
           </div>
         )}

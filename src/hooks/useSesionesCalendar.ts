@@ -159,16 +159,16 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       const { data: { session } } = await supabase.auth.getSession();
       const userId = session?.user?.id;
       
-      // Construir URL con parámetros
-      const url = new URL('/api/sesiones-reclutamiento', window.location.origin);
+      // Cargar sesiones de reclutamiento
+      const urlReclutamiento = new URL('/api/sesiones-reclutamiento', window.location.origin);
       if (userId) {
-        url.searchParams.append('userId', userId);
+        urlReclutamiento.searchParams.append('userId', userId);
       }
       if (rolSeleccionado) {
-        url.searchParams.append('rolSeleccionado', rolSeleccionado);
+        urlReclutamiento.searchParams.append('rolSeleccionado', rolSeleccionado);
       }
       
-      const response = await fetch(url.toString(), {
+      const responseReclutamiento = await fetch(urlReclutamiento.toString(), {
         headers: {
           'Content-Type': 'application/json',
           ...(userId && { 'x-user-id': userId }),
@@ -176,18 +176,68 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
         }
       });
       
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      if (!responseReclutamiento.ok) {
+        throw new Error(`Error ${responseReclutamiento.status}: ${responseReclutamiento.statusText}`);
       }
       
-      const data = await response.json();
-      console.log('📊 Sesiones cargadas para calendario:', data.sesiones?.length || 0);
+      const dataReclutamiento = await responseReclutamiento.json();
+      console.log('📊 Sesiones de reclutamiento cargadas:', dataReclutamiento.sesiones?.length || 0);
       
-      if (data.sesiones && Array.isArray(data.sesiones)) {
+      // Cargar sesiones de apoyo
+      const responseApoyo = await fetch('/api/sesiones-apoyo', {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      let dataApoyo = { sesiones: [] };
+      if (responseApoyo.ok) {
+        dataApoyo = await responseApoyo.json();
+        console.log('📊 Sesiones de apoyo cargadas:', dataApoyo.length || 0);
+      } else {
+        console.warn('⚠️ No se pudieron cargar las sesiones de apoyo:', responseApoyo.status);
+      }
+      
+      // Combinar ambas listas de sesiones
+      const sesionesReclutamiento = dataReclutamiento.sesiones || [];
+      const sesionesApoyo = Array.isArray(dataApoyo) ? dataApoyo : (dataApoyo.sesiones || []);
+      
+      // Convertir sesiones de apoyo al formato esperado
+      const sesionesApoyoFormateadas = sesionesApoyo.map((sesion: any) => {
+        // Obtener información del participante para el título
+        let participanteNombre = 'Participante';
+        if (sesion.participante && sesion.participante.nombre) {
+          participanteNombre = sesion.participante.nombre;
+        } else if (sesion.participantes_ids && sesion.participantes_ids.length > 0) {
+          participanteNombre = 'Participante de Apoyo';
+        }
+
+        return {
+          ...sesion,
+          tipo: 'apoyo', // Marcar como sesión de apoyo
+          moderador_nombre: sesion.moderador_nombre || 'Sin asignar',
+          estado_real: sesion.estado,
+          responsable_real: sesion.moderador_nombre,
+          implementador_real: sesion.moderador_nombre,
+          // Mapear campos específicos de sesiones de apoyo
+          titulo: `${participanteNombre} - ${sesion.titulo || 'Sesión de Apoyo'}`,
+          descripcion: sesion.descripcion,
+          fecha_programada: sesion.fecha_programada,
+          duracion_minutos: sesion.duracion_minutos,
+          moderador_id: sesion.moderador_id,
+          observadores: sesion.observadores || [],
+          objetivo_sesion: sesion.objetivo_sesion
+        };
+      });
+      
+      const todasLasSesiones = [...sesionesReclutamiento, ...sesionesApoyoFormateadas];
+      console.log('📊 Total de sesiones cargadas:', todasLasSesiones.length);
+      
+      if (todasLasSesiones.length > 0) {
         // Usar las sesiones directamente sin enriquecimiento adicional para mejorar rendimiento
         console.log('📊 Usando sesiones directamente para mejorar rendimiento');
         
-        const sesionesEnriquecidas = data.sesiones.map((sesion: any) => ({
+        const sesionesEnriquecidas = todasLasSesiones.map((sesion: any) => ({
           ...sesion,
           // Usar información básica disponible
           moderador_nombre: sesion.moderador_nombre || 'Sin asignar',
@@ -229,7 +279,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
 
   const createSesion = async (sesionData: any) => {
     try {
-      const response = await fetch('/api/sesiones-reclutamiento', {
+      // Determinar qué API usar basado en el tipo de sesión
+      const apiEndpoint = sesionData.tipo === 'apoyo' ? '/api/sesiones-apoyo' : '/api/sesiones-reclutamiento';
+      
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,8 +295,19 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       }
 
       const nuevaSesion = await response.json();
-      setSesiones(prev => [nuevaSesion, ...prev]);
-      return nuevaSesion;
+      
+      // Formatear la sesión para el calendario
+      const sesionFormateada = {
+        ...nuevaSesion,
+        tipo: sesionData.tipo || 'reclutamiento',
+        moderador_nombre: nuevaSesion.moderador_nombre || 'Sin asignar',
+        estado_real: nuevaSesion.estado,
+        responsable_real: nuevaSesion.moderador_nombre,
+        implementador_real: nuevaSesion.moderador_nombre
+      };
+      
+      setSesiones(prev => [sesionFormateada, ...prev]);
+      return sesionFormateada;
     } catch (err) {
       setError('Error al crear la sesión');
       throw err;
