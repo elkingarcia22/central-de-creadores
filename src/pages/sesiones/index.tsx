@@ -608,10 +608,10 @@ const SesionesPageContent: React.FC = () => {
   };
 
 
-  // Función para iniciar sesión
+  // Función para iniciar sesión de investigación
   const handleIniciarSesion = async (sesion: SesionEvent) => {
     try {
-      console.log('🎯 Iniciando sesión:', sesion.id);
+      console.log('🎯 Iniciando sesión de investigación:', sesion.id);
       console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
       
       // Si la sesión tiene enlace de Meet, abrirlo
@@ -681,6 +681,58 @@ const SesionesPageContent: React.FC = () => {
     } catch (error) {
       console.error('Error iniciando sesión:', error);
       showError('Error al iniciar la sesión');
+    }
+  };
+
+  // Función para iniciar sesión de apoyo
+  const handleIniciarSesionApoyo = async (sesion: any) => {
+    try {
+      console.log('🎯 Iniciando sesión de apoyo:', sesion.id);
+      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
+      console.log('🔍 Debug - sesion.moderador_id:', sesion.moderador_id);
+      
+      // Si la sesión tiene enlace de Meet, abrirlo
+      if (sesion.meet_link) {
+        console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
+        
+        // Guardar información de la sesión de apoyo en localStorage
+        const sesionApoyoData = {
+          id: sesion.id,
+          meet_link: sesion.meet_link,
+          titulo: sesion.titulo,
+          fecha: sesion.fecha_programada,
+          moderador_id: sesion.moderador_id,
+          moderador_nombre: sesion.moderador_nombre,
+          objetivo_sesion: sesion.objetivo_sesion,
+          observadores: sesion.observadores,
+          tipo: 'apoyo'
+        };
+        localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
+        console.log('💾 Información de la sesión de apoyo guardada en localStorage:', sesionApoyoData);
+        
+        // Abrir Meet en nueva pestaña
+        window.open(sesion.meet_link, '_blank');
+        
+        // Redirigir a la página de sesión activa de apoyo
+        // Para sesiones de apoyo, usamos el moderador como "participante" para la URL
+        if (sesion.moderador_id) {
+          console.log('🚀 Redirigiendo a sesión activa de apoyo para moderador:', sesion.moderador_id);
+          router.push(`/sesion-activa-apoyo/${sesion.moderador_id}`);
+        } else {
+          console.log('❌ No se puede redirigir: No hay ID del moderador');
+          console.log('🔍 Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
+          showError('No se pudo encontrar el ID del moderador');
+        }
+        
+      } else {
+        // Si no hay enlace de Meet, solo mostrar mensaje
+        console.log('⚠️ No hay enlace de Meet en la sesión de apoyo');
+        showWarning('Esta sesión de apoyo no tiene enlace de Meet configurado');
+      }
+      
+    } catch (error) {
+      console.error('Error iniciando sesión de apoyo:', error);
+      showError('Error al iniciar la sesión de apoyo');
     }
   };
 
@@ -794,7 +846,13 @@ const SesionesPageContent: React.FC = () => {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => handleIniciarSesion(sesion as any)}
+              onClick={() => {
+                if (sesionData.tipo === 'apoyo') {
+                  handleIniciarSesionApoyo(sesionData);
+                } else {
+                  handleIniciarSesion(sesion as any);
+                }
+              }}
               icon={<PlayIcon className="w-4 h-4" />}
             >
               Iniciar
