@@ -23,9 +23,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   try {
+    console.log('🔄 Obteniendo sesiones de apoyo...');
+    
     const { data, error } = await supabase
       .from('sesiones_apoyo')
-      .select('*')
+      .select(`
+        *,
+        profiles!sesiones_apoyo_moderador_id_fkey(
+          id,
+          full_name,
+          email
+        )
+      `)
       .order('fecha_programada', { ascending: true });
 
     if (error) {
@@ -33,7 +42,33 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error obteniendo sesiones de apoyo' });
     }
 
-    return res.status(200).json(data || []);
+    // Formatear las sesiones para que tengan la misma estructura que las sesiones de reclutamiento
+    const sesionesFormateadas = data?.map(sesion => ({
+      id: sesion.id,
+      titulo: sesion.titulo,
+      descripcion: sesion.descripcion,
+      fecha_programada: sesion.fecha_programada,
+      hora_sesion: sesion.hora_sesion,
+      duracion_minutos: sesion.duracion_minutos,
+      estado: sesion.estado,
+      estado_agendamiento: sesion.estado, // Mapear estado a estado_agendamiento para compatibilidad
+      moderador_id: sesion.moderador_id,
+      moderador_nombre: sesion.profiles?.full_name || 'Sin asignar',
+      moderador_email: sesion.profiles?.email || '',
+      observadores: sesion.observadores || [],
+      objetivo_sesion: sesion.objetivo_sesion,
+      meet_link: sesion.meet_link,
+      tipo: 'apoyo', // Marcar como sesión de apoyo
+      created_at: sesion.created_at,
+      updated_at: sesion.updated_at
+    })) || [];
+
+    console.log('✅ Sesiones de apoyo formateadas:', sesionesFormateadas.length);
+
+    return res.status(200).json({
+      sesiones: sesionesFormateadas,
+      total: sesionesFormateadas.length
+    });
   } catch (error) {
     console.error('Error en handleGet:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
