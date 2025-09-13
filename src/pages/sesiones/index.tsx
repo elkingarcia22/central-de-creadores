@@ -22,9 +22,10 @@ const SesionesPageContent: React.FC = () => {
   const { userId, isAuthenticated } = useFastUser();
   const { rolSeleccionado } = useRol();
   
-  const [activeView, setActiveView] = useState<'calendar' | 'list'>('calendar');
+  const [activeView, setActiveView] = useState<'calendar' | 'lista_investigaciones' | 'lista_apoyo'>('calendar');
   const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
+  const [sesionesApoyo, setSesionesApoyo] = useState<SesionEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -112,62 +113,110 @@ const SesionesPageContent: React.FC = () => {
     }
   };
 
-  // Función para cargar sesiones
-    const cargarSesiones = async () => {
-      setLoading(true);
-      setError(null);
+  // Función para cargar sesiones de investigación
+  const cargarSesiones = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('🔄 Cargando sesiones de reclutamiento...');
+      console.log('👤 Usuario ID:', userId);
+      console.log('🎭 Rol seleccionado:', rolSeleccionado);
       
-      try {
-        console.log('🔄 Cargando sesiones de reclutamiento...');
-        console.log('👤 Usuario ID:', userId);
-        console.log('🎭 Rol seleccionado:', rolSeleccionado);
-        
-        // Construir URL con parámetros de usuario y rol
-        const url = new URL('/api/sesiones-reclutamiento', window.location.origin);
-        if (userId) {
-          url.searchParams.append('userId', userId);
-        }
-        if (rolSeleccionado) {
-          url.searchParams.append('rolSeleccionado', rolSeleccionado);
-        }
-        
-        const response = await fetch(url.toString(), {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(userId && { 'x-user-id': userId }),
-            ...(rolSeleccionado && { 'x-rol-seleccionado': rolSeleccionado })
-          }
-        });
-        
-        if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Error response:', errorText);
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        console.log('📊 Respuesta completa:', data);
-        console.log('📊 Número de sesiones:', data.sesiones?.length || 0);
-        
-        if (data.sesiones && Array.isArray(data.sesiones)) {
-          console.log('✅ Estableciendo sesiones:', data.sesiones.length);
-          setSesiones(data.sesiones);
-        } else {
-          console.log('⚠️ No hay sesiones en la respuesta');
-          setSesiones([]);
-        }
-        
-        setLoading(false);
-      } catch (err) {
-        console.error('❌ Error cargando sesiones:', err);
-        setError(err instanceof Error ? err.message : 'Error al cargar las sesiones');
-        setLoading(false);
+      // Construir URL con parámetros de usuario y rol
+      const url = new URL('/api/sesiones-reclutamiento', window.location.origin);
+      if (userId) {
+        url.searchParams.append('userId', userId);
       }
-    };
+      if (rolSeleccionado) {
+        url.searchParams.append('rolSeleccionado', rolSeleccionado);
+      }
+      
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(userId && { 'x-user-id': userId }),
+          ...(rolSeleccionado && { 'x-rol-seleccionado': rolSeleccionado })
+        }
+      });
+      
+      if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Respuesta completa:', data);
+      console.log('📊 Número de sesiones:', data.sesiones?.length || 0);
+      
+      if (data.sesiones && Array.isArray(data.sesiones)) {
+        console.log('✅ Estableciendo sesiones:', data.sesiones.length);
+        setSesiones(data.sesiones);
+      } else {
+        console.log('⚠️ No hay sesiones en la respuesta');
+        setSesiones([]);
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('❌ Error cargando sesiones:', err);
+      setError(err instanceof Error ? err.message : 'Error al cargar las sesiones');
+      setLoading(false);
+    }
+  };
+
+  // Función para cargar sesiones de apoyo
+  const cargarSesionesApoyo = async () => {
+    try {
+      console.log('🔄 Cargando sesiones de apoyo...');
+      console.log('👤 Usuario ID:', userId);
+      console.log('🎭 Rol seleccionado:', rolSeleccionado);
+      
+      // Construir URL con parámetros de usuario y rol
+      const url = new URL('/api/sesiones-apoyo', window.location.origin);
+      if (userId) {
+        url.searchParams.append('userId', userId);
+      }
+      if (rolSeleccionado) {
+        url.searchParams.append('rolSeleccionado', rolSeleccionado);
+      }
+      
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(userId && { 'x-user-id': userId }),
+          ...(rolSeleccionado && { 'x-rol-seleccionado': rolSeleccionado })
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Error response sesiones apoyo:', errorText);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Respuesta sesiones apoyo:', data);
+      console.log('📊 Número de sesiones apoyo:', data.sesiones?.length || 0);
+      
+      if (data.sesiones && Array.isArray(data.sesiones)) {
+        console.log('✅ Estableciendo sesiones apoyo:', data.sesiones.length);
+        setSesionesApoyo(data.sesiones);
+      } else {
+        console.log('⚠️ No hay sesiones apoyo en la respuesta');
+        setSesionesApoyo([]);
+      }
+    } catch (err) {
+      console.error('❌ Error cargando sesiones apoyo:', err);
+      setSesionesApoyo([]);
+    }
+  };
 
   // Cargar sesiones y usuarios de la API
   useEffect(() => {
     cargarSesiones();
+    cargarSesionesApoyo();
     cargarUsuarios();
     checkGoogleCalendarConnection();
     
@@ -217,9 +266,15 @@ const SesionesPageContent: React.FC = () => {
   }, [router.query]);
 
 
+  // Obtener sesiones según el tab activo
+  const getSesionesActivas = () => {
+    return activeView === 'lista_apoyo' ? sesionesApoyo : sesiones;
+  };
+
   // Filtrar sesiones por estado
   const getSesionesPorEstado = (estado: string) => {
-    if (estado === 'todas') return sesiones;
+    const sesionesActivas = getSesionesActivas();
+    if (estado === 'todas') return sesionesActivas;
     
     // Mapear estados de la UI a estados de la base de datos
     const estadoMap: { [key: string]: string[] } = {
@@ -231,14 +286,14 @@ const SesionesPageContent: React.FC = () => {
     };
     
     const estadosReales = estadoMap[estado] || [estado];
-    return sesiones.filter(sesion => 
+    return sesionesActivas.filter(sesion => 
       estadosReales.includes(sesion.estado_agendamiento || sesion.estado)
     );
   };
 
   // Función para filtrar sesiones con búsqueda y filtros
   const getSesionesFiltradas = () => {
-    let sesionesFiltradas = sesiones;
+    let sesionesFiltradas = getSesionesActivas();
 
     // Aplicar filtro de estado (tab activo)
     sesionesFiltradas = getSesionesPorEstado(activeTab);
@@ -464,6 +519,7 @@ const SesionesPageContent: React.FC = () => {
       
       // Recargar las sesiones para reflejar los cambios
       cargarSesiones();
+      cargarSesionesApoyo();
     } catch (error) {
       console.error('❌ Error eliminando sesión:', error);
       showError(error instanceof Error ? error.message : 'Error al eliminar la sesión');
@@ -485,6 +541,7 @@ const SesionesPageContent: React.FC = () => {
     setSesionToEdit(null);
     // Recargar las sesiones para reflejar los cambios
     cargarSesiones();
+    cargarSesionesApoyo();
   };
 
   // Funciones para el modal de agregar participante
@@ -542,8 +599,8 @@ const SesionesPageContent: React.FC = () => {
   const handleAgregarSesionApoyoSuccess = () => {
     showSuccess('Sesión de apoyo creada exitosamente');
     setShowAgregarSesionApoyoModal(false);
-    // Recargar las sesiones
-    cargarSesiones();
+    // Recargar las sesiones de apoyo
+    cargarSesionesApoyo();
     // Actualizar el calendario también
     if (calendarRef.current) {
       calendarRef.current.refresh();
@@ -670,11 +727,12 @@ const SesionesPageContent: React.FC = () => {
 
   // Calcular estadísticas de sesiones
   const getSesionesStats = () => {
-    const total = sesiones.length;
-    const programadas = sesiones.filter(s => s.estado === 'programada' || s.estado_agendamiento === 'programada').length;
-    const completadas = sesiones.filter(s => s.estado === 'completada' || s.estado_agendamiento === 'completada').length;
-    const enCurso = sesiones.filter(s => s.estado === 'en_curso' || s.estado_agendamiento === 'en_curso').length;
-    const canceladas = sesiones.filter(s => s.estado === 'cancelada' || s.estado_agendamiento === 'cancelada').length;
+    const sesionesActivas = getSesionesActivas();
+    const total = sesionesActivas.length;
+    const programadas = sesionesActivas.filter(s => s.estado === 'programada' || s.estado_agendamiento === 'programada').length;
+    const completadas = sesionesActivas.filter(s => s.estado === 'completada' || s.estado_agendamiento === 'completada').length;
+    const enCurso = sesionesActivas.filter(s => s.estado === 'en_curso' || s.estado_agendamiento === 'en_curso').length;
+    const canceladas = sesionesActivas.filter(s => s.estado === 'cancelada' || s.estado_agendamiento === 'cancelada').length;
     
     
     // Calcular sesiones de esta semana
@@ -687,7 +745,7 @@ const SesionesPageContent: React.FC = () => {
     finSemana.setDate(inicioSemana.getDate() + 6);
     finSemana.setHours(23, 59, 59, 999);
     
-    const estaSemana = sesiones.filter(s => {
+    const estaSemana = sesionesActivas.filter(s => {
       const fechaSesion = new Date(s.fecha_programada);
       return fechaSesion >= inicioSemana && fechaSesion <= finSemana;
     }).length;
@@ -715,7 +773,7 @@ const SesionesPageContent: React.FC = () => {
             {sesion.investigacion_nombre || 'Sin investigación'}
           </h3>
               <Chip 
-                variant={getChipVariant(sesion.estado_agendamiento || 'Sin estado')}
+                variant={getChipVariant(sesion.estado_agendamiento || 'Sin estado') as any}
                 size="sm"
               >
                 {sesion.estado_agendamiento || 'Sin estado'}
@@ -732,7 +790,7 @@ const SesionesPageContent: React.FC = () => {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => handleIniciarSesion(sesion)}
+              onClick={() => handleIniciarSesion(sesion as any)}
               icon={<PlayIcon className="w-4 h-4" />}
             >
               Iniciar
@@ -742,7 +800,7 @@ const SesionesPageContent: React.FC = () => {
               actions={[
                 {
                   label: 'Ver más',
-                  onClick: () => handleVerMas(sesion),
+                  onClick: () => handleVerMas(sesion as any),
                   icon: <UserIcon className="w-4 h-4" />
                 },
                 {
@@ -797,17 +855,7 @@ const SesionesPageContent: React.FC = () => {
         {/* Header con PageHeader estándar y dropdown integrado */}
         <div className="relative">
           <PageHeader
-            title={
-              <div className="flex items-center gap-3">
-                <span>Sesiones</span>
-                {googleCalendarConnected && (
-                  <Chip variant="terminada" size="sm">
-                    <CheckCircleIcon className="w-3 h-3 mr-1" />
-                    Conectado
-                  </Chip>
-                )}
-              </div>
-            }
+            title="Sesiones"
             subtitle="Gestiona y programa sesiones de investigación y testing"
             color="blue"
             primaryAction={{
@@ -967,14 +1015,19 @@ const SesionesPageContent: React.FC = () => {
               content: null
             },
             { 
-              id: 'list', 
-              label: 'Lista', 
+              id: 'lista_investigaciones', 
+              label: 'Lista Investigaciones', 
               icon: <ClipboardListIcon className="w-4 h-4" />,
+              content: null
+            },
+            { 
+              id: 'lista_apoyo', 
+              label: 'Lista Apoyo', 
               content: null
             }
           ]}
           value={activeView}
-          onValueChange={(value) => setActiveView(value as 'calendar' | 'list')}
+          onValueChange={(value) => setActiveView(value as 'calendar' | 'lista_investigaciones' | 'lista_apoyo')}
           variant="underline"
           className="mb-6"
         />
@@ -1006,17 +1059,17 @@ const SesionesPageContent: React.FC = () => {
             />
           )}
 
-          {activeView === 'list' && (
+          {(activeView === 'lista_investigaciones' || activeView === 'lista_apoyo') && (
             <div className="space-y-6">
               {/* Header con título, contador, buscador y filtros */}
               <div className="flex items-center justify-between mb-6">
                 {/* Título y contador */}
                 <div className="flex items-center gap-3">
                   <h2 className="text-lg font-semibold text-foreground">
-                    Lista de Sesiones
+                    {activeView === 'lista_apoyo' ? 'Lista de Sesiones de Apoyo' : 'Lista de Sesiones de Investigación'}
                   </h2>
                   <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
-                    {getSesionesFiltradas().length} de {sesiones.length}
+                    {getSesionesFiltradas().length} de {getSesionesActivas().length}
                   </span>
                 </div>
 
@@ -1132,22 +1185,33 @@ const SesionesPageContent: React.FC = () => {
               )}
 
               {/* Estado vacío */}
-              {!loading && !error && sesiones.length === 0 && (
+              {!loading && !error && getSesionesActivas().length === 0 && (
                 <div className="text-center py-12">
                   <CalendarIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No hay sesiones</h3>
-                  <p className="text-muted-foreground mb-4">Aún no se han programado sesiones de investigación</p>
+                  <p className="text-muted-foreground mb-4">
+                    {activeView === 'lista_apoyo' 
+                      ? 'Aún no se han programado sesiones de apoyo' 
+                      : 'Aún no se han programado sesiones de investigación'
+                    }
+                  </p>
                   <button
                     className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
-                    onClick={() => router.push('/sesiones/nueva')}
+                    onClick={() => {
+                      if (activeView === 'lista_apoyo') {
+                        setShowAgregarSesionApoyoModal(true);
+                      } else {
+                        setShowAgregarParticipanteModal(true);
+                      }
+                    }}
                   >
-                    Crear primera sesión
+                    {activeView === 'lista_apoyo' ? 'Crear primera sesión de apoyo' : 'Crear primera sesión de investigación'}
                   </button>
                 </div>
               )}
 
               {/* Tabs por estado */}
-              {!loading && !error && sesiones.length > 0 && (
+              {!loading && !error && getSesionesActivas().length > 0 && (
                 <div>
                   <Tabs
                     items={[
@@ -1212,8 +1276,8 @@ const SesionesPageContent: React.FC = () => {
             participanteId = selectedSesion.participantes_internos_id;
           } else if (selectedSesion.participantes_friend_family_id) {
             participanteId = selectedSesion.participantes_friend_family_id;
-          } else if (selectedSesion.participantes && selectedSesion.participantes.length > 0) {
-            participanteId = selectedSesion.participantes[0].participante_id;
+          } else if ((selectedSesion as any).participantes && (selectedSesion as any).participantes.length > 0) {
+            participanteId = (selectedSesion as any).participantes[0].participante_id;
           }
         }
         
@@ -1247,7 +1311,7 @@ const SesionesPageContent: React.FC = () => {
                   <div>
                     <p className="text-sm font-medium text-foreground">Estado</p>
                     <Chip 
-                      variant={getChipVariant(selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado')}
+                      variant={getChipVariant(selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado') as any}
                       size="sm"
                     >
                       {selectedSesion.estado_agendamiento || selectedSesion.estado || 'Sin estado'}
@@ -1422,7 +1486,7 @@ const SesionesPageContent: React.FC = () => {
         onFiltersChange={handleFiltersChange}
         type="sesiones"
         options={{
-          investigaciones: sesiones.reduce((acc: any[], sesion) => {
+          investigaciones: getSesionesActivas().reduce((acc: any[], sesion) => {
             if (sesion.investigacion_id && sesion.investigacion_nombre && 
                 !acc.find(i => i.value === sesion.investigacion_id)) {
               acc.push({
