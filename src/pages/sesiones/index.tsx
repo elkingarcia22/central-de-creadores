@@ -853,9 +853,15 @@ const SesionesPageContent: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={() => {
+                console.log('🔍 [DEBUG] Sesión completa:', JSON.stringify(sesionData, null, 2));
+                console.log('🔍 [DEBUG] sesionData.tipo:', sesionData.tipo);
+                console.log('🔍 [DEBUG] Comparación tipo === "apoyo":', sesionData.tipo === 'apoyo');
+                
                 if (sesionData.tipo === 'apoyo') {
+                  console.log('✅ [DEBUG] Ejecutando handleIniciarSesionApoyo');
                   handleIniciarSesionApoyo(sesionData);
                 } else {
+                  console.log('✅ [DEBUG] Ejecutando handleIniciarSesion (investigación)');
                   handleIniciarSesion(sesion as any);
                 }
               }}
