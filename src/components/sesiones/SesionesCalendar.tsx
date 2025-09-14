@@ -261,83 +261,129 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
 
   const handleSideModalIniciar = useCallback(async (sesion: SesionEvent) => {
     try {
-      console.log('🎯 Iniciando sesión desde SideModal:', sesion.id);
-      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
+      console.log('🎯 [CALENDARIO] Iniciando sesión desde SideModal:', sesion.id);
+      console.log('🔍 [CALENDARIO] Debug - sesion completa:', JSON.stringify(sesion, null, 2));
+      console.log('🔍 [CALENDARIO] sesion.meet_link:', sesion.meet_link);
+      
+      // Verificar si es una sesión de apoyo
+      const sesionData = sesion as any;
+      const esSesionApoyo = sesionData.tipo === 'apoyo' || sesionData.moderador_id;
+      
+      console.log('🔍 [CALENDARIO] esSesionApoyo:', esSesionApoyo);
+      console.log('🔍 [CALENDARIO] sesionData.tipo:', sesionData.tipo);
+      console.log('🔍 [CALENDARIO] sesionData.moderador_id:', sesionData.moderador_id);
       
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
-        console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
-        
-        // Guardar información del reclutamiento en localStorage para el detector global
-        const reclutamientoData = {
-          id: sesion.id,
-          meet_link: sesion.meet_link,
-          titulo: sesion.titulo,
-          fecha: sesion.start
-        };
-        localStorage.setItem('currentReclutamiento', JSON.stringify(reclutamientoData));
-        console.log('💾 Información del reclutamiento guardada en localStorage:', reclutamientoData);
+        console.log('🔗 [CALENDARIO] Abriendo enlace de Meet:', sesion.meet_link);
         
         // Abrir Meet en nueva pestaña
         window.open(sesion.meet_link, '_blank');
         
-        // Redirigir a la página de sesión activa
-        // Intentar obtener el ID del participante de diferentes formas
-        let participanteId = null;
-        
-        // 1. Del objeto participante
-        if (sesion.participante?.id) {
-          participanteId = sesion.participante.id;
-        }
-        // 2. De los campos directos de participantes
-        else if (sesion.participantes_id) {
-          participanteId = sesion.participantes_id;
-        }
-        else if (sesion.participantes_internos_id) {
-          participanteId = sesion.participantes_internos_id;
-        }
-        else if (sesion.participantes_friend_family_id) {
-          participanteId = sesion.participantes_friend_family_id;
-        }
-        // 3. Del array de participantes (tomar el primero)
-        else if (sesion.participantes && sesion.participantes.length > 0) {
-          participanteId = sesion.participantes[0].participante_id;
-        }
-        
-        console.log('🔍 Debug - Intentando obtener participanteId:', {
-          'sesion.participante?.id': sesion.participante?.id,
-          'sesion.participantes_id': sesion.participantes_id,
-          'sesion.participantes_internos_id': sesion.participantes_internos_id,
-          'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
-          'sesion.participantes[0]?.participante_id': sesion.participantes?.[0]?.participante_id,
-          'participanteId final': participanteId
-        });
-        
-        if (participanteId) {
-          console.log('🚀 Redirigiendo a sesión activa para participante:', participanteId);
-          // Usar router.push para redirigir
-          if (typeof window !== 'undefined') {
-            window.location.href = `/sesion-activa/${participanteId}`;
+        if (esSesionApoyo) {
+          // Lógica para sesiones de apoyo
+          console.log('🎯 [CALENDARIO] Procesando sesión de apoyo');
+          
+          // Guardar información de la sesión de apoyo en localStorage
+          const sesionApoyoData = {
+            id: sesion.id,
+            meet_link: sesion.meet_link,
+            titulo: sesion.titulo,
+            fecha: sesion.start,
+            moderador_id: sesionData.moderador_id,
+            moderador_nombre: sesionData.moderador_nombre,
+            objetivo_sesion: sesionData.objetivo_sesion,
+            observadores: sesionData.observadores,
+            tipo: 'apoyo'
+          };
+          localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
+          console.log('💾 [CALENDARIO] Información de sesión de apoyo guardada en localStorage:', sesionApoyoData);
+          
+          // Redirigir a la página de sesión activa de apoyo
+          if (sesionData.moderador_id) {
+            console.log('🚀 [CALENDARIO] Redirigiendo a sesión activa de apoyo para moderador:', sesionData.moderador_id);
+            const url = `/sesion-activa-apoyo/${sesionData.moderador_id}`;
+            console.log('🔗 [CALENDARIO] URL de redirección:', url);
+            if (typeof window !== 'undefined') {
+              window.location.href = url;
+            }
+          } else {
+            console.log('❌ [CALENDARIO] No se puede redirigir: No hay ID del moderador');
+            if (typeof window !== 'undefined' && window.alert) {
+              alert('No se pudo encontrar el ID del moderador');
+            }
           }
+          
         } else {
-          console.log('❌ No se puede redirigir: No hay ID de participante');
-          console.log('🔍 Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
-          // Mostrar error usando toast si está disponible
-          if (typeof window !== 'undefined' && window.alert) {
-            alert('No se pudo encontrar el ID del participante');
+          // Lógica para sesiones de investigación (original)
+          console.log('🎯 [CALENDARIO] Procesando sesión de investigación');
+          
+          // Guardar información del reclutamiento en localStorage para el detector global
+          const reclutamientoData = {
+            id: sesion.id,
+            meet_link: sesion.meet_link,
+            titulo: sesion.titulo,
+            fecha: sesion.start
+          };
+          localStorage.setItem('currentReclutamiento', JSON.stringify(reclutamientoData));
+          console.log('💾 [CALENDARIO] Información del reclutamiento guardada en localStorage:', reclutamientoData);
+          
+          // Redirigir a la página de sesión activa
+          // Intentar obtener el ID del participante de diferentes formas
+          let participanteId = null;
+          
+          // 1. Del objeto participante
+          if (sesion.participante?.id) {
+            participanteId = sesion.participante.id;
+          }
+          // 2. De los campos directos de participantes
+          else if (sesion.participantes_id) {
+            participanteId = sesion.participantes_id;
+          }
+          else if (sesion.participantes_internos_id) {
+            participanteId = sesion.participantes_internos_id;
+          }
+          else if (sesion.participantes_friend_family_id) {
+            participanteId = sesion.participantes_friend_family_id;
+          }
+          // 3. Del array de participantes (tomar el primero)
+          else if (sesion.participantes && sesion.participantes.length > 0) {
+            participanteId = sesion.participantes[0].participante_id;
+          }
+          
+          console.log('🔍 [CALENDARIO] Debug - Intentando obtener participanteId:', {
+            'sesion.participante?.id': sesion.participante?.id,
+            'sesion.participantes_id': sesion.participantes_id,
+            'sesion.participantes_internos_id': sesion.participantes_internos_id,
+            'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
+            'sesion.participantes[0]?.participante_id': sesion.participantes?.[0]?.participante_id,
+            'participanteId final': participanteId
+          });
+          
+          if (participanteId) {
+            console.log('🚀 [CALENDARIO] Redirigiendo a sesión activa para participante:', participanteId);
+            if (typeof window !== 'undefined') {
+              window.location.href = `/sesion-activa/${participanteId}`;
+            }
+          } else {
+            console.log('❌ [CALENDARIO] No se puede redirigir: No hay ID de participante');
+            console.log('🔍 [CALENDARIO] Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
+            if (typeof window !== 'undefined' && window.alert) {
+              alert('No se pudo encontrar el ID del participante');
+            }
           }
         }
         
       } else {
         // Si no hay enlace de Meet, solo mostrar mensaje
-        console.log('⚠️ No hay enlace de Meet en la sesión');
+        console.log('⚠️ [CALENDARIO] No hay enlace de Meet en la sesión');
         if (typeof window !== 'undefined' && window.alert) {
           alert('Esta sesión no tiene enlace de Meet configurado');
         }
       }
       
     } catch (error) {
-      console.error('Error iniciando sesión:', error);
+      console.error('❌ [CALENDARIO] Error iniciando sesión:', error);
       if (typeof window !== 'undefined' && window.alert) {
         alert('Error al iniciar la sesión');
       }
