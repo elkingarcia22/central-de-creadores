@@ -56,6 +56,21 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     console.log('📊 Reclutamientos obtenidos:', reclutamientos?.length || 0);
 
     const sesiones = reclutamientos?.map(reclutamiento => {
+      // Determinar el tipo de participante y su ID
+      let participanteId = null;
+      let tipoParticipante = 'externo';
+      
+      if (reclutamiento.participantes_id) {
+        participanteId = reclutamiento.participantes_id;
+        tipoParticipante = 'externo';
+      } else if (reclutamiento.participantes_internos_id) {
+        participanteId = reclutamiento.participantes_internos_id;
+        tipoParticipante = 'interno';
+      } else if (reclutamiento.participantes_friend_family_id) {
+        participanteId = reclutamiento.participantes_friend_family_id;
+        tipoParticipante = 'friend_family';
+      }
+
       return {
         id: reclutamiento.id,
         titulo: `Sesión de Reclutamiento - ${reclutamiento.id}`,
@@ -71,8 +86,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         notas_publicas: `Estado: ${reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente'}`,
         created_at: reclutamiento.created_at,
         updated_at: reclutamiento.updated_at,
-        participante: null,
-        tipo_participante: 'externo',
+        participante: participanteId ? { id: participanteId } : null,
+        tipo_participante: tipoParticipante,
         reclutador: null,
         reclutador_id: reclutamiento.reclutador_id,
         estado_agendamiento: reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente',
