@@ -687,13 +687,14 @@ const SesionesPageContent: React.FC = () => {
   // Función para iniciar sesión de apoyo
   const handleIniciarSesionApoyo = async (sesion: any) => {
     try {
-      console.log('🎯 Iniciando sesión de apoyo:', sesion.id);
-      console.log('🔍 Debug - sesion.meet_link:', sesion.meet_link);
-      console.log('🔍 Debug - sesion.moderador_id:', sesion.moderador_id);
+      console.log('🎯 [SESION APOYO] Iniciando sesión de apoyo:', sesion.id);
+      console.log('🔍 [SESION APOYO] Debug - sesion completa:', JSON.stringify(sesion, null, 2));
+      console.log('🔍 [SESION APOYO] sesion.meet_link:', sesion.meet_link);
+      console.log('🔍 [SESION APOYO] sesion.moderador_id:', sesion.moderador_id);
       
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
-        console.log('🔗 Abriendo enlace de Meet:', sesion.meet_link);
+        console.log('🔗 [SESION APOYO] Abriendo enlace de Meet:', sesion.meet_link);
         
         // Guardar información de la sesión de apoyo en localStorage
         const sesionApoyoData = {
@@ -708,30 +709,35 @@ const SesionesPageContent: React.FC = () => {
           tipo: 'apoyo'
         };
         localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
-        console.log('💾 Información de la sesión de apoyo guardada en localStorage:', sesionApoyoData);
+        console.log('💾 [SESION APOYO] Información guardada en localStorage:', sesionApoyoData);
         
         // Abrir Meet en nueva pestaña
+        console.log('🌐 [SESION APOYO] Abriendo Meet en nueva pestaña...');
         window.open(sesion.meet_link, '_blank');
         
-        // Redirigir a la página de sesión activa de apoyo
-        // Para sesiones de apoyo, usamos el moderador como "participante" para la URL
-        if (sesion.moderador_id) {
-          console.log('🚀 Redirigiendo a sesión activa de apoyo para moderador:', sesion.moderador_id);
-          router.push(`/sesion-activa-apoyo/${sesion.moderador_id}`);
-        } else {
-          console.log('❌ No se puede redirigir: No hay ID del moderador');
-          console.log('🔍 Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
-          showError('No se pudo encontrar el ID del moderador');
-        }
+        // Pequeña pausa para asegurar que el Meet se abra antes de redirigir
+        setTimeout(() => {
+          // Redirigir a la página de sesión activa de apoyo
+          if (sesion.moderador_id) {
+            console.log('🚀 [SESION APOYO] Redirigiendo a sesión activa de apoyo para moderador:', sesion.moderador_id);
+            const url = `/sesion-activa-apoyo/${sesion.moderador_id}`;
+            console.log('🔗 [SESION APOYO] URL de redirección:', url);
+            router.push(url);
+          } else {
+            console.log('❌ [SESION APOYO] No se puede redirigir: No hay ID del moderador');
+            console.log('🔍 [SESION APOYO] Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
+            showError('No se pudo encontrar el ID del moderador');
+          }
+        }, 500);
         
       } else {
         // Si no hay enlace de Meet, solo mostrar mensaje
-        console.log('⚠️ No hay enlace de Meet en la sesión de apoyo');
+        console.log('⚠️ [SESION APOYO] No hay enlace de Meet en la sesión de apoyo');
         showWarning('Esta sesión de apoyo no tiene enlace de Meet configurado');
       }
       
     } catch (error) {
-      console.error('Error iniciando sesión de apoyo:', error);
+      console.error('❌ [SESION APOYO] Error iniciando sesión de apoyo:', error);
       showError('Error al iniciar la sesión de apoyo');
     }
   };
