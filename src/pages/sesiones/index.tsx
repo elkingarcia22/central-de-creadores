@@ -939,13 +939,17 @@ const SesionesPageContent: React.FC = () => {
         {/* Header con PageHeader estándar y dropdown integrado */}
         <div className="relative">
           <PageHeader
-            title="Sesiones"
-            chip={googleCalendarConnected ? {
-              label: "Conectado",
-              variant: "success",
-              size: "sm",
-              icon: <CheckCircleIcon className="w-3 h-3" />
-            } : undefined}
+            title={
+              <div className="flex items-center gap-3">
+                <span>Sesiones</span>
+                {googleCalendarConnected && (
+                  <Chip variant="success" size="sm">
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
+                    Conectado
+                  </Chip>
+                )}
+              </div>
+            }
             subtitle="Gestiona y programa sesiones de investigación y testing"
             color="blue"
             primaryAction={{
