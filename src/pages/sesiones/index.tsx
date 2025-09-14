@@ -68,28 +68,20 @@ const SesionesPageContent: React.FC = () => {
 
   // Función para verificar conexión de Google Calendar
   const checkGoogleCalendarConnection = async () => {
-    if (!isAuthenticated || !userId) {
-      console.log('🔍 [GOOGLE CALENDAR] No autenticado o sin userId:', { isAuthenticated, userId });
-      return;
-    }
+    if (!isAuthenticated || !userId) return;
     
-    console.log('🔍 [GOOGLE CALENDAR] Verificando conexión para userId:', userId);
     setCheckingConnection(true);
     try {
       const response = await fetch(`/api/google-calendar/connection-status?userId=${userId}`);
       const data = await response.json();
       
-      console.log('🔍 [GOOGLE CALENDAR] Respuesta de API:', { response: response.ok, data });
-      
       if (response.ok) {
-        console.log('✅ [GOOGLE CALENDAR] Conexión establecida:', data.connected);
         setGoogleCalendarConnected(data.connected);
       } else {
-        console.log('❌ [GOOGLE CALENDAR] Error en respuesta:', data);
         setGoogleCalendarConnected(false);
       }
     } catch (error) {
-      console.error('❌ [GOOGLE CALENDAR] Error verificando conexión:', error);
+      console.error('Error verificando conexión de Google Calendar:', error);
       setGoogleCalendarConnected(false);
     } finally {
       setCheckingConnection(false);
@@ -948,16 +940,12 @@ const SesionesPageContent: React.FC = () => {
         <div className="relative">
           <PageHeader
             title="Sesiones"
-            chip={(() => {
-              console.log('🔍 [CHIP] googleCalendarConnected:', googleCalendarConnected);
-              console.log('🔍 [CHIP] checkingConnection:', checkingConnection);
-              return googleCalendarConnected ? {
-                label: "Conectado",
-                variant: "success",
-                size: "sm",
-                icon: <CheckCircleIcon className="w-3 h-3" />
-              } : undefined;
-            })()}
+            chip={googleCalendarConnected ? {
+              label: "Conectado",
+              variant: "success",
+              size: "sm",
+              icon: <CheckCircleIcon className="w-3 h-3" />
+            } : undefined}
             subtitle="Gestiona y programa sesiones de investigación y testing"
             color="blue"
             primaryAction={{
