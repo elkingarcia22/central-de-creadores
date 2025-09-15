@@ -33,6 +33,21 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           id,
           full_name,
           email
+        ),
+        participantes!sesiones_apoyo_participantes_id_fkey(
+          id,
+          nombre,
+          email
+        ),
+        participantes_internos!sesiones_apoyo_participantes_internos_id_fkey(
+          id,
+          nombre,
+          email
+        ),
+        participantes_friend_family!sesiones_apoyo_participantes_friend_family_id_fkey(
+          id,
+          nombre,
+          email
         )
       `)
       .order('fecha_programada', { ascending: true });
@@ -53,29 +68,65 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       }
     };
 
+    // Función para obtener información del participante
+    const obtenerParticipante = (sesion: any) => {
+      if (sesion.participantes) {
+        return {
+          id: sesion.participantes.id,
+          nombre: sesion.participantes.nombre,
+          email: sesion.participantes.email,
+          tipo: 'externo' as const
+        };
+      } else if (sesion.participantes_internos) {
+        return {
+          id: sesion.participantes_internos.id,
+          nombre: sesion.participantes_internos.nombre,
+          email: sesion.participantes_internos.email,
+          tipo: 'interno' as const
+        };
+      } else if (sesion.participantes_friend_family) {
+        return {
+          id: sesion.participantes_friend_family.id,
+          nombre: sesion.participantes_friend_family.nombre,
+          email: sesion.participantes_friend_family.email,
+          tipo: 'friend_family' as const
+        };
+      }
+      return null;
+    };
+
     // Formatear las sesiones para que tengan la misma estructura que las sesiones de reclutamiento
-    const sesionesFormateadas = data?.map(sesion => ({
-      id: sesion.id,
-      titulo: sesion.titulo,
-      descripcion: sesion.descripcion,
-      fecha_programada: sesion.fecha_programada,
-      hora_sesion: sesion.hora_sesion,
-      duracion_minutos: sesion.duracion_minutos,
-      estado: sesion.estado,
-      estado_agendamiento: mapearEstadoAgendamiento(sesion.estado), // Mapear a nombre del estado
-      estado_real: mapearEstadoAgendamiento(sesion.estado), // Estado real para el modal
-      moderador_id: sesion.moderador_id,
-      moderador_nombre: sesion.profiles?.full_name || 'Sin asignar',
-      moderador_email: sesion.profiles?.email || '',
-      responsable_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como responsable
-      implementador_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como implementador
-      observadores: sesion.observadores || [],
-      objetivo_sesion: sesion.objetivo_sesion,
-      meet_link: sesion.meet_link,
-      tipo: 'apoyo', // Marcar como sesión de apoyo
-      created_at: sesion.created_at,
-      updated_at: sesion.updated_at
-    })) || [];
+    const sesionesFormateadas = data?.map(sesion => {
+      const participante = obtenerParticipante(sesion);
+      
+      return {
+        id: sesion.id,
+        titulo: sesion.titulo,
+        descripcion: sesion.descripcion,
+        fecha_programada: sesion.fecha_programada,
+        hora_sesion: sesion.hora_sesion,
+        duracion_minutos: sesion.duracion_minutos,
+        estado: sesion.estado,
+        estado_agendamiento: mapearEstadoAgendamiento(sesion.estado), // Mapear a nombre del estado
+        estado_real: mapearEstadoAgendamiento(sesion.estado), // Estado real para el modal
+        moderador_id: sesion.moderador_id,
+        moderador_nombre: sesion.profiles?.full_name || 'Sin asignar',
+        moderador_email: sesion.profiles?.email || '',
+        responsable_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como responsable
+        implementador_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como implementador
+        observadores: sesion.observadores || [],
+        objetivo_sesion: sesion.objetivo_sesion,
+        meet_link: sesion.meet_link,
+        tipo: 'apoyo', // Marcar como sesión de apoyo
+        // Campos de participantes
+        participantes_id: sesion.participantes_id,
+        participantes_internos_id: sesion.participantes_internos_id,
+        participantes_friend_family_id: sesion.participantes_friend_family_id,
+        participante: participante,
+        created_at: sesion.created_at,
+        updated_at: sesion.updated_at
+      };
+    }) || [];
 
     console.log('✅ Sesiones de apoyo formateadas:', sesionesFormateadas.length);
 
@@ -101,6 +152,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       observadores,
       objetivo_sesion,
       participantes_ids,
+      participantes_id,
+      participantes_internos_id,
+      participantes_friend_family_id,
       meet_link
     } = req.body;
 
@@ -122,7 +176,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         observadores: observadores || [],
         objetivo_sesion,
         meet_link,
-        estado: 'programada' // Mantener compatibilidad con campo existente
+        estado: 'programada', // Mantener compatibilidad con campo existente
+        // Campos de participantes
+        participantes_id: participantes_id || null,
+        participantes_internos_id: participantes_internos_id || null,
+        participantes_friend_family_id: participantes_friend_family_id || null
       })
       .select()
       .single();

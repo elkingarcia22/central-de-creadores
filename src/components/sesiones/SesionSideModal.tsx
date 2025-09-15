@@ -300,12 +300,38 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
                 </>
               )}
 
-              {/* Para sesiones de apoyo - mostrar "Sin participante asignado" */}
+              {/* Para sesiones de apoyo - mostrar participante si existe */}
               {sesion.tipo === 'apoyo' && (
-                <InfoItem 
-                  label="Participante"
-                  value="Sin participante asignado"
-                />
+                <>
+                  {sesion.participante ? (
+                    <>
+                      <InfoItem 
+                        label="Nombre"
+                        value={sesion.participante.nombre || 'Sin nombre'}
+                      />
+                      <InfoItem 
+                        label="Email"
+                        value={sesion.participante.email || 'Sin email'}
+                      />
+                      <InfoItem 
+                        label="Tipo"
+                        value={
+                          <Chip 
+                            variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
+                            size="sm"
+                          >
+                            {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
+                          </Chip>
+                        }
+                      />
+                    </>
+                  ) : (
+                    <InfoItem 
+                      label="Participante"
+                      value="Sin participante asignado"
+                    />
+                  )}
+                </>
               )}
             </InfoContainer>
           )}
