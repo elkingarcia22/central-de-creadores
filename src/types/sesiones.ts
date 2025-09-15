@@ -93,6 +93,8 @@ export interface SesionEvent extends Sesion {
   location?: string;
   status?: 'confirmed' | 'pending' | 'cancelled';
   title?: string; // Para compatibilidad con CalendarEvent
+  // Campo para distinguir tipo de sesión
+  tipo?: 'reclutamiento' | 'apoyo';
   // Campos específicos de sesiones
   participantes: SesionParticipante[];
   investigacion_nombre?: string;
@@ -103,6 +105,10 @@ export interface SesionEvent extends Sesion {
   implementador_real?: string;
   // Enlace de Google Meet
   meet_link?: string;
+  // Campos específicos de sesiones de apoyo
+  observadores?: string[];
+  objetivo_sesion?: string;
+  moderador_email?: string;
 }
 
 export interface GoogleCalendarEvent {

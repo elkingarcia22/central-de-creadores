@@ -91,6 +91,8 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       updated_at: sesion.updated_at,
       tipo_sesion: sesion.tipo_sesion,
       grabacion_permitida: sesion.grabacion_permitida,
+      // Campo tipo para distinguir sesiones de apoyo vs reclutamiento
+      tipo: (sesion as any).tipo || 'reclutamiento',
       // Propiedades enriquecidas del reclutamiento
       estado_real: (sesion as any).estado_real,
       responsable_real: (sesion as any).responsable_real,
@@ -137,6 +139,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
               sesion.estado === 'cancelada' ? 'cancelled' : 'pending',
       participantes: sesion.participantes || [],
       investigacion_nombre: sesion.investigacion_nombre,
+      // Campos específicos de sesiones de apoyo
+      observadores: (sesion as any).observadores || [],
+      objetivo_sesion: (sesion as any).objetivo_sesion,
+      moderador_email: (sesion as any).moderador_email,
       // Propiedades para compatibilidad con CalendarEvent
       title: sesion.titulo || 'Sesión sin título'
     };
