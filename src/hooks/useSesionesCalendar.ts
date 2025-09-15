@@ -92,6 +92,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       implementador_real: (sesion as any).implementador_real,
       meet_link: (sesion as any).meet_link,
       hora_sesion: (sesion as any).hora_sesion, // Agregar hora_sesion al mapeo
+      // Campos de participantes para la redirección
+      participantes_id: (sesion as any).participantes_id,
+      participantes_internos_id: (sesion as any).participantes_internos_id,
+      participantes_friend_family_id: (sesion as any).participantes_friend_family_id,
       // Mapear reclutador para el modal de edición
       reclutador: (() => {
         const reclutadorData = (sesion as any).reclutador;
