@@ -228,122 +228,124 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         {/* Contenido del modal */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 space-y-6">
           
-          {/* Participante Asociado - Solo para sesiones de reclutamiento */}
-          {sesion.tipo !== 'apoyo' && (
+          {/* Participante Asociado - Para todas las sesiones */}
+          {(
             <InfoContainer 
               title="Participante Asociado"
               icon={<UserIcon className="w-4 h-4" />}
               padding="none"
             >
-              {sesion.participantes && sesion.participantes.length > 0 ? (
-                sesion.participantes.map((participante, index) => (
-                  <div key={participante.id || index} className="space-y-4">
-                    <InfoItem 
-                      label="Nombre"
-                      value={participante.participante_nombre || 'Sin nombre'}
-                    />
-                    <InfoItem 
-                      label="Email"
-                      value={participante.participante_email || 'Sin email'}
-                    />
-                    <InfoItem 
-                      label="Estado"
-                      value={participante.estado || 'Sin estado'}
-                    />
-                    <InfoItem 
-                      label="Tipo"
-                      value={
-                        <Chip 
-                          variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
-                          size="sm"
-                        >
-                          {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
-                        </Chip>
-                      }
-                    />
-                    {index < sesion.participantes.length - 1 && (
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
-                    )}
-                  </div>
-                ))
-              ) : sesion.participante ? (
+              {/* Para sesiones de reclutamiento */}
+              {sesion.tipo !== 'apoyo' && (
                 <>
-                  <InfoItem 
-                    label="Nombre"
-                    value={sesion.participante.nombre || 'Sin nombre'}
-                  />
-                  <InfoItem 
-                    label="Email"
-                    value={sesion.participante.email || 'Sin email'}
-                  />
-                  <InfoItem 
-                    label="Tipo"
-                    value={
-                      <Chip 
-                        variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
-                        size="sm"
-                      >
-                        {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
-                      </Chip>
-                    }
-                  />
+                  {sesion.participantes && sesion.participantes.length > 0 ? (
+                    sesion.participantes.map((participante, index) => (
+                      <div key={participante.id || index} className="space-y-4">
+                        <InfoItem 
+                          label="Nombre"
+                          value={participante.participante_nombre || 'Sin nombre'}
+                        />
+                        <InfoItem 
+                          label="Email"
+                          value={participante.participante_email || 'Sin email'}
+                        />
+                        <InfoItem 
+                          label="Estado"
+                          value={participante.estado || 'Sin estado'}
+                        />
+                        <InfoItem 
+                          label="Tipo"
+                          value={
+                            <Chip 
+                              variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
+                              size="sm"
+                            >
+                              {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
+                            </Chip>
+                          }
+                        />
+                        {index < sesion.participantes.length - 1 && (
+                          <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
+                        )}
+                      </div>
+                    ))
+                  ) : sesion.participante ? (
+                    <>
+                      <InfoItem 
+                        label="Nombre"
+                        value={sesion.participante.nombre || 'Sin nombre'}
+                      />
+                      <InfoItem 
+                        label="Email"
+                        value={sesion.participante.email || 'Sin email'}
+                      />
+                      <InfoItem 
+                        label="Tipo"
+                        value={
+                          <Chip 
+                            variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
+                            size="sm"
+                          >
+                            {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
+                          </Chip>
+                        }
+                      />
+                    </>
+                  ) : (
+                    <InfoItem 
+                      label="Participante"
+                      value="Sin participante asignado"
+                    />
+                  )}
                 </>
-              ) : (
-                <InfoItem 
-                  label="Participante"
-                  value="Sin participante asignado"
-                />
+              )}
+
+              {/* Para sesiones de apoyo - usar observadores como participantes */}
+              {sesion.tipo === 'apoyo' && (
+                <>
+                  {loadingObservadores ? (
+                    <InfoItem 
+                      label="Cargando"
+                      value="Obteniendo información de participantes..."
+                    />
+                  ) : observadoresInfo.length > 0 ? (
+                    observadoresInfo.map((observador, index) => (
+                      <div key={observador.id}>
+                        <InfoItem 
+                          label="Nombre"
+                          value={observador.full_name || 'Sin nombre'}
+                        />
+                        <InfoItem 
+                          label="Email"
+                          value={observador.email || 'Sin email'}
+                        />
+                        <InfoItem 
+                          label="Tipo"
+                          value={
+                            <Chip 
+                              variant="accent-blue" 
+                              size="sm"
+                            >
+                              Observador
+                            </Chip>
+                          }
+                        />
+                        {index < observadoresInfo.length - 1 && (
+                          <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <InfoItem 
+                      label="Participante"
+                      value="Sin participante asignado"
+                    />
+                  )}
+                </>
               )}
             </InfoContainer>
           )}
 
-          {/* Observadores - Solo para sesiones de apoyo */}
-          {sesion.tipo === 'apoyo' && sesion.observadores && sesion.observadores.length > 0 && (
-            <InfoContainer 
-              title="Observadores"
-              icon={<UsersIcon className="w-4 h-4" />}
-              padding="none"
-            >
-              {loadingObservadores ? (
-                <InfoItem 
-                  label="Cargando"
-                  value="Obteniendo información de observadores..."
-                />
-              ) : observadoresInfo.length > 0 ? (
-                observadoresInfo.map((observador, index) => (
-                  <div key={observador.id}>
-                    <InfoItem 
-                      label="Observador"
-                      value={
-                        <div className="flex items-center space-x-2">
-                          <Avatar
-                            src={observador.avatar_url}
-                            alt={observador.full_name}
-                            size="sm"
-                            fallback={observador.full_name?.charAt(0) || 'U'}
-                          />
-                          <div>
-                            <div className="font-medium">{observador.full_name || 'Sin nombre'}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              {observador.email || 'Sin email'}
-                            </div>
-                          </div>
-                        </div>
-                      }
-                    />
-                    {index < observadoresInfo.length - 1 && (
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
-                    )}
-                  </div>
-                ))
-              ) : (
-                <InfoItem 
-                  label="Observadores"
-                  value="No se pudo cargar la información de los observadores"
-                />
-              )}
-            </InfoContainer>
-          )}
 
         {/* Información de la Sesión */}
         <InfoContainer 
