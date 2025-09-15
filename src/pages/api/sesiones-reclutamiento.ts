@@ -132,6 +132,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
         // 2. Obtener datos de la investigación
         if (reclutamiento.investigacion_id) {
+          console.log(`🔍 [API] Buscando investigación: ${reclutamiento.investigacion_id}`);
           const { data: investigacionData } = await supabaseServer
             .from('investigaciones')
             .select('id, nombre, responsable_id, implementador_id')
@@ -139,10 +140,14 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             .single();
           
           if (investigacionData) {
+            console.log(`✅ [API] Investigación encontrada:`, investigacionData);
             investigacionNombre = investigacionData.nombre || 'Sin nombre';
 
             // 3. Obtener datos del responsable según el tipo de participante
+            console.log(`🔍 [API] Tipo participante: ${tipoParticipante}, responsable_id: ${investigacionData.responsable_id}, reclutador_id: ${reclutamiento.reclutador_id}`);
+            
             if (tipoParticipante === 'externo' && investigacionData.responsable_id) {
+              console.log(`🔍 [API] Buscando responsable para participante externo: ${investigacionData.responsable_id}`);
               const { data: responsableData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, email')
@@ -150,9 +155,13 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
                 .single();
               
               if (responsableData) {
+                console.log(`✅ [API] Responsable encontrado:`, responsableData);
                 responsableReal = responsableData.nombre || 'Sin nombre';
+              } else {
+                console.log(`❌ [API] No se encontró responsable con ID: ${investigacionData.responsable_id}`);
               }
             } else if ((tipoParticipante === 'interno' || tipoParticipante === 'friend_family') && reclutamiento.reclutador_id) {
+              console.log(`🔍 [API] Buscando reclutador para participante ${tipoParticipante}: ${reclutamiento.reclutador_id}`);
               const { data: reclutadorData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, email')
@@ -160,12 +169,18 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
                 .single();
               
               if (reclutadorData) {
+                console.log(`✅ [API] Reclutador encontrado:`, reclutadorData);
                 responsableReal = reclutadorData.nombre || 'Sin nombre';
+              } else {
+                console.log(`❌ [API] No se encontró reclutador con ID: ${reclutamiento.reclutador_id}`);
               }
+            } else {
+              console.log(`⚠️ [API] No se puede obtener responsable - tipo: ${tipoParticipante}, responsable_id: ${investigacionData.responsable_id}, reclutador_id: ${reclutamiento.reclutador_id}`);
             }
 
             // 4. Obtener datos del implementador
             if (investigacionData.implementador_id) {
+              console.log(`🔍 [API] Buscando implementador: ${investigacionData.implementador_id}`);
               const { data: implementadorData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, email')
@@ -173,10 +188,19 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
                 .single();
               
               if (implementadorData) {
+                console.log(`✅ [API] Implementador encontrado:`, implementadorData);
                 implementadorReal = implementadorData.nombre || 'Sin nombre';
+              } else {
+                console.log(`❌ [API] No se encontró implementador con ID: ${investigacionData.implementador_id}`);
               }
+            } else {
+              console.log(`⚠️ [API] No hay implementador_id en la investigación`);
             }
+          } else {
+            console.log(`❌ [API] No se encontró investigación con ID: ${reclutamiento.investigacion_id}`);
           }
+        } else {
+          console.log(`⚠️ [API] No hay investigacion_id en el reclutamiento`);
         }
 
         // 5. Obtener nombre del estado de agendamiento
