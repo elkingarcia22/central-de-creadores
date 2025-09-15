@@ -51,19 +51,29 @@ const TestSesionesPage: React.FC = () => {
       
       addLog(`📊 Total sesiones: ${data.sesiones?.length || 0}`);
       
+      // Contar sesiones con datos completos
+      const sesionesConParticipante = data.sesiones?.filter(s => s.participante != null).length || 0;
+      const sesionesConResponsable = data.sesiones?.filter(s => s.responsable_real && s.responsable_real !== 'Sin asignar').length || 0;
+      const sesionesConImplementador = data.sesiones?.filter(s => s.implementador_real && s.implementador_real !== 'Sin asignar').length || 0;
+      
+      addLog(`📊 Sesiones con participante: ${sesionesConParticipante}/${data.sesiones?.length || 0}`);
+      addLog(`📊 Sesiones con responsable: ${sesionesConResponsable}/${data.sesiones?.length || 0}`);
+      addLog(`📊 Sesiones con implementador: ${sesionesConImplementador}/${data.sesiones?.length || 0}`);
+      
       if (data.sesiones && data.sesiones.length > 0) {
-        addLog(`📊 Primera sesión: ${JSON.stringify(data.sesiones[0], null, 2)}`);
+        // Mostrar las primeras 3 sesiones con detalles
+        data.sesiones.slice(0, 3).forEach((sesion, index) => {
+          addLog(`📋 Sesión ${index + 1} (${sesion.id}):`);
+          addLog(`   - Participante: ${sesion.participante ? `${sesion.participante.nombre} (${sesion.participante.tipo})` : 'Sin participante'}`);
+          addLog(`   - Estado: ${sesion.estado_real}`);
+          addLog(`   - Responsable: ${sesion.responsable_real}`);
+          addLog(`   - Implementador: ${sesion.implementador_real}`);
+          addLog(`   - Investigación: ${sesion.investigacion_nombre}`);
+        });
         
-        // Verificar campos específicos
+        // Verificar campos específicos de la primera sesión
         const primeraSesion = data.sesiones[0];
-        addLog(`🔍 ID: ${primeraSesion.id}`);
-        addLog(`🔍 Título: ${primeraSesion.titulo}`);
-        addLog(`🔍 Fecha: ${primeraSesion.fecha_programada}`);
-        addLog(`🔍 Participante: ${JSON.stringify(primeraSesion.participante, null, 2)}`);
-        addLog(`🔍 Estado real: ${primeraSesion.estado_real}`);
-        addLog(`🔍 Responsable real: ${primeraSesion.responsable_real}`);
-        addLog(`🔍 Implementador real: ${primeraSesion.implementador_real}`);
-        addLog(`🔍 Investigación: ${primeraSesion.investigacion_nombre}`);
+        addLog(`🔍 Primera sesión completa: ${JSON.stringify(primeraSesion, null, 2)}`);
       }
       
       setSesiones(data.sesiones || []);
@@ -148,6 +158,12 @@ const TestSesionesPage: React.FC = () => {
                 {sesiones.filter(s => s.responsable_real && s.responsable_real !== 'Sin asignar').length}
               </div>
               <div className="text-sm text-gray-600">Con Responsable</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {sesiones.filter(s => s.implementador_real && s.implementador_real !== 'Sin asignar').length}
+              </div>
+              <div className="text-sm text-gray-600">Con Implementador</div>
             </div>
           </div>
         </Card>
