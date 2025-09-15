@@ -84,17 +84,21 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'interno';
           }
         } else if (reclutamiento.participantes_friend_family_id) {
-          console.log('🔍 Buscando participante friend_family con ID:', reclutamiento.participantes_friend_family_id);
           const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes_friend_family')
-            .select('id, nombre, apellido, email, telefono')
+            .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_friend_family_id)
             .single();
           
-          console.log('🔍 Resultado participante friend_family:', { participanteData, error: errorParticipante });
-          
-          if (participanteData) {
-            participante = participanteData;
+          if (participanteData && !errorParticipante) {
+            // Mapear a la estructura esperada
+            participante = {
+              id: participanteData.id,
+              nombre: participanteData.nombre,
+              apellido: '', // No existe en esta tabla
+              email: participanteData.email,
+              telefono: '' // No existe en esta tabla
+            };
             tipoParticipante = 'friend_family';
           }
         }
