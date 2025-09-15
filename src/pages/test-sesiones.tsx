@@ -105,9 +105,18 @@ const TestSesionesPage: React.FC = () => {
 
         {/* Logs */}
         <Card className="p-4">
-          <Typography variant="h2" className="text-lg font-semibold mb-3">
-            Logs de Debug
-          </Typography>
+          <div className="flex justify-between items-center mb-3">
+            <Typography variant="h2" className="text-lg font-semibold">
+              Logs de Debug
+            </Typography>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+              size="sm"
+            >
+              Recargar
+            </Button>
+          </div>
           <div className="bg-black text-green-400 p-4 rounded font-mono text-sm max-h-96 overflow-y-auto">
             {logs.length === 0 ? (
               <div className="text-gray-500">No hay logs aún...</div>
@@ -118,6 +127,9 @@ const TestSesionesPage: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
+          <div className="mt-2 text-sm text-gray-600">
+            💡 <strong>Tip:</strong> Revisa la consola del servidor para ver los logs detallados de la API
           </div>
         </Card>
 
