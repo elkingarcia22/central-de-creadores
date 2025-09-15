@@ -69,7 +69,12 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             .single();
           
           if (participanteData) {
-            participante = participanteData;
+            participante = {
+              id: participanteData.id,
+              nombre: participanteData.nombre,
+              email: participanteData.email,
+              tipo: 'externo' as const
+            };
             tipoParticipante = 'externo';
           }
         } else if (reclutamiento.participantes_internos_id) {
@@ -80,7 +85,12 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             .single();
           
           if (participanteData) {
-            participante = participanteData;
+            participante = {
+              id: participanteData.id,
+              nombre: participanteData.nombre,
+              email: participanteData.email,
+              tipo: 'interno' as const
+            };
             tipoParticipante = 'interno';
           }
         } else if (reclutamiento.participantes_friend_family_id) {
@@ -95,9 +105,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
-              apellido: '', // No existe en esta tabla
               email: participanteData.email,
-              telefono: '' // No existe en esta tabla
+              tipo: 'friend_family' as const
             };
             tipoParticipante = 'friend_family';
           }
