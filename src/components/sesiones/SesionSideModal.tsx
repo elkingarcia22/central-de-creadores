@@ -228,67 +228,80 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         {/* Contenido del modal */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 space-y-6">
           
-          {/* Participante Asociado - Solo para sesiones de reclutamiento */}
-          {sesion.tipo !== 'apoyo' && (
+          {/* Participante Asociado - Para todas las sesiones */}
+          {(
             <InfoContainer 
               title="Participante Asociado"
               icon={<UserIcon className="w-4 h-4" />}
               padding="none"
             >
-              {sesion.participantes && sesion.participantes.length > 0 ? (
-                sesion.participantes.map((participante, index) => (
-                  <div key={participante.id || index} className="space-y-4">
-                    <InfoItem 
-                      label="Nombre"
-                      value={participante.participante_nombre || 'Sin nombre'}
-                    />
-                    <InfoItem 
-                      label="Email"
-                      value={participante.participante_email || 'Sin email'}
-                    />
-                    <InfoItem 
-                      label="Estado"
-                      value={participante.estado || 'Sin estado'}
-                    />
-                    <InfoItem 
-                      label="Tipo"
-                      value={
-                        <Chip 
-                          variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
-                          size="sm"
-                        >
-                          {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
-                        </Chip>
-                      }
-                    />
-                    {index < sesion.participantes.length - 1 && (
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
-                    )}
-                  </div>
-                ))
-              ) : sesion.participante ? (
+              {/* Para sesiones de reclutamiento */}
+              {sesion.tipo !== 'apoyo' && (
                 <>
-                  <InfoItem 
-                    label="Nombre"
-                    value={sesion.participante.nombre || 'Sin nombre'}
-                  />
-                  <InfoItem 
-                    label="Email"
-                    value={sesion.participante.email || 'Sin email'}
-                  />
-                  <InfoItem 
-                    label="Tipo"
-                    value={
-                      <Chip 
-                        variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
-                        size="sm"
-                      >
-                        {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
-                      </Chip>
-                    }
-                  />
+                  {sesion.participantes && sesion.participantes.length > 0 ? (
+                    sesion.participantes.map((participante, index) => (
+                      <div key={participante.id || index} className="space-y-4">
+                        <InfoItem 
+                          label="Nombre"
+                          value={participante.participante_nombre || 'Sin nombre'}
+                        />
+                        <InfoItem 
+                          label="Email"
+                          value={participante.participante_email || 'Sin email'}
+                        />
+                        <InfoItem 
+                          label="Estado"
+                          value={participante.estado || 'Sin estado'}
+                        />
+                        <InfoItem 
+                          label="Tipo"
+                          value={
+                            <Chip 
+                              variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
+                              size="sm"
+                            >
+                              {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
+                            </Chip>
+                          }
+                        />
+                        {index < sesion.participantes.length - 1 && (
+                          <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
+                        )}
+                      </div>
+                    ))
+                  ) : sesion.participante ? (
+                    <>
+                      <InfoItem 
+                        label="Nombre"
+                        value={sesion.participante.nombre || 'Sin nombre'}
+                      />
+                      <InfoItem 
+                        label="Email"
+                        value={sesion.participante.email || 'Sin email'}
+                      />
+                      <InfoItem 
+                        label="Tipo"
+                        value={
+                          <Chip 
+                            variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
+                            size="sm"
+                          >
+                            {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
+                          </Chip>
+                        }
+                      />
+                    </>
+                  ) : (
+                    <InfoItem 
+                      label="Participante"
+                      value="Sin participante asignado"
+                    />
+                  )}
                 </>
-              ) : (
+              )}
+
+              {/* Para sesiones de apoyo - mostrar "Sin participante asignado" */}
+              {sesion.tipo === 'apoyo' && (
                 <InfoItem 
                   label="Participante"
                   value="Sin participante asignado"
