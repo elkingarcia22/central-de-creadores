@@ -210,62 +210,56 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
           {sesion.participantes && sesion.participantes.length > 0 ? (
             sesion.participantes.map((participante, index) => (
               <div key={participante.id || index} className="space-y-4">
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <InfoItem 
-                      label="Nombre"
-                      value={participante.participante_nombre || 'Sin nombre'}
-                    />
-                    <InfoItem 
-                      label="Email"
-                      value={participante.participante_email || 'Sin email'}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <InfoItem 
-                      label="Estado"
-                      value={participante.estado || 'Sin estado'}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Tipo:</span>
-                      <Chip 
-                        variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
-                        size="sm"
-                      >
-                        {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
-                      </Chip>
-                    </div>
-                  </div>
-                </div>
+                <InfoItem 
+                  label="Nombre"
+                  value={participante.participante_nombre || 'Sin nombre'}
+                />
+                <InfoItem 
+                  label="Email"
+                  value={participante.participante_email || 'Sin email'}
+                />
+                <InfoItem 
+                  label="Estado"
+                  value={participante.estado || 'Sin estado'}
+                />
+                <InfoItem 
+                  label="Tipo"
+                  value={
+                    <Chip 
+                      variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
+                      size="sm"
+                    >
+                      {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
+                    </Chip>
+                  }
+                />
                 {index < sesion.participantes.length - 1 && (
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
                 )}
               </div>
             ))
           ) : sesion.participante ? (
-            <div className="grid grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <InfoItem 
-                  label="Nombre"
-                  value={sesion.participante.nombre || 'Sin nombre'}
-                />
-                <InfoItem 
-                  label="Email"
-                  value={sesion.participante.email || 'Sin email'}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Tipo:</span>
+            <>
+              <InfoItem 
+                label="Nombre"
+                value={sesion.participante.nombre || 'Sin nombre'}
+              />
+              <InfoItem 
+                label="Email"
+                value={sesion.participante.email || 'Sin email'}
+              />
+              <InfoItem 
+                label="Tipo"
+                value={
                   <Chip 
                     variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
                     size="sm"
                   >
                     {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
                   </Chip>
-                </div>
-              </div>
-            </div>
+                }
+              />
+            </>
           ) : (
             <InfoItem 
               label="Participante"
