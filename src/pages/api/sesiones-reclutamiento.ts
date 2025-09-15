@@ -56,6 +56,14 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     console.log('📊 Reclutamientos obtenidos:', reclutamientos?.length || 0);
 
     const sesiones = reclutamientos?.map(reclutamiento => {
+      // Determinar el estado real basado en el estado_agendamiento
+      let estadoReal = 'Pendiente';
+      if (reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029') {
+        estadoReal = 'Finalizado';
+      } else if (reclutamiento.estado_agendamiento === '0b8723e0-4f43-455d-bd95-a9576b7beb9d') {
+        estadoReal = 'En progreso';
+      }
+
       return {
         id: reclutamiento.id,
         titulo: `Sesión de Reclutamiento - ${reclutamiento.id}`,
@@ -68,21 +76,25 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         estado: reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'completada' : 'programada',
         tipo_sesion: 'presencial',
         grabacion_permitida: true,
-        notas_publicas: `Estado: ${reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente'}`,
+        notas_publicas: `Estado: ${estadoReal}`,
         created_at: reclutamiento.created_at,
         updated_at: reclutamiento.updated_at,
         participante: null,
         tipo_participante: 'externo',
         reclutador: null,
         reclutador_id: reclutamiento.reclutador_id,
-        estado_agendamiento: reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente',
+        estado_agendamiento: estadoReal,
         estado_agendamiento_color: null,
         hora_sesion: reclutamiento.hora_sesion,
         fecha_asignado: reclutamiento.fecha_asignado,
         meet_link: reclutamiento.meet_link,
         participantes_id: reclutamiento.participantes_id,
         participantes_internos_id: reclutamiento.participantes_internos_id,
-        participantes_friend_family_id: reclutamiento.participantes_friend_family_id
+        participantes_friend_family_id: reclutamiento.participantes_friend_family_id,
+        // Campos reales del reclutamiento
+        estado_real: estadoReal,
+        responsable_real: 'Reclutador', // Por ahora genérico, se puede mejorar con JOIN
+        implementador_real: 'Implementador' // Por ahora genérico, se puede mejorar con JOIN
       };
     }).filter(sesion => sesion.fecha_programada);
 
