@@ -63,6 +63,7 @@ export default function EditarReclutamientoModal({
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
+  const [observadores, setObservadores] = useState<string[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<Participante[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<Participante[]>([]);
@@ -298,7 +299,10 @@ export default function EditarReclutamientoModal({
           // Precargar los usuarios del libreto como seleccionados
           const idsUsuariosLibreto = usuariosLibreto.map(u => u.id);
           setUsuariosSeleccionadosLibreto(idsUsuariosLibreto);
+          // También precargar como observadores
+          setObservadores(idsUsuariosLibreto);
           console.log('🔍 Usuarios del libreto precargados como seleccionados:', idsUsuariosLibreto);
+          console.log('🔍 Usuarios del libreto precargados como observadores:', idsUsuariosLibreto);
           
           // Combinar usuarios del libreto con todos los usuarios
           const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
@@ -436,7 +440,8 @@ export default function EditarReclutamientoModal({
         reclutador_id: responsableId,
         fecha_sesion: fechaHoraCompleta,
         hora_sesion: horaSesion,
-        duracion_sesion: parseInt(duracionSesion)
+        duracion_sesion: parseInt(duracionSesion),
+        observadores: observadores
         // Removido: investigacion_id (no se puede cambiar)
         // Removido: tipo_participante (campo no existe en la tabla)
       };
@@ -583,6 +588,27 @@ export default function EditarReclutamientoModal({
                   </Typography>
                 </div>
               )}
+            </div>
+
+            {/* Observadores */}
+            <div className="space-y-2">
+              <FilterLabel>Observadores</FilterLabel>
+              <MultiUserSelector
+                users={responsables.map(r => ({
+                  id: r.id,
+                  full_name: r.full_name || 'Sin nombre',
+                  email: r.email || undefined,
+                  avatar_url: r.avatar_url
+                }))}
+                value={observadores}
+                onChange={setObservadores}
+                placeholder="Seleccionar observadores"
+                loading={loading}
+                disabled={loading}
+              />
+              <Typography variant="caption" color="secondary">
+                Usuarios que observarán la sesión de reclutamiento.
+              </Typography>
             </div>
 
             {/* Fecha de sesión */}

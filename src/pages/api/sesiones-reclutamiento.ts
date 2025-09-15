@@ -238,8 +238,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         estado_real: estadoAgendamientoNombre,
         responsable_real: responsableReal,
         implementador_real: implementadorReal,
-        // Campo de observadores (vacío por defecto para sesiones de reclutamiento)
-        observadores: []
+        // Campo de observadores (se llena desde el reclutamiento si existe)
+        observadores: reclutamiento.observadores || []
       };
     });
 
