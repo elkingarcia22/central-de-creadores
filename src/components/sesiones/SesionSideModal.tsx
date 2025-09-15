@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SesionEvent } from '../../types/sesiones';
 import { Card, Typography, Button, Chip, Badge, Avatar, SideModal, PageHeader, Tabs, InfoContainer, InfoItem, ActionsMenu } from '../ui';
 import { getChipVariant } from '../../utils/chipUtils';
@@ -56,6 +56,33 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [activeTab, setActiveTab] = useState('informacion');
+  const [observadoresInfo, setObservadoresInfo] = useState<any[]>([]);
+  const [loadingObservadores, setLoadingObservadores] = useState(false);
+
+  // Cargar información de observadores cuando cambie la sesión
+  useEffect(() => {
+    if (sesion?.tipo === 'apoyo' && sesion?.observadores && sesion.observadores.length > 0) {
+      cargarInformacionObservadores(sesion.observadores);
+    }
+  }, [sesion]);
+
+  const cargarInformacionObservadores = async (observadorIds: string[]) => {
+    setLoadingObservadores(true);
+    try {
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        const observadores = data.usuarios.filter((usuario: any) => 
+          observadorIds.includes(usuario.id)
+        );
+        setObservadoresInfo(observadores);
+      }
+    } catch (error) {
+      console.error('Error cargando información de observadores:', error);
+    } finally {
+      setLoadingObservadores(false);
+    }
+  };
 
   if (!sesion) return null;
 
@@ -277,14 +304,48 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
               icon={<UsersIcon className="w-4 h-4" />}
               padding="none"
             >
-              <InfoItem 
-                label="Cantidad de Observadores"
-                value={`${sesion.observadores.length} observador(es) asignado(s)`}
-              />
-              <InfoItem 
-                label="IDs de Observadores"
-                value={sesion.observadores.join(', ')}
-              />
+              {loadingObservadores ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-sm text-gray-600">Cargando observadores...</span>
+                </div>
+              ) : observadoresInfo.length > 0 ? (
+                <div className="space-y-4">
+                  {observadoresInfo.map((observador, index) => (
+                    <div key={observador.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <Avatar
+                          src={observador.avatar_url}
+                          alt={observador.full_name}
+                          size="md"
+                          fallback={observador.full_name?.charAt(0) || 'U'}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Typography variant="body" className="font-medium text-gray-900 dark:text-white">
+                              {observador.full_name || 'Sin nombre'}
+                            </Typography>
+                            <Chip 
+                              variant="accent-blue" 
+                              size="sm"
+                            >
+                              Observador
+                            </Chip>
+                          </div>
+                          <Typography variant="caption" className="text-gray-600 dark:text-gray-400">
+                            {observador.email || 'Sin email'}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <InfoItem 
+                  label="Observadores"
+                  value="No se pudo cargar la información de los observadores"
+                />
+              )}
             </InfoContainer>
           )}
 
