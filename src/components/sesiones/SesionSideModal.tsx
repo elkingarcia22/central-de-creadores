@@ -61,8 +61,10 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 
   // Cargar información de observadores cuando cambie la sesión
   useEffect(() => {
-    if (sesion?.tipo === 'apoyo' && sesion?.observadores && sesion.observadores.length > 0) {
+    if (sesion?.observadores && sesion.observadores.length > 0) {
       cargarInformacionObservadores(sesion.observadores);
+    } else {
+      setObservadoresInfo([]); // Limpiar observadores si no hay observadores
     }
   }, [sesion]);
 
@@ -336,8 +338,8 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
             </InfoContainer>
           )}
 
-          {/* Observadores - Solo para sesiones de apoyo */}
-          {sesion.tipo === 'apoyo' && sesion.observadores && sesion.observadores.length > 0 && (
+          {/* Observadores - Para todas las sesiones que tengan observadores */}
+          {sesion.observadores && sesion.observadores.length > 0 && (
             <InfoContainer 
               title="Observadores"
               icon={<UsersIcon className="w-4 h-4" />}
