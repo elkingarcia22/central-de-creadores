@@ -142,14 +142,6 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 
   // Obtener texto del estado
   const getEstadoText = () => {
-    console.log('🔍 SesionSideModal - Estado debug:', {
-      estado_real: sesion.estado_real,
-      estado: sesion.estado,
-      responsable_real: sesion.responsable_real,
-      implementador_real: sesion.implementador_real,
-      meet_link: sesion.meet_link
-    });
-    
     // Priorizar estado real del reclutamiento
     if (sesion.estado_real) {
       return sesion.estado_real;
@@ -207,26 +199,6 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 
         {/* Contenido del modal */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 space-y-6">
-          {/* Debug logs */}
-          {console.log('🔍 [MODAL DEBUG] Datos completos de la sesión:', {
-            id: sesion?.id,
-            titulo: sesion?.titulo,
-            participante: sesion?.participante,
-            participantes: sesion?.participantes,
-            estado_real: sesion?.estado_real,
-            responsable_real: sesion?.responsable_real,
-            implementador_real: sesion?.implementador_real,
-            investigacion_nombre: sesion?.investigacion_nombre,
-            sesionCompleta: sesion
-          })}
-          
-          {/* Debug visual temporal */}
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-            <strong>DEBUG TEMPORAL:</strong><br/>
-            Responsable Real: {sesion.responsable_real || 'NO HAY'}<br/>
-            Implementador Real: {sesion.implementador_real || 'NO HAY'}<br/>
-            Estado Real: {sesion.estado_real || 'NO HAY'}
-          </div>
           
           {/* Participante Asociado */}
         <InfoContainer 
