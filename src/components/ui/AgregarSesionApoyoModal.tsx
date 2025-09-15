@@ -345,6 +345,22 @@ export default function AgregarSesionApoyoModal({
       console.log('🔍 Tipo de fecha:', typeof formData.fecha_programada);
       console.log('🔍 Es Date?', formData.fecha_programada instanceof Date);
       
+      // Determinar el campo de participante según el tipo seleccionado
+      let campoParticipante = {};
+      if (participanteSeleccionado) {
+        switch (tipoParticipante) {
+          case 'externo':
+            campoParticipante = { participantes_id: participanteSeleccionado.id };
+            break;
+          case 'interno':
+            campoParticipante = { participantes_internos_id: participanteSeleccionado.id };
+            break;
+          case 'friend_family':
+            campoParticipante = { participantes_friend_family_id: participanteSeleccionado.id };
+            break;
+        }
+      }
+
       const datosEnvio = {
         ...formData,
         tipo: 'apoyo', // Marcar como sesión de apoyo
@@ -367,7 +383,8 @@ export default function AgregarSesionApoyoModal({
           }
         })() : null,
         observadores: formData.observadores || [],
-        participantes_ids: formData.participantes_ids || []
+        participantes_ids: formData.participantes_ids || [],
+        ...campoParticipante // Incluir el campo de participante correspondiente
       };
 
       console.log('🚀 Enviando datos de sesión de apoyo:', datosEnvio);
