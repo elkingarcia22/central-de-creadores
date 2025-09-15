@@ -274,34 +274,71 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
           icon={<FileTextIcon className="w-4 h-4" />}
           padding="none"
         >
-          <InfoItem 
-            label="Investigación"
-            value={sesion.investigacion_nombre || "Investigación actual"}
-          />
-          <InfoItem 
-            label="ID Investigación"
-            value={sesion.investigacion_id ? `${sesion.investigacion_id.substring(0, 12)}...` : "N/A"}
-          />
-          <InfoItem 
-            label="Estado"
-            value={
-              <Chip 
-                variant={getEstadoColor() as any} 
-                size="sm"
-              >
-                {sesion.estado_real || getEstadoText()}
-              </Chip>
-            }
-          />
-          <InfoItem 
-            label="Responsable"
-            value={sesion.responsable_real || sesion.moderador_nombre || "Sin asignar"}
-          />
-          {sesion.implementador_real && (
-            <InfoItem 
-              label="Implementador"
-              value={sesion.implementador_real}
-            />
+          {/* Para sesiones de apoyo, mostrar información específica */}
+          {sesion.tipo === 'apoyo' ? (
+            <>
+              <InfoItem 
+                label="Objetivo de la Sesión"
+                value={sesion.objetivo_sesion || "Sin objetivo especificado"}
+              />
+              <InfoItem 
+                label="Moderador"
+                value={sesion.moderador_nombre || "Sin asignar"}
+              />
+              <InfoItem 
+                label="Email del Moderador"
+                value={sesion.moderador_email || "Sin email"}
+              />
+              <InfoItem 
+                label="Estado"
+                value={
+                  <Chip 
+                    variant={getEstadoColor() as any} 
+                    size="sm"
+                  >
+                    {sesion.estado_real || getEstadoText()}
+                  </Chip>
+                }
+              />
+              {sesion.observadores && sesion.observadores.length > 0 && (
+                <InfoItem 
+                  label="Observadores"
+                  value={`${sesion.observadores.length} observador(es)`}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <InfoItem 
+                label="Investigación"
+                value={sesion.investigacion_nombre || "Investigación actual"}
+              />
+              <InfoItem 
+                label="ID Investigación"
+                value={sesion.investigacion_id ? `${sesion.investigacion_id.substring(0, 12)}...` : "N/A"}
+              />
+              <InfoItem 
+                label="Estado"
+                value={
+                  <Chip 
+                    variant={getEstadoColor() as any} 
+                    size="sm"
+                  >
+                    {sesion.estado_real || getEstadoText()}
+                  </Chip>
+                }
+              />
+              <InfoItem 
+                label="Responsable"
+                value={sesion.responsable_real || sesion.moderador_nombre || "Sin asignar"}
+              />
+              {sesion.implementador_real && (
+                <InfoItem 
+                  label="Implementador"
+                  value={sesion.implementador_real}
+                />
+              )}
+            </>
           )}
         </InfoContainer>
 

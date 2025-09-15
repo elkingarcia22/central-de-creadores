@@ -42,6 +42,17 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json({ error: 'Error obteniendo sesiones de apoyo' });
     }
 
+    // Función para mapear estado a estado_agendamiento
+    const mapearEstadoAgendamiento = (estado: string) => {
+      switch (estado) {
+        case 'programada': return 'Pendiente';
+        case 'en_curso': return 'En progreso';
+        case 'completada': return 'Finalizado';
+        case 'cancelada': return 'Cancelado';
+        default: return 'Pendiente';
+      }
+    };
+
     // Formatear las sesiones para que tengan la misma estructura que las sesiones de reclutamiento
     const sesionesFormateadas = data?.map(sesion => ({
       id: sesion.id,
@@ -51,10 +62,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       hora_sesion: sesion.hora_sesion,
       duracion_minutos: sesion.duracion_minutos,
       estado: sesion.estado,
-      estado_agendamiento: sesion.estado, // Mapear estado a estado_agendamiento para compatibilidad
+      estado_agendamiento: mapearEstadoAgendamiento(sesion.estado), // Mapear a nombre del estado
+      estado_real: mapearEstadoAgendamiento(sesion.estado), // Estado real para el modal
       moderador_id: sesion.moderador_id,
       moderador_nombre: sesion.profiles?.full_name || 'Sin asignar',
       moderador_email: sesion.profiles?.email || '',
+      responsable_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como responsable
+      implementador_real: sesion.profiles?.full_name || 'Sin asignar', // Moderador como implementador
       observadores: sesion.observadores || [],
       objetivo_sesion: sesion.objetivo_sesion,
       meet_link: sesion.meet_link,
@@ -108,7 +122,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         observadores: observadores || [],
         objetivo_sesion,
         meet_link,
-        estado: 'programada'
+        estado: 'programada' // Mantener compatibilidad con campo existente
       })
       .select()
       .single();
