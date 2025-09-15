@@ -205,7 +205,13 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       
       // Combinar ambas listas de sesiones
       const sesionesReclutamiento = dataReclutamiento.sesiones || [];
-      const sesionesApoyo = Array.isArray(dataApoyo) ? dataApoyo : (dataApoyo.sesiones || []);
+      const sesionesApoyo = dataApoyo.sesiones || [];
+      
+      console.log('🔍 Debug combinación de sesiones:', {
+        sesionesReclutamiento: sesionesReclutamiento.length,
+        sesionesApoyo: sesionesApoyo.length,
+        dataApoyo: dataApoyo
+      });
       
       // Convertir sesiones de apoyo al formato esperado
       const sesionesApoyoFormateadas = sesionesApoyo.map((sesion: any) => {
@@ -237,6 +243,12 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       
       const todasLasSesiones = [...sesionesReclutamiento, ...sesionesApoyoFormateadas];
       console.log('📊 Total de sesiones cargadas:', todasLasSesiones.length);
+      console.log('🔍 Debug sesiones finales:', {
+        total: todasLasSesiones.length,
+        reclutamiento: sesionesReclutamiento.length,
+        apoyo: sesionesApoyoFormateadas.length,
+        sesionesApoyo: sesionesApoyoFormateadas.map(s => ({ id: s.id, titulo: s.titulo, tipo: s.tipo }))
+      });
       
       if (todasLasSesiones.length > 0) {
         // Usar las sesiones directamente sin enriquecimiento adicional para mejorar rendimiento
