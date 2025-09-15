@@ -72,7 +72,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
           console.log(`🔍 [API] Buscando participante externo: ${reclutamiento.participantes_id}`);
           const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes')
-            .select('id, nombre, apellido, email, telefono')
+            .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_id)
             .single();
           
@@ -92,7 +92,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
           console.log(`🔍 [API] Buscando participante interno: ${reclutamiento.participantes_internos_id}`);
           const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes_internos')
-            .select('id, nombre, apellido, email, telefono')
+            .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_internos_id)
             .single();
           
