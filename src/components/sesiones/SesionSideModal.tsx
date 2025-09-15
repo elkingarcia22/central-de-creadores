@@ -305,41 +305,37 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
               padding="none"
             >
               {loadingObservadores ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-sm text-gray-600">Cargando observadores...</span>
-                </div>
+                <InfoItem 
+                  label="Cargando"
+                  value="Obteniendo información de observadores..."
+                />
               ) : observadoresInfo.length > 0 ? (
-                <div className="space-y-4">
-                  {observadoresInfo.map((observador, index) => (
-                    <div key={observador.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <div className="flex items-start space-x-3">
-                        <Avatar
-                          src={observador.avatar_url}
-                          alt={observador.full_name}
-                          size="md"
-                          fallback={observador.full_name?.charAt(0) || 'U'}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <Typography variant="body" className="font-medium text-gray-900 dark:text-white">
-                              {observador.full_name || 'Sin nombre'}
-                            </Typography>
-                            <Chip 
-                              variant="accent-blue" 
-                              size="sm"
-                            >
-                              Observador
-                            </Chip>
+                observadoresInfo.map((observador, index) => (
+                  <div key={observador.id}>
+                    <InfoItem 
+                      label="Observador"
+                      value={
+                        <div className="flex items-center space-x-2">
+                          <Avatar
+                            src={observador.avatar_url}
+                            alt={observador.full_name}
+                            size="sm"
+                            fallback={observador.full_name?.charAt(0) || 'U'}
+                          />
+                          <div>
+                            <div className="font-medium">{observador.full_name || 'Sin nombre'}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                              {observador.email || 'Sin email'}
+                            </div>
                           </div>
-                          <Typography variant="caption" className="text-gray-600 dark:text-gray-400">
-                            {observador.email || 'Sin email'}
-                          </Typography>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      }
+                    />
+                    {index < observadoresInfo.length - 1 && (
+                      <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
+                    )}
+                  </div>
+                ))
               ) : (
                 <InfoItem 
                   label="Observadores"
