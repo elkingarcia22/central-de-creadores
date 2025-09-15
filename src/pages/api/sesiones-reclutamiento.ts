@@ -150,7 +150,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
               console.log(`🔍 [API] Buscando responsable de la investigación: ${investigacionData.responsable_id}`);
               const { data: responsableData } = await supabaseServer
                 .from('usuarios')
-                .select('id, nombre, email')
+                .select('id, nombre, correo')
                 .eq('id', investigacionData.responsable_id)
                 .single();
               
@@ -169,7 +169,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
               console.log(`🔍 [API] Buscando implementador: ${investigacionData.implementador_id}`);
               const { data: implementadorData } = await supabaseServer
                 .from('usuarios')
-                .select('id, nombre, email')
+                .select('id, nombre, correo')
                 .eq('id', investigacionData.implementador_id)
                 .single();
               
