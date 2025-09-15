@@ -198,7 +198,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       let dataApoyo = { sesiones: [] };
       if (responseApoyo.ok) {
         dataApoyo = await responseApoyo.json();
-        console.log('📊 Sesiones de apoyo cargadas:', dataApoyo.length || 0);
+        console.log('📊 Sesiones de apoyo cargadas:', dataApoyo.sesiones?.length || 0);
       } else {
         console.warn('⚠️ No se pudieron cargar las sesiones de apoyo:', responseApoyo.status);
       }
