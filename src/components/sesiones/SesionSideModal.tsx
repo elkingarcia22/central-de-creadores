@@ -320,12 +320,6 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
                   </Chip>
                 }
               />
-              {sesion.observadores && sesion.observadores.length > 0 && (
-                <InfoItem 
-                  label="Observadores"
-                  value={`${sesion.observadores.length} observador(es)`}
-                />
-              )}
             </>
           ) : (
             <>
