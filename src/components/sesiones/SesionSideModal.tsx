@@ -54,25 +54,6 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
   onViewMore,
   className = ''
 }) => {
-  // Debug temporal
-  console.log('🔍 SesionSideModal - Datos recibidos:', {
-    sesion: sesion ? {
-      id: sesion.id,
-      titulo: sesion.titulo,
-      tipo: sesion.tipo,
-      moderador_id: sesion.moderador_id,
-      observadores: sesion.observadores,
-      objetivo_sesion: (sesion as any).objetivo_sesion,
-      moderador_nombre: (sesion as any).moderador_nombre,
-      moderador_email: (sesion as any).moderador_email
-    } : null
-  });
-  
-  // Debug específico para tipo de sesión
-  if (sesion) {
-    console.log('🎯 Tipo de sesión detectado:', sesion.tipo);
-    console.log('🎯 Es sesión de apoyo?', sesion.tipo === 'apoyo');
-  }
   const [showActions, setShowActions] = useState(false);
   const [activeTab, setActiveTab] = useState('informacion');
 
