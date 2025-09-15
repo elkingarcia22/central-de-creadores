@@ -208,14 +208,16 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         {/* Contenido del modal */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 space-y-6">
           {/* Debug logs */}
-          {console.log('🔍 [MODAL DEBUG] Datos de la sesión:', {
+          {console.log('🔍 [MODAL DEBUG] Datos completos de la sesión:', {
             id: sesion?.id,
+            titulo: sesion?.titulo,
             participante: sesion?.participante,
             participantes: sesion?.participantes,
             estado_real: sesion?.estado_real,
             responsable_real: sesion?.responsable_real,
             implementador_real: sesion?.implementador_real,
-            investigacion_nombre: sesion?.investigacion_nombre
+            investigacion_nombre: sesion?.investigacion_nombre,
+            sesionCompleta: sesion
           })}
           
           {/* Participante Asociado */}
