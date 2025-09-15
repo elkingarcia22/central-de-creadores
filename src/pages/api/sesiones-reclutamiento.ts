@@ -39,12 +39,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
     let query = supabaseServer
       .from('reclutamientos')
-      .select(`
-        *,
-        participantes:participantes_id(id, nombre, apellido, email, telefono),
-        participantes_internos:participantes_internos_id(id, nombre, apellido, email, telefono),
-        participantes_friend_family:participantes_friend_family_id(id, nombre, apellido, email, telefono)
-      `)
+      .select('*')
       .order('fecha_sesion', { ascending: true });
 
     if (!esAdmin && userId) {
@@ -61,25 +56,6 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     console.log('📊 Reclutamientos obtenidos:', reclutamientos?.length || 0);
 
     const sesiones = reclutamientos?.map(reclutamiento => {
-      // Determinar el tipo de participante y obtener sus datos
-      let participante = null;
-      let tipoParticipante = 'externo';
-      let participantes = [];
-      
-      if (reclutamiento.participantes) {
-        participante = reclutamiento.participantes;
-        tipoParticipante = 'externo';
-        participantes = [reclutamiento.participantes];
-      } else if (reclutamiento.participantes_internos) {
-        participante = reclutamiento.participantes_internos;
-        tipoParticipante = 'interno';
-        participantes = [reclutamiento.participantes_internos];
-      } else if (reclutamiento.participantes_friend_family) {
-        participante = reclutamiento.participantes_friend_family;
-        tipoParticipante = 'friend_family';
-        participantes = [reclutamiento.participantes_friend_family];
-      }
-
       return {
         id: reclutamiento.id,
         titulo: `Sesión de Reclutamiento - ${reclutamiento.id}`,
@@ -95,9 +71,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         notas_publicas: `Estado: ${reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente'}`,
         created_at: reclutamiento.created_at,
         updated_at: reclutamiento.updated_at,
-        participante: participante,
-        tipo_participante: tipoParticipante,
-        participantes: participantes,
+        participante: null,
+        tipo_participante: 'externo',
         reclutador: null,
         reclutador_id: reclutamiento.reclutador_id,
         estado_agendamiento: reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'Finalizado' : 'Pendiente',
