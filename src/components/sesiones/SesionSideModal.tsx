@@ -220,6 +220,14 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
             sesionCompleta: sesion
           })}
           
+          {/* Debug visual temporal */}
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+            <strong>DEBUG TEMPORAL:</strong><br/>
+            Responsable Real: {sesion.responsable_real || 'NO HAY'}<br/>
+            Implementador Real: {sesion.implementador_real || 'NO HAY'}<br/>
+            Estado Real: {sesion.estado_real || 'NO HAY'}
+          </div>
+          
           {/* Participante Asociado */}
         <InfoContainer 
           title="Participante Asociado"
