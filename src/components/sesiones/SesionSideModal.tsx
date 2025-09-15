@@ -213,10 +213,47 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
           icon={<UserIcon className="w-4 h-4" />}
           padding="none"
         >
-          <InfoItem 
-            label="Nombre"
-            value={sesion.titulo}
-          />
+          {sesion.participantes && sesion.participantes.length > 0 ? (
+            sesion.participantes.map((participante, index) => (
+              <div key={participante.id || index} className="space-y-2">
+                <InfoItem 
+                  label="Nombre"
+                  value={participante.participante_nombre || 'Sin nombre'}
+                />
+                <InfoItem 
+                  label="Email"
+                  value={participante.participante_email || 'Sin email'}
+                />
+                <InfoItem 
+                  label="Estado"
+                  value={participante.estado || 'Sin estado'}
+                />
+                {index < sesion.participantes.length - 1 && (
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2" />
+                )}
+              </div>
+            ))
+          ) : sesion.participante ? (
+            <div className="space-y-2">
+              <InfoItem 
+                label="Nombre"
+                value={sesion.participante.nombre || 'Sin nombre'}
+              />
+              <InfoItem 
+                label="Email"
+                value={sesion.participante.email || 'Sin email'}
+              />
+              <InfoItem 
+                label="Tipo"
+                value={sesion.participante.tipo || 'Sin tipo'}
+              />
+            </div>
+          ) : (
+            <InfoItem 
+              label="Participante"
+              value="Sin participante asignado"
+            />
+          )}
         </InfoContainer>
 
         {/* Información de la Sesión */}
