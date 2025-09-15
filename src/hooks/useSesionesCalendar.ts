@@ -12,9 +12,14 @@ interface SesionesStats {
   canceladas: number;
 }
 
-// Función para obtener el color de la sesión basado en el tipo de participante
+// Función para obtener el color de la sesión basado en el tipo de sesión
 const getSesionColorByParticipant = (sesion: Sesion): SesionEvent['color'] => {
-  // Obtener el tipo de participante de la sesión
+  // Para sesiones de apoyo, usar color específico
+  if (sesion.tipo === 'apoyo') {
+    return 'warning'; // Color naranja para sesiones de apoyo
+  }
+  
+  // Para sesiones de reclutamiento, usar el tipo de participante
   const tipoParticipante = sesion.participante?.tipo || 'externo';
   
   // Mapear el tipo de participante a colores sutiles para el calendario
