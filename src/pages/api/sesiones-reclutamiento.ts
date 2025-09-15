@@ -55,12 +55,17 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
     console.log('📊 Reclutamientos obtenidos:', reclutamientos?.length || 0);
 
-    // Función para obtener datos de participantes
-    const obtenerDatosParticipante = async (reclutamiento: any) => {
+    // Función para obtener datos completos del reclutamiento (similar a reclutamiento-actual)
+    const obtenerDatosCompletos = async (reclutamiento: any) => {
       let participante = null;
       let tipoParticipante = 'externo';
+      let investigacionNombre = 'Sin investigación';
+      let responsableReal = 'Sin asignar';
+      let implementadorReal = 'Sin asignar';
+      let estadoAgendamientoNombre = 'Sin estado';
 
       try {
+        // 1. Obtener datos del participante
         if (reclutamiento.participantes_id) {
           const { data: participanteData } = await supabaseServer
             .from('participantes')
@@ -94,14 +99,13 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'interno';
           }
         } else if (reclutamiento.participantes_friend_family_id) {
-          const { data: participanteData, error: errorParticipante } = await supabaseServer
+          const { data: participanteData } = await supabaseServer
             .from('participantes_friend_family')
             .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_friend_family_id)
             .single();
           
-          if (participanteData && !errorParticipante) {
-            // Mapear a la estructura esperada
+          if (participanteData) {
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -111,44 +115,107 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'friend_family';
           }
         }
+
+        // 2. Obtener datos de la investigación
+        if (reclutamiento.investigacion_id) {
+          const { data: investigacionData } = await supabaseServer
+            .from('investigaciones')
+            .select('id, nombre, responsable_id, implementador_id')
+            .eq('id', reclutamiento.investigacion_id)
+            .single();
+          
+          if (investigacionData) {
+            investigacionNombre = investigacionData.nombre || 'Sin nombre';
+
+            // 3. Obtener datos del responsable según el tipo de participante
+            if (tipoParticipante === 'externo' && investigacionData.responsable_id) {
+              const { data: responsableData } = await supabaseServer
+                .from('usuarios')
+                .select('id, nombre, email')
+                .eq('id', investigacionData.responsable_id)
+                .single();
+              
+              if (responsableData) {
+                responsableReal = responsableData.nombre || 'Sin nombre';
+              }
+            } else if ((tipoParticipante === 'interno' || tipoParticipante === 'friend_family') && reclutamiento.reclutador_id) {
+              const { data: reclutadorData } = await supabaseServer
+                .from('usuarios')
+                .select('id, nombre, email')
+                .eq('id', reclutamiento.reclutador_id)
+                .single();
+              
+              if (reclutadorData) {
+                responsableReal = reclutadorData.nombre || 'Sin nombre';
+              }
+            }
+
+            // 4. Obtener datos del implementador
+            if (investigacionData.implementador_id) {
+              const { data: implementadorData } = await supabaseServer
+                .from('usuarios')
+                .select('id, nombre, email')
+                .eq('id', investigacionData.implementador_id)
+                .single();
+              
+              if (implementadorData) {
+                implementadorReal = implementadorData.nombre || 'Sin nombre';
+              }
+            }
+          }
+        }
+
+        // 5. Obtener nombre del estado de agendamiento
+        if (reclutamiento.estado_agendamiento) {
+          const { data: estadoData } = await supabaseServer
+            .from('estado_agendamiento_cat')
+            .select('nombre')
+            .eq('id', reclutamiento.estado_agendamiento)
+            .single();
+          
+          if (estadoData) {
+            estadoAgendamientoNombre = estadoData.nombre || 'Sin nombre';
+          }
+        }
+
       } catch (error) {
-        console.log('⚠️ Error obteniendo datos del participante:', error);
+        console.log('⚠️ Error obteniendo datos completos:', error);
       }
 
-      return { participante, tipoParticipante };
+      return { 
+        participante, 
+        tipoParticipante, 
+        investigacionNombre, 
+        responsableReal, 
+        implementadorReal,
+        estadoAgendamientoNombre
+      };
     };
 
     // Procesar cada reclutamiento
     const sesionesPromises = reclutamientos?.map(async (reclutamiento) => {
-      // Determinar el estado real basado en el estado_agendamiento
-      let estadoReal = 'Pendiente';
-      if (reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029') {
-        estadoReal = 'Finalizado';
-      } else if (reclutamiento.estado_agendamiento === '0b8723e0-4f43-455d-bd95-a9576b7beb9d') {
-        estadoReal = 'En progreso';
-      }
+      // Obtener datos completos del reclutamiento
+      const { 
+        participante, 
+        tipoParticipante, 
+        investigacionNombre, 
+        responsableReal, 
+        implementadorReal,
+        estadoAgendamientoNombre
+      } = await obtenerDatosCompletos(reclutamiento);
 
-      // Obtener datos del participante
-      const { participante, tipoParticipante } = await obtenerDatosParticipante(reclutamiento);
+      // Usar el nombre real del estado de agendamiento
+      const estadoReal = estadoAgendamientoNombre;
 
-      // Información básica del reclutador
+      // Información del reclutador
       let reclutador = null;
       if (reclutamiento.reclutador_id) {
         reclutador = {
           id: reclutamiento.reclutador_id,
-          full_name: 'Reclutador', // Se puede mejorar con JOIN adicional
+          full_name: responsableReal, // Usar el nombre real del responsable
           email: ''
         };
       }
-
-      // Información básica de la investigación
-      let investigacionNombre = 'Sin investigación';
-      let responsableReal = 'Sin asignar';
-      let implementadorReal = 'Sin asignar';
-      
-      // Por ahora usamos valores genéricos, se pueden mejorar con JOINs adicionales
-      responsableReal = reclutador?.full_name || 'Sin asignar';
-      implementadorReal = 'Implementador';
 
       return {
         id: reclutamiento.id,
@@ -169,7 +236,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         tipo_participante: tipoParticipante,
         reclutador: reclutador,
         reclutador_id: reclutamiento.reclutador_id,
-        estado_agendamiento: estadoReal,
+        estado_agendamiento: estadoAgendamientoNombre,
         estado_agendamiento_color: null,
         hora_sesion: reclutamiento.hora_sesion,
         fecha_asignado: reclutamiento.fecha_asignado,
@@ -178,7 +245,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         participantes_internos_id: reclutamiento.participantes_internos_id,
         participantes_friend_family_id: reclutamiento.participantes_friend_family_id,
         // Campos reales del reclutamiento
-        estado_real: estadoReal,
+        estado_real: estadoAgendamientoNombre,
         responsable_real: responsableReal,
         implementador_real: implementadorReal
       };

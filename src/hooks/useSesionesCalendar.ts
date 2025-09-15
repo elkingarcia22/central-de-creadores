@@ -187,7 +187,6 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       
       const dataReclutamiento = await responseReclutamiento.json();
       console.log('📊 Sesiones de reclutamiento cargadas:', dataReclutamiento.sesiones?.length || 0);
-      console.log('🔍 [HOOK DEBUG] Primera sesión de reclutamiento:', dataReclutamiento.sesiones?.[0]);
       
       // Cargar sesiones de apoyo
       const responseApoyo = await fetch('/api/sesiones-apoyo', {

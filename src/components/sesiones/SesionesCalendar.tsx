@@ -87,15 +87,6 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
   const handleEventClick = useCallback((event: any) => {
     const sesion = sesionesEventos.find(s => s.id === event.id);
     if (sesion) {
-      console.log('🔍 [CALENDAR DEBUG] Sesión encontrada para modal:', {
-        id: sesion.id,
-        titulo: sesion.titulo,
-        participante: sesion.participante,
-        estado_real: sesion.estado_real,
-        responsable_real: sesion.responsable_real,
-        implementador_real: sesion.implementador_real,
-        investigacion_nombre: sesion.investigacion_nombre
-      });
       setSelectedSesion(sesion);
       setShowSideModal(true);
       // Convertir SesionEvent a Sesion para onSesionClick
