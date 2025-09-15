@@ -143,11 +143,11 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             console.log(`✅ [API] Investigación encontrada:`, investigacionData);
             investigacionNombre = investigacionData.nombre || 'Sin nombre';
 
-            // 3. Obtener datos del responsable según el tipo de participante
+            // 3. Obtener datos del responsable - usar responsable_id de la investigación para todos los tipos
             console.log(`🔍 [API] Tipo participante: ${tipoParticipante}, responsable_id: ${investigacionData.responsable_id}, reclutador_id: ${reclutamiento.reclutador_id}`);
             
-            if (tipoParticipante === 'externo' && investigacionData.responsable_id) {
-              console.log(`🔍 [API] Buscando responsable para participante externo: ${investigacionData.responsable_id}`);
+            if (investigacionData.responsable_id) {
+              console.log(`🔍 [API] Buscando responsable de la investigación: ${investigacionData.responsable_id}`);
               const { data: responsableData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, email')
@@ -160,22 +160,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
               } else {
                 console.log(`❌ [API] No se encontró responsable con ID: ${investigacionData.responsable_id}`);
               }
-            } else if ((tipoParticipante === 'interno' || tipoParticipante === 'friend_family') && reclutamiento.reclutador_id) {
-              console.log(`🔍 [API] Buscando reclutador para participante ${tipoParticipante}: ${reclutamiento.reclutador_id}`);
-              const { data: reclutadorData } = await supabaseServer
-                .from('usuarios')
-                .select('id, nombre, email')
-                .eq('id', reclutamiento.reclutador_id)
-                .single();
-              
-              if (reclutadorData) {
-                console.log(`✅ [API] Reclutador encontrado:`, reclutadorData);
-                responsableReal = reclutadorData.nombre || 'Sin nombre';
-              } else {
-                console.log(`❌ [API] No se encontró reclutador con ID: ${reclutamiento.reclutador_id}`);
-              }
             } else {
-              console.log(`⚠️ [API] No se puede obtener responsable - tipo: ${tipoParticipante}, responsable_id: ${investigacionData.responsable_id}, reclutador_id: ${reclutamiento.reclutador_id}`);
+              console.log(`⚠️ [API] No hay responsable_id en la investigación`);
             }
 
             // 4. Obtener datos del implementador
