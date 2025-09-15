@@ -64,22 +64,16 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       let implementadorReal = 'Sin asignar';
       let estadoAgendamientoNombre = 'Sin estado';
 
-      console.log(`🔍 [API] Procesando reclutamiento ${reclutamiento.id}`);
-
       try {
         // 1. Obtener datos del participante
         if (reclutamiento.participantes_id) {
-          console.log(`🔍 [API] Buscando participante externo: ${reclutamiento.participantes_id}`);
-          const { data: participanteData, error: errorParticipante } = await supabaseServer
+          const { data: participanteData } = await supabaseServer
             .from('participantes')
             .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_id)
             .single();
           
-          if (errorParticipante) {
-            console.log(`❌ [API] Error obteniendo participante externo:`, errorParticipante);
-          } else if (participanteData) {
-            console.log(`✅ [API] Participante externo encontrado:`, participanteData);
+          if (participanteData) {
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -89,17 +83,13 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'externo';
           }
         } else if (reclutamiento.participantes_internos_id) {
-          console.log(`🔍 [API] Buscando participante interno: ${reclutamiento.participantes_internos_id}`);
-          const { data: participanteData, error: errorParticipante } = await supabaseServer
+          const { data: participanteData } = await supabaseServer
             .from('participantes_internos')
             .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_internos_id)
             .single();
           
-          if (errorParticipante) {
-            console.log(`❌ [API] Error obteniendo participante interno:`, errorParticipante);
-          } else if (participanteData) {
-            console.log(`✅ [API] Participante interno encontrado:`, participanteData);
+          if (participanteData) {
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -109,17 +99,13 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'interno';
           }
         } else if (reclutamiento.participantes_friend_family_id) {
-          console.log(`🔍 [API] Buscando participante friend_family: ${reclutamiento.participantes_friend_family_id}`);
-          const { data: participanteData, error: errorParticipante } = await supabaseServer
+          const { data: participanteData } = await supabaseServer
             .from('participantes_friend_family')
             .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_friend_family_id)
             .single();
           
-          if (errorParticipante) {
-            console.log(`❌ [API] Error obteniendo participante friend_family:`, errorParticipante);
-          } else if (participanteData) {
-            console.log(`✅ [API] Participante friend_family encontrado:`, participanteData);
+          if (participanteData) {
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -132,7 +118,6 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
         // 2. Obtener datos de la investigación
         if (reclutamiento.investigacion_id) {
-          console.log(`🔍 [API] Buscando investigación: ${reclutamiento.investigacion_id}`);
           const { data: investigacionData } = await supabaseServer
             .from('investigaciones')
             .select('id, nombre, responsable_id, implementador_id')
@@ -140,14 +125,10 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             .single();
           
           if (investigacionData) {
-            console.log(`✅ [API] Investigación encontrada:`, investigacionData);
             investigacionNombre = investigacionData.nombre || 'Sin nombre';
 
             // 3. Obtener datos del responsable - usar responsable_id de la investigación para todos los tipos
-            console.log(`🔍 [API] Tipo participante: ${tipoParticipante}, responsable_id: ${investigacionData.responsable_id}, reclutador_id: ${reclutamiento.reclutador_id}`);
-            
             if (investigacionData.responsable_id) {
-              console.log(`🔍 [API] Buscando responsable de la investigación: ${investigacionData.responsable_id}`);
               const { data: responsableData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, correo')
@@ -155,18 +136,12 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
                 .single();
               
               if (responsableData) {
-                console.log(`✅ [API] Responsable encontrado:`, responsableData);
                 responsableReal = responsableData.nombre || 'Sin nombre';
-              } else {
-                console.log(`❌ [API] No se encontró responsable con ID: ${investigacionData.responsable_id}`);
               }
-            } else {
-              console.log(`⚠️ [API] No hay responsable_id en la investigación`);
             }
 
             // 4. Obtener datos del implementador
             if (investigacionData.implementador_id) {
-              console.log(`🔍 [API] Buscando implementador: ${investigacionData.implementador_id}`);
               const { data: implementadorData } = await supabaseServer
                 .from('usuarios')
                 .select('id, nombre, correo')
@@ -174,19 +149,10 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
                 .single();
               
               if (implementadorData) {
-                console.log(`✅ [API] Implementador encontrado:`, implementadorData);
                 implementadorReal = implementadorData.nombre || 'Sin nombre';
-              } else {
-                console.log(`❌ [API] No se encontró implementador con ID: ${investigacionData.implementador_id}`);
               }
-            } else {
-              console.log(`⚠️ [API] No hay implementador_id en la investigación`);
             }
-          } else {
-            console.log(`❌ [API] No se encontró investigación con ID: ${reclutamiento.investigacion_id}`);
           }
-        } else {
-          console.log(`⚠️ [API] No hay investigacion_id en el reclutamiento`);
         }
 
         // 5. Obtener nombre del estado de agendamiento
@@ -205,14 +171,6 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       } catch (error) {
         console.log('⚠️ Error general obteniendo datos completos:', error);
       }
-
-      console.log(`✅ [API] Datos finales para ${reclutamiento.id}:`, {
-        participante: participante ? `${participante.nombre} (${participante.tipo})` : 'null',
-        investigacionNombre,
-        responsableReal,
-        implementadorReal,
-        estadoAgendamientoNombre
-      });
 
       return { 
         participante, 
@@ -286,7 +244,6 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
     // Esperar a que todas las promesas se resuelvan y filtrar
     const sesiones = (await Promise.all(sesionesPromises || [])).filter(sesion => sesion.fecha_programada);
 
-    console.log('✅ Sesiones formateadas:', sesiones?.length || 0);
 
     return res.status(200).json({
       sesiones,
