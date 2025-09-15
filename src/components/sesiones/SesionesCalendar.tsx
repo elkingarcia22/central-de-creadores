@@ -226,10 +226,40 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     setShowSideModal(false);
     
     // Obtener el ID del participante desde los datos de la sesión
-    const participanteId = sesion.participante?.id;
+    // Intentar obtener el ID del participante de diferentes formas
+    let participanteId = null;
+    
+    // 1. Del objeto participante
+    if (sesion.participante?.id) {
+      participanteId = sesion.participante.id;
+    }
+    // 2. De los campos directos de participantes
+    else if (sesion.participantes_id) {
+      participanteId = sesion.participantes_id;
+    }
+    else if (sesion.participantes_internos_id) {
+      participanteId = sesion.participantes_internos_id;
+    }
+    else if (sesion.participantes_friend_family_id) {
+      participanteId = sesion.participantes_friend_family_id;
+    }
+    // 3. Del array de participantes (tomar el primero)
+    else if (sesion.participantes && sesion.participantes.length > 0) {
+      participanteId = sesion.participantes[0].participante_id;
+    }
+    
+    console.log('🔍 [VIEW MORE] Debug - Intentando obtener participanteId:', {
+      'sesion.participante?.id': sesion.participante?.id,
+      'sesion.participantes_id': sesion.participantes_id,
+      'sesion.participantes_internos_id': sesion.participantes_internos_id,
+      'sesion.participantes_friend_family_id': sesion.participantes_friend_family_id,
+      'sesion.participantes[0]?.participante_id': sesion.participantes?.[0]?.participante_id,
+      'participanteId final': participanteId
+    });
     
     if (!participanteId) {
-      console.error('❌ No se encontró ID del participante en la sesión:', sesion);
+      console.error('❌ [VIEW MORE] No se encontró ID del participante en la sesión:', sesion);
+      console.log('🔍 [VIEW MORE] Debug - Estructura completa de sesion:', JSON.stringify(sesion, null, 2));
       return;
     }
     
@@ -237,10 +267,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
     const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
     const participacionUrl = `/participacion/${participanteId}?reclutamiento_id=${sesion.id}&returnUrl=${returnUrl}`;
     
-    console.log('🚀 Navegando a vista de sesión desde modal lateral:', participacionUrl);
-    console.log('🚀 ID del participante:', participanteId);
-    console.log('🚀 ID de reclutamiento:', sesion.id);
-    console.log('🚀 URL de retorno:', returnUrl);
+    console.log('🚀 [VIEW MORE] Navegando a vista de sesión desde modal lateral:', participacionUrl);
+    console.log('🚀 [VIEW MORE] ID del participante:', participanteId);
+    console.log('🚀 [VIEW MORE] ID de reclutamiento:', sesion.id);
+    console.log('🚀 [VIEW MORE] URL de retorno:', returnUrl);
     router.push(participacionUrl);
   }, [router]);
 
@@ -559,10 +589,38 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         
         // Mapear el participante según su tipo
         const participanteMapping = (() => {
-          const participanteId = sesionToEdit.participante?.id;
+          // Intentar obtener el ID del participante de diferentes formas
+          let participanteId = null;
+          
+          // 1. Del objeto participante
+          if (sesionToEdit.participante?.id) {
+            participanteId = sesionToEdit.participante.id;
+          }
+          // 2. De los campos directos de participantes
+          else if (sesionToEdit.participantes_id) {
+            participanteId = sesionToEdit.participantes_id;
+          }
+          else if (sesionToEdit.participantes_internos_id) {
+            participanteId = sesionToEdit.participantes_internos_id;
+          }
+          else if (sesionToEdit.participantes_friend_family_id) {
+            participanteId = sesionToEdit.participantes_friend_family_id;
+          }
+          // 3. Del array de participantes (tomar el primero)
+          else if (sesionToEdit.participantes && sesionToEdit.participantes.length > 0) {
+            participanteId = sesionToEdit.participantes[0].participante_id;
+          }
+          
           const tipoParticipante = sesionToEdit.tipo_participante;
           
-          console.log('🔍 [AGENDA EDIT] Mapeando participante:', { participanteId, tipoParticipante });
+          console.log('🔍 [AGENDA EDIT] Mapeando participante:', { 
+            participanteId, 
+            tipoParticipante,
+            'sesionToEdit.participante?.id': sesionToEdit.participante?.id,
+            'sesionToEdit.participantes_id': sesionToEdit.participantes_id,
+            'sesionToEdit.participantes_internos_id': sesionToEdit.participantes_internos_id,
+            'sesionToEdit.participantes_friend_family_id': sesionToEdit.participantes_friend_family_id
+          });
           
           if (!participanteId) return {};
           
