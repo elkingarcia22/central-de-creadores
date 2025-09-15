@@ -64,16 +64,22 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       let implementadorReal = 'Sin asignar';
       let estadoAgendamientoNombre = 'Sin estado';
 
+      console.log(`🔍 [API] Procesando reclutamiento ${reclutamiento.id}`);
+
       try {
         // 1. Obtener datos del participante
         if (reclutamiento.participantes_id) {
-          const { data: participanteData } = await supabaseServer
+          console.log(`🔍 [API] Buscando participante externo: ${reclutamiento.participantes_id}`);
+          const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes')
             .select('id, nombre, apellido, email, telefono')
             .eq('id', reclutamiento.participantes_id)
             .single();
           
-          if (participanteData) {
+          if (errorParticipante) {
+            console.log(`❌ [API] Error obteniendo participante externo:`, errorParticipante);
+          } else if (participanteData) {
+            console.log(`✅ [API] Participante externo encontrado:`, participanteData);
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -83,13 +89,17 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'externo';
           }
         } else if (reclutamiento.participantes_internos_id) {
-          const { data: participanteData } = await supabaseServer
+          console.log(`🔍 [API] Buscando participante interno: ${reclutamiento.participantes_internos_id}`);
+          const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes_internos')
             .select('id, nombre, apellido, email, telefono')
             .eq('id', reclutamiento.participantes_internos_id)
             .single();
           
-          if (participanteData) {
+          if (errorParticipante) {
+            console.log(`❌ [API] Error obteniendo participante interno:`, errorParticipante);
+          } else if (participanteData) {
+            console.log(`✅ [API] Participante interno encontrado:`, participanteData);
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -99,13 +109,17 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
             tipoParticipante = 'interno';
           }
         } else if (reclutamiento.participantes_friend_family_id) {
-          const { data: participanteData } = await supabaseServer
+          console.log(`🔍 [API] Buscando participante friend_family: ${reclutamiento.participantes_friend_family_id}`);
+          const { data: participanteData, error: errorParticipante } = await supabaseServer
             .from('participantes_friend_family')
             .select('id, nombre, email')
             .eq('id', reclutamiento.participantes_friend_family_id)
             .single();
           
-          if (participanteData) {
+          if (errorParticipante) {
+            console.log(`❌ [API] Error obteniendo participante friend_family:`, errorParticipante);
+          } else if (participanteData) {
+            console.log(`✅ [API] Participante friend_family encontrado:`, participanteData);
             participante = {
               id: participanteData.id,
               nombre: participanteData.nombre,
@@ -179,8 +193,16 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         }
 
       } catch (error) {
-        console.log('⚠️ Error obteniendo datos completos:', error);
+        console.log('⚠️ Error general obteniendo datos completos:', error);
       }
+
+      console.log(`✅ [API] Datos finales para ${reclutamiento.id}:`, {
+        participante: participante ? `${participante.nombre} (${participante.tipo})` : 'null',
+        investigacionNombre,
+        responsableReal,
+        implementadorReal,
+        estadoAgendamientoNombre
+      });
 
       return { 
         participante, 
