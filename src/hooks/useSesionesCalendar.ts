@@ -221,9 +221,9 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
           ...sesion,
           tipo: 'apoyo', // Marcar como sesión de apoyo
           moderador_nombre: sesion.moderador_nombre || 'Sin asignar',
-          estado_real: sesion.estado,
-          responsable_real: sesion.moderador_nombre,
-          implementador_real: sesion.moderador_nombre,
+          estado_real: sesion.estado_real || sesion.estado,
+          responsable_real: sesion.responsable_real || sesion.moderador_nombre,
+          implementador_real: sesion.implementador_real || sesion.moderador_nombre,
           // Mapear campos específicos de sesiones de apoyo
           titulo: `${participanteNombre} - ${sesion.titulo || 'Sesión de Apoyo'}`,
           descripcion: sesion.descripcion,
@@ -246,9 +246,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
           ...sesion,
           // Usar información básica disponible
           moderador_nombre: sesion.moderador_nombre || 'Sin asignar',
-          estado_real: sesion.estado,
-          responsable_real: sesion.moderador_nombre,
-          implementador_real: sesion.moderador_nombre
+          estado_real: sesion.estado_real || sesion.estado,
+          // NO sobrescribir responsable_real e implementador_real - usar los valores de la API
+          responsable_real: sesion.responsable_real,
+          implementador_real: sesion.implementador_real
         }));
         
         setSesiones(sesionesEnriquecidas);
@@ -306,9 +307,9 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
         ...nuevaSesion,
         tipo: sesionData.tipo || 'reclutamiento',
         moderador_nombre: nuevaSesion.moderador_nombre || 'Sin asignar',
-        estado_real: nuevaSesion.estado,
-        responsable_real: nuevaSesion.moderador_nombre,
-        implementador_real: nuevaSesion.moderador_nombre
+        estado_real: nuevaSesion.estado_real || nuevaSesion.estado,
+        responsable_real: nuevaSesion.responsable_real,
+        implementador_real: nuevaSesion.implementador_real
       };
       
       setSesiones(prev => [sesionFormateada, ...prev]);
