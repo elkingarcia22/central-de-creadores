@@ -145,6 +145,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       meet_link: event.meet_link,
       responsable_real: event.responsable_real,
       implementador_real: event.implementador_real,
+      participante: event.participante,
       sesionOriginal: sesion
     });
     return event;
@@ -186,6 +187,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       
       const dataReclutamiento = await responseReclutamiento.json();
       console.log('📊 Sesiones de reclutamiento cargadas:', dataReclutamiento.sesiones?.length || 0);
+      console.log('🔍 [HOOK DEBUG] Primera sesión de reclutamiento:', dataReclutamiento.sesiones?.[0]);
       
       // Cargar sesiones de apoyo
       const responseApoyo = await fetch('/api/sesiones-apoyo', {
