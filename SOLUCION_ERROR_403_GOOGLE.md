@@ -33,7 +33,7 @@ Error 403: access_denied
 1. Ve a **"APIs y servicios"** → **"Credenciales"**
 2. Busca tu **"ID de cliente OAuth 2.0"**
 3. Verifica que tenga configurado:
-   - **Orígenes JavaScript autorizados**: `http://localhost:3000`
+   - **Orígenes JavaScript autorizados**: ` duplicando plicandom run devpusisru t se el color que tenia revisa bien como estaba antescomo estasin http://localhost:3000`
    - **URI de redirección autorizadas**: `http://localhost:3000/api/google-calendar/callback`
 
 ### 6. 📋 Verificar Variables de Entorno
