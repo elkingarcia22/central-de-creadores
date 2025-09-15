@@ -210,7 +210,7 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
           {sesion.participantes && sesion.participantes.length > 0 ? (
             sesion.participantes.map((participante, index) => (
               <div key={participante.id || index} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <InfoItem 
                       label="Nombre"
@@ -243,7 +243,7 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
               </div>
             ))
           ) : sesion.participante ? (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-8">
               <div className="space-y-2">
                 <InfoItem 
                   label="Nombre"
