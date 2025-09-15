@@ -441,7 +441,7 @@ export default function EditarReclutamientoModal({
         fecha_sesion: fechaHoraCompleta,
         hora_sesion: horaSesion,
         duracion_sesion: parseInt(duracionSesion),
-        observadores: observadores
+        usuarios_libreto: observadores
         // Removido: investigacion_id (no se puede cambiar)
         // Removido: tipo_participante (campo no existe en la tabla)
       };
@@ -607,7 +607,7 @@ export default function EditarReclutamientoModal({
                 disabled={loading}
               />
               <Typography variant="caption" color="secondary">
-                Usuarios que observarán la sesión de reclutamiento.
+                Usuarios del equipo que observarán la sesión de reclutamiento (se cargan automáticamente del libreto).
               </Typography>
             </div>
 
