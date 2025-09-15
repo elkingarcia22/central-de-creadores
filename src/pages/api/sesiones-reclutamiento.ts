@@ -55,7 +55,58 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
 
     console.log('📊 Reclutamientos obtenidos:', reclutamientos?.length || 0);
 
-    const sesiones = reclutamientos?.map(reclutamiento => {
+    // Función para obtener datos de participantes
+    const obtenerDatosParticipante = async (reclutamiento: any) => {
+      let participante = null;
+      let tipoParticipante = 'externo';
+
+      try {
+        if (reclutamiento.participantes_id) {
+          const { data: participanteData } = await supabaseServer
+            .from('participantes')
+            .select('id, nombre, apellido, email, telefono')
+            .eq('id', reclutamiento.participantes_id)
+            .single();
+          
+          if (participanteData) {
+            participante = participanteData;
+            tipoParticipante = 'externo';
+          }
+        } else if (reclutamiento.participantes_internos_id) {
+          const { data: participanteData } = await supabaseServer
+            .from('participantes_internos')
+            .select('id, nombre, apellido, email, telefono')
+            .eq('id', reclutamiento.participantes_internos_id)
+            .single();
+          
+          if (participanteData) {
+            participante = participanteData;
+            tipoParticipante = 'interno';
+          }
+        } else if (reclutamiento.participantes_friend_family_id) {
+          console.log('🔍 Buscando participante friend_family con ID:', reclutamiento.participantes_friend_family_id);
+          const { data: participanteData, error: errorParticipante } = await supabaseServer
+            .from('participantes_friend_family')
+            .select('id, nombre, apellido, email, telefono')
+            .eq('id', reclutamiento.participantes_friend_family_id)
+            .single();
+          
+          console.log('🔍 Resultado participante friend_family:', { participanteData, error: errorParticipante });
+          
+          if (participanteData) {
+            participante = participanteData;
+            tipoParticipante = 'friend_family';
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ Error obteniendo datos del participante:', error);
+      }
+
+      return { participante, tipoParticipante };
+    };
+
+    // Procesar cada reclutamiento
+    const sesionesPromises = reclutamientos?.map(async (reclutamiento) => {
       // Determinar el estado real basado en el estado_agendamiento
       let estadoReal = 'Pendiente';
       if (reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029') {
@@ -63,6 +114,28 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       } else if (reclutamiento.estado_agendamiento === '0b8723e0-4f43-455d-bd95-a9576b7beb9d') {
         estadoReal = 'En progreso';
       }
+
+      // Obtener datos del participante
+      const { participante, tipoParticipante } = await obtenerDatosParticipante(reclutamiento);
+
+      // Información básica del reclutador
+      let reclutador = null;
+      if (reclutamiento.reclutador_id) {
+        reclutador = {
+          id: reclutamiento.reclutador_id,
+          full_name: 'Reclutador', // Se puede mejorar con JOIN adicional
+          email: ''
+        };
+      }
+
+      // Información básica de la investigación
+      let investigacionNombre = 'Sin investigación';
+      let responsableReal = 'Sin asignar';
+      let implementadorReal = 'Sin asignar';
+      
+      // Por ahora usamos valores genéricos, se pueden mejorar con JOINs adicionales
+      responsableReal = reclutador?.full_name || 'Sin asignar';
+      implementadorReal = 'Implementador';
 
       return {
         id: reclutamiento.id,
@@ -72,16 +145,16 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         duracion_minutos: reclutamiento.duracion_sesion,
         ubicacion: 'Oficina Principal',
         investigacion_id: reclutamiento.investigacion_id,
-        investigacion_nombre: 'Sin investigación',
+        investigacion_nombre: investigacionNombre,
         estado: reclutamiento.estado_agendamiento === '7b923720-3a4e-41db-967f-0f346114f029' ? 'completada' : 'programada',
         tipo_sesion: 'presencial',
         grabacion_permitida: true,
         notas_publicas: `Estado: ${estadoReal}`,
         created_at: reclutamiento.created_at,
         updated_at: reclutamiento.updated_at,
-        participante: null,
-        tipo_participante: 'externo',
-        reclutador: null,
+        participante: participante,
+        tipo_participante: tipoParticipante,
+        reclutador: reclutador,
         reclutador_id: reclutamiento.reclutador_id,
         estado_agendamiento: estadoReal,
         estado_agendamiento_color: null,
@@ -93,10 +166,13 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         participantes_friend_family_id: reclutamiento.participantes_friend_family_id,
         // Campos reales del reclutamiento
         estado_real: estadoReal,
-        responsable_real: 'Reclutador', // Por ahora genérico, se puede mejorar con JOIN
-        implementador_real: 'Implementador' // Por ahora genérico, se puede mejorar con JOIN
+        responsable_real: responsableReal,
+        implementador_real: implementadorReal
       };
-    }).filter(sesion => sesion.fecha_programada);
+    });
+
+    // Esperar a que todas las promesas se resuelvan y filtrar
+    const sesiones = (await Promise.all(sesionesPromises || [])).filter(sesion => sesion.fecha_programada);
 
     console.log('✅ Sesiones formateadas:', sesiones?.length || 0);
 
