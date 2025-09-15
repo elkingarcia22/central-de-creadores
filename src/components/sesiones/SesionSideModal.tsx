@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SesionEvent } from '../../types/sesiones';
 import { Card, Typography, Button, Chip, Badge, Avatar, SideModal, PageHeader, Tabs, InfoContainer, InfoItem, ActionsMenu } from '../ui';
 import { getChipVariant } from '../../utils/chipUtils';
+import { getTipoParticipanteVariant, getTipoParticipanteText } from '../../utils/tipoParticipanteUtils';
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -208,38 +209,62 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
         >
           {sesion.participantes && sesion.participantes.length > 0 ? (
             sesion.participantes.map((participante, index) => (
-              <div key={participante.id || index} className="space-y-2">
-                <InfoItem 
-                  label="Nombre"
-                  value={participante.participante_nombre || 'Sin nombre'}
-                />
-                <InfoItem 
-                  label="Email"
-                  value={participante.participante_email || 'Sin email'}
-                />
-                <InfoItem 
-                  label="Estado"
-                  value={participante.estado || 'Sin estado'}
-                />
+              <div key={participante.id || index} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <InfoItem 
+                      label="Nombre"
+                      value={participante.participante_nombre || 'Sin nombre'}
+                    />
+                    <InfoItem 
+                      label="Email"
+                      value={participante.participante_email || 'Sin email'}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <InfoItem 
+                      label="Estado"
+                      value={participante.estado || 'Sin estado'}
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Tipo:</span>
+                      <Chip 
+                        variant={getTipoParticipanteVariant(participante.participante?.tipo || 'externo') as any}
+                        size="sm"
+                      >
+                        {getTipoParticipanteText(participante.participante?.tipo || 'externo')}
+                      </Chip>
+                    </div>
+                  </div>
+                </div>
                 {index < sesion.participantes.length - 1 && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2" />
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4" />
                 )}
               </div>
             ))
           ) : sesion.participante ? (
-            <div className="space-y-2">
-              <InfoItem 
-                label="Nombre"
-                value={sesion.participante.nombre || 'Sin nombre'}
-              />
-              <InfoItem 
-                label="Email"
-                value={sesion.participante.email || 'Sin email'}
-              />
-              <InfoItem 
-                label="Tipo"
-                value={sesion.participante.tipo || 'Sin tipo'}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <InfoItem 
+                  label="Nombre"
+                  value={sesion.participante.nombre || 'Sin nombre'}
+                />
+                <InfoItem 
+                  label="Email"
+                  value={sesion.participante.email || 'Sin email'}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Tipo:</span>
+                  <Chip 
+                    variant={getTipoParticipanteVariant(sesion.participante.tipo || 'externo') as any}
+                    size="sm"
+                  >
+                    {getTipoParticipanteText(sesion.participante.tipo || 'externo')}
+                  </Chip>
+                </div>
+              </div>
             </div>
           ) : (
             <InfoItem 
