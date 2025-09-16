@@ -12,11 +12,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('📝 Obteniendo notas manuales para:', { participante_id, sesion_id });
 
+      // Verificar si es una sesión de apoyo
+      const { data: sesionApoyo, error: errorApoyo } = await supabaseServer
+        .from('sesiones_apoyo')
+        .select('id')
+        .eq('id', sesion_id)
+        .single();
+
+      let sesionIdParaBuscar = sesion_id;
+      
+      if (!errorApoyo && sesionApoyo) {
+        // Es una sesión de apoyo, usar el ID temporal
+        sesionIdParaBuscar = '00000000-0000-0000-0000-000000000001';
+        console.log('🔍 Buscando notas para sesión de apoyo con ID temporal:', sesionIdParaBuscar);
+      }
+
       const { data, error } = await supabaseServer
         .from('notas_manuales')
         .select('*')
         .eq('participante_id', participante_id)
-        .eq('sesion_id', sesion_id)
+        .eq('sesion_id', sesionIdParaBuscar)
         .order('fecha_creacion', { ascending: false });
 
       if (error) {
@@ -43,11 +58,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('📝 Creando nueva nota manual:', { participante_id, sesion_id, contenido });
 
+      // Verificar si es una sesión de apoyo o reclutamiento
+      const { data: sesionApoyo, error: errorApoyo } = await supabaseServer
+        .from('sesiones_apoyo')
+        .select('id')
+        .eq('id', sesion_id)
+        .single();
+
+      const { data: sesionReclutamiento, error: errorReclutamiento } = await supabaseServer
+        .from('reclutamientos')
+        .select('id')
+        .eq('id', sesion_id)
+        .single();
+
+      console.log('🔍 Verificando tipo de sesión:', {
+        esSesionApoyo: !errorApoyo && sesionApoyo,
+        esSesionReclutamiento: !errorReclutamiento && sesionReclutamiento,
+        sesionId: sesion_id
+      });
+
+      // Si es una sesión de apoyo, usar un ID temporal o crear una entrada en reclutamientos
+      let sesionIdParaInsertar = sesion_id;
+      
+      if (!errorApoyo && sesionApoyo) {
+        // Es una sesión de apoyo, necesitamos una solución temporal
+        // Por ahora, vamos a usar un UUID fijo para sesiones de apoyo
+        sesionIdParaInsertar = '00000000-0000-0000-0000-000000000001'; // UUID temporal para sesiones de apoyo
+        console.log('⚠️ Usando ID temporal para sesión de apoyo:', sesionIdParaInsertar);
+      }
+
       const { data, error } = await supabaseServer
         .from('notas_manuales')
         .insert({
           participante_id,
-          sesion_id,
+          sesion_id: sesionIdParaInsertar,
           contenido: contenido.trim(),
           fecha_creacion: new Date().toISOString(),
           fecha_actualizacion: new Date().toISOString()
