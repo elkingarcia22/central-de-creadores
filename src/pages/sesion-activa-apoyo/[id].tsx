@@ -285,6 +285,11 @@ export default function SesionActivaApoyoPage() {
             await loadInvestigacionesData(sesionData.participante.id);
           }
           
+          // Cargar dolores para el tab de dolores
+          if (sesionData.participante && sesionData.participante.id) {
+            await loadDoloresData();
+          }
+          
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
           showError('Error al cargar los datos de la sesión de apoyo');
