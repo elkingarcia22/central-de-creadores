@@ -325,7 +325,10 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
             moderador_nombre: sesionData.moderador_nombre,
             objetivo_sesion: sesionData.objetivo_sesion,
             observadores: sesionData.observadores,
-            tipo: 'apoyo'
+            tipo: 'apoyo',
+            // Agregar información del participante
+            participante: sesionData.participante,
+            tipo_participante: sesionData.tipo_participante
           };
           localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
           console.log('💾 [CALENDARIO] Información de sesión de apoyo guardada en localStorage:', sesionApoyoData);

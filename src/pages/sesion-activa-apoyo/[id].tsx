@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip } from '../../components/ui';
 import { useToast } from '../../contexts/ToastContext';
-import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon } from '../../components/icons';
+import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon } from '../../components/icons';
+import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 
 interface SesionApoyoData {
   id: string;
@@ -14,6 +15,14 @@ interface SesionApoyoData {
   objetivo_sesion: string;
   observadores: string[];
   tipo: 'apoyo';
+  // Información del participante
+  participante?: {
+    id: string;
+    nombre: string;
+    email: string;
+    tipo: 'externo' | 'interno' | 'friend_family';
+  };
+  tipo_participante?: 'externo' | 'interno' | 'friend_family';
 }
 
 interface Usuario {
@@ -119,7 +128,7 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
-  const handleVolver = () => {
+  const handleBackToSessions = () => {
     router.push('/sesiones');
   };
 
@@ -152,7 +161,7 @@ export default function SesionActivaApoyoPage() {
             <Typography variant="body1" color="secondary" className="mb-6">
               No se pudieron cargar los datos de la sesión de apoyo
             </Typography>
-            <Button onClick={handleVolver} variant="primary">
+            <Button onClick={handleBackToSessions} variant="primary">
               Volver a Sesiones
             </Button>
           </div>
@@ -333,25 +342,28 @@ export default function SesionActivaApoyoPage() {
   return (
     <Layout>
       <div className="py-8">
-        <PageHeader
-          title="Sesión de Apoyo Activa"
-          subtitle={`${sesionApoyo.titulo} - ${moderador?.full_name || 'Cargando...'}`}
-          icon={<HelpIcon className="w-8 h-8" />}
-          color="blue"
-          chip={{
-            label: "En Progreso",
-            variant: "success",
-            size: "sm",
-            icon: <ClockIcon className="w-3 h-3" />
-          }}
-          secondaryActions={[
-            {
-              label: "Volver a Sesiones",
-              onClick: handleVolver,
-              variant: "outline"
-            }
-          ]}
-        />
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBackToSessions}
+              className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <PageHeader
+              title="Sesión Activa"
+              variant="compact"
+              color="blue"
+              className="mb-0"
+              chip={{
+                label: sesionApoyo.participante?.nombre || 'Sin participante',
+                variant: getTipoParticipanteVariant(sesionApoyo.tipo_participante || 'externo'),
+                size: 'sm'
+              }}
+            />
+          </div>
+        </div>
 
         <div className="mt-8">
           <Tabs

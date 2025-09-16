@@ -705,7 +705,10 @@ const SesionesPageContent: React.FC = () => {
           moderador_nombre: sesion.moderador_nombre,
           objetivo_sesion: sesion.objetivo_sesion,
           observadores: sesion.observadores,
-          tipo: 'apoyo'
+          tipo: 'apoyo',
+          // Agregar información del participante
+          participante: sesion.participante,
+          tipo_participante: sesion.tipo_participante
         };
         localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
         console.log('💾 [SESION APOYO] Información guardada en localStorage:', sesionApoyoData);
