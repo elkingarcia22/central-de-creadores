@@ -124,7 +124,7 @@ export default function SesionActivaApoyoPage() {
     try {
       console.log('🔍 Iniciando carga de datos del participante para ID:', id);
       // Cargar datos completos del participante desde la API
-      const participanteResponse = await fetch(`/api/participantes/${id}`);
+      const participanteResponse = await fetch(`/api/debug-participante?id=${id}`);
       console.log('🔍 Respuesta de la API de participantes:', participanteResponse.status, participanteResponse.statusText);
       
       if (participanteResponse.ok) {
