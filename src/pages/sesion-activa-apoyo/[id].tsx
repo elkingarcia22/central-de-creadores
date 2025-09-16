@@ -1505,9 +1505,11 @@ export default function SesionActivaApoyoPage() {
         }}
         onConvertirAPerfilamiento={(contenido) => {
           // Pre-llenar el modal de perfilamiento con el contenido de la nota
+          console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
           setShowPerfilamientoModal(true);
           // Guardar el contenido para pre-llenar el modal
           setContenidoNotaParaPerfilamiento(contenido);
+          console.log('🔄 [CONVERSION] Contenido guardado para perfilamiento:', contenido);
         }}
       />
     },
@@ -2132,9 +2134,12 @@ export default function SesionActivaApoyoPage() {
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
           }}
           onCategoriaSeleccionada={(categoria) => {
+            console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
+            console.log('🔄 [CONVERSION] Contenido actual para perfilamiento:', contenidoNotaParaPerfilamiento);
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
+            // NO limpiar contenidoNotaParaPerfilamiento aquí, se necesita para el siguiente modal
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
@@ -2143,24 +2148,30 @@ export default function SesionActivaApoyoPage() {
 
       {/* Modal de crear perfilamiento específico */}
       {showCrearPerfilamientoModal && categoriaSeleccionada && participante && (
-        <CrearPerfilamientoModal
-          isOpen={showCrearPerfilamientoModal}
-          onClose={() => {
-            setShowCrearPerfilamientoModal(false);
-            setCategoriaSeleccionada(null);
-            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-          }}
-          participanteId={participante.id}
-          participanteNombre={participante.nombre}
-          categoria={categoriaSeleccionada}
-          descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
-          onSuccess={() => {
-            setShowCrearPerfilamientoModal(false);
-            setCategoriaSeleccionada(null);
-            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-            showSuccess('Perfilamiento creado exitosamente');
-          }}
-        />
+        <>
+          {(() => {
+            console.log('🔄 [CONVERSION] Renderizando modal de crear perfilamiento con contenido:', contenidoNotaParaPerfilamiento);
+            return null;
+          })()}
+          <CrearPerfilamientoModal
+            isOpen={showCrearPerfilamientoModal}
+            onClose={() => {
+              setShowCrearPerfilamientoModal(false);
+              setCategoriaSeleccionada(null);
+              setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            }}
+            participanteId={participante.id}
+            participanteNombre={participante.nombre}
+            categoria={categoriaSeleccionada}
+            descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
+            onSuccess={() => {
+              setShowCrearPerfilamientoModal(false);
+              setCategoriaSeleccionada(null);
+              setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+              showSuccess('Perfilamiento creado exitosamente');
+            }}
+          />
+        </>
       )}
 
       {/* Modal de confirmación para eliminar dolor */}
