@@ -158,6 +158,9 @@ export default function SesionActivaApoyoPage() {
   // Ref para mantener el contenido de manera persistente
   const contenidoNotaRef = useRef<string>('');
   
+  // Variable para almacenar el contenido de manera más persistente
+  const [contenidoNotaPersistente, setContenidoNotaPersistente] = useState<string>('');
+  
   // Estado para la investigación actual de la sesión
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
   
@@ -1513,6 +1516,7 @@ export default function SesionActivaApoyoPage() {
           // Guardar el contenido para pre-llenar el modal
           setContenidoNotaParaPerfilamiento(contenido);
           contenidoNotaRef.current = contenido; // También guardar en ref
+          setContenidoNotaPersistente(contenido); // Y en la variable persistente
           console.log('🔄 [CONVERSION] Contenido guardado para perfilamiento:', contenido);
         }}
       />
@@ -2137,6 +2141,7 @@ export default function SesionActivaApoyoPage() {
             setShowPerfilamientoModal(false);
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
             contenidoNotaRef.current = ''; // Limpiar ref también
+            setContenidoNotaPersistente(''); // Limpiar variable persistente
           }}
           onCategoriaSeleccionada={(categoria) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
@@ -2157,7 +2162,8 @@ export default function SesionActivaApoyoPage() {
           {(() => {
             console.log('🔄 [CONVERSION] Renderizando modal de crear perfilamiento con contenido:', contenidoNotaParaPerfilamiento);
             console.log('🔄 [CONVERSION] Contenido del ref:', contenidoNotaRef.current);
-            console.log('🔄 [CONVERSION] Contenido final que se pasará:', contenidoNotaParaPerfilamiento || contenidoNotaRef.current);
+            console.log('🔄 [CONVERSION] Contenido persistente:', contenidoNotaPersistente);
+            console.log('🔄 [CONVERSION] Contenido final que se pasará:', contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente);
             return null;
           })()}
           <CrearPerfilamientoModal
@@ -2167,16 +2173,18 @@ export default function SesionActivaApoyoPage() {
               setCategoriaSeleccionada(null);
               setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
               contenidoNotaRef.current = ''; // Limpiar ref también
+              setContenidoNotaPersistente(''); // Limpiar variable persistente
             }}
             participanteId={participante.id}
             participanteNombre={participante.nombre}
             categoria={categoriaSeleccionada}
-            descripcionPrecargada={contenidoNotaParaPerfilamiento || contenidoNotaRef.current} // Pasar contenido de la nota
+            descripcionPrecargada={contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente} // Pasar contenido de la nota
             onSuccess={() => {
               setShowCrearPerfilamientoModal(false);
               setCategoriaSeleccionada(null);
               setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
               contenidoNotaRef.current = ''; // Limpiar ref también
+              setContenidoNotaPersistente(''); // Limpiar variable persistente
               showSuccess('Perfilamiento creado exitosamente');
             }}
           />
