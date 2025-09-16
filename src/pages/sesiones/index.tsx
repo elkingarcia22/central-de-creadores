@@ -714,6 +714,9 @@ const SesionesPageContent: React.FC = () => {
         };
         localStorage.setItem('currentSesionApoyo', JSON.stringify(sesionApoyoData));
         console.log('💾 [SESION APOYO] Información guardada en localStorage:', sesionApoyoData);
+        console.log('🔍 [DEBUG] estado_agendamiento guardado:', sesionApoyoData.estado_agendamiento);
+        console.log('🔍 [DEBUG] estado_real guardado:', sesionApoyoData.estado_real);
+        console.log('🔍 [DEBUG] Campos guardados:', Object.keys(sesionApoyoData));
         
         // Abrir Meet en nueva pestaña
         console.log('🌐 [SESION APOYO] Abriendo Meet en nueva pestaña...');

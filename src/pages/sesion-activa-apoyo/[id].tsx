@@ -185,9 +185,11 @@ export default function SesionActivaApoyoPage() {
       if (currentSesionApoyo) {
         try {
           const sesionData = JSON.parse(currentSesionApoyo);
-          console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
-          console.log('🔍 Estado de agendamiento:', sesionData.estado_agendamiento);
-          console.log('🔍 Estado real:', sesionData.estado_real);
+          console.log('🔍 [DEBUG] Datos de sesión de apoyo desde localStorage:', sesionData);
+          console.log('🔍 [DEBUG] Estado de agendamiento:', sesionData.estado_agendamiento);
+          console.log('🔍 [DEBUG] Estado real:', sesionData.estado_real);
+          console.log('🔍 [DEBUG] Tipo de sesión:', sesionData.tipo);
+          console.log('🔍 [DEBUG] Todos los campos disponibles:', Object.keys(sesionData));
           setSesionApoyo(sesionData);
           
           // Cargar información completa del participante desde la API
@@ -808,6 +810,11 @@ export default function SesionActivaApoyoPage() {
 
   // Componente para el contenido del tab de Información de la Sesión de Apoyo
   const SesionApoyoContent: React.FC<{ sesionApoyo: SesionApoyoData; participante: Participante }> = ({ sesionApoyo, participante }) => {
+    // Debug logs para ver qué datos están llegando
+    console.log('🔍 [SesionApoyoContent] sesionApoyo recibido:', sesionApoyo);
+    console.log('🔍 [SesionApoyoContent] estado_agendamiento:', sesionApoyo?.estado_agendamiento);
+    console.log('🔍 [SesionApoyoContent] estado_real:', sesionApoyo?.estado_real);
+    console.log('🔍 [SesionApoyoContent] Campos disponibles en sesionApoyo:', sesionApoyo ? Object.keys(sesionApoyo) : 'sesionApoyo es null/undefined');
     // Función para obtener el nombre del usuario por ID
     const getNombreUsuario = (userId: string) => {
       if (!usuarios || !userId) return 'Usuario no encontrado';
@@ -905,12 +912,26 @@ export default function SesionActivaApoyoPage() {
           <InfoItem 
             label="Estado de Agendamiento"
             value={
-              <Chip 
-                variant={getChipVariant(sesionApoyo.estado_real || sesionApoyo.estado_agendamiento || '') as any}
-                size="sm"
-              >
-                {sesionApoyo.estado_real || sesionApoyo.estado_agendamiento || 'Sin estado'}
-              </Chip>
+              (() => {
+                const estadoReal = sesionApoyo.estado_real;
+                const estadoAgendamiento = sesionApoyo.estado_agendamiento;
+                const estadoFinal = estadoReal || estadoAgendamiento || 'Sin estado';
+                const variantFinal = getChipVariant(estadoFinal);
+                
+                console.log('🔍 [ESTADO DEBUG] estado_real:', estadoReal);
+                console.log('🔍 [ESTADO DEBUG] estado_agendamiento:', estadoAgendamiento);
+                console.log('🔍 [ESTADO DEBUG] estado_final:', estadoFinal);
+                console.log('🔍 [ESTADO DEBUG] variant_final:', variantFinal);
+                
+                return (
+                  <Chip 
+                    variant={variantFinal as any}
+                    size="sm"
+                  >
+                    {estadoFinal}
+                  </Chip>
+                );
+              })()
             }
           />
           {sesionApoyo.meet_link && (
