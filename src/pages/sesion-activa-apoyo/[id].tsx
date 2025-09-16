@@ -763,7 +763,12 @@ export default function SesionActivaApoyoPage() {
 
   const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
     try {
-      const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
+      if (!participante?.id) {
+        console.error('No hay ID de participante para cambiar estado del dolor');
+        return;
+      }
+      
+      const response = await fetch(`/api/participantes/${participante.id}/dolores/${dolor.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...dolor, estado: nuevoEstado }),
@@ -771,7 +776,7 @@ export default function SesionActivaApoyoPage() {
 
       if (response.ok) {
         // Recargar dolores
-        await loadDoloresData(participante?.id);
+        await loadDoloresData(participante.id);
       }
     } catch (error) {
       console.error('Error cambiando estado del dolor:', error);
@@ -779,16 +784,16 @@ export default function SesionActivaApoyoPage() {
   };
 
   const confirmarEliminarDolor = async () => {
-    if (!dolorParaEliminar) return;
+    if (!dolorParaEliminar || !participante?.id) return;
     
     try {
-      const response = await fetch(`/api/participantes/${id}/dolores/${dolorParaEliminar.id}`, {
+      const response = await fetch(`/api/participantes/${participante.id}/dolores/${dolorParaEliminar.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
         showSuccess('Dolor eliminado exitosamente');
-        await loadDoloresData();
+        await loadDoloresData(participante.id);
       } else {
         const errorData = await response.json();
         showError(errorData.error || 'Error al eliminar el dolor');
@@ -1822,7 +1827,12 @@ export default function SesionActivaApoyoPage() {
           }}
           onSave={async (data) => {
             try {
-              const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
+              if (!participante?.id) {
+                showError('No hay ID de participante para actualizar el dolor');
+                return;
+              }
+              
+              const response = await fetch(`/api/participantes/${participante.id}/dolores/${dolorSeleccionado.id}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
@@ -1834,7 +1844,7 @@ export default function SesionActivaApoyoPage() {
                 showSuccess('Dolor actualizado exitosamente');
                 setShowEditarDolorModal(false);
                 setDolorSeleccionado(null);
-                await loadDoloresData();
+                await loadDoloresData(participante.id);
               } else {
                 const errorData = await response.json();
                 showError(errorData.error || 'Error al actualizar el dolor');
