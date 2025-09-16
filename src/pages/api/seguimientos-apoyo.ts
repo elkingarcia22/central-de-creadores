@@ -144,11 +144,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      console.log('✅ Seguimientos de apoyo obtenidos:', data?.length || 0);
+      // Enriquecer los datos con información adicional
+      const seguimientosEnriquecidos = (data || []).map(seguimiento => ({
+        ...seguimiento,
+        investigacion_nombre: 'Sesión de Apoyo' // Siempre mostrar "Sesión de Apoyo" para seguimientos de apoyo
+      }));
+
+      console.log('✅ Seguimientos de apoyo obtenidos:', seguimientosEnriquecidos?.length || 0);
 
       return res.status(200).json({
         success: true,
-        data: data || []
+        data: seguimientosEnriquecidos
       });
 
     } catch (error) {

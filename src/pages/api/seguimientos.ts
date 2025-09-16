@@ -98,18 +98,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Obtener información de la investigación
             if (seguimiento.investigacion_id) {
               try {
-                const { data: investigacion, error: investigacionError } = await supabaseServer
-                  .from('investigaciones')
-                  .select('id, nombre')
-                  .eq('id', seguimiento.investigacion_id)
-                  .single();
+                // Verificar si es un seguimiento de apoyo (investigación temporal o notas con prefijo)
+                const esSeguimientoApoyo = seguimiento.investigacion_id === '00000000-0000-0000-0000-000000000001' || 
+                                         (seguimiento.notas && seguimiento.notas.startsWith('[SEGUIMIENTO DE APOYO]'));
+                
+                if (esSeguimientoApoyo) {
+                  seguimientoEnriquecido.investigacion_nombre = 'Sesión de Apoyo';
+                } else {
+                  const { data: investigacion, error: investigacionError } = await supabaseServer
+                    .from('investigaciones')
+                    .select('id, nombre')
+                    .eq('id', seguimiento.investigacion_id)
+                    .single();
 
-                if (!investigacionError && investigacion) {
-                  seguimientoEnriquecido.investigacion_nombre = investigacion.nombre;
+                  if (!investigacionError && investigacion) {
+                    seguimientoEnriquecido.investigacion_nombre = investigacion.nombre;
+                  }
                 }
               } catch (error) {
                 console.error('❌ Error obteniendo investigación:', error);
               }
+            } else {
+              // Si no hay investigacion_id, es un seguimiento de apoyo
+              seguimientoEnriquecido.investigacion_nombre = 'Sesión de Apoyo';
             }
 
             // Obtener información del responsable
