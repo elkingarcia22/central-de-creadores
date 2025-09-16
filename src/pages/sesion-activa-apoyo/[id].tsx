@@ -363,6 +363,8 @@ export default function SesionActivaApoyoPage() {
     console.log('🔍 InformacionContent - investigaciones recibidas:', investigaciones);
     console.log('🔍 InformacionContent - participacionesPorMes recibidas:', participacionesPorMes);
     console.log('🔍 InformacionContent - participante recibido:', participante);
+    console.log('🔍 InformacionContent - participante comentarios:', participante.comentarios);
+    console.log('🔍 InformacionContent - participante doleres_necesidades:', participante.doleres_necesidades);
     
     const totalInvestigaciones = investigaciones.length;
     const investigacionesFinalizadas = investigaciones.filter(inv => 
