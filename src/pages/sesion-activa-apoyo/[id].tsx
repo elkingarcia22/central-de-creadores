@@ -161,6 +161,13 @@ export default function SesionActivaApoyoPage() {
   // Variable para almacenar el contenido de manera más persistente
   const [contenidoNotaPersistente, setContenidoNotaPersistente] = useState<string>('');
   
+  // Memoizar el contenido final para evitar pérdidas
+  const contenidoFinalParaPerfilamiento = useMemo(() => {
+    const final = contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente;
+    console.log('🔄 [MEMO] Contenido final calculado:', final);
+    return final;
+  }, [contenidoNotaParaPerfilamiento, contenidoNotaPersistente]);
+  
   // Estado para la investigación actual de la sesión
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
   
@@ -2163,7 +2170,7 @@ export default function SesionActivaApoyoPage() {
             console.log('🔄 [CONVERSION] Renderizando modal de crear perfilamiento con contenido:', contenidoNotaParaPerfilamiento);
             console.log('🔄 [CONVERSION] Contenido del ref:', contenidoNotaRef.current);
             console.log('🔄 [CONVERSION] Contenido persistente:', contenidoNotaPersistente);
-            console.log('🔄 [CONVERSION] Contenido final que se pasará:', contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente);
+            console.log('🔄 [CONVERSION] Contenido final memoizado:', contenidoFinalParaPerfilamiento);
             return null;
           })()}
           <CrearPerfilamientoModal
@@ -2178,7 +2185,7 @@ export default function SesionActivaApoyoPage() {
             participanteId={participante.id}
             participanteNombre={participante.nombre}
             categoria={categoriaSeleccionada}
-            descripcionPrecargada={contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente} // Pasar contenido de la nota
+            descripcionPrecargada={contenidoFinalParaPerfilamiento} // Pasar contenido de la nota
             onSuccess={() => {
               setShowCrearPerfilamientoModal(false);
               setCategoriaSeleccionada(null);
