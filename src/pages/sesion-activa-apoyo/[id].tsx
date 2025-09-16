@@ -16,7 +16,7 @@ import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
-import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
+import SeguimientoSideModalApoyo from '../../components/ui/SeguimientoSideModalApoyo';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import type { CategoriaPerfilamiento } from '../../types/perfilamientos';
@@ -916,6 +916,8 @@ export default function SesionActivaApoyoPage() {
   // Funciones para manejar seguimientos
   const handleCrearSeguimiento = async (data: SeguimientoFormData) => {
     try {
+      console.log('🔍 [SesionActivaApoyo] Creando seguimiento de apoyo:', data);
+      
       const response = await fetch('/api/seguimientos', {
         method: 'POST',
         headers: {
@@ -924,13 +926,14 @@ export default function SesionActivaApoyoPage() {
         body: JSON.stringify({
           ...data,
           participante_externo_id: participante?.id,
-          investigacion_id: investigacionActual?.id,
-          responsable_id: investigacionActual?.responsable_id || data.responsable_id
+          // Para sesiones de apoyo, no hay investigación obligatoria
+          investigacion_id: data.investigacion_id || null,
+          responsable_id: data.responsable_id
         }),
       });
 
       if (response.ok) {
-        showSuccess('Seguimiento creado exitosamente');
+        showSuccess('Seguimiento de apoyo creado exitosamente');
         setShowSeguimientoModal(false);
       } else {
         const errorData = await response.json();
@@ -2150,16 +2153,14 @@ export default function SesionActivaApoyoPage() {
         />
       )}
 
-      {/* Modal de crear seguimiento */}
+      {/* Modal de crear seguimiento de apoyo */}
       {showSeguimientoModal && participante && (
-        <SeguimientoSideModal
+        <SeguimientoSideModalApoyo
           isOpen={showSeguimientoModal}
           onClose={() => setShowSeguimientoModal(false)}
           onSave={handleCrearSeguimiento}
-          investigacionId={investigacionActual?.id || ''}
           usuarios={usuarios}
           participanteExternoPrecargado={participante}
-          investigaciones={investigaciones}
           responsablePorDefecto={(() => {
             const responsableId = investigacionActual?.responsable_id;
             console.log('🔍 [SesionActivaApoyo] Pasando responsable al modal:', {
@@ -2169,6 +2170,7 @@ export default function SesionActivaApoyoPage() {
             });
             return responsableId;
           })()}
+          loading={false}
         />
       )}
 
