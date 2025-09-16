@@ -161,6 +161,11 @@ export default function SesionActivaApoyoPage() {
   });
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   
+  // Estados para transcripciones
+  const [transcripcionId, setTranscripcionId] = useState<string | null>(null);
+  const [duracionGrabacion, setDuracionGrabacion] = useState(0);
+  const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
+  
   // Hook para transcripción de audio
   const audioTranscription = useWebSpeechTranscriptionSimple();
 
@@ -531,6 +536,71 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
+  const createTranscripcion = async (data?: any) => {
+    try {
+      const transcripcionData = data || {
+        sesion_apoyo_id: sesionApoyo?.id,
+        meet_link: sesionApoyo?.meet_link || '',
+        estado: 'procesando',
+        fecha_inicio: new Date().toISOString()
+      };
+
+      const response = await fetch('/api/transcripciones', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(transcripcionData),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Transcripción creada:', result);
+          return result;
+        } else {
+          console.error('❌ Error creando transcripción:', response.status);
+          return null;
+        }
+    } catch (error) {
+      console.error('❌ Error en createTranscripcion:', error);
+      return null;
+    }
+  };
+
+  const handleToggleRecording = async () => {
+    try {
+      if (audioTranscription.state.isRecording) {
+        console.log('🛑 Deteniendo grabación...');
+        audioTranscription.stopRecording();
+        setIsRecording(false);
+      } else {
+        console.log('🎤 Iniciando grabación...');
+        setIsRecording(true);
+        
+        // Crear nueva transcripción en la base de datos
+        if (sesionApoyo?.id) {
+          console.log('📝 Creando nueva transcripción en BD...');
+          const newTranscripcion = await createTranscripcion({
+            sesion_apoyo_id: sesionApoyo.id,
+            meet_link: sesionApoyo.meet_link || '',
+            estado: 'grabando'
+          });
+          
+          if (newTranscripcion?.id) {
+            setTranscripcionId(newTranscripcion.id);
+            console.log('✅ Transcripción creada con ID:', newTranscripcion.id);
+          }
+        }
+        
+        // Iniciar grabación con Web Speech API
+        audioTranscription.startRecording();
+      }
+    } catch (error) {
+      console.error('❌ Error en grabación:', error);
+      setIsRecording(false);
+    }
+  };
+
   const formatearFecha = (fecha: string) => {
     try {
       const fechaObj = new Date(fecha);
@@ -698,22 +768,6 @@ export default function SesionActivaApoyoPage() {
     router.push('/sesiones');
   };
 
-  const handleToggleRecording = async () => {
-    try {
-      if (audioTranscription.state.isRecording) {
-        console.log('🛑 Deteniendo grabación...');
-        audioTranscription.stopRecording();
-        setIsRecording(false);
-      } else {
-        console.log('🎤 Iniciando grabación...');
-        setIsRecording(true);
-        audioTranscription.startRecording();
-      }
-    } catch (error) {
-      console.error('❌ Error en grabación:', error);
-      setIsRecording(false);
-    }
-  };
 
   const handleSaveAndViewSession = async () => {
     try {
@@ -1705,6 +1759,21 @@ export default function SesionActivaApoyoPage() {
           participanteId={participante?.id || ''}
           participanteNombre={participante?.nombre || ''}
           usuarios={usuarios}
+        />
+      )
+    },
+    {
+      id: 'notas-automaticas',
+      label: 'Notas Automáticas',
+      content: (
+        <NotasAutomaticasContent
+          reclutamientoId={sesionApoyo?.id}
+          isRecording={audioTranscription.state.isRecording}
+          duracionGrabacion={audioTranscription.state.duration}
+          transcripcionCompleta={audioTranscription.state.transcription}
+          segmentosTranscripcion={audioTranscription.state.segments}
+          isProcessing={audioTranscription.state.isProcessing}
+          error={audioTranscription.state.error}
         />
       )
     }
