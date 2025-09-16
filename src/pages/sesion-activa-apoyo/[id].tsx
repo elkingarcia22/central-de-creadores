@@ -2091,16 +2091,6 @@ export default function SesionActivaApoyoPage() {
         />
       )}
 
-      {/* Modal de crear dolor */}
-      {showCrearDolorModal && participante && (
-        <DolorSideModal
-          isOpen={showCrearDolorModal}
-          onClose={() => setShowCrearDolorModal(false)}
-          participanteId={participante.id}
-          participanteNombre={participante.nombre}
-          onSave={handleCrearDolor}
-        />
-      )}
     </Layout>
   );
 }
