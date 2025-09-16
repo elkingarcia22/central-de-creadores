@@ -1480,35 +1480,6 @@ export default function SesionActivaPage() {
           </InfoContainer>
         )}
 
-        {/* Información de la Empresa (solo para participantes externos) */}
-        {participante.tipo === 'externo' && empresa && (
-          <InfoContainer 
-            title="Información de la Empresa"
-            icon={<BuildingIcon className="w-4 h-4" />}
-          >
-            <InfoItem 
-              label="Nombre de la Empresa"
-              value={empresa.nombre}
-            />
-            <InfoItem 
-              label="Estado"
-              value={
-                <Chip 
-                  variant={getEstadoChipVariant(empresa.estado_nombre || '')}
-                  size="sm"
-                >
-                  {getChipText(empresa.estado_nombre || 'disponible')}
-                    </Chip>
-              }
-            />
-            {empresa.descripcion && (
-              <InfoItem 
-                label="Descripción"
-                value={empresa.descripcion}
-              />
-            )}
-          </InfoContainer>
-                  )}
                   </div>
     );
   };
