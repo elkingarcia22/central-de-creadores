@@ -50,6 +50,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   perfilamientoExistente,
   descripcionPrecargada = ''
 }) => {
+  console.log('🔄 [PERFILAMIENTO] Componente renderizado con descripcionPrecargada:', descripcionPrecargada);
   const { userProfile } = useUser();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<PerfilamientoParticipanteForm>({
@@ -66,8 +67,16 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
 
   // Resetear formulario cuando cambie la categoría o cargar datos existentes para edición
   useEffect(() => {
+    console.log('🔄 [PERFILAMIENTO] useEffect ejecutándose con:', {
+      perfilamientoExistente: !!perfilamientoExistente,
+      categoria,
+      descripcionPrecargada,
+      participanteId
+    });
+    
     if (perfilamientoExistente) {
       // Modo edición: cargar datos existentes
+      console.log('🔄 [PERFILAMIENTO] Modo edición - cargando datos existentes');
       setFormData({
         participante_id: participanteId,
         categoria_perfilamiento: perfilamientoExistente.categoria_perfilamiento,
@@ -79,6 +88,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       });
     } else {
       // Modo creación: resetear formulario
+      console.log('🔄 [PERFILAMIENTO] Modo creación - usando descripción precargada:', descripcionPrecargada);
       setFormData(prev => ({
         ...prev,
         categoria_perfilamiento: categoria,
