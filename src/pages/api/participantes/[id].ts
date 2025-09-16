@@ -52,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fecha_ultima_participacion: participanteExterno.fecha_ultima_participacion,
         total_participaciones: participanteExterno.total_participaciones,
         comentarios: participanteExterno.descripción,
-        doleres_necesidades: '',
+        doleres_necesidades: participanteExterno.descripción || '',
         created_at: participanteExterno.created_at,
         updated_at: participanteExterno.updated_at
       });
@@ -90,8 +90,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_participante: 'Activo',
         fecha_ultima_participacion: participanteInterno.updated_at,
         total_participaciones: 0,
-        comentarios: '',
-        doleres_necesidades: '',
+        comentarios: participanteInterno.descripción || '',
+        doleres_necesidades: participanteInterno.descripción || '',
         created_at: participanteInterno.created_at,
         updated_at: participanteInterno.updated_at
       });
@@ -126,8 +126,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         estado_participante: 'Activo',
         fecha_ultima_participacion: participanteFriendFamily.updated_at,
         total_participaciones: 0,
-        comentarios: '',
-        doleres_necesidades: '',
+        comentarios: participanteFriendFamily.descripción || '',
+        doleres_necesidades: participanteFriendFamily.descripción || '',
         created_at: participanteFriendFamily.created_at,
         updated_at: participanteFriendFamily.updated_at
       });
