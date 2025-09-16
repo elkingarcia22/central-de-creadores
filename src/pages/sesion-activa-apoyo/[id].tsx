@@ -618,6 +618,134 @@ export default function SesionActivaApoyoPage() {
     );
   };
 
+  // Componente para el contenido del tab de Información de la Sesión de Apoyo
+  const SesionApoyoContent: React.FC<{ sesionApoyo: SesionApoyoData; participante: Participante }> = ({ sesionApoyo, participante }) => {
+    // Función para obtener el nombre del usuario por ID
+    const getNombreUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Usuario no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.nombre || usuario.full_name || 'Sin nombre' : 'Usuario no encontrado';
+    };
+
+    // Función para obtener el email del usuario por ID
+    const getEmailUsuario = (userId: string) => {
+      if (!usuarios || !userId) return 'Email no encontrado';
+      const usuario = usuarios.find(u => u.id === userId);
+      return usuario ? usuario.correo || usuario.email || 'Sin email' : 'Email no encontrado';
+    };
+
+    // Función para formatear la duración
+    const formatearDuracion = (duracion: number) => {
+      if (!duracion) return '0 min';
+      if (duracion >= 60) {
+        const horas = Math.floor(duracion / 60);
+        const minutos = duracion % 60;
+        return minutos > 0 ? `${horas}h ${minutos}min` : `${horas}h`;
+      }
+      return `${duracion} min`;
+    };
+
+    if (!sesionApoyo) {
+      return (
+        <div className="space-y-6">
+          <Card padding="lg">
+            <Typography variant="body1" color="secondary">
+              Sin información de sesión de apoyo disponible.
+            </Typography>
+          </Card>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Información de la Sesión de Apoyo */}
+        <InfoContainer 
+          title="Detalles de la Sesión de Apoyo"
+          icon={<FileTextIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="ID de la Sesión"
+            value={sesionApoyo.id}
+          />
+          <InfoItem 
+            label="Título"
+            value={sesionApoyo.titulo}
+          />
+          <InfoItem 
+            label="Moderador"
+            value={
+              <div className="flex items-center gap-2">
+                <span>{getNombreUsuario(sesionApoyo.moderador_id)}</span>
+                <Chip variant="secondary" size="sm">
+                  {getEmailUsuario(sesionApoyo.moderador_id)}
+                </Chip>
+              </div>
+            }
+          />
+          <InfoItem 
+            label="Participante"
+            value={participante.nombre}
+          />
+          <InfoItem 
+            label="Email del Participante"
+            value={participante.email || 'Sin email'}
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo as any)}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+              </Chip>
+            }
+          />
+          <InfoItem 
+            label="Fecha de Sesión"
+            value={sesionApoyo.fecha ? 
+              formatearFecha(sesionApoyo.fecha) : 
+              'No programada'
+            }
+          />
+          <InfoItem 
+            label="Objetivo de la Sesión"
+            value={sesionApoyo.objetivo_sesion || 'Sin objetivo definido'}
+          />
+          {sesionApoyo.meet_link && (
+            <InfoItem 
+              label="Enlace de Google Meet"
+              value={
+                <div className="flex items-center gap-2">
+                  <a 
+                    href={sesionApoyo.meet_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                  >
+                    {sesionApoyo.meet_link}
+                  </a>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigator.clipboard.writeText(sesionApoyo.meet_link)}
+                    className="p-1 h-auto"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
+                </div>
+              }
+            />
+          )}
+        </InfoContainer>
+      </div>
+    );
+  };
+
   const tabs = [
     {
       id: 'notas-manuales',
@@ -653,6 +781,33 @@ export default function SesionActivaApoyoPage() {
             empresa={empresa} 
             investigaciones={investigaciones}
             participacionesPorMes={participacionesPorMes}
+          />
+        );
+      })()
+    },
+    {
+      id: 'sesion',
+      label: 'Información de la Sesión',
+      content: (() => {
+        console.log('🔍 Renderizando tab de sesión - sesionApoyo:', sesionApoyo);
+        console.log('🔍 Renderizando tab de sesión - participante:', participante);
+        
+        if (!sesionApoyo || !participante) {
+          return (
+            <div className="space-y-6">
+              <Card padding="lg">
+                <Typography variant="body1" color="secondary">
+                  Cargando información de la sesión...
+                </Typography>
+              </Card>
+            </div>
+          );
+        }
+        
+        return (
+          <SesionApoyoContent 
+            sesionApoyo={sesionApoyo} 
+            participante={participante} 
           />
         );
       })()
