@@ -1200,7 +1200,7 @@ export default function SesionActivaApoyoPage() {
                     label="Relación" 
                     value={
                       <Chip 
-                        variant={getChipVariant(empresaData.relacion_nombre) as any}
+                        variant={empresaData.relacion_nombre?.toLowerCase() === 'buena' ? 'terminada' : getChipVariant(empresaData.relacion_nombre) as any}
                         size="sm"
                       >
                         {empresaData.relacion_nombre}
