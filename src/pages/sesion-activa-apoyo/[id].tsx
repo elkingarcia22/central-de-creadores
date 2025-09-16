@@ -860,7 +860,7 @@ export default function SesionActivaApoyoPage() {
             value={
               <div className="flex items-center gap-2">
                 <span>{getNombreUsuario(sesionApoyo.moderador_id)}</span>
-                <Chip variant="accent-violet" size="sm">
+                <Chip variant="secondary" size="sm">
                   {getEmailUsuario(sesionApoyo.moderador_id)}
                 </Chip>
               </div>
@@ -946,7 +946,7 @@ export default function SesionActivaApoyoPage() {
                       {getEmailUsuario(observadorId)}
                     </Typography>
                   </div>
-                  <Chip variant="accent-violet" size="sm">
+                  <Chip variant="secondary" size="sm">
                     Observador
                   </Chip>
                 </div>
