@@ -351,7 +351,7 @@ const ConvertirSeguimientoPage: NextPage = () => {
                 <DatePicker
                   label="Fecha de inicio"
                   value={formData.fecha_inicio}
-                  onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
+                  onChange={(date) => handleInputChange('fecha_inicio', date ? date.toISOString().split('T')[0] : '')}
                   required
                   fullWidth
                 />
@@ -359,7 +359,7 @@ const ConvertirSeguimientoPage: NextPage = () => {
                 <DatePicker
                   label="Fecha de fin"
                   value={formData.fecha_fin}
-                  onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
+                  onChange={(date) => handleInputChange('fecha_fin', date ? date.toISOString().split('T')[0] : '')}
                   required
                   fullWidth
                 />

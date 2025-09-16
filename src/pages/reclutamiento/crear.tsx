@@ -563,9 +563,9 @@ const CrearReclutamientoPage: NextPage<CrearReclutamientoPageProps> = () => {
                   </Typography>
                   <DatePicker
                     value={formData.fechaSesion}
-                    onChange={(e) => setFormData(prev => ({ ...prev, fechaSesion: e.target.value }))}
+                    onChange={date => setFormData(prev => ({ ...prev, fechaSesion: date ? date.toISOString().split('T')[0] : '' }))}
                     placeholder="Seleccionar fecha"
-                    min={getMinDate()}
+                    minDate={new Date(getMinDate())}
                     disabled={loading}
                     required
                     fullWidth

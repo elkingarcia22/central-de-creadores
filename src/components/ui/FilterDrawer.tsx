@@ -719,7 +719,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha de inicio..."
                     value={(filters as FilterValuesInvestigacion).fecha_inicio_desde || ''}
-                    onChange={(e) => handleFilterChange('fecha_inicio_desde', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_inicio_desde', date ? date.toISOString().split('T')[0] : '')}
                     fullWidth
                   />
                 </div>
@@ -730,7 +730,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha de fin..."
                     value={(filters as FilterValuesInvestigacion).fecha_fin_desde || ''}
-                    onChange={(e) => handleFilterChange('fecha_fin_desde', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_fin_desde', date ? date.toISOString().split('T')[0] : '')}
                     fullWidth
                   />
                 </div>
@@ -878,12 +878,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     <DatePicker
                       placeholder="Desde..."
                       value={(filters as FilterValuesParticipantes).fecha_ultima_participacion_desde || ''}
-                      onChange={(e) => handleFilterChange('fecha_ultima_participacion_desde', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_ultima_participacion_desde', date ? date.toISOString().split('T')[0] : '')}
                     />
                     <DatePicker
                       placeholder="Hasta..."
                       value={(filters as FilterValuesParticipantes).fecha_ultima_participacion_hasta || ''}
-                      onChange={(e) => handleFilterChange('fecha_ultima_participacion_hasta', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_ultima_participacion_hasta', date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
                 </div>
@@ -1080,12 +1080,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     <DatePicker
                       placeholder="Desde..."
                       value={(filters as FilterValuesDolores).fecha_creacion_desde || ''}
-                      onChange={(e) => handleFilterChange('fecha_creacion_desde', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_creacion_desde', date ? date.toISOString().split('T')[0] : '')}
                     />
                     <DatePicker
                       placeholder="Hasta..."
                       value={(filters as FilterValuesDolores).fecha_creacion_hasta || ''}
-                      onChange={(e) => handleFilterChange('fecha_creacion_hasta', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_creacion_hasta', date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
                 </div>
@@ -1138,7 +1138,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha..."
                     value={(filters as FilterValuesPerfilamiento).fecha_desde || ''}
-                    onChange={(e) => handleFilterChange('fecha_desde', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_desde', date ? date.toISOString().split('T')[0] : '')}
                   />
                 </div>
 
@@ -1148,7 +1148,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha..."
                     value={(filters as FilterValuesPerfilamiento).fecha_hasta || ''}
-                    onChange={(e) => handleFilterChange('fecha_hasta', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_hasta', date ? date.toISOString().split('T')[0] : '')}
                   />
                 </div>
 
@@ -1219,12 +1219,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     <DatePicker
                       placeholder="Desde..."
                       value={(filters as FilterValuesParticipaciones).fecha_participacion_desde || ''}
-                      onChange={(e) => handleFilterChange('fecha_participacion_desde', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_participacion_desde', date ? date.toISOString().split('T')[0] : '')}
                     />
                     <DatePicker
                       placeholder="Hasta..."
                       value={(filters as FilterValuesParticipaciones).fecha_participacion_hasta || ''}
-                      onChange={(e) => handleFilterChange('fecha_participacion_hasta', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_participacion_hasta', date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
                 </div>
@@ -1302,12 +1302,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                     <DatePicker
                       placeholder="Desde..."
                       value={(filters as FilterValuesSesiones).fecha_sesion_desde || ''}
-                      onChange={(e) => handleFilterChange('fecha_sesion_desde', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_sesion_desde', date ? date.toISOString().split('T')[0] : '')}
                     />
                     <DatePicker
                       placeholder="Hasta..."
                       value={(filters as FilterValuesSesiones).fecha_sesion_hasta || ''}
-                      onChange={(e) => handleFilterChange('fecha_sesion_hasta', e.target.value)}
+                      onChange={(date) => handleFilterChange('fecha_sesion_hasta', date ? date.toISOString().split('T')[0] : '')}
                     />
                   </div>
                 </div>
@@ -1373,7 +1373,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha..."
                     value={(filters as FilterValuesHistorialEmpresa).fecha_desde || ''}
-                    onChange={(e) => handleFilterChange('fecha_desde', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_desde', date ? date.toISOString().split('T')[0] : '')}
                   />
                 </div>
 
@@ -1383,7 +1383,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   <DatePicker
                     placeholder="Seleccionar fecha..."
                     value={(filters as FilterValuesHistorialEmpresa).fecha_hasta || ''}
-                    onChange={(e) => handleFilterChange('fecha_hasta', e.target.value)}
+                    onChange={(date) => handleFilterChange('fecha_hasta', date ? date.toISOString().split('T')[0] : '')}
                   />
                 </div>
               </>

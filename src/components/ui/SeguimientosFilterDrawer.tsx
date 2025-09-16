@@ -182,13 +182,13 @@ const SeguimientosFilterDrawer: React.FC<SeguimientosFilterDrawerProps> = ({
               <DatePicker
                 placeholder="Fecha desde..."
                 value={filters.fecha_seguimiento_desde || ''}
-                onChange={(e) => handleFilterChange('fecha_seguimiento_desde', e.target.value)}
+                onChange={(date) => handleFilterChange('fecha_seguimiento_desde', date ? date.toISOString().split('T')[0] : '')}
                 fullWidth
               />
               <DatePicker
                 placeholder="Fecha hasta..."
                 value={filters.fecha_seguimiento_hasta || ''}
-                onChange={(e) => handleFilterChange('fecha_seguimiento_hasta', e.target.value)}
+                onChange={(date) => handleFilterChange('fecha_seguimiento_hasta', date ? date.toISOString().split('T')[0] : '')}
                 fullWidth
               />
             </div>

@@ -347,7 +347,7 @@ const SeguimientoSideModal: React.FC<SeguimientoSideModalProps> = ({
               <FilterLabel>Fecha de Seguimiento *</FilterLabel>
               <DatePicker
                 value={formData.fecha_seguimiento}
-                onChange={(e) => handleInputChange('fecha_seguimiento', e.target.value)}
+                onChange={(date) => handleInputChange('fecha_seguimiento', date ? date.toISOString().split('T')[0] : '')}
                 disabled={saving}
                 required
                 fullWidth

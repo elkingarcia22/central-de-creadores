@@ -616,9 +616,9 @@ export default function EditarReclutamientoModal({
               <FilterLabel>Fecha de la Sesión *</FilterLabel>
               <DatePicker
                 value={fechaSesion}
-                onChange={e => setFechaSesion(e.target.value)}
+                onChange={date => setFechaSesion(date ? date.toISOString().split('T')[0] : '')}
                 placeholder="Seleccionar fecha"
-                min={getMinDate()}
+                minDate={new Date(getMinDate())}
                 disabled={loading}
                 required
                 fullWidth
