@@ -205,12 +205,11 @@ const SeguimientoSideModalApoyo: React.FC<SeguimientoSideModalApoyoProps> = ({
               <FilterLabel>Responsable *</FilterLabel>
               <UserSelectorWithAvatar
                 users={usuarios}
-                selectedUserId={formData.responsable_id}
-                onUserSelect={(userId) => handleInputChange('responsable_id', userId)}
+                value={formData.responsable_id}
+                onChange={(userId) => handleInputChange('responsable_id', userId)}
                 placeholder="Seleccionar responsable"
                 disabled={saving}
                 required
-                fullWidth
               />
             </div>
 
