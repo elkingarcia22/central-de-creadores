@@ -16,8 +16,10 @@ import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
+import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
+import { supabase } from '../../api/supabase';
 
 interface SesionApoyoData {
   id: string;
@@ -114,6 +116,14 @@ interface Usuario {
   activo: boolean;
 }
 
+interface SeguimientoFormData {
+  investigacion_id: string;
+  fecha_seguimiento: string;
+  notas: string;
+  responsable_id: string;
+  estado: string;
+}
+
 export default function SesionActivaApoyoPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -131,6 +141,9 @@ export default function SesionActivaApoyoPage() {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  
+  // Estado para la investigación actual de la sesión
+  const [investigacionActual, setInvestigacionActual] = useState<any>(null);
   
   // Estados para tabs
   const [participante, setParticipante] = useState<Participante | null>(null);
@@ -297,6 +310,9 @@ export default function SesionActivaApoyoPage() {
           
           // Cargar usuarios para el tab de perfilamiento
           await loadUsuariosData();
+          
+          // Cargar investigación actual para seguimientos
+          await loadInvestigacionActual();
           
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
@@ -533,6 +549,26 @@ export default function SesionActivaApoyoPage() {
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+    }
+  };
+
+  const loadInvestigacionActual = async () => {
+    try {
+      console.log('🔍 Cargando investigación actual...');
+      const response = await fetch(`/api/participantes/${participante?.id}/reclutamiento-actual`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Investigación actual cargada:', data);
+        console.log('🔍 Investigación actual - responsable_id:', data.responsable_id);
+        console.log('🔍 Investigación actual - nombre:', data.nombre);
+        setInvestigacionActual(data);
+      } else {
+        console.error('🔍 Error cargando investigación actual:', response.status);
+        const errorText = await response.text();
+        console.error('🔍 Error response:', errorText);
+      }
+    } catch (error) {
+      console.error('Error cargando investigación actual:', error);
     }
   };
 
@@ -811,33 +847,6 @@ export default function SesionActivaApoyoPage() {
     setShowDeleteConfirmModal(true);
   };
 
-  const handleCrearDolor = async (data: any) => {
-    try {
-      const response = await fetch('/api/participantes/dolores', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          participante_id: participante?.id
-        }),
-      });
-
-      if (response.ok) {
-        showSuccess('Dolor creado exitosamente');
-        setShowCrearDolorModal(false);
-        // Recargar dolores
-        await loadDoloresData(participante?.id);
-      } else {
-        const errorData = await response.json();
-        showError(errorData.error || 'Error al crear el dolor');
-      }
-    } catch (error) {
-      console.error('Error al crear dolor:', error);
-      showError('Error al crear el dolor');
-    }
-  };
 
   const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
     try {
@@ -893,6 +902,69 @@ export default function SesionActivaApoyoPage() {
     if (filters.fecha_creacion_desde) count++;
     if (filters.fecha_creacion_hasta) count++;
     return count;
+  };
+
+  // Funciones para manejar seguimientos
+  const handleCrearSeguimiento = async (data: SeguimientoFormData) => {
+    try {
+      const response = await fetch('/api/seguimientos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_externo_id: participante?.id,
+          investigacion_id: investigacionActual?.id,
+          responsable_id: investigacionActual?.responsable_id || data.responsable_id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Seguimiento creado exitosamente');
+        setShowSeguimientoModal(false);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || 'Error al crear el seguimiento');
+      }
+    } catch (error) {
+      console.error('Error al crear seguimiento:', error);
+      showError('Error al crear el seguimiento');
+    }
+  };
+
+  const handleCrearDolor = async (data: any) => {
+    try {
+      console.log('🚀 [SesionActivaApoyo] handleCrearDolor INICIANDO');
+      
+      // Obtener el usuario actual
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log('🔍 [SesionActivaApoyo] Usuario obtenido:', user?.id);
+      
+      const response = await fetch(`/api/participantes/${participante?.id}/dolores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id || '',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      console.log('🔍 [SesionActivaApoyo] Response status:', response.status);
+
+      if (response.ok) {
+        showSuccess('Dolor creado exitosamente');
+        setShowCrearDolorModal(false);
+        // Recargar dolores
+        await loadDoloresData(participante?.id);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al crear el dolor');
+      }
+    } catch (error) {
+      console.error('Error al crear dolor:', error);
+      showError('Error al crear el dolor');
+    }
   };
 
   if (loading) {
@@ -1994,6 +2066,39 @@ export default function SesionActivaApoyoPage() {
           message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar.titulo}"? Esta acción no se puede deshacer.`}
           confirmText="Eliminar"
           cancelText="Cancelar"
+        />
+      )}
+
+      {/* Modal de crear seguimiento */}
+      {showSeguimientoModal && participante && (
+        <SeguimientoSideModal
+          isOpen={showSeguimientoModal}
+          onClose={() => setShowSeguimientoModal(false)}
+          onSave={handleCrearSeguimiento}
+          investigacionId={investigacionActual?.id || ''}
+          usuarios={usuarios}
+          participanteExternoPrecargado={participante}
+          investigaciones={investigaciones}
+          responsablePorDefecto={(() => {
+            const responsableId = investigacionActual?.responsable_id;
+            console.log('🔍 [SesionActivaApoyo] Pasando responsable al modal:', {
+              investigacionActual: investigacionActual,
+              responsableId: responsableId,
+              tipo: typeof responsableId
+            });
+            return responsableId;
+          })()}
+        />
+      )}
+
+      {/* Modal de crear dolor */}
+      {showCrearDolorModal && participante && (
+        <DolorSideModal
+          isOpen={showCrearDolorModal}
+          onClose={() => setShowCrearDolorModal(false)}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          onSave={handleCrearDolor}
         />
       )}
     </Layout>
