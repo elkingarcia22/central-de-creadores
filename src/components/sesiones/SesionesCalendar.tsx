@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Card, Typography, Badge, Tooltip, EditarReclutamientoModal } from '../ui';
+import EditarSesionApoyoModal from '../ui/EditarSesionApoyoModal';
 import GoogleCalendar from '../ui/GoogleCalendar';
 import { Sesion, SesionEvent } from '../../types/sesiones';
 import { useSesionesCalendar } from '../../hooks/useSesionesCalendar';
@@ -582,10 +583,27 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         />
       )}
 
-      {/* Modal de edición de reclutamiento */}
+      {/* Modal de edición - según tipo de sesión */}
       {sesionToEdit && (() => {
         console.log('🚀 [AGENDA EDIT] Renderizando modal de edición');
         console.log('🚀 [AGENDA EDIT] sesionToEdit en render:', JSON.stringify(sesionToEdit, null, 2));
+        console.log('🚀 [AGENDA EDIT] Tipo de sesión:', sesionToEdit.tipo);
+        
+        // Si es una sesión de apoyo, usar el modal específico
+        if (sesionToEdit.tipo === 'apoyo') {
+          console.log('🚀 [AGENDA EDIT] Usando EditarSesionApoyoModal');
+          return (
+            <EditarSesionApoyoModal
+              isOpen={showEditModal}
+              onClose={handleCloseEditModal}
+              onSuccess={handleEditSuccess}
+              sesion={sesionToEdit}
+            />
+          );
+        }
+        
+        // Si es una sesión de reclutamiento, usar el modal de reclutamiento
+        console.log('🚀 [AGENDA EDIT] Usando EditarReclutamientoModal');
         
         // Mapear el participante según su tipo
         const participanteMapping = (() => {
