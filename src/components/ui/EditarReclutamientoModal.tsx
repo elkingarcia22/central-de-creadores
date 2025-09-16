@@ -573,7 +573,10 @@ export default function EditarReclutamientoModal({
                     label="Observadores"
                     placeholder="Seleccionar observadores"
                     value={usuariosSeleccionadosLibreto}
-                    onChange={setUsuariosSeleccionadosLibreto}
+                    onChange={(selectedUsers) => {
+                      setUsuariosSeleccionadosLibreto(selectedUsers);
+                      setObservadores(selectedUsers);
+                    }}
                     users={responsables.map(r => ({
                       id: r.id,
                       full_name: r.full_name || 'Sin nombre',
@@ -590,26 +593,6 @@ export default function EditarReclutamientoModal({
               )}
             </div>
 
-            {/* Observadores */}
-            <div className="space-y-2">
-              <FilterLabel>Observadores</FilterLabel>
-              <MultiUserSelector
-                users={responsables.map(r => ({
-                  id: r.id,
-                  full_name: r.full_name || 'Sin nombre',
-                  email: r.email || undefined,
-                  avatar_url: r.avatar_url
-                }))}
-                value={observadores}
-                onChange={setObservadores}
-                placeholder="Seleccionar observadores"
-                loading={loading}
-                disabled={loading}
-              />
-              <Typography variant="caption" color="secondary">
-                Usuarios del equipo que observarán la sesión de reclutamiento (se cargan automáticamente del libreto).
-              </Typography>
-            </div>
 
             {/* Fecha de sesión */}
             <div>
