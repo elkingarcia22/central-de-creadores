@@ -3,9 +3,22 @@ import { supabase } from '../api/supabase';
 
 interface Reclutamiento {
   id: string;
-  nombre: string;
-  usuarios_libreto: string[];
   investigacion_id: string;
+  participantes_id: string | null;
+  fecha_asignado: string;
+  fecha_sesion: string | null;
+  reclutador_id: string | null;
+  creado_por: string | null;
+  estado_agendamiento: string | null;
+  updated_at: string;
+  duracion_sesion: number;
+  participantes_internos_id: string | null;
+  tipo_participante: string | null;
+  participantes_friend_family_id: string | null;
+  hora_sesion: string | null;
+  responsable_agendamiento: string | null;
+  meet_link: string | null;
+  usuarios_libreto: string[] | null;
 }
 
 interface Sesion {
@@ -51,9 +64,11 @@ export default function TestObservadoresCompleto() {
         .from('reclutamientos')
         .select(`
           id,
-          nombre,
+          investigacion_id,
           usuarios_libreto,
-          investigacion_id
+          fecha_sesion,
+          reclutador_id,
+          tipo_participante
         `);
 
       if (errorReclutamientos) {
@@ -75,8 +90,9 @@ export default function TestObservadoresCompleto() {
           reclutamiento_id,
           reclutamientos!sesiones_reclutamiento_reclutamiento_id_fkey(
             id,
-            nombre,
-            usuarios_libreto
+            usuarios_libreto,
+            fecha_sesion,
+            reclutador_id
           )
         `);
 
@@ -124,7 +140,7 @@ export default function TestObservadoresCompleto() {
     if (reclutamientosConObservadores.length > 0) {
       addLog('📋 Detalles de reclutamientos con observadores:');
       reclutamientosConObservadores.forEach(r => {
-        addLog(`  - ${r.nombre} (ID: ${r.id}): ${r.usuarios_libreto.length} observadores`);
+        addLog(`  - Reclutamiento ${r.id}: ${r.usuarios_libreto.length} observadores`);
       });
     }
 
@@ -239,7 +255,7 @@ export default function TestObservadoresCompleto() {
             .filter(r => r.usuarios_libreto && r.usuarios_libreto.length > 0)
             .map(reclutamiento => (
               <div key={reclutamiento.id} className="border p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">{reclutamiento.nombre}</h4>
+                <h4 className="font-semibold mb-2">Reclutamiento {reclutamiento.id}</h4>
                 <p className="text-sm text-gray-600 mb-2">ID: {reclutamiento.id}</p>
                 <p className="text-sm text-gray-600 mb-2">
                   Observadores ({reclutamiento.usuarios_libreto.length}):
