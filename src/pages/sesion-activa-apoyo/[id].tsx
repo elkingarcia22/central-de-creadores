@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip, EmptyState, SideModal, Input, Textarea, Select, ConfirmModal } from '../../components/ui';
 import { useToast } from '../../contexts/ToastContext';
@@ -154,6 +154,9 @@ export default function SesionActivaApoyoPage() {
   // Estados para conversión de notas
   const [contenidoNotaParaDolor, setContenidoNotaParaDolor] = useState<string>('');
   const [contenidoNotaParaPerfilamiento, setContenidoNotaParaPerfilamiento] = useState<string>('');
+  
+  // Ref para mantener el contenido de manera persistente
+  const contenidoNotaRef = useRef<string>('');
   
   // Estado para la investigación actual de la sesión
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
@@ -1509,6 +1512,7 @@ export default function SesionActivaApoyoPage() {
           setShowPerfilamientoModal(true);
           // Guardar el contenido para pre-llenar el modal
           setContenidoNotaParaPerfilamiento(contenido);
+          contenidoNotaRef.current = contenido; // También guardar en ref
           console.log('🔄 [CONVERSION] Contenido guardado para perfilamiento:', contenido);
         }}
       />
@@ -2132,6 +2136,7 @@ export default function SesionActivaApoyoPage() {
           onClose={() => {
             setShowPerfilamientoModal(false);
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            contenidoNotaRef.current = ''; // Limpiar ref también
           }}
           onCategoriaSeleccionada={(categoria) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
@@ -2151,6 +2156,8 @@ export default function SesionActivaApoyoPage() {
         <>
           {(() => {
             console.log('🔄 [CONVERSION] Renderizando modal de crear perfilamiento con contenido:', contenidoNotaParaPerfilamiento);
+            console.log('🔄 [CONVERSION] Contenido del ref:', contenidoNotaRef.current);
+            console.log('🔄 [CONVERSION] Contenido final que se pasará:', contenidoNotaParaPerfilamiento || contenidoNotaRef.current);
             return null;
           })()}
           <CrearPerfilamientoModal
@@ -2159,15 +2166,17 @@ export default function SesionActivaApoyoPage() {
               setShowCrearPerfilamientoModal(false);
               setCategoriaSeleccionada(null);
               setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+              contenidoNotaRef.current = ''; // Limpiar ref también
             }}
             participanteId={participante.id}
             participanteNombre={participante.nombre}
             categoria={categoriaSeleccionada}
-            descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
+            descripcionPrecargada={contenidoNotaParaPerfilamiento || contenidoNotaRef.current} // Pasar contenido de la nota
             onSuccess={() => {
               setShowCrearPerfilamientoModal(false);
               setCategoriaSeleccionada(null);
               setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+              contenidoNotaRef.current = ''; // Limpiar ref también
               showSuccess('Perfilamiento creado exitosamente');
             }}
           />
