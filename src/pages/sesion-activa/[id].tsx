@@ -1647,6 +1647,35 @@ export default function SesionActivaPage() {
             }
           />
         </InfoContainer>
+
+        {/* Observadores */}
+        {reclutamiento.observadores && reclutamiento.observadores.length > 0 && (
+          <InfoContainer 
+            title="Observadores"
+            icon={<UsersIcon className="w-4 h-4" />}
+          >
+            <div className="space-y-3">
+              {reclutamiento.observadores.map((observadorId: string, index: number) => (
+                <div key={observadorId} className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  </div>
+                  <div className="flex-1">
+                    <Typography variant="body1" className="font-medium">
+                      {getNombreUsuario(observadorId)}
+                    </Typography>
+                    <Typography variant="body2" color="secondary">
+                      {getEmailUsuario(observadorId)}
+                    </Typography>
+                  </div>
+                  <Chip variant="secondary" size="sm">
+                    Observador
+                  </Chip>
+                </div>
+              ))}
+            </div>
+          </InfoContainer>
+        )}
         </div>
     );
   };
