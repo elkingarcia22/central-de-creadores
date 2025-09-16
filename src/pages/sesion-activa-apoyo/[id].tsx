@@ -151,6 +151,10 @@ export default function SesionActivaApoyoPage() {
   const [showCrearPerfilamientoModal, setShowCrearPerfilamientoModal] = useState(false);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
   
+  // Estados para conversión de notas
+  const [contenidoNotaParaDolor, setContenidoNotaParaDolor] = useState<string>('');
+  const [contenidoNotaParaPerfilamiento, setContenidoNotaParaPerfilamiento] = useState<string>('');
+  
   // Estado para la investigación actual de la sesión
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
   
@@ -1493,6 +1497,18 @@ export default function SesionActivaApoyoPage() {
       content: <NotasManualesContent 
         participanteId={participante?.id || ''}
         sesionId={sesionApoyo?.id || ''}
+        onConvertirADolor={(contenido) => {
+          // Pre-llenar el modal de dolor con el contenido de la nota
+          setShowCrearDolorModal(true);
+          // Guardar el contenido para pre-llenar el modal
+          setContenidoNotaParaDolor(contenido);
+        }}
+        onConvertirAPerfilamiento={(contenido) => {
+          // Pre-llenar el modal de perfilamiento con el contenido de la nota
+          setShowPerfilamientoModal(true);
+          // Guardar el contenido para pre-llenar el modal
+          setContenidoNotaParaPerfilamiento(contenido);
+        }}
       />
     },
     {
@@ -2096,10 +2112,14 @@ export default function SesionActivaApoyoPage() {
       {showCrearDolorModal && participante && (
         <DolorSideModalApoyo
           isOpen={showCrearDolorModal}
-          onClose={() => setShowCrearDolorModal(false)}
+          onClose={() => {
+            setShowCrearDolorModal(false);
+            setContenidoNotaParaDolor(''); // Limpiar contenido al cerrar
+          }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           onSave={handleCrearDolor}
+          descripcionPrecargada={contenidoNotaParaDolor} // Pasar contenido de la nota
         />
       )}
 
@@ -2107,7 +2127,10 @@ export default function SesionActivaApoyoPage() {
       {showPerfilamientoModal && participante && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
-          onClose={() => setShowPerfilamientoModal(false)}
+          onClose={() => {
+            setShowPerfilamientoModal(false);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+          }}
           onCategoriaSeleccionada={(categoria) => {
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
@@ -2125,13 +2148,16 @@ export default function SesionActivaApoyoPage() {
           onClose={() => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
+          descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
           onSuccess={() => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
             showSuccess('Perfilamiento creado exitosamente');
           }}
         />

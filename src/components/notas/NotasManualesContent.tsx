@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/ui';
 import Typography from '../../components/ui/Typography';
-import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../../components/icons';
+import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon, WarningIcon, UserIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
 
 interface Nota {
@@ -14,11 +14,15 @@ interface Nota {
 interface NotasManualesContentProps {
   participanteId: string;
   sesionId: string;
+  onConvertirADolor?: (contenido: string) => void;
+  onConvertirAPerfilamiento?: (contenido: string) => void;
 }
 
 export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   participanteId,
-  sesionId
+  sesionId,
+  onConvertirADolor,
+  onConvertirAPerfilamiento
 }) => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
@@ -226,7 +230,6 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               ref={inputRef}
               value={nuevaNota}
               onChange={(e) => setNuevaNota(e.target.value)}
-              onKeyPress={handleKeyPress}
               placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
               className="border-0 focus:ring-0 text-base placeholder-gray-400 dark:placeholder-gray-500"
               disabled={cargando}
@@ -267,9 +270,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                   <Input
                     value={notaEditando}
                     onChange={(e) => setNotaEditando(e.target.value)}
-                    onKeyPress={handleEditKeyPress}
                     className="text-base"
-                    autoFocus
                   />
                   <div className="flex justify-end space-x-2">
                     <Button
@@ -296,6 +297,27 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       {nota.contenido}
                     </Typography>
                     <div className="flex items-center space-x-2 ml-4">
+                      {/* Botones de conversión */}
+                      {onConvertirADolor && (
+                        <Button
+                          onClick={() => onConvertirADolor(nota.contenido)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                        >
+                          <WarningIcon className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {onConvertirAPerfilamiento && (
+                        <Button
+                          onClick={() => onConvertirAPerfilamiento(nota.contenido)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                        >
+                          <UserIcon className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         onClick={() => iniciarEdicion(nota)}
                         size="sm"

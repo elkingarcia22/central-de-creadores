@@ -13,6 +13,7 @@ interface DolorSideModalApoyoProps {
   loading?: boolean;
   readOnly?: boolean; // Nueva prop para modo solo lectura
   onEdit?: () => void; // Nueva prop para cambiar a modo edición
+  descripcionPrecargada?: string; // Nueva prop para precargar descripción desde nota
 }
 
 export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
@@ -24,7 +25,8 @@ export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
   onSave,
   loading = false,
   readOnly = false,
-  onEdit
+  onEdit,
+  descripcionPrecargada = ''
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaDolor[]>([]);
@@ -64,13 +66,13 @@ export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
       setFormData({
         categoria_id: '',
         titulo: '',
-        descripcion: '',
+        descripcion: descripcionPrecargada || '', // Usar descripción precargada si existe
         severidad: SeveridadDolor.MEDIA,
         investigacion_relacionada_id: null // No hay investigación en sesiones de apoyo
       });
     }
     setErrors({});
-  }, [dolor, isOpen]);
+  }, [dolor, isOpen, descripcionPrecargada]);
 
   const cargarCategorias = async () => {
     try {

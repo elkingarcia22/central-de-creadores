@@ -36,6 +36,7 @@ interface CrearPerfilamientoModalProps {
   onSuccess: () => void;
   onBack?: () => void; // Nueva prop para volver atrás
   perfilamientoExistente?: PerfilamientoParticipanteForm; // Para edición
+  descripcionPrecargada?: string; // Nueva prop para precargar observaciones desde nota
 }
 
 export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = ({
@@ -46,7 +47,8 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   categoria,
   onSuccess,
   onBack,
-  perfilamientoExistente
+  perfilamientoExistente,
+  descripcionPrecargada = ''
 }) => {
   const { userProfile } = useUser();
   const [loading, setLoading] = useState(false);
@@ -81,13 +83,13 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
         ...prev,
         categoria_perfilamiento: categoria,
         valor_principal: '',
-        observaciones: '',
+        observaciones: descripcionPrecargada || '', // Usar descripción precargada si existe
         contexto_interaccion: '',
         etiquetas: [],
         confianza_observacion: 3
       }));
     }
-  }, [categoria, perfilamientoExistente, participanteId]);
+  }, [categoria, perfilamientoExistente, participanteId, descripcionPrecargada]);
 
   const handleInputChange = (field: keyof PerfilamientoParticipanteForm, value: any) => {
     setFormData(prev => ({
