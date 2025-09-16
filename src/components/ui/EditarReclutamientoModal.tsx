@@ -570,8 +570,8 @@ export default function EditarReclutamientoModal({
               {usuariosDelLibreto.length > 0 && (
                 <div className="mt-2">
                   <MultiUserSelector
-                    label="Usuarios del equipo configurados en el libreto"
-                    placeholder="Seleccionar usuarios del equipo"
+                    label="Observadores"
+                    placeholder="Seleccionar observadores"
                     value={usuariosSeleccionadosLibreto}
                     onChange={setUsuariosSeleccionadosLibreto}
                     users={responsables.map(r => ({
@@ -584,7 +584,7 @@ export default function EditarReclutamientoModal({
                     disabled={loading}
                   />
                   <Typography variant="caption" color="secondary" className="mt-2 block">
-                    Estos usuarios aparecen primero en la lista y son los recomendados para esta sesión.
+                    Observadores que participarán en la sesión de reclutamiento (se cargan automáticamente del libreto).
                   </Typography>
                 </div>
               )}

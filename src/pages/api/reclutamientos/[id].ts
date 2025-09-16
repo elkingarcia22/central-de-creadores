@@ -78,6 +78,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Agregar reclutador si está presente
       if (req.body.reclutador_id) datosLimpios.reclutador_id = req.body.reclutador_id;
+      
+      // Agregar usuarios del libreto (observadores)
+      if (req.body.usuarios_libreto !== undefined) datosLimpios.usuarios_libreto = req.body.usuarios_libreto;
 
       console.log('🔧 Datos limpios para Supabase:', datosLimpios);
 

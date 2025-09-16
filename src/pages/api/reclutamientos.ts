@@ -41,7 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         hora_sesion,
         duracion_sesion,
         estado_agendamiento,
-        meet_link
+        meet_link,
+        usuarios_libreto
       } = req.body;
 
       console.log('🔍 Datos extraídos:', {
@@ -74,6 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (duracion_sesion !== undefined && duracion_sesion !== '') datosParaInsertar.duracion_sesion = parseInt(duracion_sesion);
       if (estado_agendamiento !== undefined && estado_agendamiento !== '') datosParaInsertar.estado_agendamiento = estado_agendamiento;
       if (meet_link !== undefined && meet_link !== '') datosParaInsertar.meet_link = meet_link;
+      if (usuarios_libreto !== undefined && usuarios_libreto !== null) datosParaInsertar.usuarios_libreto = usuarios_libreto;
 
       console.log('📤 Datos para insertar:', datosParaInsertar);
 
