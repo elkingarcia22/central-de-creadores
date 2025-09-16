@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip, EmptyState } from '../../components/ui';
+import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip, EmptyState, SideModal, Input, Textarea, Select, ConfirmModal } from '../../components/ui';
 import { useToast } from '../../contexts/ToastContext';
-import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon, UsersIcon, BuildingIcon } from '../../components/icons';
+import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon, UsersIcon, BuildingIcon, EditIcon } from '../../components/icons';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import { getEstadoParticipanteVariant, getEstadoEmpresaVariant } from '../../utils/estadoUtils';
-import { getChipText } from '../../utils/chipUtils';
+import { getChipText, getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
@@ -15,6 +15,9 @@ import { InfoContainer, InfoItem } from '../../components/ui/InfoContainer';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
+import { DolorSideModal } from '../../components/ui/DolorSideModal';
+import FilterDrawer from '../../components/ui/FilterDrawer';
+import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface SesionApoyoData {
   id: string;
@@ -83,6 +86,34 @@ interface Empresa {
   fecha_actualizacion?: string;
 }
 
+interface DolorParticipante {
+  id: string;
+  participante_id: string;
+  titulo: string;
+  descripcion: string;
+  severidad: 'baja' | 'media' | 'alta' | 'critica';
+  estado: 'activo' | 'resuelto' | 'archivado';
+  categoria: string;
+  categoria_nombre?: string;
+  categoria_id?: string;
+  categoria_color?: string;
+  participante_nombre?: string;
+  participante_email?: string;
+  fecha_creacion: string;
+  fecha_actualizacion: string;
+  creado_por: string;
+  actualizado_por: string;
+}
+
+interface Usuario {
+  id: string;
+  nombre: string;
+  full_name: string;
+  email: string;
+  foto_url?: string;
+  activo: boolean;
+}
+
 export default function SesionActivaApoyoPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -109,6 +140,26 @@ export default function SesionActivaApoyoPage() {
   const [investigaciones, setInvestigaciones] = useState<any[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  
+  // Estados para dolores
+  const [dolores, setDolores] = useState<DolorParticipante[]>([]);
+  const [dolorSeleccionado, setDolorSeleccionado] = useState<DolorParticipante | null>(null);
+  const [showVerDolorModal, setShowVerDolorModal] = useState(false);
+  const [showEditarDolorModal, setShowEditarDolorModal] = useState(false);
+  const [dolorParaEliminar, setDolorParaEliminar] = useState<DolorParticipante | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  
+  // Estados para filtros de dolores
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<FilterValuesDolores>({
+    busqueda: '',
+    severidad: 'todos',
+    estado: 'todos',
+    categoria: 'todos',
+    fecha_creacion_desde: '',
+    fecha_creacion_hasta: ''
+  });
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   
   // Hook para transcripción de audio
   const audioTranscription = useWebSpeechTranscriptionSimple();
@@ -152,6 +203,13 @@ export default function SesionActivaApoyoPage() {
   useEffect(() => {
     if (participante && participante.tipo === 'externo') {
       loadEmpresaData();
+    }
+  }, [participante]);
+
+  // Cargar dolores cuando el participante cambie
+  useEffect(() => {
+    if (participante) {
+      loadDoloresData();
     }
   }, [participante]);
 
@@ -422,6 +480,20 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
+  const loadDoloresData = async () => {
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores`);
+      if (response.ok) {
+        const data = await response.json();
+        setDolores(data || []);
+      } else {
+        console.error('Error en respuesta de dolores:', response.status);
+      }
+    } catch (error) {
+      console.error('Error cargando dolores:', error);
+    }
+  };
+
   const formatearFecha = (fecha: string) => {
     try {
       const fechaObj = new Date(fecha);
@@ -481,6 +553,110 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
+  // Columnas para la tabla de dolores
+  const columnsDolores = [
+    {
+      key: 'titulo',
+      label: 'Título',
+      sortable: true,
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="body2" weight="semibold">
+          {row.titulo || '-'}
+        </Typography>
+      )
+    },
+    {
+      key: 'categoria_nombre',
+      label: 'Categoría',
+      sortable: true,
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="caption" color="secondary">
+          {row.categoria_nombre || '-'}
+        </Typography>
+      )
+    },
+    {
+      key: 'severidad',
+      label: 'Severidad',
+      sortable: true,
+      render: (value: any, row: DolorParticipante) => (
+        <Chip variant={getSeveridadVariant(row.severidad)} size="sm">
+          {row.severidad ? row.severidad.charAt(0).toUpperCase() + row.severidad.slice(1) : '-'}
+        </Chip>
+      )
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      sortable: true,
+      render: (value: any, row: DolorParticipante) => (
+        <Chip variant={getEstadoDolorVariant(row.estado)} size="sm">
+          {getEstadoDolorText(row.estado)}
+        </Chip>
+      )
+    },
+    {
+      key: 'fecha_creacion',
+      label: 'Fecha de Creación',
+      sortable: true,
+      render: (value: any, row: DolorParticipante) => (
+        <Typography variant="caption" color="secondary">
+          {formatearFecha(row.fecha_creacion)}
+        </Typography>
+      )
+    }
+  ];
+
+  // Memoizar opciones de filtro para evitar re-renders infinitos
+  const filterOptions = useMemo(() => {
+    if (dolores.length === 0) {
+      return {
+        estados: [
+          { value: 'todos', label: 'Todos los estados' },
+          { value: 'activo', label: 'Activo' },
+          { value: 'resuelto', label: 'Resuelto' },
+          { value: 'archivado', label: 'Archivado' }
+        ],
+        severidades: [
+          { value: 'todos', label: 'Todas las severidades' },
+          { value: 'baja', label: 'Baja' },
+          { value: 'media', label: 'Media' },
+          { value: 'alta', label: 'Alta' }
+        ],
+        categorias: [
+          { value: 'todos', label: 'Todas las categorías' }
+        ]
+      };
+    }
+
+    // Obtener categorías únicas de los dolores
+    const categoriasUnicas = Array.from(
+      new Set(dolores.map(dolor => dolor.categoria_nombre).filter(Boolean))
+    );
+
+    return {
+      estados: [
+        { value: 'todos', label: 'Todos los estados' },
+        { value: 'activo', label: 'Activo' },
+        { value: 'resuelto', label: 'Resuelto' },
+        { value: 'archivado', label: 'Archivado' }
+      ],
+      severidades: [
+        { value: 'todos', label: 'Todas las severidades' },
+        { value: 'baja', label: 'Baja' },
+        { value: 'media', label: 'Media' },
+        { value: 'alta', label: 'Alta' }
+      ],
+      categorias: [
+        { value: 'todos', label: 'Todas las categorías' },
+        ...categoriasUnicas.map(categoria => ({
+          value: categoria,
+          label: categoria
+        }))
+      ]
+    };
+  }, [dolores]);
+
   const handleBackToSessions = () => {
     router.push('/sesiones');
   };
@@ -526,6 +702,101 @@ export default function SesionActivaApoyoPage() {
       console.error('❌ Error guardando sesión:', error);
       showError('Error al guardar la sesión');
     }
+  };
+
+  // Funciones para dolores
+  const handleVerDolor = (dolor: DolorParticipante) => {
+    setDolorSeleccionado(dolor);
+    setShowVerDolorModal(true);
+  };
+
+  const handleEditarDolor = (dolor: DolorParticipante) => {
+    setDolorSeleccionado(dolor);
+    setShowEditarDolorModal(true);
+  };
+
+  const handleEliminarDolor = (dolor: DolorParticipante) => {
+    setDolorParaEliminar(dolor);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleCrearDolor = async (data: any) => {
+    try {
+      const response = await fetch('/api/participantes/dolores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_id: participante?.id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor creado exitosamente');
+        setShowCrearDolorModal(false);
+        // Recargar dolores
+        await loadDoloresData();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al crear el dolor');
+      }
+    } catch (error) {
+      console.error('Error al crear dolor:', error);
+      showError('Error al crear el dolor');
+    }
+  };
+
+  const handleCambiarEstadoDolor = async (dolor: DolorParticipante, nuevoEstado: string) => {
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolor.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...dolor, estado: nuevoEstado }),
+      });
+
+      if (response.ok) {
+        // Recargar dolores
+        await loadDoloresData();
+      }
+    } catch (error) {
+      console.error('Error cambiando estado del dolor:', error);
+    }
+  };
+
+  const confirmarEliminarDolor = async () => {
+    if (!dolorParaEliminar) return;
+    
+    try {
+      const response = await fetch(`/api/participantes/${id}/dolores/${dolorParaEliminar.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        showSuccess('Dolor eliminado exitosamente');
+        await loadDoloresData();
+      } else {
+        const errorData = await response.json();
+        showError(errorData.error || 'Error al eliminar el dolor');
+      }
+    } catch (error) {
+      console.error('Error al eliminar dolor:', error);
+      showError('Error al eliminar el dolor');
+    } finally {
+      setShowDeleteConfirmModal(false);
+      setDolorParaEliminar(null);
+    }
+  };
+
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    if (filters.severidad && filters.severidad !== 'todos') count++;
+    if (filters.estado && filters.estado !== 'todos') count++;
+    if (filters.categoria && filters.categoria !== 'todos') count++;
+    if (filters.fecha_creacion_desde) count++;
+    if (filters.fecha_creacion_hasta) count++;
+    return count;
   };
 
   if (loading) {
@@ -1312,6 +1583,77 @@ export default function SesionActivaApoyoPage() {
           )}
         </div>
       )
+    },
+    {
+      id: 'dolores',
+      label: 'Dolores',
+      content: (
+        <>
+          {dolores.length > 0 ? (
+            <DoloresUnifiedContainer
+              dolores={dolores}
+              loading={false}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filters={filters}
+              setFilters={setFilters}
+              showFilterDrawer={showFilterDrawer}
+              setShowFilterDrawer={setShowFilterDrawer}
+              getActiveFiltersCount={getActiveFiltersCount}
+              columns={columnsDolores}
+              filterOptions={filterOptions}
+              actions={[
+                {
+                  label: 'Ver detalles',
+                  icon: <EyeIcon className="w-4 h-4" />,
+                  onClick: handleVerDolor,
+                  title: 'Ver detalles del dolor'
+                },
+                {
+                  label: 'Editar',
+                  icon: <EditIcon className="w-4 h-4" />,
+                  onClick: handleEditarDolor,
+                  title: 'Editar dolor'
+                },
+                {
+                  label: 'Marcar como Resuelto',
+                  icon: <CheckIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
+                  title: 'Marcar dolor como resuelto',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
+                },
+                {
+                  label: 'Archivar',
+                  icon: <CheckCircleIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
+                  title: 'Archivar dolor',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
+                },
+                {
+                  label: 'Reactivar',
+                  icon: <RefreshIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
+                  title: 'Reactivar dolor',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
+                },
+                {
+                  label: 'Eliminar',
+                  icon: <TrashIcon className="w-4 h-4" />,
+                  onClick: handleEliminarDolor,
+                  className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300',
+                  title: 'Eliminar dolor'
+                }
+              ]}
+            />
+          ) : (
+            <EmptyState
+              icon={<AlertTriangleIcon className="w-8 h-8" />}
+              title="Sin dolores registrados"
+              description="Este participante no tiene dolores o necesidades registradas."
+            />
+          )}
+        </>
+      )
     }
   ];
 
@@ -1424,6 +1766,101 @@ export default function SesionActivaApoyoPage() {
           />
         </div>
       </div>
+
+      {/* Modales para dolores */}
+      {showVerDolorModal && dolorSeleccionado && (
+        <DolorSideModal
+          isOpen={showVerDolorModal}
+          onClose={() => {
+            setShowVerDolorModal(false);
+            setDolorSeleccionado(null);
+          }}
+          participanteId={participante?.id || ''}
+          participanteNombre={participante?.nombre || ''}
+          dolor={{
+            ...dolorSeleccionado,
+            participante_nombre: participante?.nombre || '',
+            participante_email: participante?.email || '',
+            categoria_id: dolorSeleccionado.categoria_id || dolorSeleccionado.categoria,
+            categoria_nombre: dolorSeleccionado.categoria_nombre || dolorSeleccionado.categoria,
+            categoria_color: dolorSeleccionado.categoria_color || '#6B7280'
+          }}
+          onSave={async () => {}} // No se usa en modo view
+          loading={false}
+        />
+      )}
+
+      {showEditarDolorModal && dolorSeleccionado && (
+        <DolorSideModal
+          isOpen={showEditarDolorModal}
+          onClose={() => {
+            setShowEditarDolorModal(false);
+            setDolorSeleccionado(null);
+          }}
+          participanteId={participante?.id || ''}
+          participanteNombre={participante?.nombre || ''}
+          dolor={{
+            ...dolorSeleccionado,
+            participante_nombre: participante?.nombre || '',
+            participante_email: participante?.email || '',
+            categoria_id: dolorSeleccionado.categoria_id || dolorSeleccionado.categoria,
+            categoria_nombre: dolorSeleccionado.categoria_nombre || dolorSeleccionado.categoria,
+            categoria_color: dolorSeleccionado.categoria_color || '#6B7280'
+          }}
+          onSave={async (data) => {
+            try {
+              const response = await fetch(`/api/participantes/${id}/dolores/${dolorSeleccionado.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+              });
+
+              if (response.ok) {
+                showSuccess('Dolor actualizado exitosamente');
+                setShowEditarDolorModal(false);
+                setDolorSeleccionado(null);
+                await loadDoloresData();
+              } else {
+                const errorData = await response.json();
+                showError(errorData.error || 'Error al actualizar el dolor');
+              }
+            } catch (error) {
+              console.error('Error al actualizar dolor:', error);
+              showError('Error al actualizar el dolor');
+            }
+          }}
+          loading={false}
+        />
+      )}
+
+      {/* Modal de crear dolor */}
+      {showCrearDolorModal && participante && (
+        <DolorSideModal
+          isOpen={showCrearDolorModal}
+          onClose={() => setShowCrearDolorModal(false)}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          onSave={handleCrearDolor}
+        />
+      )}
+
+      {/* Modal de confirmación para eliminar dolor */}
+      {showDeleteConfirmModal && dolorParaEliminar && (
+        <ConfirmModal
+          isOpen={showDeleteConfirmModal}
+          onClose={() => {
+            setShowDeleteConfirmModal(false);
+            setDolorParaEliminar(null);
+          }}
+          onConfirm={confirmarEliminarDolor}
+          title="Eliminar Dolor"
+          message={`¿Estás seguro de que quieres eliminar el dolor "${dolorParaEliminar.titulo}"? Esta acción no se puede deshacer.`}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+        />
+      )}
     </Layout>
   );
 }
