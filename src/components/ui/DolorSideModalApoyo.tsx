@@ -33,7 +33,7 @@ export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
     titulo: '',
     descripcion: '',
     severidad: SeveridadDolor.MEDIA,
-    investigacion_relacionada_id: '' // Vacío para sesiones de apoyo
+    investigacion_relacionada_id: null // null para sesiones de apoyo
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -55,7 +55,7 @@ export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
         titulo: dolor.titulo || '',
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad || SeveridadDolor.MEDIA,
-        investigacion_relacionada_id: '', // No hay investigación en sesiones de apoyo
+        investigacion_relacionada_id: null, // No hay investigación en sesiones de apoyo
         sesion_relacionada_id: dolor.sesion_relacionada_id || ''
       };
       setFormData(newFormData);
@@ -66,7 +66,7 @@ export const DolorSideModalApoyo: React.FC<DolorSideModalApoyoProps> = ({
         titulo: '',
         descripcion: '',
         severidad: SeveridadDolor.MEDIA,
-        investigacion_relacionada_id: '' // No hay investigación en sesiones de apoyo
+        investigacion_relacionada_id: null // No hay investigación en sesiones de apoyo
       });
     }
     setErrors({});
