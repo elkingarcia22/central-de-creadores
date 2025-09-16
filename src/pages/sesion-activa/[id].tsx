@@ -17,7 +17,7 @@ import Chip from '../../components/ui/Chip';
 import { ArrowLeftIcon, EditIcon, BuildingIcon, UsersIcon, UserIcon, EmailIcon, CalendarIcon, PlusIcon, MessageIcon, AlertTriangleIcon, BarChartIcon, TrendingUpIcon, ClockIcon, EyeIcon, TrashIcon, CheckIcon, CheckCircleIcon, RefreshIcon, SearchIcon, FilterIcon, MoreVerticalIcon, FileTextIcon, AIIcon, MicIcon } from '../../components/icons';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
-import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant } from '../../utils/estadoUtils';
+import { getEstadoParticipanteVariant, getEstadoReclutamientoVariant, getEstadoEmpresaVariant } from '../../utils/estadoUtils';
 import { getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText, getChipText } from '../../utils/chipUtils';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
@@ -1856,10 +1856,10 @@ export default function SesionActivaPage() {
                     label="Estado" 
                     value={
                       <Chip 
-                        variant={getEstadoParticipanteVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        variant={getEstadoEmpresaVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'activa')}
                         size="sm"
                       >
-                        {getChipText(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        {empresaData?.estado_nombre || empresa.estado_nombre || 'Activa'}
                       </Chip>
                     }
                   />

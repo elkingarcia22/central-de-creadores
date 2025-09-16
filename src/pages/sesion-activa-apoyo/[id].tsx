@@ -4,7 +4,7 @@ import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip, EmptyState } 
 import { useToast } from '../../contexts/ToastContext';
 import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon, UsersIcon, BuildingIcon } from '../../components/icons';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
-import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
+import { getEstadoParticipanteVariant, getEstadoEmpresaVariant } from '../../utils/estadoUtils';
 import { getChipText } from '../../utils/chipUtils';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
@@ -1175,10 +1175,10 @@ export default function SesionActivaApoyoPage() {
                     label="Estado" 
                     value={
                       <Chip 
-                        variant={getEstadoParticipanteVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        variant={getEstadoEmpresaVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'activa')}
                         size="sm"
                       >
-                        {getChipText(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        {empresaData?.estado_nombre || empresa.estado_nombre || 'Activa'}
                       </Chip>
                     }
                   />
