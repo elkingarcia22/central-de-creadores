@@ -1,10 +1,10 @@
 export type TipoParticipante = 'externo' | 'interno' | 'friend_family';
 
-export const getTipoParticipanteVariant = (tipo: TipoParticipante): 'accent-cyan' | 'accent-blue' | 'accent-violet' => {
+export const getTipoParticipanteVariant = (tipo: TipoParticipante): 'accent-cyan' | 'accent-blue' | 'accent-black' => {
   switch (tipo) {
     case 'externo': return 'accent-cyan';
     case 'interno': return 'accent-blue';
-    case 'friend_family': return 'accent-violet';
+    case 'friend_family': return 'accent-black';
     default: return 'accent-cyan';
   }
 };

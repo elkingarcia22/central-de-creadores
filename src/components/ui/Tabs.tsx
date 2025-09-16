@@ -84,7 +84,7 @@ export const Tabs: React.FC<TabsProps> = ({
     underline: {
       container: '',
       tab: `transition-all duration-200 font-medium relative ${sizeClasses[size]}`,
-      active: 'text-blue-600 dark:text-blue-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400',
+      active: 'text-blue-600 dark:text-blue-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400 after:content-[""]',
       inactive: 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100',
       disabled: 'text-muted-foreground cursor-not-allowed'
     }
