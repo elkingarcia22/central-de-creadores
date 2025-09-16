@@ -918,17 +918,17 @@ export default function SesionActivaApoyoPage() {
     try {
       console.log('🔍 [SesionActivaApoyo] Creando seguimiento de apoyo:', data);
       
-      const response = await fetch('/api/seguimientos', {
+      const response = await fetch('/api/seguimientos-apoyo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...data,
-          participante_externo_id: participante?.id,
-          // Para sesiones de apoyo, no hay investigación obligatoria
-          investigacion_id: data.investigacion_id || null,
-          responsable_id: data.responsable_id
+          fecha_seguimiento: data.fecha_seguimiento,
+          notas: data.notas,
+          responsable_id: data.responsable_id,
+          estado: data.estado,
+          participante_externo_id: participante?.id
         }),
       });
 
@@ -937,7 +937,7 @@ export default function SesionActivaApoyoPage() {
         setShowSeguimientoModal(false);
       } else {
         const errorData = await response.json();
-        showError(errorData.message || 'Error al crear el seguimiento');
+        showError(errorData.error || 'Error al crear el seguimiento');
       }
     } catch (error) {
       console.error('Error al crear seguimiento:', error);
