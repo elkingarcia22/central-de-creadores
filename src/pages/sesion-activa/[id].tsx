@@ -26,7 +26,6 @@ import { PerfilamientosTab } from '../../components/participantes/Perfilamientos
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
-import { InformacionParticipanteApoyo } from '../../components/sesiones/InformacionParticipanteApoyo';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
@@ -116,8 +115,6 @@ export default function SesionActivaPage() {
   const { showSuccess, showError } = useToast();
   const [participante, setParticipante] = useState<Participante | null>(null);
   const [reclutamiento, setReclutamiento] = useState<Reclutamiento | null>(null);
-  const [sesionApoyo, setSesionApoyo] = useState<any>(null);
-  const [tipoSesion, setTipoSesion] = useState<'reclutamiento' | 'apoyo'>('reclutamiento');
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('notas-manuales');
   
@@ -378,91 +375,37 @@ export default function SesionActivaPage() {
     try {
       setLoading(true);
       
-      // Detectar tipo de sesión desde localStorage
-      const currentSesion = localStorage.getItem('currentSesion');
-      const currentSesionApoyo = localStorage.getItem('currentSesionApoyo');
-      
-      if (currentSesionApoyo) {
-        try {
-          const sesionData = JSON.parse(currentSesionApoyo);
-          console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
-          
-          console.log('🔍 Detectada sesión de apoyo');
-          setTipoSesion('apoyo');
-          setSesionApoyo(sesionData);
-          
-          // Cargar datos del participante desde la sesión de apoyo
-          if (sesionData.participante) {
-            setParticipante(sesionData.participante);
-          }
-        } catch (error) {
-          console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
-          // Fallback: tratar como sesión de reclutamiento
-          setTipoSesion('reclutamiento');
-          await loadReclutamientoFromAPI();
-        }
-      } else if (currentSesion) {
-        try {
-          const sesionData = JSON.parse(currentSesion);
-          console.log('🔍 Datos de sesión desde localStorage:', sesionData);
-          
-          if (sesionData.tipo === 'apoyo') {
-            console.log('🔍 Detectada sesión de apoyo');
-            setTipoSesion('apoyo');
-            setSesionApoyo(sesionData);
-            
-            // Cargar datos del participante desde la sesión de apoyo
-            if (sesionData.participante) {
-              setParticipante(sesionData.participante);
-            }
-          } else {
-            console.log('🔍 Detectada sesión de reclutamiento');
-            setTipoSesion('reclutamiento');
-            
-            // Cargar datos del participante
-            const participanteResponse = await fetch(`/api/participantes/${id}`);
-            if (participanteResponse.ok) {
-              const participanteData = await participanteResponse.json();
-              setParticipante(participanteData);
-            }
+      // Cargar datos del participante
+      const participanteResponse = await fetch(`/api/participantes/${id}`);
+      if (participanteResponse.ok) {
+        const participanteData = await participanteResponse.json();
+        setParticipante(participanteData);
+      }
 
-            // Cargar datos del reclutamiento específico de la sesión activa
-            console.log('🔍 Cargando reclutamiento específico para sesión activa');
-            const currentReclutamiento = localStorage.getItem('currentReclutamiento');
-            if (currentReclutamiento) {
-              try {
-                const reclutamientoData = JSON.parse(currentReclutamiento);
-                console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
-                
-                // Si tenemos un reclutamiento_id específico, cargar desde API con ese ID
-                if (reclutamientoData.id) {
-                  console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoData.id);
-                  await loadReclutamientoSpecifico(reclutamientoData.id);
-                } else {
-                  // Si no hay ID, usar los datos del localStorage directamente
-                  setReclutamiento(reclutamientoData);
-                }
-              } catch (error) {
-                console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
-                // Fallback: cargar desde API
-                await loadReclutamientoFromAPI();
-              }
-            } else {
-              console.log('🔍 No hay reclutamiento en localStorage, cargando desde API');
-              // Fallback: cargar desde API
-              await loadReclutamientoFromAPI();
-            }
-          }
+      // Cargar datos del reclutamiento específico de la sesión activa
+      console.log('🔍 Cargando reclutamiento específico para sesión activa');
+      const currentReclutamiento = localStorage.getItem('currentReclutamiento');
+      if (currentReclutamiento) {
+        try {
+          const reclutamientoData = JSON.parse(currentReclutamiento);
+          console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
+          
+          // Si tenemos un reclutamiento_id específico, cargar desde API con ese ID
+          if (reclutamientoData.id) {
+            console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoData.id);
+            await loadReclutamientoSpecifico(reclutamientoData.id);
+          } else {
+            // Si no hay ID, usar los datos del localStorage directamente
+        setReclutamiento(reclutamientoData);
+      }
         } catch (error) {
-          console.error('🔍 Error parseando sesión desde localStorage:', error);
-          // Fallback: tratar como sesión de reclutamiento
-          setTipoSesion('reclutamiento');
+          console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
+          // Fallback: cargar desde API
           await loadReclutamientoFromAPI();
         }
       } else {
-        console.log('🔍 No hay sesión en localStorage, cargando como reclutamiento');
-        // Fallback: cargar como sesión de reclutamiento
-        setTipoSesion('reclutamiento');
+        console.log('🔍 No hay reclutamiento en localStorage, cargando desde API');
+        // Fallback: cargar desde API
         await loadReclutamientoFromAPI();
       }
 
@@ -1537,6 +1480,35 @@ export default function SesionActivaPage() {
           </InfoContainer>
         )}
 
+        {/* Información de la Empresa (solo para participantes externos) */}
+        {participante.tipo === 'externo' && empresa && (
+          <InfoContainer 
+            title="Información de la Empresa"
+            icon={<BuildingIcon className="w-4 h-4" />}
+          >
+            <InfoItem 
+              label="Nombre de la Empresa"
+              value={empresa.nombre}
+            />
+            <InfoItem 
+              label="Estado"
+              value={
+                <Chip 
+                  variant={getEstadoChipVariant(empresa.estado_nombre || '')}
+                  size="sm"
+                >
+                  {getChipText(empresa.estado_nombre || 'disponible')}
+                    </Chip>
+              }
+            />
+            {empresa.descripcion && (
+              <InfoItem 
+                label="Descripción"
+                value={empresa.descripcion}
+              />
+            )}
+          </InfoContainer>
+                  )}
                   </div>
     );
   };
@@ -1714,487 +1686,352 @@ export default function SesionActivaPage() {
       label: 'Notas Manuales',
       content: <NotasManualesContent 
         participanteId={participante!.id}
-        sesionId={tipoSesion === 'apoyo' ? sesionApoyo!.id : reclutamiento!.id}
+        sesionId={reclutamiento!.id}
       />
     },
     {
       id: 'informacion',
       label: 'Información de Participante',
-      content: tipoSesion === 'apoyo' ? (
-        <InformacionParticipanteApoyo participante={participante!} />
-      ) : (
-        <InformacionContent 
-          participante={participante!} 
-          empresa={empresa} 
-          investigaciones={investigaciones}
-          participacionesPorMes={participacionesPorMes}
-        />
-      )
+      content: <InformacionContent 
+        participante={participante!} 
+        empresa={empresa} 
+        investigaciones={investigaciones}
+        participacionesPorMes={participacionesPorMes}
+      />
     },
     {
       id: 'reclutamiento',
-      label: tipoSesion === 'apoyo' ? 'Información de la Sesión de Apoyo' : 'Información de la Sesión',
-      content: tipoSesion === 'apoyo' ? (
-        <div className="space-y-6">
-          <InfoContainer 
-            title="Detalles de la Sesión de Apoyo"
-            icon={<FileTextIcon className="w-4 h-4" />}
-          >
-            <InfoItem 
-              label="ID de la Sesión"
-              value={sesionApoyo!.id}
-            />
-            <InfoItem 
-              label="Título"
-              value={sesionApoyo!.titulo}
-            />
-            <InfoItem 
-              label="Descripción"
-              value={sesionApoyo!.descripcion || 'Sin descripción'}
-            />
-            <InfoItem 
-              label="Moderador"
-              value={sesionApoyo!.moderador_nombre || 'Sin asignar'}
-            />
-            <InfoItem 
-              label="Participante"
-              value={participante!.nombre}
-            />
-            <InfoItem 
-              label="Email del Participante"
-              value={participante!.email || 'Sin email'}
-            />
-            <InfoItem 
-              label="Tipo de Participante"
-              value={
-                <Chip 
-                  variant={getTipoParticipanteVariant(participante!.tipo as any)}
-                  size="sm"
-                >
-                  {participante!.tipo === 'externo' ? 'Externo' : 
-                   participante!.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
-                </Chip>
-              }
-            />
-            <InfoItem 
-              label="Fecha de Sesión"
-              value={sesionApoyo!.fecha_programada ? 
-                formatearFecha(sesionApoyo!.fecha_programada) : 
-                'No programada'
-              }
-            />
-            <InfoItem 
-              label="Hora de Sesión"
-              value={sesionApoyo!.hora_sesion ? 
-                (() => {
-                  try {
-                    let hora = sesionApoyo!.hora_sesion;
-                    if (hora.match(/^\d{2}:\d{2}:\d{2}$/)) {
-                      hora = `2000-01-01T${hora}`;
-                    }
-                    if (hora.match(/^\d{2}:\d{2}$/)) {
-                      hora = `2000-01-01T${hora}:00`;
-                    }
-                    const fechaHora = new Date(hora);
-                    if (isNaN(fechaHora.getTime())) {
-                      return sesionApoyo!.hora_sesion;
-                    }
-                    return fechaHora.toLocaleTimeString('es-ES', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    });
-                  } catch (error) {
-                    return sesionApoyo!.hora_sesion;
-                  }
-                })() : 
-                'No definida'
-              }
-            />
-            <InfoItem 
-              label="Duración de Sesión"
-              value={sesionApoyo!.duracion_minutos ? 
-                (() => {
-                  const duracion = sesionApoyo!.duracion_minutos;
-                  if (duracion >= 60) {
-                    const horas = Math.floor(duracion / 60);
-                    const minutos = duracion % 60;
-                    return minutos > 0 ? `${horas}h ${minutos}min` : `${horas}h`;
-                  }
-                  return `${duracion} min`;
-                })() : 
-                'No definida'
-              }
-            />
-            <InfoItem 
-              label="Estado de Agendamiento"
-              value={
-                <Chip 
-                  variant={getChipVariant(sesionApoyo!.estado_agendamiento || '') as any}
-                  size="sm"
-                >
-                  {sesionApoyo!.estado_agendamiento || 'Sin estado'}
-                </Chip>
-              }
-            />
-            {sesionApoyo!.meet_link && (
-              <InfoItem 
-                label="Enlace de Google Meet"
-                value={
-                  <div className="flex items-center gap-2">
-                    <a 
-                      href={sesionApoyo!.meet_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
-                    >
-                      {sesionApoyo!.meet_link}
-                    </a>
-                  </div>
-                }
-              />
-            )}
-            {sesionApoyo!.objetivo_sesion && (
-              <InfoItem 
-                label="Objetivo de la Sesión"
-                value={sesionApoyo!.objetivo_sesion}
-              />
-            )}
-          </InfoContainer>
-        </div>
-      ) : (
-        <ReclutamientoContent reclutamiento={reclutamiento!} participante={participante!} />
-      )
+      label: 'Información de la Sesión',
+      content: <ReclutamientoContent reclutamiento={reclutamiento!} participante={participante!} />
     },
-    ...(tipoSesion === 'reclutamiento' ? [
-      {
-        id: 'empresa-informacion',
-        label: 'Información Empresa',
-        content: (
-          <div className="space-y-6">
-            {empresa && participante?.tipo === 'externo' ? (
-              <>
-                {/* Descripción */}
-                {(empresaData?.descripcion || empresa.descripcion) && (
-                  <InfoContainer 
-                    title="Descripción"
-                    icon={<FileTextIcon className="w-4 h-4" />}
-                  >
-                    <InfoItem 
-                      label="Descripción" 
-                      value={empresaData?.descripcion || empresa.descripcion}
-                    />
-                  </InfoContainer>
-                )}
-
-                {/* Estadísticas principales */}
-                {empresaData && empresaData.estadisticas && (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      {/* Total Participaciones */}
-                      <Card variant="elevated" padding="md">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                              <AnimatedCounter
-                                value={empresaData.estadisticas.totalParticipaciones || 0}
-                                duration={2000}
-                                className="text-gray-700 dark:text-gray-200"
-                              />
-                            </Typography>
-                            <Typography variant="body2" color="secondary">
-                              Total Participaciones
-                            </Typography>
-                          </div>
-                          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                            <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        </div>
-                      </Card>
-                    
-                      {/* Total Participantes */}
-                      <Card variant="elevated" padding="md">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                              <AnimatedCounter
-                                value={empresaData.estadisticas.totalParticipantes || 0}
-                                duration={2000}
-                                className="text-gray-700 dark:text-gray-200"
-                              />
-                            </Typography>
-                            <Typography variant="body2" color="secondary">
-                              Total Participantes
-                            </Typography>
-                          </div>
-                          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                            <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        </div>
-                      </Card>
-                    
-                      {/* Investigaciones Participadas */}
-                      <Card variant="elevated" padding="md">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                              <AnimatedCounter
-                                value={empresaData.estadisticas.investigacionesParticipadas || 0}
-                                duration={2000}
-                                className="text-gray-700 dark:text-gray-200"
-                              />
-                            </Typography>
-                            <Typography variant="body2" color="secondary">
-                              Investigaciones
-                            </Typography>
-                          </div>
-                          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                            <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        </div>
-                      </Card>
-
-                      {/* Tiempo Total */}
-                      <Card variant="elevated" padding="md">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
-                              <AnimatedCounter 
-                                value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
-                                duration={2000}
-                                className="text-gray-700 dark:text-gray-200"
-                                suffix="h"
-                              />
-                            </Typography>
-                            <Typography variant="body2" color="secondary">
-                              Tiempo Total
-                            </Typography>
-                          </div>
-                          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
-                            <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          </div>
-                        </div>
-                      </Card>
-                    </div>
-
-                    {/* Última participación y resumen del mes */}
-                    <InfoContainer 
-                      title="Resumen de Participación"
-                      icon={<UserIcon className="w-4 h-4" />}
-                    >
-                      {empresaData.estadisticas.fechaUltimaParticipacion && (
-                        <InfoItem 
-                          label="Última Participación" 
-                          value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
-                        />
-                      )}
-                      
-                      <InfoItem 
-                        label="Participaciones del Mes" 
-                        value={
-                          (() => {
-                            const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
-                            const participacionesMesActual = empresaData.estadisticas.participacionesPorMes?.[mesActual] || 0;
-                            const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                            return `${participacionesMesActual} en ${nombreMes}`;
-                          })()
-                        }
-                      />
-                    </InfoContainer>
-                  </>
-                )}
-
-                {/* Información básica */}
+    {
+      id: 'empresa-informacion',
+      label: 'Información Empresa',
+      content: (
+        <div className="space-y-6">
+          {empresa && participante?.tipo === 'externo' ? (
+            <>
+              {/* Descripción */}
+              {(empresaData?.descripcion || empresa.descripcion) && (
                 <InfoContainer 
-                  title="Información Básica"
-                  icon={<BuildingIcon className="w-4 h-4" />}
+                  title="Descripción"
+                  icon={<FileTextIcon className="w-4 h-4" />}
                 >
                   <InfoItem 
-                    label="Nombre" 
-                    value={empresa.nombre}
+                    label="Descripción" 
+                    value={empresaData?.descripcion || empresa.descripcion}
                   />
-                  {(empresaData?.estado_nombre || empresa.estado_nombre) && (
-                    <InfoItem 
-                      label="Estado" 
-                      value={
-                        <Chip 
-                          variant={getEstadoParticipanteVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
-                          size="sm"
-                        >
-                          {getChipText(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
-                        </Chip>
-                      }
-                    />
-                  )}
-                  {(empresaData?.pais_nombre || empresa.pais) && (
-                    <InfoItem label="País" value={empresaData?.pais_nombre || empresa.pais} />
-                  )}
-                  {(empresaData?.industria_nombre || empresa.industria) && (
-                    <InfoItem label="Industria" value={empresaData?.industria_nombre || empresa.industria} />
-                  )}
-                  {(empresaData?.modalidad_nombre) && (
-                    <InfoItem label="Modalidad" value={empresaData.modalidad_nombre} />
-                  )}
-                  {(empresaData?.tamano_nombre || empresa.tamano) && (
-                    <InfoItem label="Tamaño" value={empresaData?.tamano_nombre || empresa.tamano} />
-                  )}
-                  {(empresaData?.relacion_nombre) && (
-                    <InfoItem 
-                      label="Relación" 
-                      value={
-                        <Chip 
-                          variant={getChipVariant(empresaData.relacion_nombre) as any}
-                          size="sm"
-                        >
-                          {empresaData.relacion_nombre}
-                        </Chip>
-                      }
-                    />
-                  )}
-                  {(empresaData?.productos_nombres) && (
-                    <InfoItem 
-                      label="Productos" 
-                      value={empresaData.productos_nombres.join(', ')}
-                    />
-                  )}
-                  {(empresaData?.kam_nombre) && (
-                    <InfoItem 
-                      label="KAM Asignado" 
-                      value={
-                        <div className="flex items-center gap-2">
-                          <SimpleAvatar 
-                            fallbackText={empresaData.kam_nombre}
-                            size="sm"
-                          />
-                          <span>{empresaData.kam_nombre}</span>
-                        </div>
-                      }
-                    />
-                  )}
-                  {empresa.ciudad && <InfoItem label="Ciudad" value={empresa.ciudad} />}
-                  {empresa.direccion && <InfoItem label="Dirección" value={empresa.direccion} />}
-                  {empresa.telefono && <InfoItem label="Teléfono" value={empresa.telefono} />}
-                  {empresa.email && <InfoItem label="Email" value={empresa.email} />}
-                  {empresa.website && <InfoItem label="Website" value={empresa.website} />}
                 </InfoContainer>
+              )}
 
-                {/* Fechas */}
-                <InfoContainer 
-                  title="Fechas"
-                  icon={<ClockIcon className="w-4 h-4" />}
-                >
-                  {(empresaData?.created_at || empresa.fecha_creacion) && (
+              {/* Estadísticas principales */}
+              {empresaData && empresaData.estadisticas && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Total Participaciones */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                  <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.totalParticipaciones || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                    </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Total Participaciones
+                    </Typography>
+                  </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <TrendingUpIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
+                      </div>
+                    </Card>
+                
+                    {/* Total Participantes */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                    <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.totalParticipantes || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Total Participantes
+                      </Typography>
+                    </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    </div>
+                  </div>
+                    </Card>
+                  
+                    {/* Investigaciones Participadas */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                  <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter
+                              value={empresaData.estadisticas.investigacionesParticipadas || 0}
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                            />
+                    </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Investigaciones
+                      </Typography>
+                    </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                </div>
+              </Card>
+
+                    {/* Tiempo Total */}
+                    <Card variant="elevated" padding="md">
+                      <div className="flex items-center justify-between">
+                    <div>
+                          <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                            <AnimatedCounter 
+                              value={Math.round((empresaData.estadisticas.duracionTotalSesiones || 0) / 60)} 
+                              duration={2000}
+                              className="text-gray-700 dark:text-gray-200"
+                              suffix="h"
+                            />
+                      </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Tiempo Total
+                      </Typography>
+                    </div>
+                        <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                          <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  </div>
+                    </div>
+                    </Card>
+                    </div>
+
+                  {/* Última participación y resumen del mes */}
+                  <InfoContainer 
+                    title="Resumen de Participación"
+                    icon={<UserIcon className="w-4 h-4" />}
+                  >
+                    {empresaData.estadisticas.fechaUltimaParticipacion && (
+                      <InfoItem 
+                        label="Última Participación" 
+                        value={formatearFecha(empresaData.estadisticas.fechaUltimaParticipacion)}
+                      />
+                    )}
+                    
                     <InfoItem 
-                      label="Fecha de Creación" 
-                      value={formatearFecha(empresaData?.created_at || empresa.fecha_creacion)}
+                      label="Participaciones del Mes" 
+                      value={
+                        (() => {
+                          const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                          const participacionesMesActual = empresaData.estadisticas.participacionesPorMes?.[mesActual] || 0;
+                          const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                          return `${participacionesMesActual} en ${nombreMes}`;
+                        })()
+                      }
                     />
-                  )}
-                  {(empresaData?.updated_at || empresa.fecha_actualizacion) && (
-                    <InfoItem 
-                      label="Última Actualización" 
-                      value={formatearFecha(empresaData?.updated_at || empresa.fecha_actualizacion)}
-                    />
-                  )}
-                </InfoContainer>
-              </>
-            ) : (
-              <EmptyState
-                icon={<BuildingIcon className="w-8 h-8" />}
-                title="Información de Empresa no disponible"
-                description="Este participante no está asociado a una empresa externa."
-              />
-            )}
-          </div>
-        )
-      },
-      {
-        id: 'dolores',
-        label: 'Dolores',
-        content: (
-          <>
-            {dolores.length > 0 ? (
-              <DoloresUnifiedContainer
-                dolores={dolores}
-                loading={false}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filters={filters}
-                setFilters={setFilters}
-                showFilterDrawer={showFilterDrawer}
-                setShowFilterDrawer={setShowFilterDrawer}
-                getActiveFiltersCount={getActiveFiltersCount}
-                columns={columnsDolores}
-                filterOptions={filterOptions}
-                actions={[
-                  {
-                    label: 'Ver detalles',
-                    icon: <EyeIcon className="w-4 h-4" />,
-                    onClick: handleVerDolor,
-                    title: 'Ver detalles del dolor'
-                  },
-                  {
-                    label: 'Editar',
-                    icon: <EditIcon className="w-4 h-4" />,
-                    onClick: handleEditarDolor,
-                    title: 'Editar dolor'
-                  },
-                  {
-                    label: 'Marcar como Resuelto',
-                    icon: <CheckIcon className="w-4 h-4" />,
-                    onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
-                    title: 'Marcar dolor como resuelto',
-                    show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
-                  },
-                  {
-                    label: 'Archivar',
-                    icon: <CheckCircleIcon className="w-4 h-4" />,
-                    onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
-                    title: 'Archivar dolor',
-                    show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
-                  },
-                  {
-                    label: 'Reactivar',
-                    icon: <RefreshIcon className="w-4 h-4" />,
-                    onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
-                    title: 'Reactivar dolor',
-                    show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
-                  },
-                  {
-                    label: 'Eliminar',
-                    icon: <TrashIcon className="w-4 h-4" />,
-                    onClick: handleEliminarDolor,
-                    className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300',
-                    title: 'Eliminar dolor'
-                  }
-                ]}
-              />
-            ) : (
-              <EmptyState
-                icon={<AlertTriangleIcon className="w-8 h-8" />}
-                title="Sin dolores registrados"
-                description="Este participante no tiene dolores o necesidades registradas."
-              />
-            )}
-          </>
-        )
-      },
-      {
-        id: 'perfilamientos',
-        label: 'Perfilamiento',
-        content: (
-          <PerfilamientosTab
-            participanteId={id as string}
-            participanteNombre={participante?.nombre || ''}
-            usuarios={usuarios}
-          />
-        )
-      }
-    ] : []),
+                  </InfoContainer>
+                </>
+              )}
+
+              {/* Información básica */}
+              <InfoContainer 
+                title="Información Básica"
+                icon={<BuildingIcon className="w-4 h-4" />}
+              >
+                <InfoItem 
+                  label="Nombre" 
+                  value={empresa.nombre}
+                />
+                {(empresaData?.estado_nombre || empresa.estado_nombre) && (
+                  <InfoItem 
+                    label="Estado" 
+                    value={
+                      <Chip 
+                        variant={getEstadoParticipanteVariant(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                        size="sm"
+                      >
+                        {getChipText(empresaData?.estado_nombre || empresa.estado_nombre || 'disponible')}
+                      </Chip>
+                    }
+                  />
+                )}
+                {(empresaData?.pais_nombre || empresa.pais) && (
+                  <InfoItem label="País" value={empresaData?.pais_nombre || empresa.pais} />
+                )}
+                {(empresaData?.industria_nombre || empresa.industria) && (
+                  <InfoItem label="Industria" value={empresaData?.industria_nombre || empresa.industria} />
+                )}
+                {(empresaData?.modalidad_nombre) && (
+                  <InfoItem label="Modalidad" value={empresaData.modalidad_nombre} />
+                )}
+                {(empresaData?.tamano_nombre || empresa.tamano) && (
+                  <InfoItem label="Tamaño" value={empresaData?.tamano_nombre || empresa.tamano} />
+                )}
+                {(empresaData?.relacion_nombre) && (
+                  <InfoItem 
+                    label="Relación" 
+                    value={
+                      <Chip 
+                        variant={getChipVariant(empresaData.relacion_nombre) as any}
+                        size="sm"
+                      >
+                        {empresaData.relacion_nombre}
+                      </Chip>
+                    }
+                  />
+                )}
+                {(empresaData?.productos_nombres) && (
+                  <InfoItem 
+                    label="Productos" 
+                    value={empresaData.productos_nombres.join(', ')}
+                  />
+                )}
+                {(empresaData?.kam_nombre) && (
+                  <InfoItem 
+                    label="KAM Asignado" 
+                    value={
+                      <div className="flex items-center gap-2">
+                        <SimpleAvatar 
+                          fallbackText={empresaData.kam_nombre}
+                          size="sm"
+                        />
+                        <span>{empresaData.kam_nombre}</span>
+                  </div>
+                    }
+                  />
+                )}
+                {empresa.ciudad && <InfoItem label="Ciudad" value={empresa.ciudad} />}
+                {empresa.direccion && <InfoItem label="Dirección" value={empresa.direccion} />}
+                {empresa.telefono && <InfoItem label="Teléfono" value={empresa.telefono} />}
+                {empresa.email && <InfoItem label="Email" value={empresa.email} />}
+                {empresa.website && <InfoItem label="Website" value={empresa.website} />}
+              </InfoContainer>
+
+              {/* Fechas */}
+              <InfoContainer 
+                title="Fechas"
+                icon={<ClockIcon className="w-4 h-4" />}
+              >
+                {(empresaData?.created_at || empresa.fecha_creacion) && (
+                  <InfoItem 
+                    label="Fecha de Creación" 
+                    value={formatearFecha(empresaData?.created_at || empresa.fecha_creacion)}
+                  />
+                )}
+                {(empresaData?.updated_at || empresa.fecha_actualizacion) && (
+                  <InfoItem 
+                    label="Última Actualización" 
+                    value={formatearFecha(empresaData?.updated_at || empresa.fecha_actualizacion)}
+                  />
+                )}
+              </InfoContainer>
+            </>
+          ) : (
+            <EmptyState
+              icon={<BuildingIcon className="w-8 h-8" />}
+              title="Información de Empresa no disponible"
+              description="Este participante no está asociado a una empresa externa."
+            />
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'dolores',
+      label: 'Dolores',
+      content: (
+        <>
+          {dolores.length > 0 ? (
+            <DoloresUnifiedContainer
+              dolores={dolores}
+              loading={false}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              filters={filters}
+              setFilters={setFilters}
+              showFilterDrawer={showFilterDrawer}
+              setShowFilterDrawer={setShowFilterDrawer}
+              getActiveFiltersCount={getActiveFiltersCount}
+              columns={columnsDolores}
+              filterOptions={filterOptions}
+              actions={[
+                {
+                  label: 'Ver detalles',
+                  icon: <EyeIcon className="w-4 h-4" />,
+                  onClick: handleVerDolor,
+                  title: 'Ver detalles del dolor'
+                },
+                {
+                  label: 'Editar',
+                  icon: <EditIcon className="w-4 h-4" />,
+                  onClick: handleEditarDolor,
+                  title: 'Editar dolor'
+                },
+                {
+                  label: 'Marcar como Resuelto',
+                  icon: <CheckIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'resuelto'),
+                  title: 'Marcar dolor como resuelto',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'resuelto'
+                },
+                {
+                  label: 'Archivar',
+                  icon: <CheckCircleIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'archivado'),
+                  title: 'Archivar dolor',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'archivado'
+                },
+                {
+                  label: 'Reactivar',
+                  icon: <RefreshIcon className="w-4 h-4" />,
+                  onClick: (dolor: DolorParticipante) => handleCambiarEstadoDolor(dolor, 'activo'),
+                  title: 'Reactivar dolor',
+                  show: (dolor: DolorParticipante) => dolor.estado !== 'activo'
+                },
+                {
+                  label: 'Eliminar',
+                  icon: <TrashIcon className="w-4 h-4" />,
+                  onClick: handleEliminarDolor,
+                  className: 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300',
+                  title: 'Eliminar dolor'
+                }
+              ]}
+            />
+          ) : (
+            <EmptyState
+              icon={<AlertTriangleIcon className="w-8 h-8" />}
+              title="Sin dolores registrados"
+              description="Este participante no tiene dolores o necesidades registradas."
+            />
+          )}
+        </>
+      )
+    },
+    {
+      id: 'perfilamientos',
+      label: 'Perfilamiento',
+      content: (
+        <PerfilamientosTab
+          participanteId={id as string}
+          participanteNombre={participante?.nombre || ''}
+          usuarios={usuarios}
+        />
+      )
+    },
     {
       id: 'notas-automaticas',
       label: 'Notas Automáticas',
       content: (
         <NotasAutomaticasContent
-          reclutamientoId={tipoSesion === 'apoyo' ? sesionApoyo?.id : reclutamiento?.id}
+          reclutamientoId={reclutamiento?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
           transcripcionCompleta={audioTranscription.state.transcription}
