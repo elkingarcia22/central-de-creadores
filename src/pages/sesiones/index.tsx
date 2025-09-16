@@ -696,6 +696,12 @@ const SesionesPageContent: React.FC = () => {
         console.log('🔗 [SESION APOYO] Abriendo enlace de Meet:', sesion.meet_link);
         
         // Guardar información de la sesión de apoyo en localStorage
+        console.log('🔍 [SESION APOYO] Datos de sesión antes de guardar:', {
+          participante: sesion.participante,
+          tipo_participante: sesion.tipo_participante,
+          sesionCompleta: sesion
+        });
+        
         const sesionApoyoData = {
           id: sesion.id,
           meet_link: sesion.meet_link,

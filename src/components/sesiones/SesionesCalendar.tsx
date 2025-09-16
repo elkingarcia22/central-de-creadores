@@ -316,6 +316,12 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
           console.log('🎯 [CALENDARIO] Procesando sesión de apoyo');
           
           // Guardar información de la sesión de apoyo en localStorage
+          console.log('🔍 [CALENDARIO] Datos de sesión antes de guardar:', {
+            participante: sesionData.participante,
+            tipo_participante: sesionData.tipo_participante,
+            sesionDataCompleta: sesionData
+          });
+          
           const sesionApoyoData = {
             id: sesion.id,
             meet_link: sesion.meet_link,

@@ -116,6 +116,7 @@ export default function SesionActivaApoyoPage() {
         try {
           const sesionData = JSON.parse(currentSesionApoyo);
           console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
+          console.log('🔍 Participante en sesionData:', sesionData.participante);
           setSesionApoyo(sesionData);
           
           // Cargar información del participante
