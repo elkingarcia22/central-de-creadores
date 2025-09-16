@@ -92,6 +92,7 @@ export { default as DepartamentoSelect } from './DepartamentoSelect';
 // Modales específicos
 export { default as AgregarParticipanteModal } from "./AgregarParticipanteModal";
 export { default as EditarReclutamientoModal } from "./EditarReclutamientoModal";
+export { default as EditarSesionApoyoModal } from "./EditarSesionApoyoModal";
 export { default as CrearReclutamientoModal } from "./CrearReclutamientoModal";
 export { default as AsignarAgendamientoModal } from "./AsignarAgendamientoModal";
 
