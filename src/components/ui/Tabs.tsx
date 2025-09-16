@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import '../../styles/tabs-fix.css';
 
 export interface TabItem {
   id: string;

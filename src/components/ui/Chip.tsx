@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import '../../styles/tabs-fix.css';
 
 export interface ChipProps {
   children: React.ReactNode;
