@@ -26,6 +26,7 @@ interface SesionApoyoData {
   objetivo_sesion: string;
   observadores: string[];
   estado_agendamiento?: string;
+  estado_real?: string;
   tipo: 'apoyo';
   // Información del participante
   participante?: {
@@ -186,6 +187,7 @@ export default function SesionActivaApoyoPage() {
           const sesionData = JSON.parse(currentSesionApoyo);
           console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
           console.log('🔍 Estado de agendamiento:', sesionData.estado_agendamiento);
+          console.log('🔍 Estado real:', sesionData.estado_real);
           setSesionApoyo(sesionData);
           
           // Cargar información completa del participante desde la API
@@ -904,10 +906,10 @@ export default function SesionActivaApoyoPage() {
             label="Estado de Agendamiento"
             value={
               <Chip 
-                variant={getChipVariant(sesionApoyo.estado_agendamiento || '') as any}
+                variant={getChipVariant(sesionApoyo.estado_real || sesionApoyo.estado_agendamiento || '') as any}
                 size="sm"
               >
-                {sesionApoyo.estado_agendamiento || 'Sin estado'}
+                {sesionApoyo.estado_real || sesionApoyo.estado_agendamiento || 'Sin estado'}
               </Chip>
             }
           />
