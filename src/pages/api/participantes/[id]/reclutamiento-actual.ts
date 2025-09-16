@@ -355,7 +355,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // PASO 8: Formatear respuesta
+    // PASO 8: Obtener observadores desde el libreto de la investigación
+    let observadores = [];
+    if (reclutamiento.investigacion_id) {
+      console.log('🔍 PASO 8: Buscando observadores en libreto de investigación...');
+      const { data: libretoData, error: libretoError } = await supabase
+        .from('libretos_investigacion')
+        .select('usuarios_participantes')
+        .eq('investigacion_id', reclutamiento.investigacion_id)
+        .single();
+      
+      if (libretoError) {
+        console.error('❌ Error consultando libreto:', libretoError);
+      } else if (libretoData && libretoData.usuarios_participantes) {
+        observadores = libretoData.usuarios_participantes;
+        console.log('✅ Observadores encontrados en libreto:', observadores);
+      } else {
+        console.log('ℹ️ No se encontraron observadores en el libreto');
+      }
+    }
+
+    // PASO 9: Formatear respuesta
     const reclutamientoFormateado = {
       id: reclutamiento.id,
       investigacion_id: reclutamiento.investigacion_id, // Agregar investigacion_id para navegación
@@ -375,6 +395,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       creado_por: reclutamiento.creado_por,
       hora_sesion: reclutamiento.hora_sesion, // Asegurarse de que se incluya
       meet_link: reclutamiento.meet_link, // Agregar enlace de Google Meet
+      observadores: observadores, // Agregar observadores desde el libreto
     };
     
     // Debug: Log para verificar qué campos están llegando
@@ -382,6 +403,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('🔍 API: reclutamiento.meet_link:', reclutamiento.meet_link);
     console.log('🔍 API: reclutamientoFormateado.hora_sesion:', reclutamientoFormateado.hora_sesion);
     console.log('🔍 API: reclutamientoFormateado.meet_link:', reclutamientoFormateado.meet_link);
+    console.log('🔍 API: reclutamientoFormateado.observadores:', reclutamientoFormateado.observadores);
     console.log('🔍 API: Campos del reclutamiento original:', Object.keys(reclutamiento));
 
     console.log('✅ Respuesta final formateada:', reclutamientoFormateado);
