@@ -702,6 +702,17 @@ const SesionesPageContent: React.FC = () => {
       console.log('🔍 [SESION APOYO] sesion.estado_real:', sesion.estado_real);
       console.log('🔍 [SESION APOYO] sesion.estado:', sesion.estado);
       
+      // Guardar logs en localStorage para que no se pierdan al recargar
+      const debugLogs = {
+        timestamp: new Date().toISOString(),
+        sesionId: sesion.id,
+        estado_agendamiento: sesion.estado_agendamiento,
+        estado_real: sesion.estado_real,
+        estado: sesion.estado,
+        camposDisponibles: Object.keys(sesion)
+      };
+      localStorage.setItem('debug_sesion_apoyo', JSON.stringify(debugLogs));
+      
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
         console.log('🔗 [SESION APOYO] Abriendo enlace de Meet:', sesion.meet_link);
@@ -728,6 +739,17 @@ const SesionesPageContent: React.FC = () => {
         console.log('🔍 [DEBUG] estado_agendamiento guardado:', sesionApoyoData.estado_agendamiento);
         console.log('🔍 [DEBUG] estado_real guardado:', sesionApoyoData.estado_real);
         console.log('🔍 [DEBUG] Campos guardados:', Object.keys(sesionApoyoData));
+        
+        // Guardar logs del guardado en localStorage para que no se pierdan al recargar
+        const debugGuardado = {
+          timestamp: new Date().toISOString(),
+          sesionId: sesion.id,
+          estado_agendamiento_guardado: sesionApoyoData.estado_agendamiento,
+          estado_real_guardado: sesionApoyoData.estado_real,
+          camposGuardados: Object.keys(sesionApoyoData),
+          sesionApoyoDataCompleta: sesionApoyoData
+        };
+        localStorage.setItem('debug_guardado_sesion_apoyo', JSON.stringify(debugGuardado));
         
         // Abrir Meet en nueva pestaña
         console.log('🌐 [SESION APOYO] Abriendo Meet en nueva pestaña...');

@@ -115,6 +115,18 @@ export default function SesionActivaApoyoPage() {
 
   useEffect(() => {
     if (id) {
+      // Mostrar logs de debug guardados
+      const debugLogs = localStorage.getItem('debug_sesion_apoyo');
+      const debugGuardado = localStorage.getItem('debug_guardado_sesion_apoyo');
+      
+      if (debugLogs) {
+        console.log('🔍 [DEBUG LOGS] Logs de sesión de apoyo:', JSON.parse(debugLogs));
+      }
+      
+      if (debugGuardado) {
+        console.log('🔍 [DEBUG GUARDADO] Logs de guardado:', JSON.parse(debugGuardado));
+      }
+      
       loadSesionApoyoData();
     }
   }, [id]);
