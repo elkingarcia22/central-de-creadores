@@ -226,6 +226,7 @@ export default function SesionActivaApoyoPage() {
       const response = await fetch(`/api/participantes/${id}/investigaciones`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Respuesta completa de investigaciones:', data);
         setInvestigaciones(data.investigaciones || []);
         
         // Calcular participaciones por mes
@@ -240,6 +241,11 @@ export default function SesionActivaApoyoPage() {
         
         console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
         console.log('🔍 Participaciones por mes:', participacionesPorMes);
+        console.log('🔍 Primera investigación (ejemplo):', data.investigaciones?.[0]);
+      } else {
+        console.error('🔍 Error en respuesta de investigaciones:', response.status, response.statusText);
+        const errorData = await response.text();
+        console.error('🔍 Error data:', errorData);
       }
     } catch (error) {
       console.error('Error cargando investigaciones:', error);
