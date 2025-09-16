@@ -63,6 +63,7 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
       let responsableReal = 'Sin asignar';
       let implementadorReal = 'Sin asignar';
       let estadoAgendamientoNombre = 'Sin estado';
+      let observadores = [];
 
       try {
         // 1. Obtener datos del participante
@@ -155,7 +156,21 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
           }
         }
 
-        // 5. Obtener nombre del estado de agendamiento
+        // 5. Obtener observadores desde el libreto de la investigación
+        if (reclutamiento.investigacion_id) {
+          const { data: libretoData } = await supabaseServer
+            .from('libretos_investigacion')
+            .select('usuarios_participantes')
+            .eq('investigacion_id', reclutamiento.investigacion_id)
+            .single();
+          
+          if (libretoData && libretoData.usuarios_participantes) {
+            observadores = libretoData.usuarios_participantes;
+            console.log('🔍 Observadores encontrados en libreto:', observadores);
+          }
+        }
+
+        // 6. Obtener nombre del estado de agendamiento
         if (reclutamiento.estado_agendamiento) {
           const { data: estadoData } = await supabaseServer
             .from('estado_agendamiento_cat')
@@ -178,7 +193,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         investigacionNombre, 
         responsableReal, 
         implementadorReal,
-        estadoAgendamientoNombre
+        estadoAgendamientoNombre,
+        observadores
       };
     };
 
@@ -191,7 +207,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         investigacionNombre, 
         responsableReal, 
         implementadorReal,
-        estadoAgendamientoNombre
+        estadoAgendamientoNombre,
+        observadores
       } = await obtenerDatosCompletos(reclutamiento);
 
       // Usar el nombre real del estado de agendamiento
@@ -238,8 +255,8 @@ async function getSesiones(req: NextApiRequest, res: NextApiResponse) {
         estado_real: estadoAgendamientoNombre,
         responsable_real: responsableReal,
         implementador_real: implementadorReal,
-        // Campo de observadores (usar usuarios_libreto que son los observadores)
-        observadores: reclutamiento.usuarios_libreto || []
+        // Campo de observadores (obtenidos desde el libreto de la investigación)
+        observadores: observadores
       };
     });
 
