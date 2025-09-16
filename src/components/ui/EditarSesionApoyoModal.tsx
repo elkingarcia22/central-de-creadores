@@ -216,31 +216,42 @@ export default function EditarSesionApoyoModal({
       // Cargar participantes externos
       console.log('🔍 [EditarSesionApoyoModal] Cargando participantes externos...');
       const responseExternos = await fetch('/api/participantes');
+      console.log('🔍 [EditarSesionApoyoModal] Response externos status:', responseExternos.status);
       if (responseExternos.ok) {
         const dataExternos = await responseExternos.json();
-        console.log('🔍 [EditarSesionApoyoModal] Participantes externos cargados:', dataExternos.participantes?.length || 0);
-        setParticipantesExternos(dataExternos.participantes || []);
+        console.log('🔍 [EditarSesionApoyoModal] Participantes externos cargados:', dataExternos?.length || 0);
+        setParticipantesExternos(dataExternos || []);
+      } else {
+        console.error('🔍 [EditarSesionApoyoModal] Error cargando participantes externos:', responseExternos.status);
       }
 
       // Cargar participantes internos
       console.log('🔍 [EditarSesionApoyoModal] Cargando participantes internos...');
       const responseInternos = await fetch('/api/participantes-internos');
+      console.log('🔍 [EditarSesionApoyoModal] Response internos status:', responseInternos.status);
       if (responseInternos.ok) {
         const dataInternos = await responseInternos.json();
-        console.log('🔍 [EditarSesionApoyoModal] Participantes internos cargados:', dataInternos.participantes?.length || 0);
-        setParticipantesInternos(dataInternos.participantes || []);
+        console.log('🔍 [EditarSesionApoyoModal] Participantes internos cargados:', dataInternos?.length || 0);
+        setParticipantesInternos(dataInternos || []);
+      } else {
+        console.error('🔍 [EditarSesionApoyoModal] Error cargando participantes internos:', responseInternos.status);
       }
 
       // Cargar participantes friend & family
       console.log('🔍 [EditarSesionApoyoModal] Cargando participantes friend & family...');
       const responseFriendFamily = await fetch('/api/participantes-friend-family');
+      console.log('🔍 [EditarSesionApoyoModal] Response friend family status:', responseFriendFamily.status);
       if (responseFriendFamily.ok) {
         const dataFriendFamily = await responseFriendFamily.json();
-        console.log('🔍 [EditarSesionApoyoModal] Participantes friend & family cargados:', dataFriendFamily.participantes?.length || 0);
-        setParticipantesFriendFamily(dataFriendFamily.participantes || []);
+        console.log('🔍 [EditarSesionApoyoModal] Participantes friend & family cargados:', dataFriendFamily?.length || 0);
+        setParticipantesFriendFamily(dataFriendFamily || []);
+      } else {
+        console.error('🔍 [EditarSesionApoyoModal] Error cargando participantes friend & family:', responseFriendFamily.status);
       }
+      
+      console.log('🔍 [EditarSesionApoyoModal] cargarParticipantes() completado exitosamente');
     } catch (error) {
-      console.error('Error cargando participantes:', error);
+      console.error('🔍 [EditarSesionApoyoModal] Error en cargarParticipantes():', error);
     }
   };
 
