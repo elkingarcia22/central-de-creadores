@@ -1805,6 +1805,14 @@ export default function SesionActivaApoyoPage() {
           }}
           onSave={async () => {}} // No se usa en modo view
           loading={false}
+          readOnly={true}
+          onEdit={() => {
+            if (dolorSeleccionado) {
+              setDolorSeleccionado(dolorSeleccionado);
+            }
+            setShowVerDolorModal(false);
+            setShowEditarDolorModal(true);
+          }}
         />
       )}
 
