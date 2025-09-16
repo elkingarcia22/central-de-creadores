@@ -89,13 +89,17 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     // Función para mapear estado a estado_agendamiento
     const mapearEstadoAgendamiento = (estado: string) => {
+      console.log('🔍 [MAPEO DEBUG] Mapeando estado:', estado);
+      let resultado;
       switch (estado) {
-        case 'programada': return 'Pendiente';
-        case 'en_curso': return 'En progreso';
-        case 'completada': return 'Finalizado';
-        case 'cancelada': return 'Cancelado';
-        default: return 'Pendiente';
+        case 'programada': resultado = 'Pendiente'; break;
+        case 'en_curso': resultado = 'En progreso'; break;
+        case 'completada': resultado = 'Finalizado'; break;
+        case 'cancelada': resultado = 'Cancelado'; break;
+        default: resultado = 'Pendiente'; break;
       }
+      console.log('🔍 [MAPEO DEBUG] Resultado del mapeo:', resultado);
+      return resultado;
     };
 
     // Función para obtener información del participante (ya obtenido arriba)
@@ -117,6 +121,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         tipoParticipante = 'externo';
       }
       
+      const estadoAgendamiento = mapearEstadoAgendamiento(sesion.estado);
+      const estadoReal = mapearEstadoAgendamiento(sesion.estado);
+      
+      console.log('🔍 [API DEBUG] Sesión original:', {
+        id: sesion.id,
+        estado: sesion.estado,
+        estado_agendamiento: estadoAgendamiento,
+        estado_real: estadoReal
+      });
+      
       return {
         id: sesion.id,
         titulo: sesion.titulo,
@@ -125,8 +139,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         hora_sesion: sesion.hora_sesion,
         duracion_minutos: sesion.duracion_minutos,
         estado: sesion.estado,
-        estado_agendamiento: mapearEstadoAgendamiento(sesion.estado), // Mapear a nombre del estado
-        estado_real: mapearEstadoAgendamiento(sesion.estado), // Estado real para el modal
+        estado_agendamiento: estadoAgendamiento, // Mapear a nombre del estado
+        estado_real: estadoReal, // Estado real para el modal
         moderador_id: sesion.moderador_id,
         moderador_nombre: sesion.profiles?.full_name || 'Sin asignar',
         moderador_email: sesion.profiles?.email || '',
