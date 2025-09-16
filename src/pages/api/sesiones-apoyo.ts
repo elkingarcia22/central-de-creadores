@@ -25,7 +25,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   try {
     console.log('🔄 Obteniendo sesiones de apoyo...');
     
-    const { data, error } = await supabase
+    // Primero obtener las sesiones básicas
+    const { data: sesionesBasicas, error: errorBasicas } = await supabase
       .from('sesiones_apoyo')
       .select(`
         *,
@@ -33,58 +34,58 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           id,
           full_name,
           email
-        ),
-        participantes!sesiones_apoyo_participantes_id_fkey(
-          id,
-          nombre,
-          email,
-          telefono,
-          fecha_nacimiento,
-          genero,
-          estado_participante,
-          empresa_nombre,
-          rol_empresa,
-          departamento_nombre,
-          comentarios,
-          doleres_necesidades,
-          created_at,
-          updated_at
-        ),
-        participantes_internos!sesiones_apoyo_participantes_internos_id_fkey(
-          id,
-          nombre,
-          email,
-          telefono,
-          fecha_nacimiento,
-          genero,
-          estado_participante,
-          departamento_nombre,
-          comentarios,
-          doleres_necesidades,
-          created_at,
-          updated_at
-        ),
-        participantes_friend_family!sesiones_apoyo_participantes_friend_family_id_fkey(
-          id,
-          nombre,
-          email,
-          telefono,
-          fecha_nacimiento,
-          genero,
-          estado_participante,
-          departamento_nombre,
-          comentarios,
-          doleres_necesidades,
-          created_at,
-          updated_at
         )
       `)
       .order('fecha_programada', { ascending: true });
 
-    if (error) {
-      console.error('Error obteniendo sesiones de apoyo:', error);
+    if (errorBasicas) {
+      console.error('Error obteniendo sesiones básicas:', errorBasicas);
       return res.status(500).json({ error: 'Error obteniendo sesiones de apoyo' });
     }
+
+    // Ahora obtener los participantes para cada sesión
+    const sesionesConParticipantes = await Promise.all(
+      (sesionesBasicas || []).map(async (sesion) => {
+        let participante = null;
+
+        // Buscar participante según el tipo
+        if (sesion.participantes_id) {
+          const { data: participanteData } = await supabase
+            .from('participantes')
+            .select('*')
+            .eq('id', sesion.participantes_id)
+            .single();
+          if (participanteData) {
+            participante = { ...participanteData, tipo: 'externo' };
+          }
+        } else if (sesion.participantes_internos_id) {
+          const { data: participanteData } = await supabase
+            .from('participantes_internos')
+            .select('*')
+            .eq('id', sesion.participantes_internos_id)
+            .single();
+          if (participanteData) {
+            participante = { ...participanteData, tipo: 'interno' };
+          }
+        } else if (sesion.participantes_friend_family_id) {
+          const { data: participanteData } = await supabase
+            .from('participantes_friend_family')
+            .select('*')
+            .eq('id', sesion.participantes_friend_family_id)
+            .single();
+          if (participanteData) {
+            participante = { ...participanteData, tipo: 'friend_family' };
+          }
+        }
+
+        return {
+          ...sesion,
+          participante
+        };
+      })
+    );
+
+    const data = sesionesConParticipantes;
 
     // Función para mapear estado a estado_agendamiento
     const mapearEstadoAgendamiento = (estado: string) => {
@@ -97,60 +98,9 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       }
     };
 
-    // Función para obtener información del participante
+    // Función para obtener información del participante (ya obtenido arriba)
     const obtenerParticipante = (sesion: any) => {
-      if (sesion.participantes) {
-        return {
-          id: sesion.participantes.id,
-          nombre: sesion.participantes.nombre,
-          email: sesion.participantes.email,
-          telefono: sesion.participantes.telefono,
-          fecha_nacimiento: sesion.participantes.fecha_nacimiento,
-          genero: sesion.participantes.genero,
-          estado_participante: sesion.participantes.estado_participante,
-          empresa_nombre: sesion.participantes.empresa_nombre,
-          rol_empresa: sesion.participantes.rol_empresa,
-          departamento_nombre: sesion.participantes.departamento_nombre,
-          comentarios: sesion.participantes.comentarios,
-          doleres_necesidades: sesion.participantes.doleres_necesidades,
-          created_at: sesion.participantes.created_at,
-          updated_at: sesion.participantes.updated_at,
-          tipo: 'externo' as const
-        };
-      } else if (sesion.participantes_internos) {
-        return {
-          id: sesion.participantes_internos.id,
-          nombre: sesion.participantes_internos.nombre,
-          email: sesion.participantes_internos.email,
-          telefono: sesion.participantes_internos.telefono,
-          fecha_nacimiento: sesion.participantes_internos.fecha_nacimiento,
-          genero: sesion.participantes_internos.genero,
-          estado_participante: sesion.participantes_internos.estado_participante,
-          departamento_nombre: sesion.participantes_internos.departamento_nombre,
-          comentarios: sesion.participantes_internos.comentarios,
-          doleres_necesidades: sesion.participantes_internos.doleres_necesidades,
-          created_at: sesion.participantes_internos.created_at,
-          updated_at: sesion.participantes_internos.updated_at,
-          tipo: 'interno' as const
-        };
-      } else if (sesion.participantes_friend_family) {
-        return {
-          id: sesion.participantes_friend_family.id,
-          nombre: sesion.participantes_friend_family.nombre,
-          email: sesion.participantes_friend_family.email,
-          telefono: sesion.participantes_friend_family.telefono,
-          fecha_nacimiento: sesion.participantes_friend_family.fecha_nacimiento,
-          genero: sesion.participantes_friend_family.genero,
-          estado_participante: sesion.participantes_friend_family.estado_participante,
-          departamento_nombre: sesion.participantes_friend_family.departamento_nombre,
-          comentarios: sesion.participantes_friend_family.comentarios,
-          doleres_necesidades: sesion.participantes_friend_family.doleres_necesidades,
-          created_at: sesion.participantes_friend_family.created_at,
-          updated_at: sesion.participantes_friend_family.updated_at,
-          tipo: 'friend_family' as const
-        };
-      }
-      return null;
+      return sesion.participante;
     };
 
     // Formatear las sesiones para que tengan la misma estructura que las sesiones de reclutamiento
