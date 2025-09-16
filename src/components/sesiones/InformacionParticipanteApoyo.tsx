@@ -7,7 +7,7 @@ import {
   PhoneIcon,
   CalendarIcon,
   ClockIcon
-} from '@heroicons/react/24/outline';
+} from '../../components/icons';
 import { InfoContainer, InfoItem } from '../ui/InfoContainer';
 import { Chip } from '../ui/Chip';
 import { Typography } from '../ui/Typography';
