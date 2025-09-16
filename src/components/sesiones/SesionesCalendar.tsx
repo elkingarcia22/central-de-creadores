@@ -592,6 +592,13 @@ const SesionesCalendar = forwardRef<SesionesCalendarRef, SesionesCalendarProps>(
         // Si es una sesión de apoyo, usar el modal específico
         if (sesionToEdit.tipo === 'apoyo') {
           console.log('🚀 [AGENDA EDIT] Usando EditarSesionApoyoModal');
+          console.log('🚀 [AGENDA EDIT] Datos de participante en sesionToEdit:', {
+            participantes_id: sesionToEdit.participantes_id,
+            participantes_internos_id: sesionToEdit.participantes_internos_id,
+            participantes_friend_family_id: sesionToEdit.participantes_friend_family_id,
+            participante: sesionToEdit.participante,
+            tipo_participante: sesionToEdit.tipo_participante
+          });
           return (
             <EditarSesionApoyoModal
               isOpen={showEditModal}

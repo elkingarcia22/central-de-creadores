@@ -102,6 +102,13 @@ export default function EditarSesionApoyoModal({
   useEffect(() => {
     if (isOpen && sesion) {
       console.log('🔍 [EditarSesionApoyoModal] Inicializando con sesión:', sesion);
+      console.log('🔍 [EditarSesionApoyoModal] Campos de participante en sesión:', {
+        participantes_id: sesion.participantes_id,
+        participantes_internos_id: sesion.participantes_internos_id,
+        participantes_friend_family_id: sesion.participantes_friend_family_id,
+        participante: sesion.participante,
+        tipo_participante: sesion.tipo_participante
+      });
       
       // Determinar tipo de participante basándose en la sesión
       let tipoPart = 'externo';
