@@ -58,6 +58,7 @@ interface Reclutamiento {
     nombre: string;
     email: string;
   };
+  observadores?: string[];
 }
 
 interface Empresa {
