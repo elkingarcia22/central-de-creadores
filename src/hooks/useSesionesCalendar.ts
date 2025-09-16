@@ -214,6 +214,12 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       console.log('🔍 [HOOK] Sesiones con observadores:', sesionesConObservadores?.length || 0);
       if (sesionesConObservadores && sesionesConObservadores.length > 0) {
         console.log('🔍 [HOOK] Detalles de sesiones con observadores:', sesionesConObservadores);
+        console.log('🔍 [HOOK] Fechas de sesiones con observadores:', sesionesConObservadores.map((s: any) => ({
+          id: s.id,
+          fecha: s.fecha_programada,
+          titulo: s.titulo,
+          observadores: s.observadores?.length || 0
+        })));
       }
       
       // Cargar sesiones de apoyo
