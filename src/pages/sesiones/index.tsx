@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, AgregarParticipanteModal, FilterDrawer, AIButton } from '../../components/ui';
+import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, EditarSesionApoyoModal, AgregarParticipanteModal, FilterDrawer, AIButton } from '../../components/ui';
 import { FilterValuesSesiones } from '../../components/ui/FilterDrawer';
 import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
@@ -1493,8 +1493,28 @@ const SesionesPageContent: React.FC = () => {
         );
       })()}
 
-      {/* Modal de edición de reclutamiento */}
+      {/* Modal de edición - según tipo de sesión */}
       {sesionToEdit && (() => {
+        console.log('🚀 [LISTA EDIT] Renderizando modal de edición desde lista');
+        console.log('🚀 [LISTA EDIT] sesionToEdit:', JSON.stringify(sesionToEdit, null, 2));
+        console.log('🚀 [LISTA EDIT] Tipo de sesión:', sesionToEdit.tipo);
+        
+        // Si es una sesión de apoyo, usar el modal específico
+        if (sesionToEdit.tipo === 'apoyo') {
+          console.log('🚀 [LISTA EDIT] Usando EditarSesionApoyoModal');
+          return (
+            <EditarSesionApoyoModal
+              isOpen={showEditModal}
+              onClose={handleCloseEditModal}
+              onSuccess={handleEditSuccess}
+              sesion={sesionToEdit}
+            />
+          );
+        }
+        
+        // Si es una sesión de reclutamiento, usar el modal de reclutamiento
+        console.log('🚀 [LISTA EDIT] Usando EditarReclutamientoModal');
+        
         // Mapear el participante según su tipo
         const participanteMapping = (() => {
           const participanteId = sesionToEdit.participante?.id;
