@@ -121,19 +121,21 @@ export default function TestObservadoresCompleto() {
       setSesiones(sesionesData || []);
       addLog(`✅ Sesiones cargadas: ${sesionesData?.length || 0}`);
 
-      // 3. Cargar usuarios
+      // 3. Cargar usuarios (temporalmente deshabilitado hasta conocer estructura)
       addLog('👥 Cargando usuarios...');
-      const { data: usuariosData, error: errorUsuarios } = await supabase
-        .from('usuarios')
-        .select('id, full_name, email');
+      addLog('⚠️ Carga de usuarios temporalmente deshabilitada - necesitamos estructura de tabla');
+      
+      // const { data: usuariosData, error: errorUsuarios } = await supabase
+      //   .from('usuarios')
+      //   .select('id, full_name, email');
 
-      if (errorUsuarios) {
-        addLog(`❌ Error cargando usuarios: ${errorUsuarios.message}`);
-        return;
-      }
+      // if (errorUsuarios) {
+      //   addLog(`❌ Error cargando usuarios: ${errorUsuarios.message}`);
+      //   return;
+      // }
 
-      setUsuarios(usuariosData || []);
-      addLog(`✅ Usuarios cargados: ${usuariosData?.length || 0}`);
+      setUsuarios([]);
+      addLog(`✅ Usuarios cargados: 0 (temporalmente deshabilitado)`);
 
       // 4. Análisis de datos
       analizarDatos(libretosData || [], sesionesData || []);
