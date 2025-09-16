@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../api/supabase';
 
-interface Reclutamiento {
+interface Libreto {
   id: string;
   investigacion_id: string;
-  participantes_id: string | null;
-  fecha_asignado: string;
-  fecha_sesion: string | null;
-  reclutador_id: string | null;
+  problema_situacion: string | null;
+  hipotesis: string | null;
+  objetivos: string | null;
+  resultado_esperado: string | null;
+  productos_requeridos: string[] | null;
+  plataforma_id: string | null;
+  tipo_prueba: string | null;
+  rol_empresa_id: string | null;
+  industria_id: string | null;
+  pais: string | null;
+  numero_participantes_esperados: number | null;
+  nombre_sesion: string | null;
+  usuarios_participantes: string[] | null;
+  duracion_estimada_minutos: number | null;
+  descripcion_general: string | null;
+  link_prototipo: string | null;
   creado_por: string | null;
-  estado_agendamiento: string | null;
-  updated_at: string;
-  duracion_sesion: number;
-  participantes_internos_id: string | null;
-  tipo_participante: string | null;
-  participantes_friend_family_id: string | null;
-  hora_sesion: string | null;
-  responsable_agendamiento: string | null;
-  meet_link: string | null;
-  usuarios_libreto: string[] | null;
+  creado_el: string;
+  actualizado_el: string;
+  duracion_estimada: number | null;
+  tipo_prueba_id: string | null;
+  pais_id: string | null;
+  productos_recomendaciones: string | null;
+  numero_participantes: number | null;
+  modalidad_id: string[] | null;
+  tamano_empresa_id: string[] | null;
 }
 
 interface Sesion {
@@ -37,7 +48,7 @@ interface Usuario {
 }
 
 export default function TestObservadoresCompleto() {
-  const [reclutamientos, setReclutamientos] = useState<Reclutamiento[]>([]);
+  const [libretos, setLibretos] = useState<Libreto[]>([]);
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,26 +69,25 @@ export default function TestObservadoresCompleto() {
     addLog('🚀 Iniciando carga de datos de prueba...');
 
     try {
-      // 1. Cargar reclutamientos con usuarios_libreto
-      addLog('📋 Cargando reclutamientos...');
-      const { data: reclutamientosData, error: errorReclutamientos } = await supabase
-        .from('reclutamientos')
+      // 1. Cargar libretos con usuarios_participantes (observadores)
+      addLog('📋 Cargando libretos de investigación...');
+      const { data: libretosData, error: errorLibretos } = await supabase
+        .from('libretos_investigacion')
         .select(`
           id,
           investigacion_id,
-          usuarios_libreto,
-          fecha_sesion,
-          reclutador_id,
-          tipo_participante
+          usuarios_participantes,
+          nombre_sesion,
+          creado_por
         `);
 
-      if (errorReclutamientos) {
-        addLog(`❌ Error cargando reclutamientos: ${errorReclutamientos.message}`);
+      if (errorLibretos) {
+        addLog(`❌ Error cargando libretos: ${errorLibretos.message}`);
         return;
       }
 
-      setReclutamientos(reclutamientosData || []);
-      addLog(`✅ Reclutamientos cargados: ${reclutamientosData?.length || 0}`);
+      setLibretos(libretosData || []);
+      addLog(`✅ Libretos cargados: ${libretosData?.length || 0}`);
 
       // 2. Cargar sesiones de reclutamiento
       addLog('📅 Cargando sesiones de reclutamiento...');
@@ -87,13 +97,7 @@ export default function TestObservadoresCompleto() {
           id,
           titulo,
           fecha_programada,
-          reclutamiento_id,
-          reclutamientos!sesiones_reclutamiento_reclutamiento_id_fkey(
-            id,
-            usuarios_libreto,
-            fecha_sesion,
-            reclutador_id
-          )
+          reclutamiento_id
         `);
 
       if (errorSesiones) {
@@ -119,7 +123,7 @@ export default function TestObservadoresCompleto() {
       addLog(`✅ Usuarios cargados: ${usuariosData?.length || 0}`);
 
       // 4. Análisis de datos
-      analizarDatos(reclutamientosData || [], sesionesData || []);
+      analizarDatos(libretosData || [], sesionesData || []);
 
     } catch (error) {
       addLog(`❌ Error general: ${error}`);
@@ -128,42 +132,48 @@ export default function TestObservadoresCompleto() {
     }
   };
 
-  const analizarDatos = (reclutamientosData: Reclutamiento[], sesionesData: any[]) => {
+  const analizarDatos = (libretosData: Libreto[], sesionesData: any[]) => {
     addLog('🔍 Analizando datos...');
 
-    // Analizar reclutamientos con usuarios_libreto
-    const reclutamientosConObservadores = reclutamientosData.filter(r => 
-      r.usuarios_libreto && r.usuarios_libreto.length > 0
+    // Analizar libretos con usuarios_participantes (observadores)
+    const libretosConObservadores = libretosData.filter(l => 
+      l.usuarios_participantes && l.usuarios_participantes.length > 0
     );
-    addLog(`📊 Reclutamientos con observadores: ${reclutamientosConObservadores.length}`);
+    addLog(`📊 Libretos con observadores: ${libretosConObservadores.length}`);
 
-    if (reclutamientosConObservadores.length > 0) {
-      addLog('📋 Detalles de reclutamientos con observadores:');
-      reclutamientosConObservadores.forEach(r => {
-        addLog(`  - Reclutamiento ${r.id}: ${r.usuarios_libreto.length} observadores`);
+    if (libretosConObservadores.length > 0) {
+      addLog('📋 Detalles de libretos con observadores:');
+      libretosConObservadores.forEach(l => {
+        addLog(`  - Libreto ${l.id} (Investigación: ${l.investigacion_id}): ${l.usuarios_participantes.length} observadores`);
+        addLog(`    Observadores IDs: ${JSON.stringify(l.usuarios_participantes)}`);
       });
+    } else {
+      addLog('⚠️ No se encontraron libretos con observadores');
     }
 
-    // Analizar sesiones con observadores
-    const sesionesConObservadores = sesionesData.filter(s => 
-      s.reclutamientos?.usuarios_libreto && 
-      s.reclutamientos.usuarios_libreto.length > 0
-    );
-    addLog(`📅 Sesiones con observadores: ${sesionesConObservadores.length}`);
+    // Analizar sesiones
+    addLog(`📅 Sesiones de reclutamiento: ${sesionesData.length}`);
 
-    if (sesionesConObservadores.length > 0) {
-      addLog('📋 Detalles de sesiones con observadores:');
-      sesionesConObservadores.forEach(s => {
-        addLog(`  - ${s.titulo} (ID: ${s.id}): ${s.reclutamientos.usuarios_libreto.length} observadores`);
+    if (sesionesData.length > 0) {
+      addLog('📋 Detalles de sesiones:');
+      sesionesData.forEach(s => {
+        addLog(`  - ${s.titulo} (ID: ${s.id})`);
         addLog(`    Fecha: ${s.fecha_programada}`);
-        addLog(`    Observadores IDs: ${JSON.stringify(s.reclutamientos.usuarios_libreto)}`);
+        addLog(`    Reclutamiento ID: ${s.reclutamiento_id}`);
       });
     }
 
     // Simular el mapeo que hace la API
     addLog('🔄 Simulando mapeo de la API...');
     const sesionesMapeadas = sesionesData.map(sesion => {
-      const observadores = sesion.reclutamientos?.usuarios_libreto || [];
+      // Buscar el libreto correspondiente a esta sesión
+      const libretoCorrespondiente = libretosData.find(l => 
+        // Aquí necesitaríamos la relación entre sesión y libreto
+        // Por ahora simulamos que no hay observadores
+        false
+      );
+      
+      const observadores = libretoCorrespondiente?.usuarios_participantes || [];
       addLog(`  - Sesión ${sesion.id}: observadores = ${JSON.stringify(observadores)}`);
       
       return {
@@ -208,10 +218,10 @@ export default function TestObservadoresCompleto() {
       {/* Resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-100 p-4 rounded-lg">
-          <h3 className="font-semibold text-blue-800">Reclutamientos</h3>
-          <p className="text-2xl font-bold text-blue-600">{reclutamientos.length}</p>
+          <h3 className="font-semibold text-blue-800">Libretos</h3>
+          <p className="text-2xl font-bold text-blue-600">{libretos.length}</p>
           <p className="text-sm text-blue-600">
-            Con observadores: {reclutamientos.filter(r => r.usuarios_libreto && r.usuarios_libreto.length > 0).length}
+            Con observadores: {libretos.filter(l => l.usuarios_participantes && l.usuarios_participantes.length > 0).length}
           </p>
         </div>
         
@@ -219,7 +229,7 @@ export default function TestObservadoresCompleto() {
           <h3 className="font-semibold text-green-800">Sesiones</h3>
           <p className="text-2xl font-bold text-green-600">{sesiones.length}</p>
           <p className="text-sm text-green-600">
-            Con observadores: {sesiones.filter(s => s.reclutamientos?.usuarios_libreto && s.reclutamientos.usuarios_libreto.length > 0).length}
+            Total de sesiones de reclutamiento
           </p>
         </div>
         
@@ -247,21 +257,22 @@ export default function TestObservadoresCompleto() {
         </div>
       </div>
 
-      {/* Reclutamientos con observadores */}
+      {/* Libretos con observadores */}
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-4">📋 Reclutamientos con Observadores</h3>
+        <h3 className="text-xl font-semibold mb-4">📋 Libretos con Observadores</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {reclutamientos
-            .filter(r => r.usuarios_libreto && r.usuarios_libreto.length > 0)
-            .map(reclutamiento => (
-              <div key={reclutamiento.id} className="border p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">Reclutamiento {reclutamiento.id}</h4>
-                <p className="text-sm text-gray-600 mb-2">ID: {reclutamiento.id}</p>
+          {libretos
+            .filter(l => l.usuarios_participantes && l.usuarios_participantes.length > 0)
+            .map(libreto => (
+              <div key={libreto.id} className="border p-4 rounded-lg">
+                <h4 className="font-semibold mb-2">Libreto {libreto.id}</h4>
+                <p className="text-sm text-gray-600 mb-2">ID: {libreto.id}</p>
+                <p className="text-sm text-gray-600 mb-2">Investigación: {libreto.investigacion_id}</p>
                 <p className="text-sm text-gray-600 mb-2">
-                  Observadores ({reclutamiento.usuarios_libreto.length}):
+                  Observadores ({libreto.usuarios_participantes.length}):
                 </p>
                 <ul className="text-sm">
-                  {reclutamiento.usuarios_libreto.map(userId => (
+                  {libreto.usuarios_participantes.map(userId => (
                     <li key={userId} className="ml-4">
                       • {obtenerNombreUsuario(userId)} ({userId})
                     </li>
@@ -272,31 +283,22 @@ export default function TestObservadoresCompleto() {
         </div>
       </div>
 
-      {/* Sesiones con observadores */}
+      {/* Sesiones de reclutamiento */}
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-4">📅 Sesiones con Observadores</h3>
+        <h3 className="text-xl font-semibold mb-4">📅 Sesiones de Reclutamiento</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sesiones
-            .filter(s => s.reclutamientos?.usuarios_libreto && s.reclutamientos.usuarios_libreto.length > 0)
-            .map(sesion => (
-              <div key={sesion.id} className="border p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">{sesion.titulo}</h4>
-                <p className="text-sm text-gray-600 mb-2">ID: {sesion.id}</p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Fecha: {new Date(sesion.fecha_programada).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Observadores ({sesion.reclutamientos.usuarios_libreto.length}):
-                </p>
-                <ul className="text-sm">
-                  {sesion.reclutamientos.usuarios_libreto.map(userId => (
-                    <li key={userId} className="ml-4">
-                      • {obtenerNombreUsuario(userId)} ({userId})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          {sesiones.map(sesion => (
+            <div key={sesion.id} className="border p-4 rounded-lg">
+              <h4 className="font-semibold mb-2">{sesion.titulo}</h4>
+              <p className="text-sm text-gray-600 mb-2">ID: {sesion.id}</p>
+              <p className="text-sm text-gray-600 mb-2">
+                Fecha: {new Date(sesion.fecha_programada).toLocaleDateString()}
+              </p>
+              <p className="text-sm text-gray-600 mb-2">
+                Reclutamiento ID: {sesion.reclutamiento_id}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 
