@@ -120,11 +120,11 @@ export default function SesionActivaApoyoPage() {
     };
   }, [showActionsMenu]);
 
-  const loadParticipantData = async () => {
+  const loadParticipantData = async (participanteId: string) => {
     try {
-      console.log('🔍 Iniciando carga de datos del participante para ID:', id);
+      console.log('🔍 Iniciando carga de datos del participante para ID:', participanteId);
       // Cargar datos completos del participante desde la API
-      const participanteResponse = await fetch(`/api/debug-participante?id=${id}`);
+      const participanteResponse = await fetch(`/api/participantes/${participanteId}`);
       console.log('🔍 Respuesta de la API de participantes:', participanteResponse.status, participanteResponse.statusText);
       
       if (participanteResponse.ok) {
@@ -154,7 +154,11 @@ export default function SesionActivaApoyoPage() {
           setSesionApoyo(sesionData);
           
           // Cargar información completa del participante desde la API
-          await loadParticipantData();
+          if (sesionData.participante && sesionData.participante.id) {
+            await loadParticipantData(sesionData.participante.id);
+          } else {
+            console.error('🔍 No se encontró ID del participante en la sesión de apoyo');
+          }
           
           // Cargar información del moderador
           await loadModeradorData(sesionData.moderador_id);
@@ -168,7 +172,9 @@ export default function SesionActivaApoyoPage() {
           await loadUsuarios();
           
           // Cargar investigaciones para el tab de información del participante
-          await loadInvestigacionesData();
+          if (sesionData.participante && sesionData.participante.id) {
+            await loadInvestigacionesData(sesionData.participante.id);
+          }
           
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
@@ -226,10 +232,10 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
-  const loadInvestigacionesData = async () => {
+  const loadInvestigacionesData = async (participanteId: string) => {
     try {
-      console.log('🔍 Cargando investigaciones para participante:', id);
-      const response = await fetch(`/api/participantes/${id}/investigaciones`);
+      console.log('🔍 Cargando investigaciones para participante:', participanteId);
+      const response = await fetch(`/api/participantes/${participanteId}/investigaciones`);
       if (response.ok) {
         const data = await response.json();
         console.log('🔍 Respuesta completa de investigaciones:', data);
@@ -607,20 +613,6 @@ export default function SesionActivaApoyoPage() {
           </InfoContainer>
         )}
 
-        {participante.doleres_necesidades && (
-          <InfoContainer 
-            title="Dolores y Necesidades"
-            icon={<AlertTriangleIcon className="w-4 h-4" />}
-            variant="bordered"
-            padding="md"
-          >
-            <div className="col-span-full">
-              <Typography variant="body2" color="secondary">
-                {participante.doleres_necesidades}
-                      </Typography>
-                    </div>
-          </InfoContainer>
-        )}
 
                   </div>
     );
