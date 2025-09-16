@@ -1538,7 +1538,7 @@ export default function SesionActivaPage() {
             value={
               <div className="flex items-center gap-2">
                 <span>{getNombreUsuario(reclutamiento.reclutador_id)}</span>
-                <Chip variant="terminada" size="sm">
+                <Chip variant="accent-violet" size="sm">
                   {getEmailUsuario(reclutamiento.reclutador_id)}
                 </Chip>
                   </div>
@@ -1669,7 +1669,7 @@ export default function SesionActivaPage() {
                       {getEmailUsuario(observadorId)}
                     </Typography>
                   </div>
-                  <Chip variant="terminada" size="sm">
+                  <Chip variant="accent-violet" size="sm">
                     Observador
                   </Chip>
                 </div>

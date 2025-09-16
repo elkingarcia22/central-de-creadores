@@ -420,13 +420,19 @@ export default function SesionActivaApoyoPage() {
   const getEstadoParticipanteVariant = (estado: string) => {
     switch (estado?.toLowerCase()) {
       case 'disponible':
-        return 'success';
+        return 'terminada';
+      case 'activo':
+        return 'terminada';
+      case 'buena':
+        return 'terminada';
+      case 'en enfriamiento':
+        return 'pendiente';
       case 'ocupado':
-        return 'warning';
+        return 'transitoria';
       case 'no_disponible':
-        return 'danger';
+        return 'fallo';
       default:
-        return 'secondary';
+        return 'default';
     }
   };
 
@@ -446,13 +452,13 @@ export default function SesionActivaApoyoPage() {
   const getChipVariant = (relacion: string) => {
     switch (relacion?.toLowerCase()) {
       case 'cliente':
-        return 'success';
+        return 'terminada';
       case 'prospecto':
-        return 'warning';
+        return 'transitoria';
       case 'ex-cliente':
-        return 'danger';
+        return 'fallo';
       default:
-        return 'secondary';
+        return 'default';
     }
   };
 
@@ -854,7 +860,7 @@ export default function SesionActivaApoyoPage() {
             value={
               <div className="flex items-center gap-2">
                 <span>{getNombreUsuario(sesionApoyo.moderador_id)}</span>
-                <Chip variant="terminada" size="sm">
+                <Chip variant="accent-violet" size="sm">
                   {getEmailUsuario(sesionApoyo.moderador_id)}
                 </Chip>
               </div>
@@ -940,7 +946,7 @@ export default function SesionActivaApoyoPage() {
                       {getEmailUsuario(observadorId)}
                     </Typography>
                   </div>
-                  <Chip variant="terminada" size="sm">
+                  <Chip variant="accent-violet" size="sm">
                     Observador
                   </Chip>
                 </div>

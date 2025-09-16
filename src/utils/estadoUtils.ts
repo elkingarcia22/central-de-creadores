@@ -85,6 +85,7 @@ export const getEstadoParticipanteVariant = (estado: string): 'terminada' | 'pen
   switch (estadoLower) {
     case 'activo': return 'terminada';         // Verde (estado exitoso)
     case 'disponible': return 'terminada';     // Verde (estado exitoso)
+    case 'buena': return 'terminada';          // Verde (estado exitoso)
     case 'en enfriamiento': return 'pendiente'; // Azul (estado pendiente)
     case 'pendiente': return 'pendiente';      // Azul (estado pendiente)
     case 'pendiente de agendamiento': return 'transitoria'; // Amarillo (estado transitorio)
@@ -108,6 +109,8 @@ export const getEstadoParticipanteText = (estado: string): string => {
       return 'Pendiente de Agendamiento';
     case 'disponible':
       return 'Disponible';
+    case 'buena':
+      return 'Buena';
     case 'en enfriamiento':
       return 'En Enfriamiento';
     default:
