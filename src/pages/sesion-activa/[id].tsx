@@ -380,7 +380,28 @@ export default function SesionActivaPage() {
       
       // Detectar tipo de sesión desde localStorage
       const currentSesion = localStorage.getItem('currentSesion');
-      if (currentSesion) {
+      const currentSesionApoyo = localStorage.getItem('currentSesionApoyo');
+      
+      if (currentSesionApoyo) {
+        try {
+          const sesionData = JSON.parse(currentSesionApoyo);
+          console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
+          
+          console.log('🔍 Detectada sesión de apoyo');
+          setTipoSesion('apoyo');
+          setSesionApoyo(sesionData);
+          
+          // Cargar datos del participante desde la sesión de apoyo
+          if (sesionData.participante) {
+            setParticipante(sesionData.participante);
+          }
+        } catch (error) {
+          console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
+          // Fallback: tratar como sesión de reclutamiento
+          setTipoSesion('reclutamiento');
+          await loadReclutamientoFromAPI();
+        }
+      } else if (currentSesion) {
         try {
           const sesionData = JSON.parse(currentSesion);
           console.log('🔍 Datos de sesión desde localStorage:', sesionData);
