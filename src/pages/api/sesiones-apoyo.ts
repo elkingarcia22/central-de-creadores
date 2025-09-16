@@ -99,6 +99,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     const sesionesFormateadas = data?.map(sesion => {
       const participante = obtenerParticipante(sesion);
       
+      // Determinar tipo de participante
+      let tipoParticipante = 'externo';
+      if (sesion.participantes_internos_id) {
+        tipoParticipante = 'interno';
+      } else if (sesion.participantes_friend_family_id) {
+        tipoParticipante = 'friend_family';
+      } else if (sesion.participantes_id) {
+        tipoParticipante = 'externo';
+      }
+      
       return {
         id: sesion.id,
         titulo: sesion.titulo,
@@ -123,6 +133,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         participantes_internos_id: sesion.participantes_internos_id,
         participantes_friend_family_id: sesion.participantes_friend_family_id,
         participante: participante,
+        tipo_participante: tipoParticipante, // Agregar tipo de participante
         created_at: sesion.created_at,
         updated_at: sesion.updated_at
       };
