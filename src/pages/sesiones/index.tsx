@@ -200,6 +200,14 @@ const SesionesPageContent: React.FC = () => {
       console.log('📊 Respuesta sesiones apoyo:', data);
       console.log('📊 Número de sesiones apoyo:', data.sesiones?.length || 0);
       
+      // Debug: Verificar si las sesiones tienen los campos de estado
+      if (data.sesiones && data.sesiones.length > 0) {
+        console.log('🔍 [DEBUG] Primera sesión de apoyo:', data.sesiones[0]);
+        console.log('🔍 [DEBUG] Campos de la primera sesión:', Object.keys(data.sesiones[0]));
+        console.log('🔍 [DEBUG] estado_agendamiento:', data.sesiones[0].estado_agendamiento);
+        console.log('🔍 [DEBUG] estado_real:', data.sesiones[0].estado_real);
+      }
+      
       if (data.sesiones && Array.isArray(data.sesiones)) {
         console.log('✅ Estableciendo sesiones apoyo:', data.sesiones.length);
         setSesionesApoyo(data.sesiones);
