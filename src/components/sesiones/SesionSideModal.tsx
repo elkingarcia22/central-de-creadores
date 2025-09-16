@@ -61,9 +61,15 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
 
   // Cargar información de observadores cuando cambie la sesión
   useEffect(() => {
+    console.log('🔍 [SesionSideModal] useEffect sesion cambió:', sesion);
+    console.log('🔍 [SesionSideModal] sesion.observadores:', sesion?.observadores);
+    console.log('🔍 [SesionSideModal] sesion.observadores?.length:', sesion?.observadores?.length);
+    
     if (sesion?.observadores && sesion.observadores.length > 0) {
+      console.log('🔍 [SesionSideModal] Cargando información de observadores:', sesion.observadores);
       cargarInformacionObservadores(sesion.observadores);
     } else {
+      console.log('🔍 [SesionSideModal] No hay observadores, limpiando estado');
       setObservadoresInfo([]); // Limpiar observadores si no hay observadores
     }
   }, [sesion]);
@@ -339,6 +345,13 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
           )}
 
           {/* Observadores - Para todas las sesiones que tengan observadores */}
+          {(() => {
+            console.log('🔍 [SesionSideModal] Renderizando sección observadores');
+            console.log('🔍 [SesionSideModal] sesion.observadores:', sesion.observadores);
+            console.log('🔍 [SesionSideModal] sesion.observadores?.length:', sesion.observadores?.length);
+            console.log('🔍 [SesionSideModal] Condición para mostrar:', sesion.observadores && sesion.observadores.length > 0);
+            return null;
+          })()}
           {sesion.observadores && sesion.observadores.length > 0 && (
             <InfoContainer 
               title="Observadores"
