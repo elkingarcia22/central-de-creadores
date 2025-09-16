@@ -690,6 +690,9 @@ const SesionesPageContent: React.FC = () => {
       console.log('🔍 [SESION APOYO] Debug - sesion completa:', JSON.stringify(sesion, null, 2));
       console.log('🔍 [SESION APOYO] sesion.meet_link:', sesion.meet_link);
       console.log('🔍 [SESION APOYO] sesion.moderador_id:', sesion.moderador_id);
+      console.log('🔍 [SESION APOYO] sesion.estado_agendamiento:', sesion.estado_agendamiento);
+      console.log('🔍 [SESION APOYO] sesion.estado_real:', sesion.estado_real);
+      console.log('🔍 [SESION APOYO] sesion.estado:', sesion.estado);
       
       // Si la sesión tiene enlace de Meet, abrirlo
       if (sesion.meet_link) {
