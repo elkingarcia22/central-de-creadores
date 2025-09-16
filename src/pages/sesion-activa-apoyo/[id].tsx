@@ -2,8 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip } from '../../components/ui';
 import { useToast } from '../../contexts/ToastContext';
-import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon } from '../../components/icons';
+import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon } from '../../components/icons';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
+import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
+import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
+import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
+import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
+import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
+import InfoContainer from '../../components/ui/InfoContainer';
+import InfoItem from '../../components/ui/InfoItem';
+import AnimatedCounter from '../../components/ui/AnimatedCounter';
+import SimpleAvatar from '../../components/ui/SimpleAvatar';
+import { formatearFecha } from '../../utils/fechas';
 
 interface SesionApoyoData {
   id: string;
@@ -32,6 +42,19 @@ interface Usuario {
   foto_url?: string;
 }
 
+interface Participante {
+  id: string;
+  nombre: string;
+  email: string;
+  tipo: 'externo' | 'interno' | 'friend_family';
+}
+
+interface Empresa {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+}
+
 export default function SesionActivaApoyoPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -41,13 +64,47 @@ export default function SesionActivaApoyoPage() {
   const [moderador, setModerador] = useState<Usuario | null>(null);
   const [observadores, setObservadores] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('detalles');
+  const [activeTab, setActiveTab] = useState('notas-manuales');
+  
+  // Estados para acciones
+  const [isRecording, setIsRecording] = useState(false);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
+  const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  
+  // Estados para tabs
+  const [participante, setParticipante] = useState<Participante | null>(null);
+  const [empresa, setEmpresa] = useState<Empresa | null>(null);
+  const [empresaData, setEmpresaData] = useState<any>(null);
+  const [investigaciones, setInvestigaciones] = useState<any[]>([]);
+  const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  
+  // Hook para transcripción de audio
+  const audioTranscription = useWebSpeechTranscriptionSimple();
 
   useEffect(() => {
     if (id) {
       loadSesionApoyoData();
     }
   }, [id]);
+
+  // Cerrar menú de acciones cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showActionsMenu) {
+        const target = event.target as Element;
+        if (!target.closest('.relative')) {
+          setShowActionsMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActionsMenu]);
 
   const loadSesionApoyoData = async () => {
     try {
@@ -61,6 +118,11 @@ export default function SesionActivaApoyoPage() {
           console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
           setSesionApoyo(sesionData);
           
+          // Cargar información del participante
+          if (sesionData.participante) {
+            setParticipante(sesionData.participante);
+          }
+          
           // Cargar información del moderador
           await loadModeradorData(sesionData.moderador_id);
           
@@ -68,6 +130,9 @@ export default function SesionActivaApoyoPage() {
           if (sesionData.observadores && sesionData.observadores.length > 0) {
             await loadObservadoresData(sesionData.observadores);
           }
+          
+          // Cargar usuarios para los tabs
+          await loadUsuarios();
           
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
@@ -113,6 +178,18 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
+  const loadUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        setUsuarios(data.usuarios || []);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
+    }
+  };
+
   const formatFecha = (fecha: string) => {
     try {
       const fechaObj = new Date(fecha);
@@ -130,6 +207,49 @@ export default function SesionActivaApoyoPage() {
 
   const handleBackToSessions = () => {
     router.push('/sesiones');
+  };
+
+  const handleToggleRecording = async () => {
+    try {
+      if (audioTranscription.state.isRecording) {
+        console.log('🛑 Deteniendo grabación...');
+        audioTranscription.stopRecording();
+        setIsRecording(false);
+      } else {
+        console.log('🎤 Iniciando grabación...');
+        setIsRecording(true);
+        audioTranscription.startRecording();
+      }
+    } catch (error) {
+      console.error('❌ Error en grabación:', error);
+      setIsRecording(false);
+    }
+  };
+
+  const handleSaveAndViewSession = async () => {
+    try {
+      // Actualizar el estado de la sesión de apoyo a "En progreso"
+      if (sesionApoyo?.id) {
+        const response = await fetch(`/api/sesiones-apoyo/${sesionApoyo.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            estado: 'en_curso'
+          })
+        });
+
+        if (response.ok) {
+          showSuccess('Sesión guardada exitosamente');
+        } else {
+          showError('Error al guardar la sesión');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error guardando sesión:', error);
+      showError('Error al guardar la sesión');
+    }
   };
 
   if (loading) {
@@ -362,6 +482,80 @@ export default function SesionActivaApoyoPage() {
                 size: 'sm'
               }}
             />
+          </div>
+          
+          {/* Acciones principales */}
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              onClick={handleToggleRecording}
+              variant={audioTranscription.state.isRecording ? "destructive" : "outline"}
+              size="md"
+              className="flex items-center gap-2"
+              disabled={audioTranscription.state.isProcessing}
+            >
+              {audioTranscription.state.isProcessing ? (
+                <>
+                  <div className="w-2 h-2 bg-white rounded-full animate-spin"></div>
+                  Procesando...
+                </>
+              ) : audioTranscription.state.isRecording ? (
+                <>
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  Detener Grabación
+                </>
+              ) : (
+                <>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  Grabar
+                </>
+              )}
+            </Button>
+            <Button 
+              onClick={handleSaveAndViewSession}
+              variant="primary"
+              size="md"
+            >
+              Guardar
+            </Button>
+            
+            {/* Menú de acciones con 3 puntos */}
+            <div className="relative">
+              <button
+                onClick={() => setShowActionsMenu(!showActionsMenu)}
+                className="w-10 h-10 rounded-md border border-border bg-card text-card-foreground hover:bg-accent flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
+                aria-label="Más opciones"
+              >
+                <MoreVerticalIcon className="w-4 h-4" />
+              </button>
+              
+              {/* Menú desplegable */}
+              {showActionsMenu && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowSeguimientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
+                    >
+                      <MessageIcon className="w-4 h-4" />
+                      Crear Seguimiento
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCrearDolorModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
+                    >
+                      <AlertTriangleIcon className="w-4 h-4" />
+                      Crear Dolor
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
