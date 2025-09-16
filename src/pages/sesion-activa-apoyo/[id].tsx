@@ -120,6 +120,22 @@ export default function SesionActivaApoyoPage() {
     };
   }, [showActionsMenu]);
 
+  const loadParticipantData = async () => {
+    try {
+      // Cargar datos completos del participante desde la API
+      const participanteResponse = await fetch(`/api/participantes/${id}`);
+      if (participanteResponse.ok) {
+        const participanteData = await participanteResponse.json();
+        setParticipante(participanteData);
+        console.log('🔍 Información completa del participante cargada:', participanteData);
+      } else {
+        console.error('🔍 Error cargando información del participante:', participanteResponse.status);
+      }
+    } catch (error) {
+      console.error('🔍 Error cargando información del participante:', error);
+    }
+  };
+
   const loadSesionApoyoData = async () => {
     try {
       setLoading(true);
@@ -131,10 +147,8 @@ export default function SesionActivaApoyoPage() {
           const sesionData = JSON.parse(currentSesionApoyo);
           setSesionApoyo(sesionData);
           
-          // Cargar información del participante
-          if (sesionData.participante) {
-            setParticipante(sesionData.participante);
-          }
+          // Cargar información completa del participante desde la API
+          await loadParticipantData();
           
           // Cargar información del moderador
           await loadModeradorData(sesionData.moderador_id);
