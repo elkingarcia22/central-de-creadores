@@ -694,6 +694,7 @@ const SesionesPageContent: React.FC = () => {
   // Función para iniciar sesión de apoyo
   const handleIniciarSesionApoyo = async (sesion: any) => {
     try {
+      console.log('🚀🚀🚀 [SESION APOYO] FUNCIÓN EJECUTÁNDOSE 🚀🚀🚀');
       console.log('🎯 [SESION APOYO] Iniciando sesión de apoyo:', sesion.id);
       console.log('🔍 [SESION APOYO] Debug - sesion completa:', JSON.stringify(sesion, null, 2));
       console.log('🔍 [SESION APOYO] sesion.meet_link:', sesion.meet_link);
