@@ -143,6 +143,7 @@ export default function EditarSesionApoyoModal({
         meet_link: sesion.meet_link || ''
       });
       
+      console.log('🔍 [EditarSesionApoyoModal] Llamando a cargarUsuarios() y cargarParticipantes()');
       cargarUsuarios();
       cargarParticipantes();
     }
@@ -210,25 +211,32 @@ export default function EditarSesionApoyoModal({
 
   // Función para cargar todos los tipos de participantes
   const cargarParticipantes = async () => {
+    console.log('🔍 [EditarSesionApoyoModal] cargarParticipantes() ejecutándose');
     try {
       // Cargar participantes externos
+      console.log('🔍 [EditarSesionApoyoModal] Cargando participantes externos...');
       const responseExternos = await fetch('/api/participantes');
       if (responseExternos.ok) {
         const dataExternos = await responseExternos.json();
+        console.log('🔍 [EditarSesionApoyoModal] Participantes externos cargados:', dataExternos.participantes?.length || 0);
         setParticipantesExternos(dataExternos.participantes || []);
       }
 
       // Cargar participantes internos
+      console.log('🔍 [EditarSesionApoyoModal] Cargando participantes internos...');
       const responseInternos = await fetch('/api/participantes-internos');
       if (responseInternos.ok) {
         const dataInternos = await responseInternos.json();
+        console.log('🔍 [EditarSesionApoyoModal] Participantes internos cargados:', dataInternos.participantes?.length || 0);
         setParticipantesInternos(dataInternos.participantes || []);
       }
 
       // Cargar participantes friend & family
+      console.log('🔍 [EditarSesionApoyoModal] Cargando participantes friend & family...');
       const responseFriendFamily = await fetch('/api/participantes-friend-family');
       if (responseFriendFamily.ok) {
         const dataFriendFamily = await responseFriendFamily.json();
+        console.log('🔍 [EditarSesionApoyoModal] Participantes friend & family cargados:', dataFriendFamily.participantes?.length || 0);
         setParticipantesFriendFamily(dataFriendFamily.participantes || []);
       }
     } catch (error) {
