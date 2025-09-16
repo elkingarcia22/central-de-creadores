@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Card, Typography, Button, Chip } from '../../components/ui';
 import { useToast } from '../../contexts/ToastContext';
-import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon } from '../../components/icons';
+import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIcon, MoreVerticalIcon, MessageIcon, AlertTriangleIcon, FileTextIcon, BarChartIcon, TrendingUpIcon, EyeIcon, TrashIcon, CheckIcon, RefreshIcon, SearchIcon, FilterIcon, AIIcon, MicIcon, UsersIcon } from '../../components/icons';
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
+import { getEstadoParticipanteVariant } from '../../utils/estadoUtils';
+import { getChipText } from '../../utils/chipUtils';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
 import DoloresUnifiedContainer from '../../components/dolores/DoloresUnifiedContainer';
-import InfoContainer from '../../components/ui/InfoContainer';
-import InfoItem from '../../components/ui/InfoItem';
+import { InfoContainer, InfoItem } from '../../components/ui/InfoContainer';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
@@ -47,6 +48,19 @@ interface Participante {
   nombre: string;
   email: string;
   tipo: 'externo' | 'interno' | 'friend_family';
+  telefono?: string;
+  fecha_nacimiento?: string;
+  genero?: string;
+  estado_participante?: string;
+  empresa_nombre?: string;
+  rol_empresa?: string;
+  departamento_nombre?: string;
+  comentarios?: string;
+  doleres_necesidades?: string;
+  total_participaciones?: number;
+  fecha_ultima_participacion?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface Empresa {
@@ -133,6 +147,9 @@ export default function SesionActivaApoyoPage() {
           // Cargar usuarios para los tabs
           await loadUsuarios();
           
+          // Cargar investigaciones para el tab de información del participante
+          await loadInvestigacionesData();
+          
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
           showError('Error al cargar los datos de la sesión de apoyo');
@@ -186,6 +203,32 @@ export default function SesionActivaApoyoPage() {
       }
     } catch (error) {
       console.error('Error cargando usuarios:', error);
+    }
+  };
+
+  const loadInvestigacionesData = async () => {
+    try {
+      console.log('🔍 Cargando investigaciones para participante:', id);
+      const response = await fetch(`/api/participantes/${id}/investigaciones`);
+      if (response.ok) {
+        const data = await response.json();
+        setInvestigaciones(data.investigaciones || []);
+        
+        // Calcular participaciones por mes
+        const participacionesPorMes: { [key: string]: number } = {};
+        (data.investigaciones || []).forEach((inv: any) => {
+          if (inv.fecha_participacion) {
+            const mes = inv.fecha_participacion.slice(0, 7); // YYYY-MM
+            participacionesPorMes[mes] = (participacionesPorMes[mes] || 0) + 1;
+          }
+        });
+        setParticipacionesPorMes(participacionesPorMes);
+        
+        console.log('🔍 Investigaciones cargadas:', data.investigaciones?.length || 0);
+        console.log('🔍 Participaciones por mes:', participacionesPorMes);
+      }
+    } catch (error) {
+      console.error('Error cargando investigaciones:', error);
     }
   };
 
@@ -289,6 +332,258 @@ export default function SesionActivaApoyoPage() {
     );
   }
 
+  // Componente para el contenido del tab de Información
+  const InformacionContent: React.FC<{ 
+    participante: Participante; 
+    empresa?: Empresa;
+    investigaciones: any[];
+    participacionesPorMes: { [key: string]: number };
+  }> = ({ participante, empresa, investigaciones, participacionesPorMes }) => {
+    // Debug: Log de datos recibidos
+    console.log('🔍 InformacionContent - investigaciones recibidas:', investigaciones);
+    console.log('🔍 InformacionContent - participacionesPorMes recibidas:', participacionesPorMes);
+    console.log('🔍 InformacionContent - participante recibido:', participante);
+    
+    const totalInvestigaciones = investigaciones.length;
+    const investigacionesFinalizadas = investigaciones.filter(inv => 
+      inv.estado === 'finalizada' || inv.estado === 'completada'
+    ).length;
+    const investigacionesEnProgreso = investigaciones.filter(inv => 
+      inv.estado === 'en_progreso' || inv.estado === 'activa'
+    ).length;
+    
+    const tiempoTotalHoras = investigaciones.reduce((total, inv) => {
+      if (inv.duracion_sesion) {
+        const duracion = parseInt(inv.duracion_sesion);
+        return total + (isNaN(duracion) ? 0 : duracion);
+      }
+      return total;
+    }, 0) / 60; // Convertir minutos a horas
+    
+    console.log('🔍 InformacionContent - Métricas calculadas:', {
+      totalInvestigaciones,
+      investigacionesFinalizadas,
+      investigacionesEnProgreso,
+      tiempoTotalHoras
+    });
+
+    return (
+      <div className="space-y-6">
+        {/* Estadísticas principales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total de Investigaciones */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={totalInvestigaciones}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                    </Typography>
+                <Typography variant="body2" color="secondary">
+                  Total
+                  </Typography>
+                </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <FileTextIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
+                </div>
+              </Card>
+
+          {/* Investigaciones Finalizadas */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesFinalizadas}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                </Typography>
+                <Typography variant="body2" color="secondary">
+                  Finalizadas
+              </Typography>
+                  </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <BarChartIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
+              </div>
+            </Card>
+
+          {/* Investigaciones En Progreso */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+                  <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter
+                    value={investigacionesEnProgreso}
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                  />
+                    </Typography>
+                <Typography variant="body2" color="secondary">
+                  En Progreso
+                    </Typography>
+                  </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <UsersIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                </div>
+                </div>
+              </Card>
+                
+          {/* Tiempo Total Estimado */}
+          <Card variant="elevated" padding="md">
+            <div className="flex items-center justify-between">
+                    <div>
+                <Typography variant="h4" weight="bold" className="text-gray-700 dark:text-gray-200">
+                  <AnimatedCounter 
+                    value={tiempoTotalHoras} 
+                    duration={2000}
+                    className="text-gray-700 dark:text-gray-200"
+                    suffix="h"
+                  />
+                      </Typography>
+                <Typography variant="body2" color="secondary">
+                  Tiempo Total
+                      </Typography>
+                    </div>
+              <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">
+                <ClockIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    </div>
+            </div>
+          </Card>
+                  </div>
+                  
+        {/* Información adicional */}
+        <InfoContainer 
+          title="Resumen de Participación"
+          icon={<UserIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Última Participación" 
+            value={
+              (() => {
+                if (investigaciones.length > 0) {
+                  const investigacionesOrdenadas = investigaciones.sort((a, b) => 
+                    new Date(b.fecha_participacion).getTime() - new Date(a.fecha_participacion).getTime()
+                  );
+                  return formatearFecha(investigacionesOrdenadas[0].fecha_participacion);
+                }
+                return participante.fecha_ultima_participacion ? 
+                  formatearFecha(participante.fecha_ultima_participacion) : 
+                  'Sin participaciones';
+              })()
+            }
+          />
+          <InfoItem 
+            label="Participaciones del Mes" 
+            value={
+              (() => {
+                const mesActual = new Date().toISOString().slice(0, 7); // YYYY-MM
+                const participacionesMesActual = participacionesPorMes[mesActual] || 0;
+                const nombreMes = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                return `${participacionesMesActual} en ${nombreMes}`;
+              })()
+            }
+          />
+        </InfoContainer>
+
+        {/* Información del Participante */}
+        <InfoContainer 
+          title="Información del Participante"
+          icon={<UserIcon className="w-4 h-4" />}
+        >
+          <InfoItem 
+            label="Nombre Completo"
+            value={participante.nombre}
+          />
+          <InfoItem 
+            label="Email"
+            value={participante.email}
+          />
+          <InfoItem 
+            label="Tipo de Participante"
+            value={
+              <Chip 
+                variant={getTipoParticipanteVariant(participante.tipo as any)}
+                size="sm"
+              >
+                {participante.tipo === 'externo' ? 'Externo' : 
+                 participante.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+                      </Chip>
+            }
+          />
+          <InfoItem 
+            label="Estado"
+            value={
+              <Chip 
+                variant={getEstadoParticipanteVariant(participante.estado_participante || 'disponible')}
+                size="sm"
+              >
+                {getChipText(participante.estado_participante || 'disponible')}
+                      </Chip>
+            }
+          />
+          <InfoItem 
+            label="Total de Participaciones"
+            value={participante.total_participaciones?.toString() || '0'}
+          />
+          <InfoItem 
+            label="Última Participación"
+            value={
+              participante.fecha_ultima_participacion ? 
+              formatearFecha(participante.fecha_ultima_participacion) : 
+              'Sin participaciones'
+            }
+          />
+          <InfoItem 
+            label="Fecha de Registro"
+            value={formatearFecha(participante.created_at)}
+          />
+          <InfoItem 
+            label="Última Actualización"
+            value={formatearFecha(participante.updated_at)}
+          />
+        </InfoContainer>
+
+        {/* Información adicional */}
+        {participante.comentarios && (
+          <InfoContainer 
+            title="Comentarios"
+            icon={<MessageIcon className="w-4 h-4" />}
+            variant="bordered"
+            padding="md"
+          >
+            <div className="col-span-full">
+              <Typography variant="body2" color="secondary">
+                {participante.comentarios}
+                      </Typography>
+                    </div>
+          </InfoContainer>
+        )}
+
+        {participante.doleres_necesidades && (
+          <InfoContainer 
+            title="Dolores y Necesidades"
+            icon={<AlertTriangleIcon className="w-4 h-4" />}
+            variant="bordered"
+            padding="md"
+          >
+            <div className="col-span-full">
+              <Typography variant="body2" color="secondary">
+                {participante.doleres_necesidades}
+                      </Typography>
+                    </div>
+          </InfoContainer>
+        )}
+
+                  </div>
+    );
+  };
+
   const tabs = [
     {
       id: 'notas-manuales',
@@ -296,6 +591,16 @@ export default function SesionActivaApoyoPage() {
       content: <NotasManualesContent 
         participanteId={participante?.id || ''}
         sesionId={sesionApoyo?.id || ''}
+      />
+    },
+    {
+      id: 'informacion',
+      label: 'Información de Participante',
+      content: <InformacionContent 
+        participante={participante!} 
+        empresa={empresa} 
+        investigaciones={investigaciones}
+        participacionesPorMes={participacionesPorMes}
       />
     }
   ];
