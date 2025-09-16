@@ -4,6 +4,14 @@ import { getTipoParticipanteVariant } from '../utils/tipoParticipanteUtils';
 import { supabase } from '../api/supabase';
 import { useRol } from '../contexts/RolContext';
 
+// Función para formatear hora
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString('es-ES', { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+};
+
 interface SesionesStats {
   total: number;
   programadas: number;
@@ -153,7 +161,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       objetivo_sesion: (sesion as any).objetivo_sesion,
       moderador_email: (sesion as any).moderador_email,
       // Propiedades para compatibilidad con CalendarEvent
-      title: sesion.titulo || 'Sesión sin título'
+      title: `${sesion.participante?.nombre || 'Sin participante'} - ${formatTime(sesion.start)}`
     };
     
     console.log('🔄 Converted sesion to event:', {
@@ -265,7 +273,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
           responsable_real: sesion.responsable_real || sesion.moderador_nombre,
           implementador_real: sesion.implementador_real || sesion.moderador_nombre,
           // Mapear campos específicos de sesiones de apoyo
-          titulo: `${participanteNombre} - ${sesion.titulo || 'Sesión de Apoyo'}`,
+          titulo: `${participanteNombre} - ${formatTime(new Date(sesion.fecha_programada))}`,
           descripcion: sesion.descripcion,
           fecha_programada: sesion.fecha_programada,
           duracion_minutos: sesion.duracion_minutos,
