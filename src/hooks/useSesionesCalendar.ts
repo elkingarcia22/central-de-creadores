@@ -5,7 +5,8 @@ import { supabase } from '../api/supabase';
 import { useRol } from '../contexts/RolContext';
 
 // Función para formatear hora
-const formatTime = (date: Date) => {
+const formatTime = (date: Date | undefined | null) => {
+  if (!date) return 'Sin hora';
   return date.toLocaleTimeString('es-ES', { 
     hour: '2-digit', 
     minute: '2-digit' 
@@ -161,7 +162,7 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       objetivo_sesion: (sesion as any).objetivo_sesion,
       moderador_email: (sesion as any).moderador_email,
       // Propiedades para compatibilidad con CalendarEvent
-      title: `${sesion.participante?.nombre || 'Sin participante'} - ${formatTime(sesion.start)}`
+      title: `${sesion.participante?.nombre || 'Sin participante'} - ${formatTime(start)}`
     };
     
     console.log('🔄 Converted sesion to event:', {
