@@ -64,14 +64,8 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const guardarNota = async (contenido: string) => {
     if (!contenido.trim()) return;
 
-    console.log('🔍 [NOTAS] Intentando guardar nota:', {
-      contenido: contenido.trim(),
-      participanteId,
-      sesionId
-    });
-
     if (!participanteId || !sesionId) {
-      console.error('❌ [NOTAS] Faltan participanteId o sesionId:', { participanteId, sesionId });
+      console.error('❌ Faltan participanteId o sesionId');
       return;
     }
 
@@ -89,11 +83,8 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         }),
       });
 
-      console.log('🔍 [NOTAS] Respuesta de API:', response.status, response.statusText);
-      
       if (response.ok) {
         const nuevaNota = await response.json();
-        console.log('✅ [NOTAS] Nota guardada exitosamente:', nuevaNota);
         setNotas(prev => [nuevaNota, ...prev]);
         
         // Limpiar el input inmediatamente para flujo continuo
@@ -108,8 +99,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
           }
         }, 50);
       } else {
-        const errorText = await response.text();
-        console.error('❌ [NOTAS] Error guardando nota:', response.status, response.statusText, errorText);
+        console.error('Error guardando nota:', response.statusText);
       }
     } catch (error) {
       console.error('Error guardando nota:', error);
@@ -203,9 +193,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    console.log('🔍 [NOTAS] Tecla presionada:', e.key, 'Shift:', e.shiftKey);
     if (e.key === 'Enter' && !e.shiftKey) {
-      console.log('🔍 [NOTAS] Enter detectado, guardando nota...');
       e.preventDefault();
       guardarNota(nuevaNota);
     }

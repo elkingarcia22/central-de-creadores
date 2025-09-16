@@ -115,8 +115,6 @@ export default function SesionActivaApoyoPage() {
       if (currentSesionApoyo) {
         try {
           const sesionData = JSON.parse(currentSesionApoyo);
-          console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
-          console.log('🔍 Participante en sesionData:', sesionData.participante);
           setSesionApoyo(sesionData);
           
           // Cargar información del participante
@@ -295,18 +293,10 @@ export default function SesionActivaApoyoPage() {
     {
       id: 'notas-manuales',
       label: 'Notas Manuales',
-      content: (() => {
-        console.log('🔍 [SESION APOYO] Datos para NotasManualesContent:', {
-          participante,
-          participanteId: participante?.id,
-          sesionApoyo,
-          sesionId: sesionApoyo?.id
-        });
-        return <NotasManualesContent 
-          participanteId={participante?.id || ''}
-          sesionId={sesionApoyo?.id || ''}
-        />;
-      })()
+      content: <NotasManualesContent 
+        participanteId={participante?.id || ''}
+        sesionId={sesionApoyo?.id || ''}
+      />
     },
     {
       id: 'placeholder',
