@@ -122,14 +122,20 @@ export default function SesionActivaApoyoPage() {
 
   const loadParticipantData = async () => {
     try {
+      console.log('🔍 Iniciando carga de datos del participante para ID:', id);
       // Cargar datos completos del participante desde la API
       const participanteResponse = await fetch(`/api/participantes/${id}`);
+      console.log('🔍 Respuesta de la API de participantes:', participanteResponse.status, participanteResponse.statusText);
+      
       if (participanteResponse.ok) {
         const participanteData = await participanteResponse.json();
+        console.log('🔍 Datos del participante recibidos:', participanteData);
         setParticipante(participanteData);
-        console.log('🔍 Información completa del participante cargada:', participanteData);
+        console.log('🔍 Estado del participante actualizado:', participanteData);
       } else {
         console.error('🔍 Error cargando información del participante:', participanteResponse.status);
+        const errorText = await participanteResponse.text();
+        console.error('🔍 Error details:', errorText);
       }
     } catch (error) {
       console.error('🔍 Error cargando información del participante:', error);
@@ -363,8 +369,22 @@ export default function SesionActivaApoyoPage() {
     console.log('🔍 InformacionContent - investigaciones recibidas:', investigaciones);
     console.log('🔍 InformacionContent - participacionesPorMes recibidas:', participacionesPorMes);
     console.log('🔍 InformacionContent - participante recibido:', participante);
-    console.log('🔍 InformacionContent - participante comentarios:', participante.comentarios);
-    console.log('🔍 InformacionContent - participante doleres_necesidades:', participante.doleres_necesidades);
+    console.log('🔍 InformacionContent - participante comentarios:', participante?.comentarios);
+    console.log('🔍 InformacionContent - participante doleres_necesidades:', participante?.doleres_necesidades);
+    
+    // Verificar si el participante está cargado
+    if (!participante) {
+      console.error('🔍 Error: participante es null en InformacionContent');
+      return (
+        <div className="space-y-6">
+          <Card padding="lg">
+            <Typography variant="body1" color="secondary">
+              Cargando información del participante...
+            </Typography>
+          </Card>
+        </div>
+      );
+    }
     
     const totalInvestigaciones = investigaciones.length;
     const investigacionesFinalizadas = investigaciones.filter(inv => 
@@ -618,12 +638,32 @@ export default function SesionActivaApoyoPage() {
     {
       id: 'informacion',
       label: 'Información de Participante',
-      content: <InformacionContent 
-        participante={participante!} 
-        empresa={empresa} 
-        investigaciones={investigaciones}
-        participacionesPorMes={participacionesPorMes}
-      />
+      content: (() => {
+        console.log('🔍 Renderizando tab de información - participante:', participante);
+        console.log('🔍 Renderizando tab de información - investigaciones:', investigaciones);
+        console.log('🔍 Renderizando tab de información - participacionesPorMes:', participacionesPorMes);
+        
+        if (!participante) {
+          return (
+            <div className="space-y-6">
+              <Card padding="lg">
+                <Typography variant="body1" color="secondary">
+                  Cargando información del participante...
+                </Typography>
+              </Card>
+            </div>
+          );
+        }
+        
+        return (
+          <InformacionContent 
+            participante={participante} 
+            empresa={empresa} 
+            investigaciones={investigaciones}
+            participacionesPorMes={participacionesPorMes}
+          />
+        );
+      })()
     }
   ];
 
