@@ -34,11 +34,23 @@ interface Libreto {
 
 interface Sesion {
   id: string;
-  titulo: string;
-  fecha_programada: string;
-  reclutamiento_id: string;
-  observadores?: string[];
-  reclutamiento?: Reclutamiento;
+  nombre: string;
+  fecha_sesion: string;
+  investigacion_id: string | null;
+  empresa_id: string;
+  industria_id: string;
+  pais_id: string;
+  usuarios_presentes_json: any;
+  dolores_necesidades: string | null;
+  descripcion_cliente: string | null;
+  seguimiento_programado: boolean;
+  fecha_seguimiento_tentativa: string | null;
+  created_at: string;
+  responsable_id: string | null;
+  creado_por: string | null;
+  estado: string | null;
+  tamaño: string | null;
+  relacion: string | null;
 }
 
 interface Usuario {
@@ -95,9 +107,10 @@ export default function TestObservadoresCompleto() {
         .from('sesiones')
         .select(`
           id,
-          titulo,
-          fecha_programada,
-          reclutamiento_id
+          nombre,
+          fecha_sesion,
+          investigacion_id,
+          usuarios_presentes_json
         `);
 
       if (errorSesiones) {
@@ -157,24 +170,24 @@ export default function TestObservadoresCompleto() {
     if (sesionesData.length > 0) {
       addLog('📋 Detalles de sesiones:');
       sesionesData.forEach(s => {
-        addLog(`  - ${s.titulo} (ID: ${s.id})`);
-        addLog(`    Fecha: ${s.fecha_programada}`);
-        addLog(`    Reclutamiento ID: ${s.reclutamiento_id}`);
+        addLog(`  - ${s.nombre} (ID: ${s.id})`);
+        addLog(`    Fecha: ${s.fecha_sesion}`);
+        addLog(`    Investigación ID: ${s.investigacion_id}`);
+        addLog(`    Usuarios presentes: ${JSON.stringify(s.usuarios_presentes_json)}`);
       });
     }
 
     // Simular el mapeo que hace la API
     addLog('🔄 Simulando mapeo de la API...');
     const sesionesMapeadas = sesionesData.map(sesion => {
-      // Buscar el libreto correspondiente a esta sesión
+      // Buscar el libreto correspondiente a esta sesión por investigacion_id
       const libretoCorrespondiente = libretosData.find(l => 
-        // Aquí necesitaríamos la relación entre sesión y libreto
-        // Por ahora simulamos que no hay observadores
-        false
+        l.investigacion_id === sesion.investigacion_id
       );
       
       const observadores = libretoCorrespondiente?.usuarios_participantes || [];
       addLog(`  - Sesión ${sesion.id}: observadores = ${JSON.stringify(observadores)}`);
+      addLog(`    Libreto encontrado: ${libretoCorrespondiente ? 'Sí' : 'No'}`);
       
       return {
         ...sesion,
@@ -289,13 +302,16 @@ export default function TestObservadoresCompleto() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sesiones.map(sesion => (
             <div key={sesion.id} className="border p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">{sesion.titulo}</h4>
+              <h4 className="font-semibold mb-2">{sesion.nombre}</h4>
               <p className="text-sm text-gray-600 mb-2">ID: {sesion.id}</p>
               <p className="text-sm text-gray-600 mb-2">
-                Fecha: {new Date(sesion.fecha_programada).toLocaleDateString()}
+                Fecha: {new Date(sesion.fecha_sesion).toLocaleDateString()}
               </p>
               <p className="text-sm text-gray-600 mb-2">
-                Reclutamiento ID: {sesion.reclutamiento_id}
+                Investigación ID: {sesion.investigacion_id}
+              </p>
+              <p className="text-sm text-gray-600 mb-2">
+                Usuarios presentes: {JSON.stringify(sesion.usuarios_presentes_json)}
               </p>
             </div>
           ))}
