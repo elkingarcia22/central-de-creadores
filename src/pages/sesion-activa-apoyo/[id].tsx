@@ -17,6 +17,9 @@ import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
 import { DolorSideModal } from '../../components/ui/DolorSideModal';
 import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
+import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
+import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
+import type { CategoriaPerfilamiento } from '../../types/perfilamientos';
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 import { supabase } from '../../api/supabase';
@@ -124,6 +127,7 @@ interface SeguimientoFormData {
   estado: string;
 }
 
+
 export default function SesionActivaApoyoPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -141,6 +145,11 @@ export default function SesionActivaApoyoPage() {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  
+  // Estados para modales de perfilamiento
+  const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
+  const [showCrearPerfilamientoModal, setShowCrearPerfilamientoModal] = useState(false);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<CategoriaPerfilamiento | null>(null);
   
   // Estado para la investigación actual de la sesión
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
@@ -964,6 +973,34 @@ export default function SesionActivaApoyoPage() {
     } catch (error) {
       console.error('Error al crear dolor:', error);
       showError('Error al crear el dolor');
+    }
+  };
+
+  // Funciones para manejar perfilamientos
+  const handleCrearPerfilamiento = async (data: any) => {
+    try {
+      const response = await fetch('/api/perfilamientos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          participante_id: participante?.id
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Perfilamiento creado exitosamente');
+        setShowCrearPerfilamientoModal(false);
+        setCategoriaSeleccionada(null);
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || 'Error al crear el perfilamiento');
+      }
+    } catch (error) {
+      console.error('Error al crear perfilamiento:', error);
+      showError('Error al crear el perfilamiento');
     }
   };
 
@@ -1936,6 +1973,16 @@ export default function SesionActivaApoyoPage() {
                     </button>
                     <button
                       onClick={() => {
+                        setShowPerfilamientoModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-card-foreground hover:bg-accent flex items-center gap-3"
+                    >
+                      <UserIcon className="w-4 h-4" />
+                      Crear Perfilamiento
+                    </button>
+                    <button
+                      onClick={() => {
                         setShowCrearDolorModal(true);
                         setShowActionsMenu(false);
                       }}
@@ -2050,6 +2097,40 @@ export default function SesionActivaApoyoPage() {
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           onSave={handleCrearDolor}
+        />
+      )}
+
+      {/* Modal de seleccionar categoría de perfilamiento */}
+      {showPerfilamientoModal && participante && (
+        <SeleccionarCategoriaPerfilamientoModal
+          isOpen={showPerfilamientoModal}
+          onClose={() => setShowPerfilamientoModal(false)}
+          onCategoriaSeleccionada={(categoria) => {
+            setCategoriaSeleccionada(categoria);
+            setShowPerfilamientoModal(false);
+            setShowCrearPerfilamientoModal(true);
+          }}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+        />
+      )}
+
+      {/* Modal de crear perfilamiento específico */}
+      {showCrearPerfilamientoModal && categoriaSeleccionada && participante && (
+        <CrearPerfilamientoModal
+          isOpen={showCrearPerfilamientoModal}
+          onClose={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+          }}
+          participanteId={participante.id}
+          participanteNombre={participante.nombre}
+          categoria={categoriaSeleccionada}
+          onSuccess={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            showSuccess('Perfilamiento creado exitosamente');
+          }}
         />
       )}
 
