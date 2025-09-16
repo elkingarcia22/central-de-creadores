@@ -101,6 +101,17 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
     }
   }, [categoria, perfilamientoExistente, participanteId, descripcionPrecargada]);
 
+  // useEffect adicional para manejar cambios en descripcionPrecargada
+  useEffect(() => {
+    if (descripcionPrecargada && !perfilamientoExistente) {
+      console.log('🔄 [PERFILAMIENTO] descripcionPrecargada cambió, actualizando observaciones:', descripcionPrecargada);
+      setFormData(prev => ({
+        ...prev,
+        observaciones: descripcionPrecargada
+      }));
+    }
+  }, [descripcionPrecargada, perfilamientoExistente]);
+
   const handleInputChange = (field: keyof PerfilamientoParticipanteForm, value: any) => {
     setFormData(prev => ({
       ...prev,
