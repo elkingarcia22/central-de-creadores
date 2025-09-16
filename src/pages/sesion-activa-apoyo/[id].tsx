@@ -294,10 +294,18 @@ export default function SesionActivaApoyoPage() {
     {
       id: 'notas-manuales',
       label: 'Notas Manuales',
-      content: <NotasManualesContent 
-        participanteId={participante?.id || ''}
-        sesionId={sesionApoyo?.id || ''}
-      />
+      content: (() => {
+        console.log('🔍 [SESION APOYO] Datos para NotasManualesContent:', {
+          participante,
+          participanteId: participante?.id,
+          sesionApoyo,
+          sesionId: sesionApoyo?.id
+        });
+        return <NotasManualesContent 
+          participanteId={participante?.id || ''}
+          sesionId={sesionApoyo?.id || ''}
+        />;
+      })()
     },
     {
       id: 'placeholder',
