@@ -3,7 +3,7 @@ import { supabase } from '../api/supabase';
 
 interface Reclutamiento {
   id: string;
-  titulo: string;
+  nombre: string;
   usuarios_libreto: string[];
   investigacion_id: string;
 }
@@ -51,7 +51,7 @@ export default function TestObservadoresCompleto() {
         .from('reclutamientos')
         .select(`
           id,
-          titulo,
+          nombre,
           usuarios_libreto,
           investigacion_id
         `);
@@ -75,7 +75,7 @@ export default function TestObservadoresCompleto() {
           reclutamiento_id,
           reclutamientos!sesiones_reclutamiento_reclutamiento_id_fkey(
             id,
-            titulo,
+            nombre,
             usuarios_libreto
           )
         `);
@@ -124,7 +124,7 @@ export default function TestObservadoresCompleto() {
     if (reclutamientosConObservadores.length > 0) {
       addLog('📋 Detalles de reclutamientos con observadores:');
       reclutamientosConObservadores.forEach(r => {
-        addLog(`  - ${r.titulo} (ID: ${r.id}): ${r.usuarios_libreto.length} observadores`);
+        addLog(`  - ${r.nombre} (ID: ${r.id}): ${r.usuarios_libreto.length} observadores`);
       });
     }
 
@@ -239,7 +239,7 @@ export default function TestObservadoresCompleto() {
             .filter(r => r.usuarios_libreto && r.usuarios_libreto.length > 0)
             .map(reclutamiento => (
               <div key={reclutamiento.id} className="border p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">{reclutamiento.titulo}</h4>
+                <h4 className="font-semibold mb-2">{reclutamiento.nombre}</h4>
                 <p className="text-sm text-gray-600 mb-2">ID: {reclutamiento.id}</p>
                 <p className="text-sm text-gray-600 mb-2">
                   Observadores ({reclutamiento.usuarios_libreto.length}):
