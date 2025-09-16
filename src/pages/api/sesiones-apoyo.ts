@@ -37,17 +37,46 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
         participantes!sesiones_apoyo_participantes_id_fkey(
           id,
           nombre,
-          email
+          email,
+          telefono,
+          fecha_nacimiento,
+          genero,
+          estado_participante,
+          empresa_nombre,
+          rol_empresa,
+          departamento_nombre,
+          comentarios,
+          doleres_necesidades,
+          created_at,
+          updated_at
         ),
         participantes_internos!sesiones_apoyo_participantes_internos_id_fkey(
           id,
           nombre,
-          email
+          email,
+          telefono,
+          fecha_nacimiento,
+          genero,
+          estado_participante,
+          departamento_nombre,
+          comentarios,
+          doleres_necesidades,
+          created_at,
+          updated_at
         ),
         participantes_friend_family!sesiones_apoyo_participantes_friend_family_id_fkey(
           id,
           nombre,
-          email
+          email,
+          telefono,
+          fecha_nacimiento,
+          genero,
+          estado_participante,
+          departamento_nombre,
+          comentarios,
+          doleres_necesidades,
+          created_at,
+          updated_at
         )
       `)
       .order('fecha_programada', { ascending: true });
@@ -75,6 +104,17 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           id: sesion.participantes.id,
           nombre: sesion.participantes.nombre,
           email: sesion.participantes.email,
+          telefono: sesion.participantes.telefono,
+          fecha_nacimiento: sesion.participantes.fecha_nacimiento,
+          genero: sesion.participantes.genero,
+          estado_participante: sesion.participantes.estado_participante,
+          empresa_nombre: sesion.participantes.empresa_nombre,
+          rol_empresa: sesion.participantes.rol_empresa,
+          departamento_nombre: sesion.participantes.departamento_nombre,
+          comentarios: sesion.participantes.comentarios,
+          doleres_necesidades: sesion.participantes.doleres_necesidades,
+          created_at: sesion.participantes.created_at,
+          updated_at: sesion.participantes.updated_at,
           tipo: 'externo' as const
         };
       } else if (sesion.participantes_internos) {
@@ -82,6 +122,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           id: sesion.participantes_internos.id,
           nombre: sesion.participantes_internos.nombre,
           email: sesion.participantes_internos.email,
+          telefono: sesion.participantes_internos.telefono,
+          fecha_nacimiento: sesion.participantes_internos.fecha_nacimiento,
+          genero: sesion.participantes_internos.genero,
+          estado_participante: sesion.participantes_internos.estado_participante,
+          departamento_nombre: sesion.participantes_internos.departamento_nombre,
+          comentarios: sesion.participantes_internos.comentarios,
+          doleres_necesidades: sesion.participantes_internos.doleres_necesidades,
+          created_at: sesion.participantes_internos.created_at,
+          updated_at: sesion.participantes_internos.updated_at,
           tipo: 'interno' as const
         };
       } else if (sesion.participantes_friend_family) {
@@ -89,6 +138,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           id: sesion.participantes_friend_family.id,
           nombre: sesion.participantes_friend_family.nombre,
           email: sesion.participantes_friend_family.email,
+          telefono: sesion.participantes_friend_family.telefono,
+          fecha_nacimiento: sesion.participantes_friend_family.fecha_nacimiento,
+          genero: sesion.participantes_friend_family.genero,
+          estado_participante: sesion.participantes_friend_family.estado_participante,
+          departamento_nombre: sesion.participantes_friend_family.departamento_nombre,
+          comentarios: sesion.participantes_friend_family.comentarios,
+          doleres_necesidades: sesion.participantes_friend_family.doleres_necesidades,
+          created_at: sesion.participantes_friend_family.created_at,
+          updated_at: sesion.participantes_friend_family.updated_at,
           tipo: 'friend_family' as const
         };
       }

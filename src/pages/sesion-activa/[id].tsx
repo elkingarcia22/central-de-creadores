@@ -26,6 +26,7 @@ import { PerfilamientosTab } from '../../components/participantes/Perfilamientos
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
+import { InformacionParticipanteApoyo } from '../../components/sesiones/InformacionParticipanteApoyo';
 import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
@@ -115,6 +116,8 @@ export default function SesionActivaPage() {
   const { showSuccess, showError } = useToast();
   const [participante, setParticipante] = useState<Participante | null>(null);
   const [reclutamiento, setReclutamiento] = useState<Reclutamiento | null>(null);
+  const [sesionApoyo, setSesionApoyo] = useState<any>(null);
+  const [tipoSesion, setTipoSesion] = useState<'reclutamiento' | 'apoyo'>('reclutamiento');
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('notas-manuales');
   
@@ -375,37 +378,70 @@ export default function SesionActivaPage() {
     try {
       setLoading(true);
       
-      // Cargar datos del participante
-      const participanteResponse = await fetch(`/api/participantes/${id}`);
-      if (participanteResponse.ok) {
-        const participanteData = await participanteResponse.json();
-        setParticipante(participanteData);
-      }
-
-      // Cargar datos del reclutamiento específico de la sesión activa
-      console.log('🔍 Cargando reclutamiento específico para sesión activa');
-      const currentReclutamiento = localStorage.getItem('currentReclutamiento');
-      if (currentReclutamiento) {
+      // Detectar tipo de sesión desde localStorage
+      const currentSesion = localStorage.getItem('currentSesion');
+      if (currentSesion) {
         try {
-          const reclutamientoData = JSON.parse(currentReclutamiento);
-          console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
+          const sesionData = JSON.parse(currentSesion);
+          console.log('🔍 Datos de sesión desde localStorage:', sesionData);
           
-          // Si tenemos un reclutamiento_id específico, cargar desde API con ese ID
-          if (reclutamientoData.id) {
-            console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoData.id);
-            await loadReclutamientoSpecifico(reclutamientoData.id);
+          if (sesionData.tipo === 'apoyo') {
+            console.log('🔍 Detectada sesión de apoyo');
+            setTipoSesion('apoyo');
+            setSesionApoyo(sesionData);
+            
+            // Cargar datos del participante desde la sesión de apoyo
+            if (sesionData.participante) {
+              setParticipante(sesionData.participante);
+            }
           } else {
-            // Si no hay ID, usar los datos del localStorage directamente
-        setReclutamiento(reclutamientoData);
-      }
+            console.log('🔍 Detectada sesión de reclutamiento');
+            setTipoSesion('reclutamiento');
+            
+            // Cargar datos del participante
+            const participanteResponse = await fetch(`/api/participantes/${id}`);
+            if (participanteResponse.ok) {
+              const participanteData = await participanteResponse.json();
+              setParticipante(participanteData);
+            }
+
+            // Cargar datos del reclutamiento específico de la sesión activa
+            console.log('🔍 Cargando reclutamiento específico para sesión activa');
+            const currentReclutamiento = localStorage.getItem('currentReclutamiento');
+            if (currentReclutamiento) {
+              try {
+                const reclutamientoData = JSON.parse(currentReclutamiento);
+                console.log('🔍 Datos de reclutamiento desde localStorage:', reclutamientoData);
+                
+                // Si tenemos un reclutamiento_id específico, cargar desde API con ese ID
+                if (reclutamientoData.id) {
+                  console.log('🔍 Cargando reclutamiento específico con ID:', reclutamientoData.id);
+                  await loadReclutamientoSpecifico(reclutamientoData.id);
+                } else {
+                  // Si no hay ID, usar los datos del localStorage directamente
+                  setReclutamiento(reclutamientoData);
+                }
+              } catch (error) {
+                console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
+                // Fallback: cargar desde API
+                await loadReclutamientoFromAPI();
+              }
+            } else {
+              console.log('🔍 No hay reclutamiento en localStorage, cargando desde API');
+              // Fallback: cargar desde API
+              await loadReclutamientoFromAPI();
+            }
+          }
         } catch (error) {
-          console.error('🔍 Error parseando reclutamiento desde localStorage:', error);
-          // Fallback: cargar desde API
+          console.error('🔍 Error parseando sesión desde localStorage:', error);
+          // Fallback: tratar como sesión de reclutamiento
+          setTipoSesion('reclutamiento');
           await loadReclutamientoFromAPI();
         }
       } else {
-        console.log('🔍 No hay reclutamiento en localStorage, cargando desde API');
-        // Fallback: cargar desde API
+        console.log('🔍 No hay sesión en localStorage, cargando como reclutamiento');
+        // Fallback: cargar como sesión de reclutamiento
+        setTipoSesion('reclutamiento');
         await loadReclutamientoFromAPI();
       }
 
@@ -1480,35 +1516,6 @@ export default function SesionActivaPage() {
           </InfoContainer>
         )}
 
-        {/* Información de la Empresa (solo para participantes externos) */}
-        {participante.tipo === 'externo' && empresa && (
-          <InfoContainer 
-            title="Información de la Empresa"
-            icon={<BuildingIcon className="w-4 h-4" />}
-          >
-            <InfoItem 
-              label="Nombre de la Empresa"
-              value={empresa.nombre}
-            />
-            <InfoItem 
-              label="Estado"
-              value={
-                <Chip 
-                  variant={getEstadoChipVariant(empresa.estado_nombre || '')}
-                  size="sm"
-                >
-                  {getChipText(empresa.estado_nombre || 'disponible')}
-                    </Chip>
-              }
-            />
-            {empresa.descripcion && (
-              <InfoItem 
-                label="Descripción"
-                value={empresa.descripcion}
-              />
-            )}
-          </InfoContainer>
-                  )}
                   </div>
     );
   };
@@ -1686,25 +1693,158 @@ export default function SesionActivaPage() {
       label: 'Notas Manuales',
       content: <NotasManualesContent 
         participanteId={participante!.id}
-        sesionId={reclutamiento!.id}
+        sesionId={tipoSesion === 'apoyo' ? sesionApoyo!.id : reclutamiento!.id}
       />
     },
     {
       id: 'informacion',
       label: 'Información de Participante',
-      content: <InformacionContent 
-        participante={participante!} 
-        empresa={empresa} 
-        investigaciones={investigaciones}
-        participacionesPorMes={participacionesPorMes}
-      />
+      content: tipoSesion === 'apoyo' ? (
+        <InformacionParticipanteApoyo participante={participante!} />
+      ) : (
+        <InformacionContent 
+          participante={participante!} 
+          empresa={empresa} 
+          investigaciones={investigaciones}
+          participacionesPorMes={participacionesPorMes}
+        />
+      )
     },
     {
       id: 'reclutamiento',
-      label: 'Información de la Sesión',
-      content: <ReclutamientoContent reclutamiento={reclutamiento!} participante={participante!} />
+      label: tipoSesion === 'apoyo' ? 'Información de la Sesión de Apoyo' : 'Información de la Sesión',
+      content: tipoSesion === 'apoyo' ? (
+        <div className="space-y-6">
+          <InfoContainer 
+            title="Detalles de la Sesión de Apoyo"
+            icon={<FileTextIcon className="w-4 h-4" />}
+          >
+            <InfoItem 
+              label="ID de la Sesión"
+              value={sesionApoyo!.id}
+            />
+            <InfoItem 
+              label="Título"
+              value={sesionApoyo!.titulo}
+            />
+            <InfoItem 
+              label="Descripción"
+              value={sesionApoyo!.descripcion || 'Sin descripción'}
+            />
+            <InfoItem 
+              label="Moderador"
+              value={sesionApoyo!.moderador_nombre || 'Sin asignar'}
+            />
+            <InfoItem 
+              label="Participante"
+              value={participante!.nombre}
+            />
+            <InfoItem 
+              label="Email del Participante"
+              value={participante!.email || 'Sin email'}
+            />
+            <InfoItem 
+              label="Tipo de Participante"
+              value={
+                <Chip 
+                  variant={getTipoParticipanteVariant(participante!.tipo as any)}
+                  size="sm"
+                >
+                  {participante!.tipo === 'externo' ? 'Externo' : 
+                   participante!.tipo === 'interno' ? 'Interno' : 'Friend & Family'}
+                </Chip>
+              }
+            />
+            <InfoItem 
+              label="Fecha de Sesión"
+              value={sesionApoyo!.fecha_programada ? 
+                formatearFecha(sesionApoyo!.fecha_programada) : 
+                'No programada'
+              }
+            />
+            <InfoItem 
+              label="Hora de Sesión"
+              value={sesionApoyo!.hora_sesion ? 
+                (() => {
+                  try {
+                    let hora = sesionApoyo!.hora_sesion;
+                    if (hora.match(/^\d{2}:\d{2}:\d{2}$/)) {
+                      hora = `2000-01-01T${hora}`;
+                    }
+                    if (hora.match(/^\d{2}:\d{2}$/)) {
+                      hora = `2000-01-01T${hora}:00`;
+                    }
+                    const fechaHora = new Date(hora);
+                    if (isNaN(fechaHora.getTime())) {
+                      return sesionApoyo!.hora_sesion;
+                    }
+                    return fechaHora.toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                  } catch (error) {
+                    return sesionApoyo!.hora_sesion;
+                  }
+                })() : 
+                'No definida'
+              }
+            />
+            <InfoItem 
+              label="Duración de Sesión"
+              value={sesionApoyo!.duracion_minutos ? 
+                (() => {
+                  const duracion = sesionApoyo!.duracion_minutos;
+                  if (duracion >= 60) {
+                    const horas = Math.floor(duracion / 60);
+                    const minutos = duracion % 60;
+                    return minutos > 0 ? `${horas}h ${minutos}min` : `${horas}h`;
+                  }
+                  return `${duracion} min`;
+                })() : 
+                'No definida'
+              }
+            />
+            <InfoItem 
+              label="Estado de Agendamiento"
+              value={
+                <Chip 
+                  variant={getChipVariant(sesionApoyo!.estado_agendamiento || '') as any}
+                  size="sm"
+                >
+                  {sesionApoyo!.estado_agendamiento || 'Sin estado'}
+                </Chip>
+              }
+            />
+            {sesionApoyo!.meet_link && (
+              <InfoItem 
+                label="Enlace de Google Meet"
+                value={
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={sesionApoyo!.meet_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                    >
+                      {sesionApoyo!.meet_link}
+                    </a>
+                  </div>
+                }
+              />
+            )}
+            {sesionApoyo!.objetivo_sesion && (
+              <InfoItem 
+                label="Objetivo de la Sesión"
+                value={sesionApoyo!.objetivo_sesion}
+              />
+            )}
+          </InfoContainer>
+        </div>
+      ) : (
+        <ReclutamientoContent reclutamiento={reclutamiento!} participante={participante!} />
+      )
     },
-    {
+    ...(tipoSesion === 'reclutamiento' ? [{
       id: 'empresa-informacion',
       label: 'Información Empresa',
       content: (
@@ -2032,6 +2172,22 @@ export default function SesionActivaPage() {
       content: (
         <NotasAutomaticasContent
           reclutamientoId={reclutamiento?.id}
+          isRecording={audioTranscription.state.isRecording}
+          duracionGrabacion={audioTranscription.state.duration}
+          transcripcionCompleta={audioTranscription.state.transcription}
+          segmentosTranscripcion={audioTranscription.state.segments}
+          isProcessing={audioTranscription.state.isProcessing}
+          error={audioTranscription.state.error}
+        />
+      )
+    }
+    }] : []),
+    {
+      id: 'notas-automaticas',
+      label: 'Notas Automáticas',
+      content: (
+        <NotasAutomaticasContent
+          reclutamientoId={tipoSesion === 'apoyo' ? sesionApoyo?.id : reclutamiento?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
           transcripcionCompleta={audioTranscription.state.transcription}
