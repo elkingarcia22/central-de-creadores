@@ -303,7 +303,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                           onClick={() => onConvertirADolor(nota.contenido)}
                           size="sm"
                           variant="ghost"
-                          className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-200 dark:hover:bg-gray-800"
                         >
                           <WarningIcon className="w-4 h-4" />
                         </Button>
@@ -313,7 +313,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                           onClick={() => onConvertirAPerfilamiento(nota.contenido)}
                           size="sm"
                           variant="ghost"
-                          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-200 dark:hover:bg-gray-800"
                         >
                           <UserIcon className="w-4 h-4" />
                         </Button>
