@@ -139,6 +139,58 @@ export default function EditarSesionApoyoModal({
     }
   }, [isOpen, sesion]);
 
+  // Establecer participante seleccionado después de cargar participantes
+  useEffect(() => {
+    if (isOpen && sesion && (participantesExternos.length > 0 || participantesInternos.length > 0 || participantesFriendFamily.length > 0)) {
+      console.log('🔍 [EditarSesionApoyoModal] Estableciendo participante seleccionado');
+      console.log('🔍 [EditarSesionApoyoModal] Participantes cargados:', {
+        externos: participantesExternos.length,
+        internos: participantesInternos.length,
+        friendFamily: participantesFriendFamily.length
+      });
+      
+      // Determinar tipo de participante y ID
+      let tipoPart = 'externo';
+      let participanteId = '';
+      
+      if (sesion.participantes_friend_family_id) {
+        tipoPart = 'friend_family';
+        participanteId = sesion.participantes_friend_family_id;
+      } else if (sesion.participantes_internos_id) {
+        tipoPart = 'interno';
+        participanteId = sesion.participantes_internos_id;
+      } else if (sesion.participantes_id) {
+        tipoPart = 'externo';
+        participanteId = sesion.participantes_id;
+      }
+      
+      if (participanteId) {
+        // Buscar el participante en la lista correspondiente
+        let participanteEncontrado = null;
+        
+        if (tipoPart === 'externo') {
+          participanteEncontrado = participantesExternos.find(p => p.id === participanteId);
+        } else if (tipoPart === 'interno') {
+          participanteEncontrado = participantesInternos.find(p => p.id === participanteId);
+        } else if (tipoPart === 'friend_family') {
+          participanteEncontrado = participantesFriendFamily.find(p => p.id === participanteId);
+        }
+        
+        if (participanteEncontrado) {
+          console.log('🔍 [EditarSesionApoyoModal] Participante encontrado:', participanteEncontrado);
+          setParticipanteSeleccionado(participanteEncontrado);
+          // Asegurar que el formData también tenga el participante seleccionado
+          setFormData(prev => ({
+            ...prev,
+            participantes_ids: [participanteId]
+          }));
+        } else {
+          console.log('⚠️ [EditarSesionApoyoModal] Participante no encontrado en la lista:', participanteId);
+        }
+      }
+    }
+  }, [isOpen, sesion, participantesExternos, participantesInternos, participantesFriendFamily]);
+
   // Cargar usuarios al abrir el modal
   useEffect(() => {
     if (isOpen) {
