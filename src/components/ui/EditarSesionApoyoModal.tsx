@@ -64,6 +64,8 @@ export default function EditarSesionApoyoModal({
   onSuccess,
   sesion
 }: EditarSesionApoyoModalProps) {
+  console.log('🚀 [EditarSesionApoyoModal] Componente montado/actualizado');
+  console.log('🚀 [EditarSesionApoyoModal] Props recibidas:', { isOpen, sesion: sesion?.id });
   
   const { userId, userName, userEmail } = useFastUser();
   const [loading, setLoading] = useState(false);
