@@ -140,7 +140,13 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       participantes: sesion.participantes || [],
       investigacion_nombre: sesion.investigacion_nombre,
       // Campos específicos de sesiones de apoyo
-      observadores: (sesion as any).observadores || [],
+      observadores: (() => {
+        const obs = (sesion as any).observadores || [];
+        console.log('🔍 [HOOK] Mapeando observadores para sesión:', sesion.id);
+        console.log('🔍 [HOOK] observadores raw:', (sesion as any).observadores);
+        console.log('🔍 [HOOK] observadores final:', obs);
+        return obs;
+      })(),
       objetivo_sesion: (sesion as any).objetivo_sesion,
       moderador_email: (sesion as any).moderador_email,
       // Propiedades para compatibilidad con CalendarEvent
@@ -198,6 +204,14 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
       
       const dataReclutamiento = await responseReclutamiento.json();
       console.log('📊 Sesiones de reclutamiento cargadas:', dataReclutamiento.sesiones?.length || 0);
+      console.log('🔍 [HOOK] Datos de reclutamiento completos:', dataReclutamiento);
+      
+      // Verificar si hay sesiones con observadores
+      const sesionesConObservadores = dataReclutamiento.sesiones?.filter((s: any) => s.observadores && s.observadores.length > 0);
+      console.log('🔍 [HOOK] Sesiones con observadores:', sesionesConObservadores?.length || 0);
+      if (sesionesConObservadores && sesionesConObservadores.length > 0) {
+        console.log('🔍 [HOOK] Detalles de sesiones con observadores:', sesionesConObservadores);
+      }
       
       // Cargar sesiones de apoyo
       const responseApoyo = await fetch('/api/sesiones-apoyo', {
