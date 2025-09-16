@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import '../../styles/tabs-fix.css';
 
 export interface ChipProps {
   children: React.ReactNode;
@@ -98,8 +99,8 @@ const Chip: React.FC<ChipProps> = ({
       ? 'border border-accent-violet text-accent-violet bg-transparent'
       : 'bg-accent-violet/10 text-accent-violet',
     'accent-black': outlined
-      ? 'border border-gray-800 text-gray-800 bg-transparent dark:border-gray-200 dark:text-gray-200'
-      : 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-800',
+      ? '!border-gray-800 !text-gray-800 !bg-transparent dark:!border-gray-200 dark:!text-gray-200'
+      : 'chip-accent-black',
     // Nuevas variantes agrupadas
     pendiente: outlined
       ? 'border border-blue-500 text-blue-600 bg-transparent dark:border-blue-400 dark:text-blue-400'
