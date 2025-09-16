@@ -55,8 +55,12 @@ interface Sesion {
 
 interface Usuario {
   id: string;
-  full_name: string;
-  email: string;
+  nombre: string;
+  correo: string;
+  foto_url: string;
+  activo: boolean;
+  rol_plataforma: string | null;
+  borrado_manual: boolean;
 }
 
 export default function TestObservadoresCompleto() {
@@ -121,21 +125,27 @@ export default function TestObservadoresCompleto() {
       setSesiones(sesionesData || []);
       addLog(`✅ Sesiones cargadas: ${sesionesData?.length || 0}`);
 
-      // 3. Cargar usuarios (temporalmente deshabilitado hasta conocer estructura)
+      // 3. Cargar usuarios
       addLog('👥 Cargando usuarios...');
-      addLog('⚠️ Carga de usuarios temporalmente deshabilitada - necesitamos estructura de tabla');
-      
-      // const { data: usuariosData, error: errorUsuarios } = await supabase
-      //   .from('usuarios')
-      //   .select('id, full_name, email');
+      const { data: usuariosData, error: errorUsuarios } = await supabase
+        .from('usuarios')
+        .select(`
+          id,
+          nombre,
+          correo,
+          foto_url,
+          activo,
+          rol_plataforma,
+          borrado_manual
+        `);
 
-      // if (errorUsuarios) {
-      //   addLog(`❌ Error cargando usuarios: ${errorUsuarios.message}`);
-      //   return;
-      // }
+      if (errorUsuarios) {
+        addLog(`❌ Error cargando usuarios: ${errorUsuarios.message}`);
+        return;
+      }
 
-      setUsuarios([]);
-      addLog(`✅ Usuarios cargados: 0 (temporalmente deshabilitado)`);
+      setUsuarios(usuariosData || []);
+      addLog(`✅ Usuarios cargados: ${usuariosData?.length || 0}`);
 
       // 4. Análisis de datos
       analizarDatos(libretosData || [], sesionesData || []);
@@ -211,7 +221,7 @@ export default function TestObservadoresCompleto() {
 
   const obtenerNombreUsuario = (userId: string) => {
     const usuario = usuarios.find(u => u.id === userId);
-    return usuario ? usuario.full_name : `Usuario ${userId}`;
+    return usuario ? usuario.nombre : `Usuario ${userId}`;
   };
 
   const limpiarLogs = () => {
