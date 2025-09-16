@@ -209,7 +209,7 @@ export default function SesionActivaApoyoPage() {
   // Cargar dolores cuando el participante cambie
   useEffect(() => {
     if (participante) {
-      loadDoloresData();
+      loadDoloresData(participante.id);
     }
   }, [participante]);
 
@@ -287,7 +287,7 @@ export default function SesionActivaApoyoPage() {
           
           // Cargar dolores para el tab de dolores
           if (sesionData.participante && sesionData.participante.id) {
-            await loadDoloresData();
+            await loadDoloresData(sesionData.participante.id);
           }
           
         } catch (error) {
@@ -485,11 +485,19 @@ export default function SesionActivaApoyoPage() {
     }
   };
 
-  const loadDoloresData = async () => {
+  const loadDoloresData = async (participanteId?: string) => {
     try {
-      const response = await fetch(`/api/participantes/${id}/dolores`);
+      const idToUse = participanteId || participante?.id;
+      if (!idToUse) {
+        console.error('No hay ID de participante para cargar dolores');
+        return;
+      }
+      
+      console.log('🔍 Cargando dolores para participante:', idToUse);
+      const response = await fetch(`/api/participantes/${idToUse}/dolores`);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Dolores obtenidos:', data);
         setDolores(data || []);
       } else {
         console.error('Error en respuesta de dolores:', response.status);
@@ -742,7 +750,7 @@ export default function SesionActivaApoyoPage() {
         showSuccess('Dolor creado exitosamente');
         setShowCrearDolorModal(false);
         // Recargar dolores
-        await loadDoloresData();
+        await loadDoloresData(participante?.id);
       } else {
         const errorData = await response.json();
         showError(errorData.error || 'Error al crear el dolor');
@@ -763,7 +771,7 @@ export default function SesionActivaApoyoPage() {
 
       if (response.ok) {
         // Recargar dolores
-        await loadDoloresData();
+        await loadDoloresData(participante?.id);
       }
     } catch (error) {
       console.error('Error cambiando estado del dolor:', error);
