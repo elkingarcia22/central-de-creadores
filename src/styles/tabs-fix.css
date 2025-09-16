@@ -1,0 +1,33 @@
+/* Forzar estilos de tabs en modo dark */
+.tabs-underline-active {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.dark .tabs-underline-active {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+.tabs-underline-active::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background-color: #2563eb !important; /* blue-600 */
+}
+
+.dark .tabs-underline-active::after {
+  background-color: #60a5fa !important; /* blue-400 */
+}
+
+/* Forzar estilos del chip negro */
+.chip-accent-black {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #ffffff !important; /* white */
+}
+
+.dark .chip-accent-black {
+  background-color: #e5e7eb !important; /* gray-200 */
+  color: #1f2937 !important; /* gray-800 */
+}
