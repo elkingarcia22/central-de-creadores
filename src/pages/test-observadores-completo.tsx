@@ -89,10 +89,10 @@ export default function TestObservadoresCompleto() {
       setLibretos(libretosData || []);
       addLog(`✅ Libretos cargados: ${libretosData?.length || 0}`);
 
-      // 2. Cargar sesiones de reclutamiento
-      addLog('📅 Cargando sesiones de reclutamiento...');
+      // 2. Cargar sesiones
+      addLog('📅 Cargando sesiones...');
       const { data: sesionesData, error: errorSesiones } = await supabase
-        .from('sesiones_reclutamiento')
+        .from('sesiones')
         .select(`
           id,
           titulo,
@@ -152,7 +152,7 @@ export default function TestObservadoresCompleto() {
     }
 
     // Analizar sesiones
-    addLog(`📅 Sesiones de reclutamiento: ${sesionesData.length}`);
+    addLog(`📅 Sesiones: ${sesionesData.length}`);
 
     if (sesionesData.length > 0) {
       addLog('📋 Detalles de sesiones:');
@@ -229,7 +229,7 @@ export default function TestObservadoresCompleto() {
           <h3 className="font-semibold text-green-800">Sesiones</h3>
           <p className="text-2xl font-bold text-green-600">{sesiones.length}</p>
           <p className="text-sm text-green-600">
-            Total de sesiones de reclutamiento
+            Total de sesiones
           </p>
         </div>
         
@@ -283,9 +283,9 @@ export default function TestObservadoresCompleto() {
         </div>
       </div>
 
-      {/* Sesiones de reclutamiento */}
+      {/* Sesiones */}
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-4">📅 Sesiones de Reclutamiento</h3>
+        <h3 className="text-xl font-semibold mb-4">📅 Sesiones</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sesiones.map(sesion => (
             <div key={sesion.id} className="border p-4 rounded-lg">
