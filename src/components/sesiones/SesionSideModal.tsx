@@ -64,6 +64,8 @@ const SesionSideModal: React.FC<SesionSideModalProps> = ({
     console.log('🔍 [SesionSideModal] useEffect sesion cambió:', sesion);
     console.log('🔍 [SesionSideModal] sesion.observadores:', sesion?.observadores);
     console.log('🔍 [SesionSideModal] sesion.observadores?.length:', sesion?.observadores?.length);
+    console.log('🔍 [SesionSideModal] sesion.observadores content:', JSON.stringify(sesion?.observadores));
+    console.log('🔍 [SesionSideModal] sesion completa:', JSON.stringify(sesion, null, 2));
     
     if (sesion?.observadores && sesion.observadores.length > 0) {
       console.log('🔍 [SesionSideModal] Cargando información de observadores:', sesion.observadores);

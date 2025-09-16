@@ -144,7 +144,10 @@ export const useSesionesCalendar = (options: UseSesionesCalendarOptions = {}) =>
         const obs = (sesion as any).observadores || [];
         console.log('🔍 [HOOK] Mapeando observadores para sesión:', sesion.id);
         console.log('🔍 [HOOK] observadores raw:', (sesion as any).observadores);
+        console.log('🔍 [HOOK] observadores raw length:', (sesion as any).observadores?.length);
+        console.log('🔍 [HOOK] observadores raw content:', JSON.stringify((sesion as any).observadores));
         console.log('🔍 [HOOK] observadores final:', obs);
+        console.log('🔍 [HOOK] observadores final length:', obs.length);
         return obs;
       })(),
       objetivo_sesion: (sesion as any).objetivo_sesion,
