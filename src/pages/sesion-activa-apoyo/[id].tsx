@@ -292,8 +292,16 @@ export default function SesionActivaApoyoPage() {
 
   const tabs = [
     {
-      id: 'detalles',
-      label: 'Detalles',
+      id: 'notas-manuales',
+      label: 'Notas Manuales',
+      content: <NotasManualesContent 
+        participanteId={participante?.id || ''}
+        sesionId={sesionApoyo?.id || ''}
+      />
+    },
+    {
+      id: 'placeholder',
+      label: 'Placeholder',
       content: (
         <div className="space-y-6">
           <Card padding="lg">
@@ -435,26 +443,6 @@ export default function SesionActivaApoyoPage() {
             </Card>
           )}
         </div>
-      )
-    },
-    {
-      id: 'notas',
-      label: 'Notas',
-      content: (
-        <Card padding="lg">
-          <Typography variant="h4" className="mb-4">
-            Notas de la Sesión
-          </Typography>
-          <div className="text-center py-8">
-            <HelpIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <Typography variant="body1" color="secondary">
-              Las notas de la sesión de apoyo se guardarán aquí
-            </Typography>
-            <Typography variant="body2" color="secondary" className="mt-2">
-              Esta funcionalidad estará disponible próximamente
-            </Typography>
-          </div>
-        </Card>
       )
     }
   ];
