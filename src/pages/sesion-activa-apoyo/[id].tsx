@@ -2153,10 +2153,23 @@ export default function SesionActivaApoyoPage() {
           onCategoriaSeleccionada={(categoria) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
             console.log('🔄 [CONVERSION] Contenido actual para perfilamiento:', contenidoNotaParaPerfilamiento);
+            console.log('🔄 [CONVERSION] Contenido del ref:', contenidoNotaRef.current);
+            console.log('🔄 [CONVERSION] Contenido persistente:', contenidoNotaPersistente);
+            
+            // Asegurar que el contenido se mantenga al cambiar de modal
+            const contenidoActual = contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente;
+            console.log('🔄 [CONVERSION] Contenido que se mantendrá:', contenidoActual);
+            
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
-            // NO limpiar contenidoNotaParaPerfilamiento aquí, se necesita para el siguiente modal
+            
+            // Forzar que el contenido se mantenga en todas las variables
+            if (contenidoActual) {
+              setContenidoNotaParaPerfilamiento(contenidoActual);
+              contenidoNotaRef.current = contenidoActual;
+              setContenidoNotaPersistente(contenidoActual);
+            }
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
