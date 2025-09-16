@@ -15,7 +15,7 @@ import { InfoContainer, InfoItem } from '../../components/ui/InfoContainer';
 import AnimatedCounter from '../../components/ui/AnimatedCounter';
 import SimpleAvatar from '../../components/ui/SimpleAvatar';
 import { formatearFecha } from '../../utils/fechas';
-import { DolorSideModal } from '../../components/ui/DolorSideModal';
+import { DolorSideModalApoyo } from '../../components/ui/DolorSideModalApoyo';
 import SeguimientoSideModalApoyo from '../../components/ui/SeguimientoSideModalApoyo';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
@@ -2013,7 +2013,7 @@ export default function SesionActivaApoyoPage() {
 
       {/* Modales para dolores */}
       {showVerDolorModal && dolorSeleccionado && (
-        <DolorSideModal
+        <DolorSideModalApoyo
           isOpen={showVerDolorModal}
           onClose={() => {
             setShowVerDolorModal(false);
@@ -2043,7 +2043,7 @@ export default function SesionActivaApoyoPage() {
       )}
 
       {showEditarDolorModal && dolorSeleccionado && (
-        <DolorSideModal
+        <DolorSideModalApoyo
           isOpen={showEditarDolorModal}
           onClose={() => {
             setShowEditarDolorModal(false);
@@ -2092,9 +2092,9 @@ export default function SesionActivaApoyoPage() {
         />
       )}
 
-      {/* Modal de crear dolor */}
+      {/* Modal de crear dolor de apoyo */}
       {showCrearDolorModal && participante && (
-        <DolorSideModal
+        <DolorSideModalApoyo
           isOpen={showCrearDolorModal}
           onClose={() => setShowCrearDolorModal(false)}
           participanteId={participante.id}
