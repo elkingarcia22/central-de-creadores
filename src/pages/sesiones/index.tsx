@@ -23,7 +23,7 @@ const SesionesPageContent: React.FC = () => {
   const { rolSeleccionado } = useRol();
   
   const [activeView, setActiveView] = useState<'calendar' | 'lista_investigaciones' | 'lista_apoyo'>('calendar');
-  const [activeTab, setActiveTab] = useState<'todas' | 'pendiente_agendamiento' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
+  const [activeTab, setActiveTab] = useState<'todas' | 'pendiente' | 'en_progreso' | 'finalizado' | 'cancelado'>('todas');
   const [sesiones, setSesiones] = useState<SesionEvent[]>([]);
   const [sesionesApoyo, setSesionesApoyo] = useState<SesionEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -278,7 +278,6 @@ const SesionesPageContent: React.FC = () => {
     
     // Mapear estados de la UI a estados de la base de datos
     const estadoMap: { [key: string]: string[] } = {
-      'pendiente_agendamiento': ['Pendiente de agendamiento'],
       'pendiente': ['Pendiente'],
       'en_progreso': ['En progreso'],
       'finalizado': ['Finalizado'],
@@ -830,7 +829,7 @@ const SesionesPageContent: React.FC = () => {
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-lg font-semibold text-foreground">
             {sesionData.tipo === 'apoyo' 
-              ? (sesionData.objetivo_sesion || 'Sesión de Apoyo')
+              ? (sesionData.participante?.nombre || 'Sesión de Apoyo')
               : (sesion.investigacion_nombre || 'Sin investigación')
             }
           </h3>
@@ -843,7 +842,10 @@ const SesionesPageContent: React.FC = () => {
             </div>
             
             <p className="text-muted-foreground text-sm">
-            {sesion.titulo}
+            {sesionData.tipo === 'apoyo' 
+              ? (sesionData.objetivo_sesion || sesion.titulo)
+              : sesion.titulo
+            }
           </p>
         </div>
 
@@ -901,23 +903,23 @@ const SesionesPageContent: React.FC = () => {
         </div>
         <div>
             <p className="text-xs text-muted-foreground mb-1">
-              {sesionData.tipo === 'apoyo' ? 'Moderador' : 'Participante'}
+              {sesionData.tipo === 'apoyo' ? 'Moderador' : 'Responsable'}
             </p>
             <p className="text-sm font-medium text-foreground">
               {sesionData.tipo === 'apoyo' 
                 ? (sesionData.moderador_nombre || 'Sin moderador')
-                : (sesion.titulo?.split(' - ')[0] || 'Sin participante')
+                : (sesionData.responsable_real || 'Sin responsable')
               }
             </p>
         </div>
         <div>
             <p className="text-xs text-muted-foreground mb-1">
-              {sesionData.tipo === 'apoyo' ? 'Objetivo' : 'Empresa'}
+              {sesionData.tipo === 'apoyo' ? 'Participante' : 'Implementador'}
             </p>
             <p className="text-sm font-medium text-foreground">
               {sesionData.tipo === 'apoyo' 
-                ? (sesionData.objetivo_sesion || 'Sin objetivo')
-                : (sesion.ubicacion || 'Sin empresa')
+                ? (sesionData.participante?.nombre || 'Sin participante')
+                : (sesionData.implementador_real || 'Sin implementador')
               }
             </p>
         </div>
@@ -1311,7 +1313,6 @@ const SesionesPageContent: React.FC = () => {
                   <Tabs
                     items={[
                       { value: 'todas', label: 'Todas', count: contarSesiones('todas') },
-                      { value: 'pendiente_agendamiento', label: 'Pendiente de Agendamiento', count: contarSesiones('pendiente_agendamiento') },
                       { value: 'pendiente', label: 'Pendiente', count: contarSesiones('pendiente') },
                       { value: 'en_progreso', label: 'En Progreso', count: contarSesiones('en_progreso') },
                       { value: 'finalizado', label: 'Finalizado', count: contarSesiones('finalizado') },

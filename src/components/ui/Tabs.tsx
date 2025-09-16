@@ -70,22 +70,22 @@ export const Tabs: React.FC<TabsProps> = ({
     default: {
       container: 'border-b border-border',
       tab: `transition-all duration-200 font-medium ${sizeClasses[size]} relative`,
-      active: 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20',
+      active: 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20',
       inactive: 'text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-border hover:bg-muted/50',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },
     pills: {
       container: 'bg-muted rounded-lg p-1',
       tab: `transition-all duration-200 font-medium rounded-md ${sizeClasses[size]}`,
-      active: 'text-white bg-blue-600',
+      active: 'text-white bg-blue-600 dark:bg-blue-500',
       inactive: 'text-muted-foreground hover:text-foreground hover:bg-muted',
       disabled: 'text-muted-foreground cursor-not-allowed'
     },
     underline: {
       container: '',
       tab: `transition-all duration-200 font-medium relative ${sizeClasses[size]}`,
-      active: 'text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary',
-      inactive: 'text-gray-500 hover:text-gray-900',
+      active: 'text-blue-600 dark:text-blue-400 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400',
+      inactive: 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100',
       disabled: 'text-muted-foreground cursor-not-allowed'
     }
   };
