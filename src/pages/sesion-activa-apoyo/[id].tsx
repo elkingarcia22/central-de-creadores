@@ -25,6 +25,7 @@ interface SesionApoyoData {
   moderador_nombre: string;
   objetivo_sesion: string;
   observadores: string[];
+  estado_agendamiento?: string;
   tipo: 'apoyo';
   // Información del participante
   participante?: {
@@ -896,6 +897,17 @@ export default function SesionActivaApoyoPage() {
           <InfoItem 
             label="Objetivo de la Sesión"
             value={sesionApoyo.objetivo_sesion || 'Sin objetivo definido'}
+          />
+          <InfoItem 
+            label="Estado de Agendamiento"
+            value={
+              <Chip 
+                variant={getChipVariant(sesionApoyo.estado_agendamiento || '') as any}
+                size="sm"
+              >
+                {sesionApoyo.estado_agendamiento || 'Sin estado'}
+              </Chip>
+            }
           />
           {sesionApoyo.meet_link && (
             <InfoItem 
