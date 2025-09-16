@@ -17,6 +17,7 @@ import {
   Chip,
   PageHeader
 } from './index';
+import MultiUserSelector from './MultiUserSelector';
 import FilterLabel from './FilterLabel';
 import CrearParticipanteExternoModal from './CrearParticipanteExternoModal';
 import CrearParticipanteInternoModal from './CrearParticipanteInternoModal';
@@ -149,6 +150,7 @@ export default function CrearReclutamientoModal({
   const [responsables, setResponsables] = useState<Usuario[]>([]);
   const [usuariosDelLibreto, setUsuariosDelLibreto] = useState<UsuarioLibreto[]>([]);
   const [usuariosSeleccionadosLibreto, setUsuariosSeleccionadosLibreto] = useState<string[]>([]);
+  const [observadores, setObservadores] = useState<string[]>([]);
   const [participantesExternos, setParticipantesExternos] = useState<Participante[]>([]);
   const [participantesInternos, setParticipantesInternos] = useState<ParticipanteInterno[]>([]);
   const [participantesFriendFamily, setParticipantesFriendFamily] = useState<ParticipanteFriendFamily[]>([]);
@@ -254,6 +256,12 @@ export default function CrearReclutamientoModal({
           console.log('🔍 Cargando usuarios del libreto para investigación:', investigacionSeleccionada.id);
           const usuariosLibreto = await obtenerUsuariosDelLibreto(investigacionSeleccionada.id);
           setUsuariosDelLibreto(usuariosLibreto);
+          
+          // Precargar los usuarios del libreto como observadores
+          const idsUsuariosLibreto = usuariosLibreto.map(u => u.id);
+          setUsuariosSeleccionadosLibreto(idsUsuariosLibreto);
+          setObservadores(idsUsuariosLibreto);
+          console.log('🔍 Usuarios del libreto precargados como observadores:', idsUsuariosLibreto);
           
           // Combinar usuarios del libreto con todos los usuarios
           const usuariosCombinados = combinarUsuarios(usuariosLibreto, todosLosUsuarios);
@@ -491,7 +499,8 @@ export default function CrearReclutamientoModal({
         reclutador_id: responsableId,
         creado_por: responsableId,
         tipo_participante: tipoParticipante,
-        meet_link: meetLink || null // Agregar enlace de Meet
+        meet_link: meetLink || null, // Agregar enlace de Meet
+        usuarios_libreto: observadores // Agregar observadores
       };
 
       // Agregar el participante correcto según el tipo
@@ -927,6 +936,33 @@ export default function CrearReclutamientoModal({
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Observadores - Solo mostrar si hay usuarios del libreto */}
+          {usuariosDelLibreto.length > 0 && (
+            <div>
+              <FilterLabel>Observadores</FilterLabel>
+              <MultiUserSelector
+                label="Observadores"
+                placeholder="Seleccionar observadores"
+                value={usuariosSeleccionadosLibreto}
+                onChange={(selectedUsers) => {
+                  setUsuariosSeleccionadosLibreto(selectedUsers);
+                  setObservadores(selectedUsers);
+                }}
+                users={responsables.map(r => ({
+                  id: r.id,
+                  name: r.full_name || 'Sin nombre',
+                  email: r.email || undefined,
+                  avatar_url: r.avatar_url
+                }))}
+                loading={loading}
+                disabled={loading}
+              />
+              <Typography variant="caption" color="secondary" className="mt-1">
+                Usuarios del equipo configurados en el libreto de la investigación
+              </Typography>
             </div>
           )}
             </form>
