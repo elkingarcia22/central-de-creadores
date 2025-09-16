@@ -122,6 +122,7 @@ export default function SesionActivaApoyoPage() {
   const [sesionApoyo, setSesionApoyo] = useState<SesionApoyoData | null>(null);
   const [moderador, setModerador] = useState<Usuario | null>(null);
   const [observadores, setObservadores] = useState<Usuario[]>([]);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('notas-manuales');
   
@@ -139,7 +140,6 @@ export default function SesionActivaApoyoPage() {
   const [errorEstadisticas, setErrorEstadisticas] = useState<string | null>(null);
   const [investigaciones, setInvestigaciones] = useState<any[]>([]);
   const [participacionesPorMes, setParticipacionesPorMes] = useState<{ [key: string]: number }>({});
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   
   // Estados para dolores
   const [dolores, setDolores] = useState<DolorParticipante[]>([]);
@@ -289,6 +289,9 @@ export default function SesionActivaApoyoPage() {
           if (sesionData.participante && sesionData.participante.id) {
             await loadDoloresData(sesionData.participante.id);
           }
+          
+          // Cargar usuarios para el tab de perfilamiento
+          await loadUsuariosData();
           
         } catch (error) {
           console.error('🔍 Error parseando sesión de apoyo desde localStorage:', error);
@@ -504,6 +507,27 @@ export default function SesionActivaApoyoPage() {
       }
     } catch (error) {
       console.error('Error cargando dolores:', error);
+    }
+  };
+
+  const loadUsuariosData = async () => {
+    try {
+      console.log('🔍 Cargando usuarios...');
+      const response = await fetch('/api/usuarios');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Datos de usuarios recibidos:', data);
+        console.log('🔍 Tipo de datos:', typeof data, 'Es array:', Array.isArray(data));
+        
+        // La API devuelve { usuarios: [...] }
+        const usuariosArray = data.usuarios || data || [];
+        console.log('🔍 Usuarios procesados:', usuariosArray);
+        setUsuarios(usuariosArray);
+      } else {
+        console.error('🔍 Error en respuesta de usuarios:', response.status);
+      }
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
     }
   };
 
@@ -1671,6 +1695,17 @@ export default function SesionActivaApoyoPage() {
             />
           )}
         </>
+      )
+    },
+    {
+      id: 'perfilamientos',
+      label: 'Perfilamiento',
+      content: (
+        <PerfilamientosTab
+          participanteId={participante?.id || ''}
+          participanteNombre={participante?.nombre || ''}
+          usuarios={usuarios}
+        />
       )
     }
   ];
