@@ -57,15 +57,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (error) {
         console.error('❌ Error creando nota:', error);
-        return res.status(500).json({ error: 'Error al crear nota' });
+        console.error('❌ Detalles del error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        return res.status(500).json({ 
+          error: 'Error al crear nota',
+          details: error.message 
+        });
       }
 
       console.log('✅ Nota creada exitosamente:', data.id);
       return res.status(201).json(data);
 
     } catch (error) {
-      console.error('Error en API notas-manuales POST:', error);
-      return res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('❌ Error en API notas-manuales POST:', error);
+      console.error('❌ Stack trace:', error.stack);
+      return res.status(500).json({ 
+        error: 'Error interno del servidor',
+        details: error instanceof Error ? error.message : 'Error desconocido'
+      });
     }
   }
 
