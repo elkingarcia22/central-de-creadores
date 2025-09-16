@@ -184,6 +184,8 @@ export default function SesionActivaApoyoPage() {
       if (currentSesionApoyo) {
         try {
           const sesionData = JSON.parse(currentSesionApoyo);
+          console.log('🔍 Datos de sesión de apoyo desde localStorage:', sesionData);
+          console.log('🔍 Estado de agendamiento:', sesionData.estado_agendamiento);
           setSesionApoyo(sesionData);
           
           // Cargar información completa del participante desde la API

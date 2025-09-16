@@ -705,6 +705,7 @@ const SesionesPageContent: React.FC = () => {
           moderador_nombre: sesion.moderador_nombre,
           objetivo_sesion: sesion.objetivo_sesion,
           observadores: sesion.observadores,
+          estado_agendamiento: sesion.estado_agendamiento,
           tipo: 'apoyo',
           // Agregar información del participante
           participante: sesion.participante,
