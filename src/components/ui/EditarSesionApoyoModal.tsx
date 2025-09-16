@@ -608,7 +608,7 @@ export default function EditarSesionApoyoModal({
 
               {/* Mostrar información del participante seleccionado */}
               {participanteSeleccionado && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                   <Typography variant="h5" className="font-semibold mb-2">
                     Participante Seleccionado
                   </Typography>

@@ -3,7 +3,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ChipProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet' | 'accent-black' | 'pendiente' | 'transitoria' | 'terminada' | 'fallo' | 'sin_resolver' | 'resuelto' | 'archivado' | 'baja' | 'media' | 'alta' | 'critica';
+  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'secondary' | 'accent-blue' | 'accent-purple' | 'accent-orange' | 'accent-teal' | 'accent-indigo' | 'accent-pink' | 'accent-cyan' | 'accent-emerald' | 'accent-violet' | 'pendiente' | 'transitoria' | 'terminada' | 'fallo' | 'sin_resolver' | 'resuelto' | 'archivado' | 'baja' | 'media' | 'alta' | 'critica';
   size?: 'sm' | 'md' | 'lg';
   outlined?: boolean;
   rounded?: boolean;
@@ -97,9 +97,6 @@ const Chip: React.FC<ChipProps> = ({
     'accent-violet': outlined
       ? 'border border-accent-violet text-accent-violet bg-transparent'
       : 'bg-accent-violet/10 text-accent-violet',
-    'accent-black': outlined
-      ? '!border-gray-800 !text-gray-800 !bg-transparent dark:!border-gray-200 dark:!text-gray-200'
-      : 'chip-accent-black',
     // Nuevas variantes agrupadas
     pendiente: outlined
       ? 'border border-blue-500 text-blue-600 bg-transparent dark:border-blue-400 dark:text-blue-400'

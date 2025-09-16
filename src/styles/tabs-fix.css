@@ -20,14 +20,3 @@
 .dark .tabs-underline-active::after {
   background-color: #60a5fa !important; /* blue-400 */
 }
-
-/* Forzar estilos del chip negro */
-.chip-accent-black {
-  background-color: #1f2937 !important; /* gray-800 */
-  color: #ffffff !important; /* white */
-}
-
-.dark .chip-accent-black {
-  background-color: #e5e7eb !important; /* gray-200 */
-  color: #1f2937 !important; /* gray-800 */
-}
