@@ -1487,12 +1487,14 @@ const SesionesPageContent: React.FC = () => {
                 participanteId={participanteId || 'temp-id'}
                 sesionId={selectedSesion.id}
                 onConvertirADolor={(contenido) => {
+                  console.log('🔍 [DEBUG] onConvertirADolor llamado desde sesiones/index.tsx, contenido:', contenido);
                   // Pre-llenar el modal de dolor con el contenido de la nota
                   setShowCrearDolorModal(true);
                   // Guardar el contenido para pre-llenar el modal
                   setContenidoNotaParaDolor(contenido);
                 }}
                 onConvertirAPerfilamiento={(contenido) => {
+                  console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde sesiones/index.tsx, contenido:', contenido);
                   // Abrir modal de selección de categoría con todas las notas disponibles
                   console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
                   
@@ -1507,6 +1509,7 @@ const SesionesPageContent: React.FC = () => {
                   console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
                 }}
                 onNotasChange={(notas) => {
+                  console.log('🔍 [DEBUG] onNotasChange llamado desde sesiones/index.tsx, notas:', notas);
                   setNotasManuales(notas);
                 }}
               />

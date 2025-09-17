@@ -29,6 +29,14 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   onConvertirAPerfilamiento,
   onNotasChange
 }) => {
+  // Debug logs para verificar props
+  console.log('🔍 [DEBUG] NotasManualesContent props:', {
+    participanteId,
+    sesionId,
+    hasOnConvertirADolor: !!onConvertirADolor,
+    hasOnConvertirAPerfilamiento: !!onConvertirAPerfilamiento,
+    hasOnNotasChange: !!onNotasChange
+  });
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
   const [semaforoNuevaNota, setSemaforoNuevaNota] = useState<SemaforoRiesgo>('verde');
@@ -459,9 +467,12 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       {/* Botones de conversión */}
                       {onConvertirADolor && (
                         <Button
-                          onClick={() => onConvertirADolor(nota.contenido)}
+                          onClick={() => {
+                            console.log('🔍 [DEBUG] Botón Dolor clickeado, contenido:', nota.contenido);
+                            onConvertirADolor(nota.contenido);
+                          }}
                           size="sm"
-                          variant="secondary"
+                          variant="ghost"
                         >
                           <WarningIcon className="w-4 h-4 mr-1" />
                           Dolor
@@ -469,9 +480,12 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       )}
                       {onConvertirAPerfilamiento && (
                         <Button
-                          onClick={() => onConvertirAPerfilamiento(nota.contenido)}
+                          onClick={() => {
+                            console.log('🔍 [DEBUG] Botón Perfilamiento clickeado, contenido:', nota.contenido);
+                            onConvertirAPerfilamiento(nota.contenido);
+                          }}
                           size="sm"
-                          variant="secondary"
+                          variant="ghost"
                         >
                           <UserIcon className="w-4 h-4 mr-1" />
                           Perfilamiento
