@@ -310,11 +310,16 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 
   // Función para marcar una nota como convertida a dolor
   const marcarNotaConvertidaADolor = (notaId: string, dolorId: string) => {
-    setNotas(prev => prev.map(nota => 
-      nota.id === notaId 
-        ? { ...nota, convertida_a_dolor: true, dolor_id: dolorId }
-        : nota
-    ));
+    console.log('🔍 [DEBUG] marcarNotaConvertidaADolor llamado:', { notaId, dolorId });
+    setNotas(prev => {
+      const nuevasNotas = prev.map(nota => 
+        nota.id === notaId 
+          ? { ...nota, convertida_a_dolor: true, dolor_id: dolorId }
+          : nota
+      );
+      console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
+      return nuevasNotas;
+    });
     
     // Notificar al componente padre si existe la función
     if (onNotaConvertidaADolor) {
@@ -324,11 +329,16 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 
   // Función para marcar una nota como convertida a perfilamiento
   const marcarNotaConvertidaAPerfilamiento = (notaId: string, perfilamientoId: string) => {
-    setNotas(prev => prev.map(nota => 
-      nota.id === notaId 
-        ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoId }
-        : nota
-    ));
+    console.log('🔍 [DEBUG] marcarNotaConvertidaAPerfilamiento llamado:', { notaId, perfilamientoId });
+    setNotas(prev => {
+      const nuevasNotas = prev.map(nota => 
+        nota.id === notaId 
+          ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoId }
+          : nota
+      );
+      console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
+      return nuevasNotas;
+    });
     
     // Notificar al componente padre si existe la función
     if (onNotaConvertidaAPerfilamiento) {

@@ -92,6 +92,14 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
   notaPreSeleccionada,
   onCategoriaSeleccionada
 }) => {
+  console.log('🔍 [DEBUG] SeleccionarCategoriaPerfilamientoModal props:', {
+    isOpen,
+    participanteId,
+    participanteNombre,
+    notasParaConvertir: notasParaConvertir.length,
+    notaPreSeleccionada,
+    todasLasNotas: notasParaConvertir
+  });
   const [categoriaSeleccionada, setCategoriaSeleccionada] = React.useState<CategoriaPerfilamiento | null>(null);
   const [notaSeleccionada, setNotaSeleccionada] = React.useState<NotaParaConvertir | null>(null);
 
@@ -168,7 +176,7 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
         {/* Notas para convertir */}
         {notasParaConvertir.length > 0 && (
           <div className="space-y-3">
-            <ContainerTitle title="Selecciona una nota para convertir" />
+            <ContainerTitle title="Elige la nota que quieres usar como base para el perfilamiento" />
             <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
               Elige la nota que quieres usar como base para el perfilamiento
             </Typography>

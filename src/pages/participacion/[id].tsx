@@ -535,10 +535,22 @@ export default function VistaParticipacion() {
         setShowModalCrearDolor(false);
         
         // Marcar la nota como convertida a dolor si hay contenido pre-cargado
+        console.log('🔍 [DEBUG] Intentando marcar nota como convertida a dolor:', {
+          contenidoNotaParaDolor,
+          tieneFuncion: !!(window as any).marcarNotaConvertidaADolor,
+          notasManuales: notasManuales.length
+        });
+        
         if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
           // Encontrar la nota que se convirtió
           const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
+          console.log('🔍 [DEBUG] Nota encontrada para convertir:', notaConvertida);
+          
           if (notaConvertida) {
+            console.log('🔍 [DEBUG] Llamando marcarNotaConvertidaADolor con:', {
+              notaId: notaConvertida.id,
+              dolorId: dolorCreado.id
+            });
             (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
           }
         }
@@ -2540,6 +2552,8 @@ export default function VistaParticipacion() {
                    }}
                    onConvertirAPerfilamiento={(contenido) => {
                      console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde participacion/[id].tsx, contenido:', contenido);
+                     console.log('🔍 [DEBUG] notasManuales disponibles:', notasManuales);
+                     
                      // Encontrar la nota que se está convirtiendo
                      const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
                      console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
@@ -2690,24 +2704,10 @@ export default function VistaParticipacion() {
         />
       )}
 
-      <SeleccionarCategoriaPerfilamientoModal
-        isOpen={showModalPerfilamiento}
-        onClose={() => {
-          setShowModalPerfilamiento(false);
-          setParticipanteParaPerfilamiento(null);
-        }}
-        participanteId={participanteParaPerfilamiento?.id || ''}
-        participanteNombre={participanteParaPerfilamiento?.nombre || ''}
-        onCategoriaSeleccionada={(categoria) => {
-          setCategoriaSeleccionada(categoria);
-          setShowModalCrearPerfilamiento(true);
-          setShowModalPerfilamiento(false);
-        }}
-      />
 
       {showModalCrearPerfilamiento && categoriaSeleccionada && participante && (
         <CrearPerfilamientoModal
-          isOpen={true}
+          isOpen={showModalCrearPerfilamiento}
           onClose={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
@@ -2766,9 +2766,10 @@ export default function VistaParticipacion() {
           onClose={() => setShowModalPerfilamiento(false)}
           participanteId={id as string}
           participanteNombre={participante?.nombre || ''}
-          notasParaConvertir={notasManuales}
+          notasParaConvertir={notaPreSeleccionada ? [notaPreSeleccionada] : []}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
+            console.log('🔍 [DEBUG] Categoría seleccionada:', categoria, 'Nota:', nota);
             setCategoriaSeleccionada(categoria);
             setNotaPreSeleccionada(nota);
             setShowModalPerfilamiento(false);

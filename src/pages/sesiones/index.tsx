@@ -1739,7 +1739,7 @@ const SesionesPageContent: React.FC = () => {
           onClose={() => setShowPerfilamientoModal(false)}
           participanteId={selectedSesion?.participantes_id || ''}
           participanteNombre={selectedSesion?.participante?.nombre || ''}
-          notasParaConvertir={notasManuales}
+          notasParaConvertir={notaPreSeleccionada ? [notaPreSeleccionada] : []}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
             setCategoriaSeleccionada(categoria);

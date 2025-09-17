@@ -51,7 +51,16 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
   descripcionPrecargada = ''
 }) => {
   console.log('🔄 [PERFILAMIENTO] Componente renderizado con descripcionPrecargada:', descripcionPrecargada);
+  console.log('🔄 [PERFILAMIENTO] Props del modal:', { isOpen, participanteId, categoria });
   const { userProfile } = useUser();
+
+  // Debug para ver cuándo se monta y desmonta el componente
+  useEffect(() => {
+    console.log('🔄 [PERFILAMIENTO] Componente montado');
+    return () => {
+      console.log('🔄 [PERFILAMIENTO] Componente desmontado');
+    };
+  }, []);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<PerfilamientoParticipanteForm>({
     participante_id: participanteId,
