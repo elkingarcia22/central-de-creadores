@@ -198,9 +198,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       <Card className="p-4 bg-muted/30">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
-              <CheckCircleIcon className="w-5 h-5 text-white" />
-            </div>
+            <CheckCircleIcon className="w-5 h-5 text-white" />
             <div>
               <Typography variant="h3" weight="semibold" className="text-white">
                 Análisis Completado
@@ -243,15 +241,15 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
         </div>
         
         <div className="flex flex-wrap gap-2">
-          <Badge variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-600">
+          <Badge variant="secondary" className="flex items-center gap-1 bg-gray-700 text-white">
             <ClockIcon className="w-3 h-3" />
             {formatLatency(meta.latencyMs)}
           </Badge>
-          <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+          <Badge variant="secondary" className="bg-gray-700 text-white">
             {meta.provider}
           </Badge>
           {meta.fromCache && (
-            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            <Badge variant="secondary" className="bg-gray-700 text-white">
               Desde caché
             </Badge>
           )}
@@ -261,9 +259,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       {/* Resumen */}
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-6 h-6 rounded-full bg-info/20 flex items-center justify-center">
-            <CheckCircleIcon className="w-4 h-4 text-white" />
-          </div>
+          <CheckCircleIcon className="w-4 h-4 text-white" />
           <Typography variant="h4" weight="semibold" className="text-white">
             Resumen Ejecutivo
           </Typography>
@@ -277,13 +273,11 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       {result.insights && result.insights.length > 0 && (
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
-              <CheckCircleIcon className="w-4 h-4 text-white" />
-            </div>
+            <CheckCircleIcon className="w-4 h-4 text-white" />
             <Typography variant="h4" weight="semibold" className="text-white">
               Insights Identificados
             </Typography>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            <Badge variant="secondary" className="bg-gray-700 text-white">
               {result.insights.length}
             </Badge>
           </div>
@@ -306,13 +300,11 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       {result.dolores && result.dolores.length > 0 && (
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-6 h-6 rounded-full bg-destructive/20 flex items-center justify-center">
-              <AlertCircleIcon className="w-4 h-4 text-white" />
-            </div>
+            <AlertCircleIcon className="w-4 h-4 text-white" />
             <Typography variant="h4" weight="semibold" className="text-white">
               Dolores Identificados
             </Typography>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            <Badge variant="secondary" className="bg-gray-700 text-white">
               {result.dolores.length}
             </Badge>
           </div>
@@ -418,11 +410,9 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       {result.perfil_sugerido && (
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center">
-              <UserIcon className="w-4 h-4 text-white" />
-            </div>
+            <UserIcon className="w-4 h-4 text-white" />
             <Typography variant="h4" weight="semibold" className="text-white">
-              Perfil Sugerido
+              Perfilamiento Sugerido
             </Typography>
             <Badge variant={getConfidenceColor(result.perfil_sugerido.confidence)}>
               Confianza: {getConfidenceLabel(result.perfil_sugerido.confidence)}
