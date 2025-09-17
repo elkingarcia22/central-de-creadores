@@ -50,10 +50,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     try {
-      const { participante_id, sesion_id, contenido } = req.body;
+      const { participante_id, sesion_id, contenido, semaforo_riesgo = 'verde' } = req.body;
 
       if (!participante_id || !sesion_id || !contenido) {
         return res.status(400).json({ error: 'participante_id, sesion_id y contenido son requeridos' });
+      }
+
+      // Validar semaforo_riesgo
+      if (!['verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+        return res.status(400).json({ error: 'semaforo_riesgo debe ser verde, amarillo o rojo' });
       }
 
       console.log('📝 Creando nueva nota manual:', { participante_id, sesion_id, contenido });
@@ -93,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           participante_id,
           sesion_id: sesionIdParaInsertar,
           contenido: contenido.trim(),
+          semaforo_riesgo,
           fecha_creacion: new Date().toISOString(),
           fecha_actualizacion: new Date().toISOString()
         })

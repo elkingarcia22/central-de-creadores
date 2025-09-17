@@ -10,20 +10,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PUT') {
     try {
-      const { contenido } = req.body;
+      const { contenido, semaforo_riesgo } = req.body;
 
       if (!contenido) {
         return res.status(400).json({ error: 'contenido es requerido' });
       }
 
-      console.log('📝 Actualizando nota manual:', { id, contenido });
+      // Validar semaforo_riesgo si se proporciona
+      if (semaforo_riesgo && !['verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+        return res.status(400).json({ error: 'semaforo_riesgo debe ser verde, amarillo o rojo' });
+      }
+
+      console.log('📝 Actualizando nota manual:', { id, contenido, semaforo_riesgo });
+
+      const updateData: any = {
+        contenido: contenido.trim(),
+        fecha_actualizacion: new Date().toISOString()
+      };
+
+      // Solo actualizar semaforo_riesgo si se proporciona
+      if (semaforo_riesgo) {
+        updateData.semaforo_riesgo = semaforo_riesgo;
+      }
 
       const { data, error } = await supabaseServer
         .from('notas_manuales')
-        .update({
-          contenido: contenido.trim(),
-          fecha_actualizacion: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();

@@ -3,12 +3,14 @@ import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/
 import Typography from '../../components/ui/Typography';
 import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon, WarningIcon, UserIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
+import { SemaforoRiesgoSelector, SemaforoRiesgoIndicator, SemaforoRiesgo } from './SemaforoRiesgoSelector';
 
 interface Nota {
   id: string;
   contenido: string;
   fecha_creacion: string;
   fecha_actualizacion?: string;
+  semaforo_riesgo: 'verde' | 'amarillo' | 'rojo';
 }
 
 interface NotasManualesContentProps {
@@ -28,13 +30,16 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 }) => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
+  const [semaforoNuevaNota, setSemaforoNuevaNota] = useState<SemaforoRiesgo>('verde');
   const [editandoNota, setEditandoNota] = useState<string | null>(null);
   const [notaEditando, setNotaEditando] = useState('');
+  const [semaforoEditando, setSemaforoEditando] = useState<SemaforoRiesgo>('verde');
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notaAEliminar, setNotaAEliminar] = useState<Nota | null>(null);
   const [eliminando, setEliminando] = useState(false);
+  const [filtroSemaforo, setFiltroSemaforo] = useState<SemaforoRiesgo | 'todos'>('todos');
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Notificar al componente padre cuando las notas cambien
@@ -43,6 +48,24 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       onNotasChange(notas);
     }
   }, [notas, onNotasChange]);
+
+  // Manejar eventos de teclado en el input
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        guardarNota(nuevaNota, semaforoNuevaNota);
+        setNuevaNota('');
+        setSemaforoNuevaNota('verde');
+      }
+    };
+
+    input.addEventListener('keypress', handleKeyPress);
+    return () => input.removeEventListener('keypress', handleKeyPress);
+  }, [nuevaNota, semaforoNuevaNota]);
 
   // Cargar notas al montar el componente
   useEffect(() => {
@@ -74,7 +97,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const guardarNota = async (contenido: string) => {
+  const guardarNota = async (contenido: string, semaforo: SemaforoRiesgo = 'verde') => {
     if (!contenido.trim()) return;
 
     if (!participanteId || !sesionId) {
@@ -92,7 +115,8 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         body: JSON.stringify({
           participante_id: participanteId,
           sesion_id: sesionId,
-          contenido: contenido.trim()
+          contenido: contenido.trim(),
+          semaforo_riesgo: semaforo
         }),
       });
 
@@ -102,6 +126,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         
         // Limpiar el input inmediatamente para flujo continuo
         setNuevaNota('');
+        setSemaforoNuevaNota('verde');
         
         // Enfocar el input inmediatamente para seguir escribiendo
         setTimeout(() => {
@@ -121,18 +146,24 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const actualizarNota = async (notaId: string, nuevoContenido: string) => {
+  const actualizarNota = async (notaId: string, nuevoContenido: string, semaforo?: SemaforoRiesgo) => {
     if (!nuevoContenido.trim()) return;
 
     try {
+      const body: any = {
+        contenido: nuevoContenido.trim()
+      };
+
+      if (semaforo) {
+        body.semaforo_riesgo = semaforo;
+      }
+
       const response = await fetch(`/api/notas-manuales/${notaId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          contenido: nuevoContenido.trim()
-        }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
@@ -153,20 +184,22 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const iniciarEdicion = (nota: Nota) => {
     setEditandoNota(nota.id);
     setNotaEditando(nota.contenido);
+    setSemaforoEditando(nota.semaforo_riesgo);
   };
 
   const cancelarEdicion = () => {
     setEditandoNota(null);
     setNotaEditando('');
+    setSemaforoEditando('verde');
   };
 
   const handleEditKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (editandoNota) {
-        actualizarNota(editandoNota, notaEditando);
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (editandoNota) {
+          actualizarNota(editandoNota, notaEditando, semaforoEditando);
+        }
       }
-    }
     if (e.key === 'Escape') {
       cancelarEdicion();
     }
@@ -205,12 +238,11 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     setNotaAEliminar(null);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      guardarNota(nuevaNota);
-    }
-  };
+  // Filtrar notas por semáforo de riesgo
+  const notasFiltradas = filtroSemaforo === 'todos' 
+    ? notas 
+    : notas.filter(nota => nota.semaforo_riesgo === filtroSemaforo);
+
 
 
   return (
@@ -227,36 +259,99 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         </div>
         <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <MessageIcon className="w-4 h-4" />
-          <span>{notas.length} notas</span>
+          <span>{notasFiltradas.length} de {notas.length} notas</span>
+        </div>
+      </div>
+
+      {/* Filtro de semáforo de riesgo */}
+      <div className="flex items-center space-x-3">
+        <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+          Filtrar por riesgo:
+        </span>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setFiltroSemaforo('todos')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              filtroSemaforo === 'todos'
+                ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+            }`}
+          >
+            Todas
+          </button>
+          <button
+            onClick={() => setFiltroSemaforo('verde')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              filtroSemaforo === 'verde'
+                ? 'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
+            }`}
+          >
+            Verde
+          </button>
+          <button
+            onClick={() => setFiltroSemaforo('amarillo')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              filtroSemaforo === 'amarillo'
+                ? 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-400 dark:hover:bg-yellow-700'
+            }`}
+          >
+            Amarillo
+          </button>
+          <button
+            onClick={() => setFiltroSemaforo('rojo')}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              filtroSemaforo === 'rojo'
+                ? 'bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200'
+                : 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-800 dark:text-red-400 dark:hover:bg-red-700'
+            }`}
+          >
+            Rojo
+          </button>
         </div>
       </div>
 
       {/* Input para nueva nota */}
       <Card className="p-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1">
-            <Input
-              ref={inputRef}
-              value={nuevaNota}
-              onChange={(e) => setNuevaNota(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
-              className="border-0 focus:ring-0 text-base placeholder-gray-400 dark:placeholder-gray-500"
+        <div className="space-y-3">
+          <div className="flex items-center space-x-3">
+            <div className="flex-1">
+              <Input
+                ref={inputRef}
+                value={nuevaNota}
+                onChange={(e) => setNuevaNota(e.target.value)}
+                placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
+                className="border-0 focus:ring-0 text-base placeholder-gray-400 dark:placeholder-gray-500"
+                disabled={cargando}
+              />
+            </div>
+            <Button
+              onClick={() => guardarNota(nuevaNota, semaforoNuevaNota)}
+              disabled={!nuevaNota.trim() || cargando || guardando}
+              size="sm"
+              className="shrink-0"
+            >
+              {guardando ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : (
+                <PlusIcon className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
+          
+          {/* Selector de semáforo de riesgo */}
+          <div className="flex items-center space-x-3">
+            <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+              Nivel de riesgo:
+            </span>
+            <SemaforoRiesgoSelector
+              valor={semaforoNuevaNota}
+              onChange={setSemaforoNuevaNota}
+              size="sm"
               disabled={cargando}
             />
           </div>
-          <Button
-            onClick={() => guardarNota(nuevaNota)}
-            disabled={!nuevaNota.trim() || cargando || guardando}
-            size="sm"
-            className="shrink-0"
-          >
-            {guardando ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            ) : (
-              <PlusIcon className="w-4 h-4" />
-            )}
-          </Button>
         </div>
       </Card>
 
@@ -271,9 +366,15 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
           title="No hay notas aún"
           description="Comienza escribiendo tu primera nota arriba"
         />
+      ) : notasFiltradas.length === 0 ? (
+        <EmptyState
+          icon={<MessageIcon className="w-12 h-12 text-gray-400" />}
+          title="No hay notas con este filtro"
+          description="Cambia el filtro o crea una nueva nota"
+        />
       ) : (
         <div className="space-y-3">
-          {notas.map((nota) => (
+          {notasFiltradas.map((nota) => (
             <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow">
               {editandoNota === nota.id ? (
                 <div className="space-y-3">
@@ -282,9 +383,22 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                     onChange={(e) => setNotaEditando(e.target.value)}
                     className="text-base"
                   />
+                  
+                  {/* Selector de semáforo en modo edición */}
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      Nivel de riesgo:
+                    </span>
+                    <SemaforoRiesgoSelector
+                      valor={semaforoEditando}
+                      onChange={setSemaforoEditando}
+                      size="sm"
+                    />
+                  </div>
+                  
                   <div className="flex justify-end space-x-2">
                     <Button
-                      onClick={() => actualizarNota(nota.id, notaEditando)}
+                      onClick={() => actualizarNota(nota.id, notaEditando, semaforoEditando)}
                       size="sm"
                       variant="primary"
                       disabled={!notaEditando.trim()}
@@ -303,10 +417,17 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                      {nota.contenido}
-                    </Typography>
+                    <div className="flex-1">
+                      <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                        {nota.contenido}
+                      </Typography>
+                    </div>
                     <div className="flex items-center space-x-2 ml-4">
+                      {/* Indicador de semáforo de riesgo */}
+                      <SemaforoRiesgoIndicator
+                        valor={nota.semaforo_riesgo}
+                        size="sm"
+                      />
                       {/* Botones de conversión */}
                       {onConvertirADolor && (
                         <Button
