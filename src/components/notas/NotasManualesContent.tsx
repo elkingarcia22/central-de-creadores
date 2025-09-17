@@ -297,40 +297,84 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   };
 
   // Función para marcar una nota como convertida a dolor
-  const marcarNotaConvertidaADolor = (notaId: string, dolorId: string) => {
+  const marcarNotaConvertidaADolor = async (notaId: string, dolorId: string) => {
     console.log('🔍 [DEBUG] marcarNotaConvertidaADolor llamado:', { notaId, dolorId });
-    setNotas(prev => {
-      const nuevasNotas = prev.map(nota => 
-        nota.id === notaId 
-          ? { ...nota, convertida_a_dolor: true, dolor_id: dolorId }
-          : nota
-      );
-      console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
-      return nuevasNotas;
-    });
     
-    // Notificar al componente padre si existe la función
-    if (onNotaConvertidaADolor) {
-      onNotaConvertidaADolor(notaId, dolorId);
+    try {
+      // Actualizar en la base de datos
+      const response = await fetch(`/api/notas-manuales/${notaId}/marcar-conversion`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tipo_conversion: 'dolor',
+          entidad_id: dolorId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al marcar conversión en la base de datos');
+      }
+
+      // Actualizar el estado local
+      setNotas(prev => {
+        const nuevasNotas = prev.map(nota => 
+          nota.id === notaId 
+            ? { ...nota, convertida_a_dolor: true, dolor_id: dolorId }
+            : nota
+        );
+        console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
+        return nuevasNotas;
+      });
+      
+      // Notificar al componente padre si existe la función
+      if (onNotaConvertidaADolor) {
+        onNotaConvertidaADolor(notaId, dolorId);
+      }
+    } catch (error) {
+      console.error('❌ Error marcando conversión a dolor:', error);
     }
   };
 
   // Función para marcar una nota como convertida a perfilamiento
-  const marcarNotaConvertidaAPerfilamiento = (notaId: string, perfilamientoId: string) => {
+  const marcarNotaConvertidaAPerfilamiento = async (notaId: string, perfilamientoId: string) => {
     console.log('🔍 [DEBUG] marcarNotaConvertidaAPerfilamiento llamado:', { notaId, perfilamientoId });
-    setNotas(prev => {
-      const nuevasNotas = prev.map(nota => 
-        nota.id === notaId 
-          ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoId }
-          : nota
-      );
-      console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
-      return nuevasNotas;
-    });
     
-    // Notificar al componente padre si existe la función
-    if (onNotaConvertidaAPerfilamiento) {
-      onNotaConvertidaAPerfilamiento(notaId, perfilamientoId);
+    try {
+      // Actualizar en la base de datos
+      const response = await fetch(`/api/notas-manuales/${notaId}/marcar-conversion`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tipo_conversion: 'perfilamiento',
+          entidad_id: perfilamientoId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al marcar conversión en la base de datos');
+      }
+
+      // Actualizar el estado local
+      setNotas(prev => {
+        const nuevasNotas = prev.map(nota => 
+          nota.id === notaId 
+            ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoId }
+            : nota
+        );
+        console.log('🔍 [DEBUG] Notas actualizadas:', nuevasNotas);
+        return nuevasNotas;
+      });
+      
+      // Notificar al componente padre si existe la función
+      if (onNotaConvertidaAPerfilamiento) {
+        onNotaConvertidaAPerfilamiento(notaId, perfilamientoId);
+      }
+    } catch (error) {
+      console.error('❌ Error marcando conversión a perfilamiento:', error);
     }
   };
 

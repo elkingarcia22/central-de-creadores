@@ -100,7 +100,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           contenido: contenido.trim(),
           semaforo_riesgo,
           fecha_creacion: new Date().toISOString(),
-          fecha_actualizacion: new Date().toISOString()
+          fecha_actualizacion: new Date().toISOString(),
+          convertida_a_dolor: false,
+          convertida_a_perfilamiento: false,
+          dolor_id: null,
+          perfilamiento_id: null
         })
         .select()
         .single();
