@@ -2092,7 +2092,7 @@ export default function VistaParticipacion() {
       console.log('🔍 Cargando análisis de IA existente para sesión:', reclutamiento_id);
       loadExistingAnalysis(reclutamiento_id);
     }
-  }, [reclutamiento_id, loadExistingAnalysis]);
+  }, [reclutamiento_id]); // Removemos loadExistingAnalysis de las dependencias
 
   // Estados de loading
   if (loading) {
