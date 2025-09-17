@@ -106,7 +106,16 @@ export const useAIAnalysis = () => {
         statusText: response.statusText
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+        console.log('✅ [AI Hook] JSON parseado exitosamente');
+      } catch (jsonError) {
+        console.error('❌ [AI Hook] Error parseando JSON:', jsonError);
+        const textResponse = await response.text();
+        console.error('❌ [AI Hook] Response como texto:', textResponse);
+        throw new Error(`Error parseando respuesta del servidor: ${jsonError.message}`);
+      }
       
       console.log('🔍 [AI Hook] Response completa:', {
         ok: response.ok,
@@ -135,6 +144,7 @@ export const useAIAnalysis = () => {
 
     } catch (error) {
       console.error('❌ [AI Hook] Error en análisis:', error);
+      console.error('❌ [AI Hook] Error stack:', error instanceof Error ? error.stack : 'No stack available');
       
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       
