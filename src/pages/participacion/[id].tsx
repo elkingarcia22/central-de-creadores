@@ -2505,6 +2505,20 @@ export default function VistaParticipacion() {
                  <NotasManualesContent 
                    participanteId={id as string}
                    sesionId={reclutamiento_id as string}
+                   onConvertirADolor={(contenido) => {
+                     console.log('🔍 [DEBUG] onConvertirADolor llamado desde participacion/[id].tsx, contenido:', contenido);
+                     setShowModalCrearDolor(true);
+                     // Aquí podrías pre-llenar el modal con el contenido de la nota
+                   }}
+                   onConvertirAPerfilamiento={(contenido) => {
+                     console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde participacion/[id].tsx, contenido:', contenido);
+                     setShowModalPerfilamiento(true);
+                     // Aquí podrías pre-llenar el modal con el contenido de la nota
+                   }}
+                   onNotasChange={(notas) => {
+                     console.log('🔍 [DEBUG] onNotasChange llamado desde participacion/[id].tsx, notas:', notas);
+                     // Aquí podrías actualizar el estado de las notas si es necesario
+                   }}
                  />
                )
              },
