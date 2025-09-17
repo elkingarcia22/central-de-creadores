@@ -73,12 +73,17 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     (window as any).marcarNotaConvertidaADolor = marcarNotaConvertidaADolor;
     (window as any).marcarNotaConvertidaAPerfilamiento = marcarNotaConvertidaAPerfilamiento;
     
+    console.log('🔍 [DEBUG] Funciones expuestas en window:', {
+      marcarNotaConvertidaADolor: !!(window as any).marcarNotaConvertidaADolor,
+      marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
+    });
+    
     return () => {
       // Limpiar las funciones cuando el componente se desmonte
       delete (window as any).marcarNotaConvertidaADolor;
       delete (window as any).marcarNotaConvertidaAPerfilamiento;
     };
-  }, []);
+  }, [marcarNotaConvertidaADolor, marcarNotaConvertidaAPerfilamiento]);
 
   // Manejar eventos de teclado en el input
   useEffect(() => {
