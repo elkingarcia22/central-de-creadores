@@ -48,6 +48,26 @@ export const useAIAnalysis = () => {
 
     try {
       console.log('🤖 [AI Hook] Iniciando análisis de sesión:', sessionId);
+      console.log('🤖 [AI Hook] Payload a enviar:', {
+        tool: 'analyze_session',
+        input: {
+          sessionId,
+          language: 'es'
+        },
+        context: {
+          tenantId: 'default-tenant',
+          sessionId,
+          participantId,
+          catalogs: {}
+        },
+        policy: {
+          allowPaid: false,
+          preferProvider: 'ollama',
+          maxLatencyMs: 60000,
+          budgetCents: 0
+        },
+        idempotency_key: `analyze-${sessionId}-${Date.now()}`
+      });
 
       const response = await fetch('/api/ai/run', {
         method: 'POST',
@@ -81,7 +101,12 @@ export const useAIAnalysis = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error en el análisis de IA');
+        console.error('❌ [AI Hook] Error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        throw new Error(data.error || `Error en el análisis de IA (${response.status})`);
       }
 
       console.log('✅ [AI Hook] Análisis completado:', data);
