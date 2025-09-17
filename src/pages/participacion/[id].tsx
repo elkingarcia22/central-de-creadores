@@ -535,21 +535,11 @@ export default function VistaParticipacion() {
         setShowModalCrearDolor(false);
         
         // Marcar la nota como convertida a dolor si hay contenido pre-cargado
-        if (contenidoNotaParaDolor) {
+        if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
           // Encontrar la nota que se convirtió
           const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
-          console.log('🔍 [DEBUG] Marcando nota como convertida a dolor:', {
-            notaConvertida,
-            dolorId: dolorCreado.id
-          });
-          
           if (notaConvertida) {
-            // Actualizar las notas localmente para mostrar el indicador
-            setNotasManuales(prev => prev.map(nota => 
-              nota.id === notaConvertida.id 
-                ? { ...nota, convertida_a_dolor: true, dolor_id: dolorCreado.id }
-                : nota
-            ));
+            (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
           }
         }
         
@@ -2550,7 +2540,8 @@ export default function VistaParticipacion() {
                    }}
                    onConvertirAPerfilamiento={(contenido) => {
                      console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde participacion/[id].tsx, contenido:', contenido);
-                     console.log('🔍 [DEBUG] notasManuales disponibles:', notasManuales);
+                     // Abrir modal de selección de categoría con todas las notas disponibles
+                     console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
                      
                      // Encontrar la nota que se está convirtiendo
                      const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
@@ -2725,18 +2716,8 @@ export default function VistaParticipacion() {
             setCategoriaSeleccionada(null);
             
             // Marcar la nota como convertida a perfilamiento
-            if (notaPreSeleccionada) {
-              console.log('🔍 [DEBUG] Marcando nota como convertida a perfilamiento:', {
-                notaPreSeleccionada,
-                perfilamientoId: perfilamientoCreado?.id
-              });
-              
-              // Actualizar las notas localmente para mostrar el indicador
-              setNotasManuales(prev => prev.map(nota => 
-                nota.id === notaPreSeleccionada.id 
-                  ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoCreado?.id }
-                  : nota
-              ));
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
             }
             
             setNotaPreSeleccionada(null);
@@ -2768,13 +2749,13 @@ export default function VistaParticipacion() {
       )}
 
       {/* Modal de selección de categoría de perfilamiento */}
-      {showModalPerfilamiento && notaPreSeleccionada && (
+      {showModalPerfilamiento && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showModalPerfilamiento}
           onClose={() => setShowModalPerfilamiento(false)}
           participanteId={id as string}
           participanteNombre={participante?.nombre || ''}
-          notasParaConvertir={[notaPreSeleccionada]}
+          notasParaConvertir={notasManuales}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
             console.log('🔍 [DEBUG] Categoría seleccionada:', categoria, 'Nota:', nota);

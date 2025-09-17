@@ -1708,21 +1708,11 @@ const SesionesPageContent: React.FC = () => {
                 setShowCrearDolorModal(false);
                 
                 // Marcar la nota como convertida a dolor si hay contenido pre-cargado
-                if (contenidoNotaParaDolor) {
+                if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
                   // Encontrar la nota que se convirtió
                   const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
-                  console.log('🔍 [DEBUG] Marcando nota como convertida a dolor:', {
-                    notaConvertida,
-                    dolorId: dolorCreado.id
-                  });
-                  
                   if (notaConvertida) {
-                    // Actualizar las notas localmente para mostrar el indicador
-                    setNotasManuales(prev => prev.map(nota => 
-                      nota.id === notaConvertida.id 
-                        ? { ...nota, convertida_a_dolor: true, dolor_id: dolorCreado.id }
-                        : nota
-                    ));
+                    (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
                   }
                 }
                 
@@ -1743,13 +1733,13 @@ const SesionesPageContent: React.FC = () => {
       )}
 
       {/* Modal de Selección de Categoría de Perfilamiento */}
-      {showPerfilamientoModal && notaPreSeleccionada && (
+      {showPerfilamientoModal && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
           onClose={() => setShowPerfilamientoModal(false)}
           participanteId={selectedSesion?.participantes_id || ''}
           participanteNombre={selectedSesion?.participante?.nombre || ''}
-          notasParaConvertir={[notaPreSeleccionada]}
+          notasParaConvertir={notasManuales}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
             setCategoriaSeleccionada(categoria);
@@ -1774,18 +1764,8 @@ const SesionesPageContent: React.FC = () => {
             setCategoriaSeleccionada(null);
             
             // Marcar la nota como convertida a perfilamiento
-            if (notaPreSeleccionada) {
-              console.log('🔍 [DEBUG] Marcando nota como convertida a perfilamiento:', {
-                notaPreSeleccionada,
-                perfilamientoId: perfilamientoCreado?.id
-              });
-              
-              // Actualizar las notas localmente para mostrar el indicador
-              setNotasManuales(prev => prev.map(nota => 
-                nota.id === notaPreSeleccionada.id 
-                  ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoCreado?.id }
-                  : nota
-              ));
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
             }
             
             setNotaPreSeleccionada(null);
