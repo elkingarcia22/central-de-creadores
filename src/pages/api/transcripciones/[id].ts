@@ -19,7 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duracion_total, 
         transcripcion_completa, 
         transcripcion_por_segmentos,
-        idioma_detectado 
+        idioma_detectado,
+        semaforo_riesgo
       } = req.body;
 
       // Preparar datos para actualizar
@@ -33,6 +34,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (transcripcion_completa !== undefined) updateData.transcripcion_completa = transcripcion_completa;
       if (transcripcion_por_segmentos !== undefined) updateData.transcripcion_por_segmentos = transcripcion_por_segmentos;
       if (idioma_detectado !== undefined) updateData.idioma_detectado = idioma_detectado;
+      if (semaforo_riesgo !== undefined) {
+        // Validar semaforo_riesgo
+        if (!['verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+          return res.status(400).json({ error: 'semaforo_riesgo debe ser verde, amarillo o rojo' });
+        }
+        updateData.semaforo_riesgo = semaforo_riesgo;
+      }
 
       console.log('💾 Datos a actualizar en BD:', updateData);
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, EmptyState, Badge, ConfirmModal } from '../ui';
-import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon, TrashIcon } from '../icons';
+import { Card, Typography, Button, EmptyState, Badge, ConfirmModal, Chip, Input } from '../ui';
+import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
+import { SemaforoRiesgoSelector, SemaforoRiesgoQuickChange, SemaforoRiesgo } from '../notas/SemaforoRiesgoSelector';
 
 interface NotasAutomaticasContentProps {
   reclutamientoId?: string;
@@ -26,6 +27,7 @@ interface TranscripcionSesion {
   fecha_fin?: string;
   created_at?: string;
   updated_at?: string;
+  semaforo_riesgo: 'verde' | 'amarillo' | 'rojo';
 }
 
 export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = ({
@@ -49,6 +51,10 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [transcripcionAEliminar, setTranscripcionAEliminar] = useState<TranscripcionSesion | null>(null);
   const [eliminando, setEliminando] = useState(false);
+  const [filtroSemaforo, setFiltroSemaforo] = useState<'todos' | 'verde' | 'amarillo' | 'rojo'>('todos');
+  const [editandoTranscripcion, setEditandoTranscripcion] = useState<string | null>(null);
+  const [transcripcionEditando, setTranscripcionEditando] = useState('');
+  const [semaforoEditando, setSemaforoEditando] = useState<SemaforoRiesgo>('verde');
 
   // Cargar transcripciones existentes
   useEffect(() => {
@@ -113,6 +119,87 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
     setShowDeleteModal(false);
     setTranscripcionAEliminar(null);
   };
+
+  // Función para cambiar el color de una transcripción rápidamente
+  const cambiarColorTranscripcion = async (transcripcionId: string, nuevoColor: SemaforoRiesgo) => {
+    try {
+      const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          semaforo_riesgo: nuevoColor
+        }),
+      });
+
+      if (response.ok) {
+        const transcripcionActualizada = await response.json();
+        setTranscripciones(prev => prev.map(transcripcion => 
+          transcripcion.id === transcripcionId ? transcripcionActualizada : transcripcion
+        ));
+        // Actualizar también la transcripción seleccionada si es la misma
+        if (selectedTranscripcion?.id === transcripcionId) {
+          setSelectedTranscripcion(transcripcionActualizada);
+        }
+      } else {
+        console.error('Error cambiando color de transcripción:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error cambiando color de transcripción:', error);
+    }
+  };
+
+  // Función para iniciar edición
+  const iniciarEdicion = (transcripcion: TranscripcionSesion) => {
+    setEditandoTranscripcion(transcripcion.id);
+    setTranscripcionEditando(transcripcion.transcripcion_completa || '');
+    setSemaforoEditando(transcripcion.semaforo_riesgo);
+  };
+
+  // Función para cancelar edición
+  const cancelarEdicion = () => {
+    setEditandoTranscripcion(null);
+    setTranscripcionEditando('');
+    setSemaforoEditando('verde');
+  };
+
+  // Función para actualizar transcripción
+  const actualizarTranscripcion = async (transcripcionId: string) => {
+    try {
+      const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          transcripcion_completa: transcripcionEditando,
+          semaforo_riesgo: semaforoEditando
+        }),
+      });
+
+      if (response.ok) {
+        const transcripcionActualizada = await response.json();
+        setTranscripciones(prev => prev.map(transcripcion => 
+          transcripcion.id === transcripcionId ? transcripcionActualizada : transcripcion
+        ));
+        // Actualizar también la transcripción seleccionada si es la misma
+        if (selectedTranscripcion?.id === transcripcionId) {
+          setSelectedTranscripcion(transcripcionActualizada);
+        }
+        cancelarEdicion();
+      } else {
+        console.error('Error actualizando transcripción:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error actualizando transcripción:', error);
+    }
+  };
+
+  // Filtrar transcripciones por semáforo de riesgo
+  const transcripcionesFiltradas = filtroSemaforo === 'todos' 
+    ? transcripciones 
+    : transcripciones.filter(transcripcion => transcripcion.semaforo_riesgo === filtroSemaforo);
 
   const formatDuracion = (segundos: number) => {
     const horas = Math.floor(segundos / 3600);
@@ -295,6 +382,47 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           </Button>
         </div>
 
+        {/* Filtro de semáforo de riesgo */}
+        <div className="flex items-center space-x-3">
+          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            Filtrar por riesgo:
+          </span>
+          <div className="flex items-center space-x-2">
+            <Chip
+              variant="default"
+              size="sm"
+              onClick={() => setFiltroSemaforo('todos')}
+              className="cursor-pointer"
+            >
+              Todas
+            </Chip>
+            <Chip
+              variant={filtroSemaforo === 'verde' ? 'success' : 'default'}
+              size="sm"
+              onClick={() => setFiltroSemaforo('verde')}
+              className="cursor-pointer"
+            >
+              Bueno
+            </Chip>
+            <Chip
+              variant={filtroSemaforo === 'amarillo' ? 'warning' : 'default'}
+              size="sm"
+              onClick={() => setFiltroSemaforo('amarillo')}
+              className="cursor-pointer"
+            >
+              Alerta
+            </Chip>
+            <Chip
+              variant={filtroSemaforo === 'rojo' ? 'danger' : 'default'}
+              size="sm"
+              onClick={() => setFiltroSemaforo('rojo')}
+              className="cursor-pointer"
+            >
+              Crítico
+            </Chip>
+          </div>
+        </div>
+
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -308,61 +436,119 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           </div>
         ) : transcripciones.length > 0 ? (
           <div className="space-y-3">
-            {transcripciones.map((transcripcion) => (
+            {transcripcionesFiltradas.map((transcripcion) => (
               <Card
                 key={transcripcion.id}
                 variant="elevated"
                 padding="md"
-                className={`cursor-pointer transition-colors ${
+                className={`transition-colors ${
                   selectedTranscripcion?.id === transcripcion.id
                     ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20'
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
-                onClick={() => setSelectedTranscripcion(transcripcion)}
+                onClick={() => !editandoTranscripcion && setSelectedTranscripcion(transcripcion)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <MicIcon className="w-5 h-5 text-gray-500" />
-                    <div>
-                      <Typography variant="h5" weight="medium" className="text-gray-600 dark:text-gray-300">
-                        Transcripción #{transcripcion.id.slice(-8)}
-                      </Typography>
-                      <div className="flex items-center gap-4 mt-1">
-                        <div className="flex items-center gap-1">
-                          <ClockIcon className="w-4 h-4 text-gray-400" />
-                          <Typography variant="body2" color="secondary">
-                            {transcripcion.duracion_total ? formatDuracion(transcripcion.duracion_total) : 'N/A'}
-                          </Typography>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <UserIcon className="w-4 h-4 text-gray-400" />
-                          <Typography variant="body2" color="secondary">
-                            {transcripcion.idioma_detectado || 'es'}
-                          </Typography>
-                        </div>
-                        <Typography variant="body2" color="secondary">
-                          {transcripcion.fecha_inicio ? formatearFecha(transcripcion.fecha_inicio) : 'N/A'}
-                        </Typography>
-                      </div>
+                {editandoTranscripcion === transcripcion.id ? (
+                  <div className="space-y-3">
+                    <Input
+                      value={transcripcionEditando}
+                      onChange={(e) => setTranscripcionEditando(e.target.value)}
+                      className="text-base"
+                      placeholder="Editar transcripción..."
+                    />
+                    
+                    {/* Selector de semáforo en modo edición */}
+                    <div className="flex items-center space-x-3">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                        Nivel de riesgo:
+                      </span>
+                      <SemaforoRiesgoSelector
+                        valor={semaforoEditando}
+                        onChange={setSemaforoEditando}
+                        size="sm"
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        onClick={() => actualizarTranscripcion(transcripcion.id)}
+                        size="sm"
+                        variant="primary"
+                        disabled={!transcripcionEditando.trim()}
+                      >
+                        <CheckIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={cancelarEdicion}
+                        size="sm"
+                        variant="secondary"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={getEstadoVariant(transcripcion.estado)} size="sm">
-                      {getEstadoText(transcripcion.estado)}
-                    </Badge>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        confirmarEliminarTranscripcion(transcripcion);
-                      }}
-                      size="sm"
-                      variant="ghost"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </Button>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <MicIcon className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <Typography variant="h5" weight="medium" className="text-gray-600 dark:text-gray-300">
+                          Transcripción #{transcripcion.id.slice(-8)}
+                        </Typography>
+                        <div className="flex items-center gap-4 mt-1">
+                          <div className="flex items-center gap-1">
+                            <ClockIcon className="w-4 h-4 text-gray-400" />
+                            <Typography variant="body2" color="secondary">
+                              {transcripcion.duracion_total ? formatDuracion(transcripcion.duracion_total) : 'N/A'}
+                            </Typography>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <UserIcon className="w-4 h-4 text-gray-400" />
+                            <Typography variant="body2" color="secondary">
+                              {transcripcion.idioma_detectado || 'es'}
+                            </Typography>
+                          </div>
+                          <Typography variant="body2" color="secondary">
+                            {transcripcion.fecha_inicio ? formatearFecha(transcripcion.fecha_inicio) : 'N/A'}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getEstadoVariant(transcripcion.estado)} size="sm">
+                        {getEstadoText(transcripcion.estado)}
+                      </Badge>
+                      {/* Cambio rápido de semáforo de riesgo */}
+                      <SemaforoRiesgoQuickChange
+                        valor={transcripcion.semaforo_riesgo}
+                        onChange={(nuevoColor) => cambiarColorTranscripcion(transcripcion.id, nuevoColor)}
+                        size="sm"
+                      />
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          iniciarEdicion(transcripcion);
+                        }}
+                        size="sm"
+                        variant="ghost"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      >
+                        <EditIcon className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          confirmarEliminarTranscripcion(transcripcion);
+                        }}
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </Card>
             ))}
           </div>

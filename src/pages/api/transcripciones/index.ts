@@ -6,14 +6,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   if (req.method === 'POST') {
     try {
-      const { reclutamiento_id, meet_link, estado, fecha_inicio } = req.body;
+      const { reclutamiento_id, meet_link, estado, fecha_inicio, semaforo_riesgo = 'verde' } = req.body;
       
-      console.log('📝 Datos recibidos:', { reclutamiento_id, meet_link, estado, fecha_inicio });
+      console.log('📝 Datos recibidos:', { reclutamiento_id, meet_link, estado, fecha_inicio, semaforo_riesgo });
 
       // Validar datos requeridos
       if (!reclutamiento_id) {
         console.log('❌ Error: reclutamiento_id es requerido');
         return res.status(400).json({ error: 'reclutamiento_id es requerido' });
+      }
+
+      // Validar semaforo_riesgo
+      if (!['verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+        return res.status(400).json({ error: 'semaforo_riesgo debe ser verde, amarillo o rojo' });
       }
 
       // Crear nueva transcripción
@@ -26,7 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             estado: estado || 'procesando',
             fecha_inicio: fecha_inicio || new Date().toISOString(),
             idioma_detectado: 'es',
-            transcripcion_por_segmentos: []
+            transcripcion_por_segmentos: [],
+            semaforo_riesgo
           }
         ])
         .select()
