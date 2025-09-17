@@ -137,17 +137,29 @@ async function handleAnalyzeSession(
   // 1. Cargar información del reclutamiento con investigación y libreto
   console.log('📊 [AI] Cargando datos del reclutamiento...');
   
+  // Primero verificar si existe el reclutamiento sin JOIN
   const { data: reclutamiento, error: reclutamientoError } = await supabaseServer
     .from('reclutamientos')
-    .select(`
-      *,
-      investigaciones (
-        *,
-        libretos_investigacion (*)
-      )
-    `)
+    .select('*')
     .eq('id', sessionId)
     .single();
+
+  // Si existe el reclutamiento, cargar la investigación por separado
+  let investigacion = null;
+  if (reclutamiento && !reclutamientoError) {
+    const { data: invData, error: invError } = await supabaseServer
+      .from('investigaciones')
+      .select(`
+        *,
+        libretos_investigacion (*)
+      `)
+      .eq('id', reclutamiento.investigacion_id)
+      .single();
+    
+    if (!invError && invData) {
+      investigacion = invData;
+    }
+  }
 
   if (reclutamientoError || !reclutamiento) {
     console.log('⚠️ [AI] Reclutamiento no encontrado, usando datos de prueba:', sessionId);
@@ -171,7 +183,7 @@ async function handleAnalyzeSession(
     id: reclutamiento.id,
     investigacion_id: reclutamiento.investigacion_id,
     participantes_id: reclutamiento.participantes_id,
-    investigacion: reclutamiento.investigaciones?.nombre
+    investigacion: investigacion?.nombre
   });
 
   // 2. Cargar transcripciones de la sesión
@@ -259,7 +271,7 @@ async function handleAnalyzeSession(
   ).join('\n') || '';
 
   // 8. Procesar contexto del libreto
-  const libreto = reclutamiento.investigaciones?.libretos_investigacion;
+  const libreto = investigacion?.libretos_investigacion;
   const contextoLibreto = libreto ? `
 CONTEXTO DE LA INVESTIGACIÓN:
 - Problema/Situación: ${libreto.problema_situacion || 'No especificado'}
