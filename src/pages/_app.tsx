@@ -4,7 +4,14 @@ import { UserProvider } from '../contexts/UserContext';
 import { FastUserProvider } from '../contexts/FastUserContext';
 import { RolProvider } from '../contexts/RolContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { ToastProvider } from '../contexts/ToastContext';
+import { ToastProvider, useToast } from '../contexts/ToastContext';
+import ToastContainer from '../components/ui/ToastContainer';
+
+// Componente interno para renderizar toasts
+function ToastRenderer() {
+  const { toasts, removeToast } = useToast();
+  return <ToastContainer toasts={toasts} onRemoveToast={removeToast} />;
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -14,6 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <RolProvider>
             <ToastProvider>
               <Component {...pageProps} />
+              <ToastRenderer />
             </ToastProvider>
           </RolProvider>
         </FastUserProvider>
