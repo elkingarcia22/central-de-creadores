@@ -36,7 +36,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
     titulo: '',
     descripcion: '',
     severidad: SeveridadDolor.MEDIA,
-    investigacion_relacionada_id: ''
+    investigacion_relacionada_id: null
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -60,7 +60,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         titulo: dolor.titulo || '',
         descripcion: dolor.descripcion || '',
         severidad: dolor.severidad || SeveridadDolor.MEDIA,
-        investigacion_relacionada_id: dolor.investigacion_relacionada_id || '',
+        investigacion_relacionada_id: dolor.investigacion_relacionada_id || null,
         sesion_relacionada_id: dolor.sesion_relacionada_id || ''
       };
       setFormData(newFormData);
@@ -71,7 +71,7 @@ export const DolorSideModal: React.FC<DolorSideModalProps> = ({
         titulo: '',
         descripcion: descripcionPrecargada || '', // Usar descripción precargada si existe
         severidad: SeveridadDolor.MEDIA,
-        investigacion_relacionada_id: ''
+        investigacion_relacionada_id: null
       });
     }
     setErrors({});
