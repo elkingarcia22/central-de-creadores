@@ -2545,6 +2545,7 @@ export default function VistaParticipacion() {
                      // Encontrar la nota que se está convirtiendo
                      const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
                      console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
+                     console.log('🔄 [CONVERSION] Todas las notas disponibles:', notasManuales);
                      
                      // Guardar la nota pre-seleccionada
                      setNotaPreSeleccionada(notaSeleccionada);
