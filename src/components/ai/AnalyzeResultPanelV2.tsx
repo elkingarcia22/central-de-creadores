@@ -258,19 +258,6 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
               </Button>
             )}
             
-            {/* Botón Eliminar - siempre visible */}
-            {onDelete && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onDelete}
-                className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
-              >
-                <XIcon className="w-4 h-4" />
-                Eliminar
-              </Button>
-            )}
-            
             {/* Botón Exportar - solo cuando está guardado */}
             {isSaved && (
               <Button
@@ -281,6 +268,19 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
               >
                 <DownloadIcon className="w-4 h-4" />
                 Exportar
+              </Button>
+            )}
+            
+            {/* Botón Eliminar - siempre visible, al final */}
+            {onDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onDelete}
+                className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
+              >
+                <XIcon className="w-4 h-4" />
+                Eliminar
               </Button>
             )}
           </div>
