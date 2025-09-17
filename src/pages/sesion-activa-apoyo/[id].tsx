@@ -2277,12 +2277,25 @@ export default function SesionActivaApoyoPage() {
             categoria={categoriaSeleccionada}
             descripcionPrecargada={contenidoFinalParaPerfilamiento} // Pasar contenido de la nota
           onSuccess={(perfilamientoCreado) => {
+            console.log('🔍 [DEBUG] onSuccess llamado con perfilamientoCreado:', perfilamientoCreado);
+            console.log('🔍 [DEBUG] notaPreSeleccionada:', notaPreSeleccionada);
+            console.log('🔍 [DEBUG] window.marcarNotaConvertidaAPerfilamiento existe:', !!(window as any).marcarNotaConvertidaAPerfilamiento);
+            
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
             
             // Marcar la nota como convertida a perfilamiento
             if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              console.log('🔍 [DEBUG] Llamando marcarNotaConvertidaAPerfilamiento con:', {
+                notaId: notaPreSeleccionada.id,
+                perfilamientoId: perfilamientoCreado?.id
+              });
               (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            } else {
+              console.log('🔍 [DEBUG] No se puede marcar la nota como convertida:', {
+                notaPreSeleccionada: !!notaPreSeleccionada,
+                marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
+              });
             }
             
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
