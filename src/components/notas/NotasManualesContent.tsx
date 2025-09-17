@@ -436,7 +436,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             Todas
           </Chip>
           <Chip
-            variant={filtroSemaforo === 'neutral' ? 'secondary' : 'default'}
+            variant={filtroSemaforo === 'neutral' ? 'default' : 'default'}
             size="sm"
             onClick={() => setFiltroSemaforo('neutral')}
             className="cursor-pointer"
