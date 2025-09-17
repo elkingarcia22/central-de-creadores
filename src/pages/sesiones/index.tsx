@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, EditarSesionApoyoModal, AgregarParticipanteModal, FilterDrawer, AIButton } from '../../components/ui';
 import { useAIAnalysis } from '../../hooks/useAIAnalysis';
-import { AnalyzeResultPanel } from '../../components/ai/AnalyzeResultPanel';
+import { AnalyzeResultPanelV2 } from '../../components/ai/AnalyzeResultPanelV2';
 import { FilterValuesSesiones } from '../../components/ui/FilterDrawer';
 import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
@@ -394,6 +394,95 @@ const SesionesPageContent: React.FC = () => {
   // Contar sesiones por estado
   const contarSesiones = (estado: string) => {
     return getSesionesPorEstado(estado).length;
+  };
+
+  // Funciones para crear desde análisis de IA
+  const handleCreateDolorFromAI = async (dolorData: any) => {
+    try {
+      console.log('🚀 [Sesiones] Creando dolor desde IA:', dolorData);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Obtener el participante de la sesión seleccionada
+      const participanteId = sesionSeleccionada?.participante?.id;
+      if (!participanteId) {
+        throw new Error('No se encontró el participante de la sesión');
+      }
+      
+      const response = await fetch(`/api/participantes/${participanteId}/dolores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id || '',
+        },
+        body: JSON.stringify({
+          categoria_id: dolorData.categoria_id,
+          titulo: dolorData.titulo,
+          descripcion: dolorData.descripcion,
+          severidad: dolorData.severidad,
+          ejemplo: dolorData.ejemplo,
+          evidencia_segmento: dolorData.evidence?.seg_id || null,
+          fuente: 'ai_analysis'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear dolor');
+      }
+
+      const newDolor = await response.json();
+      console.log('✅ [Sesiones] Dolor creado desde IA:', newDolor);
+      
+      showSuccess('Dolor creado exitosamente desde el análisis de IA');
+      
+    } catch (error) {
+      console.error('❌ [Sesiones] Error creando dolor desde IA:', error);
+      showError('Error al crear el dolor desde el análisis de IA');
+    }
+  };
+
+  const handleCreatePerfilamientoFromAI = async (perfilData: any) => {
+    try {
+      console.log('🚀 [Sesiones] Creando perfilamiento desde IA:', perfilData);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Obtener el participante de la sesión seleccionada
+      const participanteId = sesionSeleccionada?.participante?.id;
+      if (!participanteId) {
+        throw new Error('No se encontró el participante de la sesión');
+      }
+      
+      const response = await fetch(`/api/participantes/${participanteId}/perfilamientos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'user-id': user?.id || '',
+        },
+        body: JSON.stringify({
+          categoria_perfilamiento: perfilData.categoria,
+          valor_principal: perfilData.valor_principal,
+          observaciones: perfilData.observaciones,
+          contexto_interaccion: perfilData.contexto_interaccion,
+          confianza_observacion: perfilData.confianza_observacion,
+          etiquetas_contexto: perfilData.etiquetas_contexto,
+          fuente: 'ai_analysis'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear perfilamiento');
+      }
+
+      const newPerfilamiento = await response.json();
+      console.log('✅ [Sesiones] Perfilamiento creado desde IA:', newPerfilamiento);
+      
+      showSuccess('Perfilamiento creado exitosamente desde el análisis de IA');
+      
+    } catch (error) {
+      console.error('❌ [Sesiones] Error creando perfilamiento desde IA:', error);
+      showError('Error al crear el perfilamiento desde el análisis de IA');
+    }
   };
 
   // Función para manejar "Ver más" - navegar a vista específica de la sesión
@@ -1548,7 +1637,7 @@ const SesionesPageContent: React.FC = () => {
             id: 'ai-analysis',
             label: 'Análisis IA',
             content: aiResult && aiMeta ? (
-              <AnalyzeResultPanel
+              <AnalyzeResultPanelV2
                 result={aiResult}
                 meta={aiMeta}
                 sessionId={sesionSeleccionada?.id}
@@ -1572,6 +1661,8 @@ const SesionesPageContent: React.FC = () => {
                     console.error('Error en re-análisis:', error);
                   }
                 }}
+                onCreateDolor={handleCreateDolorFromAI}
+                onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
               />
             ) : (
               <div className="text-center py-8">
