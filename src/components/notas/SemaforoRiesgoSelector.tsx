@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Chip } from '../ui';
 
-export type SemaforoRiesgo = 'verde' | 'amarillo' | 'rojo';
+export type SemaforoRiesgo = 'neutral' | 'verde' | 'amarillo' | 'rojo';
 
 interface SemaforoRiesgoSelectorProps {
   valor: SemaforoRiesgo;
@@ -12,6 +12,12 @@ interface SemaforoRiesgoSelectorProps {
 }
 
 const semaforoConfig = {
+  neutral: {
+    variant: 'secondary' as const,
+    color: '#6B7280',
+    label: 'Neutral',
+    description: 'Sin evaluación específica'
+  },
   verde: {
     variant: 'success' as const,
     color: '#10B981',

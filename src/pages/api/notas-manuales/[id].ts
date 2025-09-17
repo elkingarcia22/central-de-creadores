@@ -17,8 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Validar semaforo_riesgo si se proporciona
-      if (semaforo_riesgo && !['verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
-        return res.status(400).json({ error: 'semaforo_riesgo debe ser verde, amarillo o rojo' });
+      if (semaforo_riesgo && !['neutral', 'verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+        return res.status(400).json({ error: 'semaforo_riesgo debe ser neutral, verde, amarillo o rojo' });
       }
 
       console.log('📝 Actualizando nota manual:', { id, contenido, semaforo_riesgo });

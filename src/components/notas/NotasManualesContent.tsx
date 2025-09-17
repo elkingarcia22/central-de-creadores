@@ -11,7 +11,7 @@ interface Nota {
   contenido: string;
   fecha_creacion: string;
   fecha_actualizacion?: string;
-  semaforo_riesgo: 'verde' | 'amarillo' | 'rojo';
+  semaforo_riesgo: 'neutral' | 'verde' | 'amarillo' | 'rojo';
   // Campos para indicar conversiones
   convertida_a_dolor?: boolean;
   convertida_a_perfilamiento?: boolean;
@@ -48,10 +48,10 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   });
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
-  const [semaforoNuevaNota, setSemaforoNuevaNota] = useState<SemaforoRiesgo>('verde');
+  const [semaforoNuevaNota, setSemaforoNuevaNota] = useState<SemaforoRiesgo>('neutral');
   const [editandoNota, setEditandoNota] = useState<string | null>(null);
   const [notaEditando, setNotaEditando] = useState('');
-  const [semaforoEditando, setSemaforoEditando] = useState<SemaforoRiesgo>('verde');
+  const [semaforoEditando, setSemaforoEditando] = useState<SemaforoRiesgo>('neutral');
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -78,7 +78,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         e.preventDefault();
         guardarNota(nuevaNota, semaforoNuevaNota);
         setNuevaNota('');
-        setSemaforoNuevaNota('verde');
+        setSemaforoNuevaNota('neutral');
       }
     };
 
@@ -116,7 +116,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-  const guardarNota = async (contenido: string, semaforo: SemaforoRiesgo = 'verde') => {
+  const guardarNota = async (contenido: string, semaforo: SemaforoRiesgo = 'neutral') => {
     if (!contenido.trim()) return;
 
     if (!participanteId || !sesionId) {
@@ -145,7 +145,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         
         // Limpiar el input inmediatamente para flujo continuo
         setNuevaNota('');
-        setSemaforoNuevaNota('verde');
+        setSemaforoNuevaNota('neutral');
         
         // Enfocar el input inmediatamente para seguir escribiendo
         setTimeout(() => {
@@ -486,7 +486,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
           {/* Selector de semáforo de riesgo */}
           <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-              Nivel de riesgo:
+              Radar de feedback:
             </span>
             <SemaforoRiesgoSelector
               valor={semaforoNuevaNota}
@@ -530,7 +530,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                   {/* Selector de semáforo en modo edición */}
                   <div className="flex items-center space-x-3">
                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                      Nivel de riesgo:
+                      Radar de feedback:
                     </span>
                     <SemaforoRiesgoSelector
                       valor={semaforoEditando}
