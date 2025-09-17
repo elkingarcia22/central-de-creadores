@@ -7,16 +7,7 @@ import { supabaseServer } from '../../../api/supabase-server';
 const AIRunRequestSchema = z.object({
   tool: z.string(),
   input: z.record(z.any()),
-  context: z.object({
-    tenantId: z.string(),
-    investigationId: z.string().optional(),
-    sessionId: z.string().optional(),
-    participantId: z.string().optional(),
-    catalogs: z.object({
-      dolorCategoriaIds: z.array(z.string()).optional(),
-      perfilCategoriaIds: z.array(z.string()).optional(),
-    }).optional(),
-  }),
+  context: z.record(z.any()).optional(),
   policy: z.object({
     allowPaid: z.boolean(),
     preferProvider: z.string().optional(),
@@ -60,17 +51,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     console.log('🤖 [AI] Endpoint /ai/run llamado');
     
-    // Validar request
-    const validationResult = AIRunRequestSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      console.error('❌ [AI] Request inválido:', validationResult.error);
+    // Validar request básico
+    const { tool, input, context, policy, idempotency_key } = req.body;
+    
+    if (!tool || !input) {
       return res.status(400).json({ 
-        error: 'Request inválido', 
-        details: validationResult.error.issues 
+        error: 'Request inválido: tool e input son requeridos'
       });
     }
-
-    const { tool, input, context, policy, idempotency_key } = validationResult.data;
 
     // Verificar flags de habilitación
     const iaEnabled = process.env.IA_ENABLE_EXEC === 'true';
