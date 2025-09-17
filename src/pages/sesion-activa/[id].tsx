@@ -1087,8 +1087,31 @@ export default function SesionActivaPage() {
       console.log('🔍 [SesionActiva] Response status:', response.status);
 
       if (response.ok) {
+        const dolorCreado = await response.json();
         showSuccess('Dolor creado exitosamente');
         setShowCrearDolorModal(false);
+        
+        // Marcar la nota como convertida a dolor si hay contenido pre-cargado
+        if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
+          console.log('🔍 [DEBUG] Marcando nota como convertida a dolor:', { contenidoNotaParaDolor, dolorCreadoId: dolorCreado.id });
+          // Encontrar la nota que se convirtió
+          const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
+          if (notaConvertida) {
+            console.log('🔍 [DEBUG] Nota encontrada para marcar como convertida:', notaConvertida);
+            (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
+          } else {
+            console.log('🔍 [DEBUG] No se encontró la nota para marcar como convertida');
+          }
+        } else {
+          console.log('🔍 [DEBUG] No se puede marcar la nota como convertida a dolor:', {
+            contenidoNotaParaDolor: !!contenidoNotaParaDolor,
+            marcarNotaConvertidaADolor: !!(window as any).marcarNotaConvertidaADolor
+          });
+        }
+        
+        // Limpiar el contenido pre-cargado
+        setContenidoNotaParaDolor('');
+        
         // Recargar dolores
         await loadDoloresData();
       } else {
@@ -1718,6 +1741,14 @@ export default function SesionActivaPage() {
         onNotasChange={(notas) => {
           setNotasManuales(notas);
         }}
+        onNotaConvertidaADolor={(notaId, dolorId) => {
+          console.log('🔍 [DEBUG] Nota convertida a dolor:', { notaId, dolorId });
+          // La función marcarNotaConvertidaADolor se ejecutará automáticamente
+        }}
+        onNotaConvertidaAPerfilamiento={(notaId, perfilamientoId) => {
+          console.log('🔍 [DEBUG] Nota convertida a perfilamiento:', { notaId, perfilamientoId });
+          // La función marcarNotaConvertidaAPerfilamiento se ejecutará automáticamente
+        }}
       />
     },
     {
@@ -2321,9 +2352,28 @@ export default function SesionActivaPage() {
           participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
           descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
-          onSuccess={() => {
+          onSuccess={(perfilamientoCreado) => {
+            console.log('🔍 [DEBUG] onSuccess llamado con perfilamientoCreado:', perfilamientoCreado);
+            console.log('🔍 [DEBUG] notaPreSeleccionada:', notaPreSeleccionada);
+            console.log('🔍 [DEBUG] window.marcarNotaConvertidaAPerfilamiento existe:', !!(window as any).marcarNotaConvertidaAPerfilamiento);
+            
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            
+            // Marcar la nota como convertida a perfilamiento
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              console.log('🔍 [DEBUG] Llamando marcarNotaConvertidaAPerfilamiento con:', {
+                notaId: notaPreSeleccionada.id,
+                perfilamientoId: perfilamientoCreado?.id
+              });
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            } else {
+              console.log('🔍 [DEBUG] No se puede marcar la nota como convertida:', {
+                notaPreSeleccionada: !!notaPreSeleccionada,
+                marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
+              });
+            }
+            
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
             setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
             showSuccess('Perfilamiento creado exitosamente');
