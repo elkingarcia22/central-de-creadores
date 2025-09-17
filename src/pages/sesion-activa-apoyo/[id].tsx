@@ -1034,8 +1034,22 @@ export default function SesionActivaApoyoPage() {
       console.log('🔍 [SesionActivaApoyo] Response status:', response.status);
 
       if (response.ok) {
+        const dolorCreado = await response.json();
         showSuccess('Dolor creado exitosamente');
         setShowCrearDolorModal(false);
+        
+        // Marcar la nota como convertida a dolor si hay contenido pre-cargado
+        if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
+          // Encontrar la nota que se convirtió
+          const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
+          if (notaConvertida) {
+            (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
+          }
+        }
+        
+        // Limpiar el contenido pre-cargado
+        setContenidoNotaParaDolor('');
+        
         // Recargar dolores
         await loadDoloresData(participante?.id);
       } else {
