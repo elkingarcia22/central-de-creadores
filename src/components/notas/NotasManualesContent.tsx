@@ -508,7 +508,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               onChange={setSemaforoNuevaNota}
               size="sm"
               disabled={cargando}
-              showLabels={true}
+              showLabels={false}
             />
           </div>
         </div>
