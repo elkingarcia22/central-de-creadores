@@ -63,6 +63,10 @@ export function useWebSpeechTranscription() {
     // Eventos del reconocimiento
     recognition.onstart = () => {
       console.log('🎤 [Web Speech] Reconocimiento iniciado');
+      console.log('🔍 [Web Speech] Estado en onstart:', {
+        stoppedManually: stoppedManuallyRef.current,
+        isRecording: state.isRecording
+      });
       setState(prev => ({ 
         ...prev, 
         isRecording: true, 
@@ -132,6 +136,18 @@ export function useWebSpeechTranscription() {
 
     recognition.onerror = (event) => {
       console.error('❌ [Web Speech] Error:', event.error);
+      console.log('🔍 [Web Speech] Estado en onerror:', {
+        stoppedManually: stoppedManuallyRef.current,
+        isRecording: state.isRecording,
+        errorType: event.error
+      });
+      
+      // No detener la grabación por errores temporales
+      if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        console.log('⚠️ [Web Speech] Error temporal, continuando...');
+        return;
+      }
+      
       setState(prev => ({ 
         ...prev, 
         isRecording: false, 
@@ -168,14 +184,37 @@ export function useWebSpeechTranscription() {
         }
       } else {
         console.log('🔄 [Web Speech] Reconocimiento terminado automáticamente, reiniciando...');
+        console.log('🔍 [Web Speech] Estado actual:', {
+          recognitionRef: !!recognitionRef.current,
+          stoppedManually: stoppedManuallyRef.current,
+          isRecording: state.isRecording
+        });
+        
         // Reiniciar el reconocimiento si no se detuvo manualmente
         setTimeout(() => {
+          console.log('⏰ [Web Speech] Intentando reiniciar después de 100ms...');
+          console.log('🔍 [Web Speech] Estado en reinicio:', {
+            recognitionRef: !!recognitionRef.current,
+            stoppedManually: stoppedManuallyRef.current,
+            isRecording: state.isRecording
+          });
+          
           if (recognitionRef.current && !stoppedManuallyRef.current) {
             try {
+              console.log('🔄 [Web Speech] Reiniciando reconocimiento...');
               recognitionRef.current.start();
+              console.log('✅ [Web Speech] Reconocimiento reiniciado exitosamente');
             } catch (error) {
               console.log('⚠️ [Web Speech] No se pudo reiniciar automáticamente:', error);
+              // Si no se puede reiniciar, crear una nueva instancia
+              console.log('🔄 [Web Speech] Creando nueva instancia de reconocimiento...');
+              startRecording();
             }
+          } else {
+            console.log('❌ [Web Speech] No se puede reiniciar:', {
+              hasRecognition: !!recognitionRef.current,
+              stoppedManually: stoppedManuallyRef.current
+            });
           }
         }, 100);
       }
