@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseServer } from '../../api/supabase-server';
+import { supabaseServer } from '../../../api/supabase-server';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -26,11 +26,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Verificar que las tablas existen
     const tables = [
       'ai_runs',
-      'insights', 
-      'perfiles_clientes',
+      'ai_insights_sesiones',
       'categorias_dolores',
       'transcripciones_sesiones',
-      'notas_manuales'
+      'notas_manuales',
+      'dolores_participantes',
+      'perfilamientos_participantes',
+      'sesiones',
+      'investigaciones',
+      'libretos_investigacion'
     ];
 
     const tableStatus = {};

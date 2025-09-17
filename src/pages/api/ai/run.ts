@@ -141,56 +141,121 @@ async function handleAnalyzeSession(
 ) {
   console.log('🔍 [AI] Procesando analyze_session');
   
-  const { transcriptId, notesId, language = 'es' } = input;
+  const { sessionId, language = 'es' } = input;
   
-  if (!transcriptId) {
-    return res.status(400).json({ error: 'transcriptId es requerido' });
+  if (!sessionId) {
+    return res.status(400).json({ error: 'sessionId es requerido' });
   }
 
-  // Cargar transcripción
-  const { data: transcript, error: transcriptError } = await supabaseServer
-    .from('transcripciones_sesiones')
-    .select('*')
-    .eq('id', transcriptId)
+  // 1. Cargar información de la sesión con investigación y libreto
+  console.log('📊 [AI] Cargando datos de la sesión...');
+  
+  const { data: sesion, error: sesionError } = await supabaseServer
+    .from('sesiones')
+    .select(`
+      *,
+      investigaciones (
+        *,
+        libretos_investigacion (*)
+      )
+    `)
+    .eq('id', sessionId)
     .single();
 
-  if (transcriptError || !transcript) {
-    console.error('❌ [AI] Error cargando transcripción:', transcriptError);
-    return res.status(404).json({ error: 'Transcripción no encontrada' });
+  if (sesionError || !sesion) {
+    console.error('❌ [AI] Error cargando sesión:', sesionError);
+    return res.status(404).json({ error: 'Sesión no encontrada' });
   }
 
-  // Cargar notas manuales si se proporciona
-  let notes = '';
-  if (notesId) {
-    const { data: notesData, error: notesError } = await supabaseServer
-      .from('notas_manuales')
-      .select('contenido, fecha_creacion')
-      .eq('participante_id', context.participantId)
-      .order('fecha_creacion', { ascending: true });
+  // 2. Cargar transcripciones de la sesión
+  const { data: transcripciones, error: transcripcionesError } = await supabaseServer
+    .from('transcripciones_sesiones')
+    .select('*')
+    .eq('reclutamiento_id', sessionId)
+    .or(`sesion_apoyo_id.eq.${sessionId}`);
 
-    if (!notesError && notesData) {
-      notes = notesData.map(n => `[${n.fecha_creacion}] ${n.contenido}`).join('\n');
+  if (transcripcionesError) {
+    console.error('❌ [AI] Error cargando transcripciones:', transcripcionesError);
+    return res.status(500).json({ error: 'Error cargando transcripciones' });
+  }
+
+  // 3. Cargar notas manuales de la sesión
+  const { data: notasManuales, error: notasError } = await supabaseServer
+    .from('notas_manuales')
+    .select('*')
+    .eq('sesion_id', sessionId)
+    .order('fecha_creacion', { ascending: true });
+
+  if (notasError) {
+    console.error('❌ [AI] Error cargando notas manuales:', notasError);
+    return res.status(500).json({ error: 'Error cargando notas manuales' });
+  }
+
+  // 4. Cargar categorías de dolores
+  const { data: categoriasDolores, error: categoriasError } = await supabaseServer
+    .from('categorias_dolores')
+    .select('id, nombre')
+    .eq('activo', true);
+
+  if (categoriasError) {
+    console.error('❌ [AI] Error cargando categorías de dolores:', categoriasError);
+    return res.status(500).json({ error: 'Error cargando categorías' });
+  }
+
+  // 5. Categorías de perfilamientos (valores fijos)
+  const categoriasPerfilamientos = [
+    'comunicacion',
+    'comportamiento', 
+    'proveedores',
+    'decisiones',
+    'cultura'
+  ];
+
+  // 6. Procesar transcripciones y segmentos
+  let segmentosFormateados = '';
+  let allSegments: any[] = [];
+  
+  if (transcripciones && transcripciones.length > 0) {
+    for (const transcript of transcripciones) {
+      const segmentos = transcript.transcripcion_por_segmentos || [];
+      const formattedSegments = segmentos.map((seg: any, index: number) => {
+        const segId = `seg_${allSegments.length + index + 1}`;
+        allSegments.push({ ...seg, id: segId, transcriptId: transcript.id });
+        return `[SEG id=${segId} start=${seg.start_ms || 0} end=${seg.end_ms || 0}]\n${seg.text || ''}\n[/SEG]`;
+      });
+      segmentosFormateados += formattedSegments.join('\n\n') + '\n\n';
     }
   }
 
-  // Procesar segmentos de transcripción
-  const segmentos = transcript.transcripcion_por_segmentos || [];
-  const segmentosFormateados = segmentos.map((seg: any, index: number) => {
-    const segId = `seg_${index + 1}`;
-    return `[SEG id=${segId} start=${seg.start_ms || 0} end=${seg.end_ms || 0}]\n${seg.text || ''}\n[/SEG]`;
-  }).join('\n\n');
+  // 7. Procesar notas manuales
+  const notasFormateadas = notasManuales?.map(n => 
+    `[NOTA ${n.fecha_creacion}] ${n.contenido}`
+  ).join('\n') || '';
 
-  // Sanitizar PII
+  // 8. Procesar contexto del libreto
+  const libreto = sesion.investigaciones?.libretos_investigacion;
+  const contextoLibreto = libreto ? `
+CONTEXTO DE LA INVESTIGACIÓN:
+- Problema/Situación: ${libreto.problema_situacion || 'No especificado'}
+- Hipótesis: ${libreto.hipotesis || 'No especificada'}
+- Objetivos: ${libreto.objetivos || 'No especificados'}
+- Resultado Esperado: ${libreto.resultado_esperado || 'No especificado'}
+- Descripción General: ${libreto.descripcion_general || 'No especificada'}
+` : '';
+
+  // 9. Sanitizar PII
   const sanitizedTranscript = sanitizePII(segmentosFormateados);
-  const sanitizedNotes = sanitizePII(notes);
+  const sanitizedNotes = sanitizePII(notasFormateadas);
+  const sanitizedLibreto = sanitizePII(contextoLibreto);
 
-  // Construir prompt
+  // 10. Construir prompt
   const prompt = buildAnalyzeSessionPrompt({
     language,
-    dolorCategoriaIds: context.catalogs?.dolorCategoriaIds || [],
-    perfilCategoriaIds: context.catalogs?.perfilCategoriaIds || [],
+    dolorCategoriaIds: categoriasDolores?.map(c => c.id) || [],
+    perfilCategoriaIds: categoriasPerfilamientos,
     segmentosFormateados: sanitizedTranscript,
     notes: sanitizedNotes,
+    contextoLibreto: sanitizedLibreto,
   });
 
   console.log('📝 [AI] Prompt construido, longitud:', prompt.length);
@@ -240,7 +305,7 @@ async function handleAnalyzeSession(
     }
 
     // Resolver evidencias
-    const resolvedResult = resolveEvidence(result, segmentos);
+    const resolvedResult = resolveEvidence(result, allSegments);
 
     // Persistir en base de datos
     await persistAnalysisResults(context, resolvedResult, aiResult, latencyMs, idempotency_key);
@@ -274,8 +339,9 @@ function buildAnalyzeSessionPrompt(params: {
   perfilCategoriaIds: string[];
   segmentosFormateados: string;
   notes: string;
+  contextoLibreto: string;
 }): string {
-  const { language, dolorCategoriaIds, perfilCategoriaIds, segmentosFormateados, notes } = params;
+  const { language, dolorCategoriaIds, perfilCategoriaIds, segmentosFormateados, notes, contextoLibreto } = params;
 
   return `
 Idioma: ${language}
@@ -286,12 +352,15 @@ ${dolorCategoriaIds.map(id => `- ${id}`).join('\n')}
 CATEGORÍAS PERFIL PERMITIDAS (usa solo estos valores):
 ${perfilCategoriaIds.map(cat => `- ${cat}`).join('\n')}
 
+${contextoLibreto}
+
 TRANSCRIPCIÓN SEGMENTADA:
 ${segmentosFormateados}
 
 ${notes ? `\nNOTAS MANUALES:\n${notes}` : ''}
 
 Analiza la transcripción y extrae información estructurada según el schema AnalyzeSessionOut.
+Considera el contexto de la investigación para entender mejor los objetivos.
 Devuelve SOLO JSON válido sin texto adicional.
 `;
 }
@@ -366,59 +435,64 @@ async function persistAnalysisResults(
   idempotency_key?: string
 ) {
   // Insertar en ai_runs
-  const { error: runError } = await supabaseServer
+  const { data: aiRun, error: runError } = await supabaseServer
     .from('ai_runs')
     .insert({
+      tenant_id: context.tenantId,
+      user_id: context.userId || 'system',
       tool: 'analyze_session',
-      input: { transcriptId: context.transcriptId },
-      context,
-      result,
       provider: aiResult.provider,
       model: aiResult.model,
       latency_ms: latencyMs,
-      cost_cents: aiResult.costCents,
-      status: 'completed',
+      cost_cents: aiResult.costCents || 0,
+      status: 'ok',
+      input: { sessionId: context.sessionId },
+      result,
       idempotency_key,
-    });
+    })
+    .select()
+    .single();
 
   if (runError) {
     console.error('❌ [AI] Error guardando ai_runs:', runError);
+    return;
   }
 
-  // Insertar insights
-  if (result.insights) {
-    for (const insight of result.insights) {
-      const { error: insightError } = await supabaseServer
-        .from('insights')
-        .insert({
-          tenant_id: context.tenantId,
-          entity: 'sesion',
-          entity_id: context.sessionId,
-          type: 'insight',
-          text: insight.text,
-          evidence: insight.evidence,
-          tags: [],
-        });
+  // Insertar en ai_insights_sesiones
+  const { error: insightsError } = await supabaseServer
+    .from('ai_insights_sesiones')
+    .insert({
+      sesion_id: context.sessionId,
+      participante_id: context.participantId,
+      ai_run_id: aiRun.id,
+      resumen: result.summary,
+      insights: result.insights || [],
+      dolores_identificados: result.dolores || [],
+      perfil_sugerido: result.perfil_sugerido,
+      confidence_score: result.perfil_sugerido?.confidence || 0.5,
+      modelo_usado: aiResult.model,
+      tiempo_analisis_ms: latencyMs,
+      estado: 'completado',
+    });
 
-      if (insightError) {
-        console.error('❌ [AI] Error guardando insight:', insightError);
-      }
-    }
+  if (insightsError) {
+    console.error('❌ [AI] Error guardando ai_insights_sesiones:', insightsError);
   }
 
-  // Insertar dolores
-  if (result.dolores) {
+  // Insertar dolores en dolores_participantes
+  if (result.dolores && result.dolores.length > 0) {
     for (const dolor of result.dolores) {
       const { error: dolorError } = await supabaseServer
-        .from('insights')
+        .from('dolores_participantes')
         .insert({
-          tenant_id: context.tenantId,
-          entity: 'sesion',
-          entity_id: context.sessionId,
-          type: 'pain',
-          text: dolor.ejemplo,
-          evidence: dolor.evidence,
-          tags: [dolor.categoria_id],
+          participante_id: context.participantId,
+          categoria_id: dolor.categoria_id,
+          titulo: `Dolor identificado por IA: ${dolor.categoria_id}`,
+          descripcion: dolor.ejemplo,
+          severidad: 'media',
+          estado: 'activo',
+          sesion_relacionada_id: context.sessionId,
+          creado_por: context.userId || null,
         });
 
       if (dolorError) {
@@ -427,19 +501,19 @@ async function persistAnalysisResults(
     }
   }
 
-  // Insertar perfil sugerido
+  // Insertar perfil en perfilamientos_participantes
   if (result.perfil_sugerido) {
     const { error: perfilError } = await supabaseServer
-      .from('perfiles_clientes')
+      .from('perfilamientos_participantes')
       .insert({
-        tenant_id: context.tenantId,
-        participant_id: context.participantId,
+        participante_id: context.participantId,
+        usuario_perfilador_id: context.userId || null,
         categoria_perfilamiento: result.perfil_sugerido.categoria_perfilamiento,
         valor_principal: result.perfil_sugerido.valor_principal,
-        razones: result.perfil_sugerido.razones,
-        confidence: result.perfil_sugerido.confidence,
-        source: 'ai_analysis',
-        session_id: context.sessionId,
+        observaciones: `Perfil generado por IA. Razones: ${result.perfil_sugerido.razones.join(', ')}`,
+        contexto_interaccion: `Análisis automático de sesión ${context.sessionId}`,
+        confianza_observacion: Math.round(result.perfil_sugerido.confidence * 5), // Convertir 0-1 a 1-5
+        etiquetas: ['ai_generated'],
       });
 
     if (perfilError) {
