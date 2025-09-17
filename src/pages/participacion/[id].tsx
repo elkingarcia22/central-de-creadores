@@ -2748,7 +2748,10 @@ export default function VistaParticipacion() {
       )}
 
       {/* Modal de selección de categoría de perfilamiento */}
-      {showPerfilamientoModal && notaPreSeleccionada && (
+      {showPerfilamientoModal && notaPreSeleccionada && (() => {
+        console.log('🔍 [DEBUG] Renderizando modal con notaPreSeleccionada:', notaPreSeleccionada);
+        console.log('🔍 [DEBUG] notasParaConvertir será:', [notaPreSeleccionada]);
+        return (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
           onClose={() => setShowPerfilamientoModal(false)}
@@ -2764,7 +2767,8 @@ export default function VistaParticipacion() {
             setShowModalCrearPerfilamiento(true);
           }}
         />
-      )}
+        );
+      })()}
 
       {/* Modal de edición de participación */}
       {showEditarParticipacionModal && participacionParaEditar && (
