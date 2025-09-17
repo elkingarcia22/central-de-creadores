@@ -123,6 +123,15 @@ export const useAIAnalysis = () => {
         statusText: response.statusText,
         data: data
       });
+      
+      // Log específico del error del servidor
+      if (!response.ok && data) {
+        console.error('❌ [AI Hook] Error específico del servidor:', {
+          error: data.error,
+          details: data.details,
+          message: data.message
+        });
+      }
 
       if (!response.ok) {
         console.error('❌ [AI Hook] Error response:', {
