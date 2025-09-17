@@ -47,7 +47,7 @@ export class OllamaProvider implements AIProvider {
         throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       const latencyMs = Date.now() - startTime;
 
       // Extraer el JSON de la respuesta
@@ -112,7 +112,6 @@ ${JSON.stringify(task.input, null, 2)}`;
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`, {
         method: 'GET',
-        timeout: 5000,
       });
       
       return response.ok;
