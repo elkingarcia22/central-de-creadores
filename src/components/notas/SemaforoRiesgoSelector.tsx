@@ -14,7 +14,7 @@ interface SemaforoRiesgoSelectorProps {
 const semaforoConfig = {
   neutral: {
     variant: 'secondary' as const,
-    color: '#6B7280',
+    color: '#9CA3AF',
     label: 'Neutral',
     description: 'Sin evaluación específica'
   },

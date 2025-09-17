@@ -429,6 +429,14 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             Todas
           </Chip>
           <Chip
+            variant={filtroSemaforo === 'neutral' ? 'secondary' : 'default'}
+            size="sm"
+            onClick={() => setFiltroSemaforo('neutral')}
+            className="cursor-pointer"
+          >
+            Neutral
+          </Chip>
+          <Chip
             variant={filtroSemaforo === 'verde' ? 'success' : 'default'}
             size="sm"
             onClick={() => setFiltroSemaforo('verde')}
