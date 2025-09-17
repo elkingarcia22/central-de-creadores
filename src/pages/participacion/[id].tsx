@@ -136,6 +136,7 @@ export default function VistaParticipacion() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('informacion');
   const [showAITab, setShowAITab] = useState(false);
+  const [isAnalysisSaved, setIsAnalysisSaved] = useState(false);
 
   // Estados para datos
   const [investigaciones, setInvestigaciones] = useState<InvestigacionParticipante[]>([]);
@@ -2094,6 +2095,9 @@ export default function VistaParticipacion() {
       setShowAITab(true);
       setActiveTab('ai-analysis');
       
+      // Resetear estado de guardado al re-analizar
+      setIsAnalysisSaved(false);
+      
       // Iniciar el análisis
       await analyzeSession(sessionId);
     } catch (error) {
@@ -2109,6 +2113,7 @@ export default function VistaParticipacion() {
       // Aquí podrías implementar la lógica para eliminar el análisis de la base de datos
       // Por ahora, solo ocultamos el tab y reseteamos el estado
       setShowAITab(false);
+      setIsAnalysisSaved(false);
       resetAI();
       setActiveTab('informacion'); // Volver al tab de información
       
@@ -2124,9 +2129,10 @@ export default function VistaParticipacion() {
     if (reclutamiento_id && typeof reclutamiento_id === 'string') {
       console.log('🔍 Cargando análisis de IA existente para sesión:', reclutamiento_id);
       loadExistingAnalysis(reclutamiento_id).then((result) => {
-        // Si hay análisis existente, mostrar el tab
+        // Si hay análisis existente, mostrar el tab y marcar como guardado
         if (result && result.found) {
           setShowAITab(true);
+          setIsAnalysisSaved(true);
         }
       });
     }
@@ -2761,11 +2767,15 @@ export default function VistaParticipacion() {
                       }}
                       onSave={async () => {
                         if (!reclutamiento_id || !participante?.id) return;
-                        await saveAnalysis(reclutamiento_id, participante.id);
+                        const success = await saveAnalysis(reclutamiento_id, participante.id);
+                        if (success) {
+                          setIsAnalysisSaved(true);
+                        }
                       }}
                       onDelete={handleDeleteAnalysis}
                       onCreateDolor={handleCreateDolorFromAI}
                       onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
+                      isSaved={isAnalysisSaved}
                     />
                   </div>
                 ) : isAnalyzing ? (

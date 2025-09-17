@@ -64,6 +64,7 @@ interface AnalyzeResultPanelV2Props {
   onCreateDolor?: (dolor: any) => void;
   onCreatePerfilamiento?: (perfil: any) => void;
   sessionId?: string;
+  isSaved?: boolean;
 }
 
 export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
@@ -77,7 +78,8 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
   onDelete,
   onCreateDolor,
   onCreatePerfilamiento,
-  sessionId
+  sessionId,
+  isSaved = false
 }) => {
   const [editingDolor, setEditingDolor] = useState<number | null>(null);
   const [editingPerfil, setEditingPerfil] = useState<boolean>(false);
@@ -213,35 +215,38 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Botón Re-analizar - siempre visible, estilo secundario */}
             {onReanalyze && (
               <button
                 onClick={onReanalyze}
-                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 text-white hover:from-blue-500 hover:via-cyan-400 hover:to-blue-500 dark:from-cyan-600 dark:via-blue-500 dark:to-cyan-600 dark:hover:from-cyan-500/90 dark:hover:via-blue-400/90 dark:hover:to-cyan-500/90"
+                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 border border-blue-200 dark:border-blue-800 bg-transparent text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700"
               >
-                {/* Efecto de brillo animado */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
+                {/* Efecto de brillo animado sutil */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/20 via-blue-50/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
                 
-                {/* Efecto de partículas */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
-                  <div className="absolute top-1 left-2 w-1 h-1 bg-white/50 rounded-full animate-pulse"></div>
-                  <div className="absolute top-2 right-3 w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-100"></div>
-                  <div className="absolute bottom-2 left-4 w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-200"></div>
-                  <div className="absolute bottom-1 right-2 w-0.5 h-0.5 bg-white/30 rounded-full animate-pulse delay-300"></div>
+                {/* Efecto de partículas sutiles */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-300">
+                  <div className="absolute top-1 left-2 w-1 h-1 bg-blue-400/50 rounded-full animate-pulse"></div>
+                  <div className="absolute top-2 right-3 w-0.5 h-0.5 bg-blue-400/40 rounded-full animate-pulse delay-100"></div>
+                  <div className="absolute bottom-2 left-4 w-0.5 h-0.5 bg-blue-400/40 rounded-full animate-pulse delay-200"></div>
+                  <div className="absolute bottom-1 right-2 w-0.5 h-0.5 bg-blue-400/30 rounded-full animate-pulse delay-300"></div>
                 </div>
                 
                 {/* Icono con efecto de brillo */}
                 <div className="relative">
-                  <RefreshIcon className="w-3 h-3 text-white group-hover:text-cyan-100 transition-colors duration-300" />
-                  <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-white/10 to-cyan-200/10 rounded-full blur-sm opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+                  <RefreshIcon className="w-3 h-3 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300" />
+                  <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-blue-100/10 to-blue-200/10 rounded-full blur-sm opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
                 </div>
                 
                 <span className="relative z-10">Re-analizar</span>
                 
-                {/* Efecto de borde brillante */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-l from-cyan-300/30 via-blue-500/25 to-cyan-300/30 opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur-sm"></div>
+                {/* Efecto de borde brillante sutil */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-l from-blue-200/30 via-blue-300/25 to-blue-200/30 opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur-sm"></div>
               </button>
             )}
-            {onSave && (
+            
+            {/* Botón Guardar - solo cuando NO está guardado */}
+            {onSave && !isSaved && (
               <Button
                 variant="primary"
                 size="sm"
@@ -252,6 +257,8 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
                 Guardar
               </Button>
             )}
+            
+            {/* Botón Eliminar - siempre visible */}
             {onDelete && (
               <Button
                 variant="outline"
@@ -263,15 +270,19 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
                 Eliminar
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={exportAnalysis}
-              className="flex items-center gap-2"
-            >
-              <DownloadIcon className="w-4 h-4" />
-              Exportar
-            </Button>
+            
+            {/* Botón Exportar - solo cuando está guardado */}
+            {isSaved && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportAnalysis}
+                className="flex items-center gap-2"
+              >
+                <DownloadIcon className="w-4 h-4" />
+                Exportar
+              </Button>
+            )}
           </div>
         </div>
         
