@@ -1,8 +1,10 @@
 import { AITask, AIResult, AIPolicy } from './types';
 import { MockProvider } from './providers/mock.provider';
+import { OllamaProvider } from './providers/ollama.provider';
 
-// Proveedor mock por defecto (no ejecuta APIs reales)
+// Proveedores disponibles
 const mockProvider = new MockProvider();
+const ollamaProvider = new OllamaProvider();
 
 /**
  * Ejecuta una tarea de IA usando el router de proveedores
@@ -18,9 +20,22 @@ export async function runLLM(task: AITask): Promise<AIResult> {
     return mockProvider.generate(task);
   }
   
-  // TODO: Implementar router real cuando IA_ENABLE_EXEC=true
-  // Por ahora, siempre usar mock
-  return mockProvider.generate(task);
+  // Seleccionar proveedor basado en la política
+  const selectedProvider = selectProvider(task.policy);
+  
+  try {
+    switch (selectedProvider) {
+      case 'ollama':
+        return await ollamaProvider.generate(task);
+      case 'mock':
+      default:
+        return await mockProvider.generate(task);
+    }
+  } catch (error) {
+    console.error('❌ [AI Router] Error en proveedor:', selectedProvider, error);
+    // Fallback a mock en caso de error
+    return await mockProvider.generate(task);
+  }
 }
 
 /**
@@ -46,10 +61,21 @@ export function validatePolicy(policy: AIPolicy): boolean {
  * @returns Nombre del proveedor seleccionado
  */
 export function selectProvider(policy: AIPolicy): string {
+  // FREE-FIRST: Si no se permite pago, usar proveedores gratuitos
   if (!policy.allowPaid) {
-    return 'mock'; // FREE-FIRST
+    const textProvider = process.env.IA_TEXT_PROVIDER || 'local';
+    
+    switch (textProvider) {
+      case 'local':
+        return 'ollama';
+      case 'groq':
+        return 'groq';
+      default:
+        return 'ollama'; // Fallback a local
+    }
   }
   
+  // Si se permite pago, usar el proveedor preferido
   switch (policy.preferProvider) {
     case 'openai':
       return 'openai';
@@ -60,9 +86,12 @@ export function selectProvider(policy: AIPolicy): string {
     case 'local':
       return 'ollama';
     default:
-      return 'mock';
+      return 'ollama'; // Fallback a local
   }
 }
 
 // Exportar tipos
 export * from './types';
+
+// Exportar utilidades
+export * from './utils/sanitize-pii';

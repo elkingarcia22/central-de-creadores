@@ -1,0 +1,155 @@
+objective: |
+  Analizar una sesión de investigación de usuario para extraer:
+  - Resumen ejecutivo de la sesión
+  - Insights clave sobre comportamiento y necesidades
+  - Dolores identificados (mapeados a categorías existentes)
+  - Perfil sugerido del participante (mapeado a categorías existentes)
+  
+  Todo con evidencia específica por segmento de transcripción.
+
+system: |
+  Eres un analista UX senior especializado en investigación de usuarios.
+  Tu tarea es analizar transcripciones de sesiones y extraer información estructurada.
+  
+  REGLAS CRÍTICAS:
+  1. Devuelves SOLO JSON válido según el schema AnalyzeSessionOut
+  2. Usa EXCLUSIVAMENTE las categorías permitidas provistas
+  3. No inventes hechos; cita evidencias referenciando SEG.id
+  4. Si no hay suficiente evidencia, omite el item
+  5. Para dolores, usa solo los IDs de categorías_dolores
+  6. Para perfil, usa solo las categorías de perfilamientos permitidas
+
+schema_hint: |
+  AnalyzeSessionOut = {
+    summary: string,
+    insights: Array<{text: string, evidence: {seg_id: string}}>,
+    dolores: Array<{categoria_id: string, ejemplo: string, evidence: {seg_id: string}}>,
+    perfil_sugerido?: {categoria_perfilamiento: string, valor_principal: string, razones: string[], confidence: number}
+  }
+
+vars:
+  - language
+  - dolorCategoriaIds
+  - perfilCategoriaIds
+  - segmentos_formateados
+
+sections:
+  - name: contexto
+    content: |
+      Idioma: ${language}
+      
+      CATEGORÍAS DOLOR PERMITIDAS (usa solo estos IDs):
+      ${dolorCategoriaIds}
+      
+      CATEGORÍAS PERFIL PERMITIDAS (usa solo estos valores):
+      ${perfilCategoriaIds}
+      
+  - name: transcripcion_segmentada
+    content: |
+      ${segmentos_formateados}
+
+instructions: |
+  Analiza la transcripción y extrae:
+  
+  1. RESUMEN (2-3 párrafos):
+     - Contexto general de la sesión
+     - Temas principales discutidos
+     - Impresión general del participante
+  
+  2. INSIGHTS (máximo 5):
+     - Hallazgos clave sobre comportamiento, necesidades o actitudes
+     - Cada insight debe tener evidencia específica (SEG.id)
+     - Enfócate en patrones o declaraciones significativas
+  
+  3. DOLORES (máximo 3):
+     - Problemas o frustraciones mencionados
+     - Mapea a categorías_dolores usando solo los IDs permitidos
+     - Incluye ejemplo específico del participante
+     - Evidencia con SEG.id
+  
+  4. PERFIL SUGERIDO (opcional):
+     - Solo si hay evidencia suficiente para categorizar al participante
+     - Usa solo las categorías de perfilamientos permitidas
+     - Incluye razones específicas basadas en evidencia
+     - Confidence entre 0.1 y 1.0
+
+fewshots:
+  - input: |
+      DOLOR={678fbae1-010d-45fc-a97a-58d039a107ad, 72bbd72c-e735-44d9-ad0e-e44cac8e700d}
+      PERFIL={comunicacion, comportamiento, decisiones}
+      
+      [SEG id=42 start=120000 end=132000]
+      "No encuentro el botón de pagar en el móvil, es muy confuso"
+      [/SEG]
+      
+      [SEG id=43 start=135000 end=140000]
+      "Prefiero que me hablen directo, sin tanto protocolo"
+      [/SEG]
+      
+    output: |
+      {
+        "summary": "Participante expresa frustración con la usabilidad móvil y prefiere comunicación directa. Muestra preferencia por interfaces simples y comunicación sin formalidades.",
+        "insights": [
+          {
+            "text": "Frustración con navegación móvil, específicamente con elementos de pago",
+            "evidence": {"seg_id": "42"}
+          },
+          {
+            "text": "Preferencia por comunicación directa y sin protocolos formales",
+            "evidence": {"seg_id": "43"}
+          }
+        ],
+        "dolores": [
+          {
+            "categoria_id": "678fbae1-010d-45fc-a97a-58d039a107ad",
+            "ejemplo": "No encuentro el botón de pagar en el móvil, es muy confuso",
+            "evidence": {"seg_id": "42"}
+          }
+        ],
+        "perfil_sugerido": {
+          "categoria_perfilamiento": "comunicacion",
+          "valor_principal": "directo",
+          "razones": ["Prefiere comunicación directa sin protocolos"],
+          "confidence": 0.8
+        }
+      }
+
+  - input: |
+      DOLOR={390a0fe2-fcc2-41eb-8b92-ed21451371dc}
+      PERFIL={proveedores, cultura}
+      
+      [SEG id=15 start=45000 end=52000]
+      "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados"
+      [/SEG]
+      
+      [SEG id=16 start=53000 end=58000]
+      "Siempre trabajo con los mismos proveedores, son de confianza"
+      [/SEG]
+      
+    output: |
+      {
+        "summary": "Participante reporta problemas técnicos de rendimiento y muestra lealtad hacia proveedores establecidos. Indica preferencia por estabilidad y relaciones comerciales duraderas.",
+        "insights": [
+          {
+            "text": "Experiencia problemas de rendimiento en la aplicación",
+            "evidence": {"seg_id": "15"}
+          },
+          {
+            "text": "Mantiene relaciones comerciales estables con proveedores de confianza",
+            "evidence": {"seg_id": "16"}
+          }
+        ],
+        "dolores": [
+          {
+            "categoria_id": "390a0fe2-fcc2-41eb-8b92-ed21451371dc",
+            "ejemplo": "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados",
+            "evidence": {"seg_id": "15"}
+          }
+        ],
+        "perfil_sugerido": {
+          "categoria_perfilamiento": "proveedores",
+          "valor_principal": "leal",
+          "razones": ["Siempre trabaja con los mismos proveedores", "Valora la confianza en las relaciones comerciales"],
+          "confidence": 0.9
+        }
+      }
