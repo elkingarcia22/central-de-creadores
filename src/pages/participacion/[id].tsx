@@ -530,8 +530,22 @@ export default function VistaParticipacion() {
       console.log('🔍 [Participacion] Response status:', response.status);
 
       if (response.ok) {
+        const dolorCreado = await response.json();
         showSuccess('Dolor creado exitosamente');
         setShowModalCrearDolor(false);
+        
+        // Marcar la nota como convertida a dolor si hay contenido pre-cargado
+        if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
+          // Encontrar la nota que se convirtió
+          const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
+          if (notaConvertida) {
+            (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
+          }
+        }
+        
+        // Limpiar el contenido pre-cargado
+        setContenidoNotaParaDolor('');
+        
         // Recargar dolores
         await cargarDolores();
       } else {
@@ -2516,6 +2530,14 @@ export default function VistaParticipacion() {
                      setContenidoNotaParaDolor(contenido);
                      setShowModalCrearDolor(true);
                    }}
+                   onNotaConvertidaADolor={(notaId, dolorId) => {
+                     console.log('🔍 [DEBUG] Nota convertida a dolor:', { notaId, dolorId });
+                     // La función marcarNotaConvertidaADolor se ejecutará automáticamente
+                   }}
+                   onNotaConvertidaAPerfilamiento={(notaId, perfilamientoId) => {
+                     console.log('🔍 [DEBUG] Nota convertida a perfilamiento:', { notaId, perfilamientoId });
+                     // La función marcarNotaConvertidaAPerfilamiento se ejecutará automáticamente
+                   }}
                    onConvertirAPerfilamiento={(contenido) => {
                      console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde participacion/[id].tsx, contenido:', contenido);
                      // Encontrar la nota que se está convirtiendo
@@ -2700,9 +2722,15 @@ export default function VistaParticipacion() {
             setCategoriaSeleccionada(null);
             setShowModalPerfilamiento(true);
           }}
-          onSuccess={() => {
+          onSuccess={(perfilamientoCreado) => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
+            
+            // Marcar la nota como convertida a perfilamiento
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            }
+            
             setNotaPreSeleccionada(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}

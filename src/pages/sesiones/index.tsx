@@ -1493,6 +1493,14 @@ const SesionesPageContent: React.FC = () => {
                   // Guardar el contenido para pre-llenar el modal
                   setContenidoNotaParaDolor(contenido);
                 }}
+                onNotaConvertidaADolor={(notaId, dolorId) => {
+                  console.log('🔍 [DEBUG] Nota convertida a dolor:', { notaId, dolorId });
+                  // La función marcarNotaConvertidaADolor se ejecutará automáticamente
+                }}
+                onNotaConvertidaAPerfilamiento={(notaId, perfilamientoId) => {
+                  console.log('🔍 [DEBUG] Nota convertida a perfilamiento:', { notaId, perfilamientoId });
+                  // La función marcarNotaConvertidaAPerfilamiento se ejecutará automáticamente
+                }}
                 onConvertirAPerfilamiento={(contenido) => {
                   console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde sesiones/index.tsx, contenido:', contenido);
                   // Abrir modal de selección de categoría con todas las notas disponibles
@@ -1696,7 +1704,21 @@ const SesionesPageContent: React.FC = () => {
               });
               
               if (response.ok) {
+                const dolorCreado = await response.json();
                 setShowCrearDolorModal(false);
+                
+                // Marcar la nota como convertida a dolor si hay contenido pre-cargado
+                if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
+                  // Encontrar la nota que se convirtió
+                  const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
+                  if (notaConvertida) {
+                    (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
+                  }
+                }
+                
+                // Limpiar el contenido pre-cargado
+                setContenidoNotaParaDolor('');
+                
                 showSuccess('Dolor creado exitosamente');
               } else {
                 showError('Error al crear dolor');
@@ -1737,9 +1759,15 @@ const SesionesPageContent: React.FC = () => {
             setCategoriaSeleccionada(null);
             setNotaPreSeleccionada(null);
           }}
-          onSuccess={() => {
+          onSuccess={(perfilamientoCreado) => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            
+            // Marcar la nota como convertida a perfilamiento
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            }
+            
             setNotaPreSeleccionada(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}

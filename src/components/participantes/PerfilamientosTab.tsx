@@ -332,7 +332,7 @@ export const PerfilamientosTab: React.FC<PerfilamientosTabProps> = ({
   };
 
   // Manejar éxito en creación
-  const handlePerfilamientoCreado = () => {
+  const handlePerfilamientoCreado = (perfilamientoCreado?: any) => {
     cargarPerfilamientos();
   };
 

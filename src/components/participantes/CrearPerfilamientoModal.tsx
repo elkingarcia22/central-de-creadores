@@ -33,7 +33,7 @@ interface CrearPerfilamientoModalProps {
   participanteId: string;
   participanteNombre: string;
   categoria: CategoriaPerfilamiento;
-  onSuccess: () => void;
+  onSuccess: (perfilamientoCreado?: any) => void;
   onBack?: () => void; // Nueva prop para volver atrás
   perfilamientoExistente?: PerfilamientoParticipanteForm; // Para edición
   descripcionPrecargada?: string; // Nueva prop para precargar observaciones desde nota
@@ -186,7 +186,17 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
         return;
       }
 
-      onSuccess();
+      // Obtener el perfilamiento creado para pasarlo al onSuccess
+      let perfilamientoCreado = null;
+      if (!perfilamientoExistente) {
+        // Solo para creación, obtener el perfilamiento recién creado
+        const { data: perfilamientos } = await PerfilamientosService.obtenerPerfilamientosPorParticipante(participanteId);
+        if (perfilamientos && perfilamientos.length > 0) {
+          perfilamientoCreado = perfilamientos[perfilamientos.length - 1]; // El último creado
+        }
+      }
+
+      onSuccess(perfilamientoCreado);
       onClose();
     } catch (error) {
       console.error('Error inesperado:', error);

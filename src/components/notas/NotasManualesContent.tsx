@@ -12,6 +12,11 @@ interface Nota {
   fecha_creacion: string;
   fecha_actualizacion?: string;
   semaforo_riesgo: 'verde' | 'amarillo' | 'rojo';
+  // Campos para indicar conversiones
+  convertida_a_dolor?: boolean;
+  convertida_a_perfilamiento?: boolean;
+  dolor_id?: string;
+  perfilamiento_id?: string;
 }
 
 interface NotasManualesContentProps {
@@ -20,6 +25,8 @@ interface NotasManualesContentProps {
   onConvertirADolor?: (contenido: string) => void;
   onConvertirAPerfilamiento?: (contenido: string) => void;
   onNotasChange?: (notas: Nota[]) => void;
+  onNotaConvertidaADolor?: (notaId: string, dolorId: string) => void;
+  onNotaConvertidaAPerfilamiento?: (notaId: string, perfilamientoId: string) => void;
 }
 
 export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
@@ -27,7 +34,9 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   sesionId,
   onConvertirADolor,
   onConvertirAPerfilamiento,
-  onNotasChange
+  onNotasChange,
+  onNotaConvertidaADolor,
+  onNotaConvertidaAPerfilamiento
 }) => {
   // Debug logs para verificar props
   console.log('🔍 [DEBUG] NotasManualesContent props:', {
@@ -57,6 +66,19 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       onNotasChange(notas);
     }
   }, [notas, onNotasChange]);
+
+  // Exponer las funciones de marcado de conversión al componente padre
+  useEffect(() => {
+    // Agregar las funciones al objeto window para que los componentes padre puedan acceder
+    (window as any).marcarNotaConvertidaADolor = marcarNotaConvertidaADolor;
+    (window as any).marcarNotaConvertidaAPerfilamiento = marcarNotaConvertidaAPerfilamiento;
+    
+    return () => {
+      // Limpiar las funciones cuando el componente se desmonte
+      delete (window as any).marcarNotaConvertidaADolor;
+      delete (window as any).marcarNotaConvertidaAPerfilamiento;
+    };
+  }, []);
 
   // Manejar eventos de teclado en el input
   useEffect(() => {
@@ -286,6 +308,34 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
+  // Función para marcar una nota como convertida a dolor
+  const marcarNotaConvertidaADolor = (notaId: string, dolorId: string) => {
+    setNotas(prev => prev.map(nota => 
+      nota.id === notaId 
+        ? { ...nota, convertida_a_dolor: true, dolor_id: dolorId }
+        : nota
+    ));
+    
+    // Notificar al componente padre si existe la función
+    if (onNotaConvertidaADolor) {
+      onNotaConvertidaADolor(notaId, dolorId);
+    }
+  };
+
+  // Función para marcar una nota como convertida a perfilamiento
+  const marcarNotaConvertidaAPerfilamiento = (notaId: string, perfilamientoId: string) => {
+    setNotas(prev => prev.map(nota => 
+      nota.id === notaId 
+        ? { ...nota, convertida_a_perfilamiento: true, perfilamiento_id: perfilamientoId }
+        : nota
+    ));
+    
+    // Notificar al componente padre si existe la función
+    if (onNotaConvertidaAPerfilamiento) {
+      onNotaConvertidaAPerfilamiento(notaId, perfilamientoId);
+    }
+  };
+
 
 
   return (
@@ -456,6 +506,32 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       <Typography variant="body1" className="text-gray-700 dark:text-gray-200 leading-relaxed">
                         {nota.contenido}
                       </Typography>
+                      
+                      {/* Indicadores de conversión */}
+                      {(nota.convertida_a_dolor || nota.convertida_a_perfilamiento) && (
+                        <div className="flex items-center space-x-2 mt-2">
+                          {nota.convertida_a_dolor && (
+                            <Chip
+                              variant="danger"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              <WarningIcon className="w-3 h-3 mr-1" />
+                              Convertida a Dolor
+                            </Chip>
+                          )}
+                          {nota.convertida_a_perfilamiento && (
+                            <Chip
+                              variant="primary"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              <UserIcon className="w-3 h-3 mr-1" />
+                              Convertida a Perfilamiento
+                            </Chip>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
                       {/* Cambio rápido de semáforo de riesgo */}
