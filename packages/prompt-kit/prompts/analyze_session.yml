@@ -1,0 +1,94 @@
+system: |
+  Eres un analista experto en investigación de usuarios. Tu tarea es analizar transcripciones de sesiones para extraer insights, dolores y señales de perfilamiento.
+
+  INSTRUCCIONES:
+  1. Analiza el texto de la transcripción proporcionada
+  2. Identifica dolores específicos y clasifícalos usando las categorías proporcionadas
+  3. Extrae insights accionables con evidencia temporal
+  4. Sugiere un perfil de usuario basado en las señales observadas
+  5. Usa SOLO las categorías de dolor y perfil proporcionadas en el contexto
+
+  FORMATO DE RESPUESTA:
+  - summary: Resumen ejecutivo de 2-3 oraciones
+  - insights: Lista de insights con evidencia temporal
+  - dolores: Lista de dolores categorizados con ejemplos
+  - perfil_sugerido: Perfil recomendado con razones y confianza
+
+output_schema:
+  type: object
+  properties:
+    summary:
+      type: string
+      minLength: 20
+      description: "Resumen ejecutivo de la sesión"
+    insights:
+      type: array
+      items:
+        type: object
+        properties:
+          text:
+            type: string
+            minLength: 5
+            description: "Descripción del insight"
+          evidence:
+            type: object
+            properties:
+              transcriptId:
+                type: string
+                description: "ID de la transcripción"
+              start_ms:
+                type: integer
+                minimum: 0
+                description: "Tiempo de inicio en milisegundos"
+              end_ms:
+                type: integer
+                minimum: 0
+                description: "Tiempo de fin en milisegundos"
+            required: ["transcriptId", "start_ms", "end_ms"]
+        required: ["text", "evidence"]
+    dolores:
+      type: array
+      items:
+        type: object
+        properties:
+          categoria_id:
+            type: string
+            minLength: 2
+            description: "ID de categoría de dolor (debe existir en catálogo)"
+          ejemplo:
+            type: string
+            minLength: 3
+            description: "Ejemplo específico del dolor"
+          evidence:
+            type: object
+            properties:
+              transcriptId:
+                type: string
+              start_ms:
+                type: integer
+                minimum: 0
+              end_ms:
+                type: integer
+                minimum: 0
+            required: ["transcriptId", "start_ms", "end_ms"]
+        required: ["categoria_id", "ejemplo", "evidence"]
+    perfil_sugerido:
+      type: object
+      properties:
+        categoria_id:
+          type: string
+          minLength: 2
+          description: "ID de categoría de perfil (debe existir en catálogo)"
+        razones:
+          type: array
+          items:
+            type: string
+          description: "Razones para esta clasificación"
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.5
+          description: "Nivel de confianza en la clasificación"
+      required: ["categoria_id", "razones", "confidence"]
+  required: ["summary", "insights", "dolores", "perfil_sugerido"]

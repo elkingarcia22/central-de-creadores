@@ -44,6 +44,13 @@ export interface DataTableProps {
     className?: string;
     title?: string;
   }[];
+  getRowActions?: (row: any) => {
+    label: string;
+    icon?: React.ReactNode;
+    onClick: (row: any) => void;
+    className?: string;
+    title?: string;
+  }[];
   bulkActions?: {
     label: string;
     icon?: React.ReactNode;
@@ -79,6 +86,7 @@ const DataTable: React.FC<DataTableProps> = ({
   onRowDelete,
   onRowClick,
   actions = [],
+  getRowActions,
   bulkActions = [],
   emptyMessage = "No hay datos para mostrar",
   loadingMessage = "Cargando...",
@@ -322,7 +330,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 ))}
 
                 {/* Columna de acciones */}
-                {actions.length > 0 && (
+                {(actions.length > 0 || getRowActions) && (
                   <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     Acciones
                   </th>
@@ -333,7 +341,7 @@ const DataTable: React.FC<DataTableProps> = ({
               {loading ? (
                 <tr>
                   <td 
-                    colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)} 
+                    colSpan={columns.length + (selectable ? 1 : 0) + ((actions.length > 0 || getRowActions) ? 1 : 0)} 
                     className="text-center py-8 text-gray-500 dark:text-gray-400"
                   >
                     {loadingMessage}
@@ -342,7 +350,7 @@ const DataTable: React.FC<DataTableProps> = ({
               ) : sortedData.length === 0 ? (
                 <tr>
                   <td 
-                    colSpan={columns.length + (selectable ? 1 : 0) + (actions.length > 0 ? 1 : 0)} 
+                    colSpan={columns.length + (selectable ? 1 : 0) + ((actions.length > 0 || getRowActions) ? 1 : 0)} 
                     className="text-center py-8 text-gray-500 dark:text-gray-400"
                   >
                     {emptyMessage}
@@ -403,18 +411,21 @@ const DataTable: React.FC<DataTableProps> = ({
                       })}
 
                       {/* Acciones por fila */}
-                      {actions.length > 0 && (
-                        <td className="px-4 py-3 text-center">
-                          <ActionsMenu
-                            actions={actions.map(action => ({
-                              label: action.label,
-                              icon: action.icon || <EditIcon className="w-4 h-4" />,
-                              onClick: () => action.onClick(row),
-                              className: action.className
-                            }))}
-                          />
-                        </td>
-                      )}
+                      {(() => {
+                        const rowActions = getRowActions ? getRowActions(row) : actions;
+                        return rowActions.length > 0 && (
+                          <td className="px-4 py-3 text-center">
+                            <ActionsMenu
+                              actions={rowActions.map(action => ({
+                                label: action.label,
+                                icon: action.icon || <EditIcon className="w-4 h-4" />,
+                                onClick: () => action.onClick(row),
+                                className: action.className
+                              }))}
+                            />
+                          </td>
+                        );
+                      })()}
                     </tr>
                   );
                 })

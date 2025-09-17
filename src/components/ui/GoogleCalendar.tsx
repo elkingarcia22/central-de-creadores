@@ -338,9 +338,18 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                           e.stopPropagation();
                           onEventClick?.(event);
                         }}
-                        title={event.title}
+                        title={`${event.title} - ${formatTime(event.start)} - ${formatDuration(event.duracion_minutos || 0)} - ${getTipoSesionText(event)}`}
                       >
-                        {event.title}
+                        <div className="font-medium truncate">{event.title}</div>
+                        <div className="text-xs opacity-90 truncate">
+                          {formatTime(event.start)}
+                          {event.duracion_minutos && (
+                            <span className="ml-1">• {formatDuration(event.duracion_minutos)}</span>
+                          )}
+                        </div>
+                        <div className="text-xs opacity-75 truncate">
+                          {getTipoSesionText(event)}
+                        </div>
                       </div>
                     ))}
                     
@@ -456,11 +465,17 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
                             e.stopPropagation();
                             onEventClick?.(event);
                           }}
-                          title={event.title}
+                          title={`${event.title} - ${formatTime(event.start)} - ${formatDuration(event.duracion_minutos || 0)} - ${getTipoSesionText(event)}`}
                         >
-                          <div className="truncate">{event.title}</div>
-                          <div className="text-xs opacity-90">
-                            {formatTime(event.start)} - {formatTime(event.end)}
+                          <div className="truncate font-medium">{event.title}</div>
+                          <div className="text-xs opacity-90 truncate">
+                            {formatTime(event.start)}
+                            {event.duracion_minutos && (
+                              <span className="ml-1">• {formatDuration(event.duracion_minutos)}</span>
+                            )}
+                          </div>
+                          <div className="text-xs opacity-75 truncate">
+                            {getTipoSesionText(event)}
                           </div>
                         </div>
                       ))}
@@ -613,6 +628,61 @@ const GoogleCalendar: React.FC<GoogleCalendarProps> = ({
     }
     // Por defecto usar azul
     return participantColors.blue;
+  };
+
+  // Formatear duración
+  const formatDuration = (minutes: number) => {
+    if (!minutes) return '';
+    if (minutes < 60) {
+      return `${minutes}min`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
+  };
+
+  // Obtener texto del tipo de sesión/participante
+  const getTipoSesionText = (event: CalendarEvent) => {
+    // Si es sesión de apoyo (basado en el tipo o investigacion_nombre)
+    if ((event as any).tipo === 'apoyo' || 
+        event.investigacion_nombre === 'Sesión de Apoyo' || 
+        event.title?.includes('Sesión de Apoyo')) {
+      return 'Sesión de Apoyo';
+    }
+    
+    // Usar el campo tipo_participante que viene del hook
+    const tipoParticipante = (event as any).tipo_participante;
+    if (tipoParticipante) {
+      switch (tipoParticipante) {
+        case 'externo':
+          return 'Externo';
+        case 'interno':
+          return 'Interno';
+        case 'friend_family':
+          return 'Friend & Family';
+        default:
+          return tipoParticipante;
+      }
+    }
+    
+    // Fallback: Si tiene participantes, determinar el tipo basado en el primer participante
+    if (event.participantes && event.participantes.length > 0) {
+      const participante = event.participantes[0];
+      if (participante.tipo) {
+        switch (participante.tipo) {
+          case 'externo':
+            return 'Externo';
+          case 'interno':
+            return 'Interno';
+          case 'friend_family':
+            return 'Friend & Family';
+          default:
+            return participante.tipo;
+        }
+      }
+    }
+    
+    return 'Reclutamiento';
   };
 
   // Obtener eventos para una fecha específica

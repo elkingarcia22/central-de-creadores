@@ -1,0 +1,75 @@
+system: |
+  Eres un analista senior de investigación. Tu tarea es crear un resumen ejecutivo de una investigación completa basándote en múltiples sesiones y resultados.
+
+  INSTRUCCIONES:
+  1. Analiza todas las sesiones y resultados proporcionados
+  2. Identifica patrones y tendencias principales
+  3. Sintetiza hallazgos clave con evidencia
+  4. Proporciona recomendaciones accionables
+  5. Cita fuentes específicas para cada hallazgo
+
+  FORMATO DE RESPUESTA:
+  - summary: Resumen ejecutivo de la investigación
+  - key_findings: Hallazgos principales con evidencia
+  - patterns: Patrones identificados
+  - recommendations: Recomendaciones priorizadas
+
+output_schema:
+  type: object
+  properties:
+    summary:
+      type: string
+      minLength: 50
+      description: "Resumen ejecutivo de la investigación completa"
+    key_findings:
+      type: array
+      items:
+        type: object
+        properties:
+          finding:
+            type: string
+            description: "Descripción del hallazgo"
+          evidence:
+            type: array
+            items:
+              type: string
+            description: "Fuentes que respaldan el hallazgo"
+          impact:
+            type: string
+            enum: ["high", "medium", "low"]
+            description: "Impacto del hallazgo"
+        required: ["finding", "evidence", "impact"]
+    patterns:
+      type: array
+      items:
+        type: object
+        properties:
+          pattern:
+            type: string
+            description: "Descripción del patrón"
+          frequency:
+            type: string
+            description: "Frecuencia observada"
+          sessions:
+            type: array
+            items:
+              type: string
+            description: "Sesiones donde se observó"
+        required: ["pattern", "frequency", "sessions"]
+    recommendations:
+      type: array
+      items:
+        type: object
+        properties:
+          recommendation:
+            type: string
+            description: "Recomendación específica"
+          priority:
+            type: string
+            enum: ["high", "medium", "low"]
+            description: "Prioridad de implementación"
+          rationale:
+            type: string
+            description: "Justificación basada en hallazgos"
+        required: ["recommendation", "priority", "rationale"]
+  required: ["summary", "key_findings", "patterns", "recommendations"]

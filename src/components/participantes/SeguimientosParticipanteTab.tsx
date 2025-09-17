@@ -480,6 +480,8 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
 
   // Función para obtener acciones dinámicas basadas en el tipo de seguimiento
   const getTableActions = (row: SeguimientoParticipante) => {
+    console.log('🚀 [SEGUIMIENTOS] getTableActions ejecutándose para:', row.id);
+    
     // Detectar si es un seguimiento de sesión de apoyo
     const isSesionApoyo = 
       row.investigacion_nombre === 'Sesión de Apoyo' ||
@@ -616,18 +618,21 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
       {/* Tabla de seguimientos */}
       {seguimientos.length > 0 ? (
         seguimientosFiltrados.length > 0 ? (
-          <DataTable
-            data={seguimientosFiltrados}
-            columns={columns}
-            loading={loading}
-            searchable={false}
-            filterable={false}
-            selectable={false}
-            emptyMessage="No se encontraron seguimientos que coincidan con los criterios de búsqueda"
-            rowKey="id"
-            getRowActions={getTableActions}
-            onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
-          />
+          <>
+            {console.log('🎯 [SEGUIMIENTOS] Renderizando tabla con', seguimientosFiltrados.length, 'seguimientos')}
+            <DataTable
+              data={seguimientosFiltrados}
+              columns={columns}
+              loading={loading}
+              searchable={false}
+              filterable={false}
+              selectable={false}
+              emptyMessage="No se encontraron seguimientos que coincidan con los criterios de búsqueda"
+              rowKey="id"
+              getRowActions={getTableActions}
+              onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
+            />
+          </>
         ) : (
           <div className="text-center py-12">
             <ClipboardListIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />

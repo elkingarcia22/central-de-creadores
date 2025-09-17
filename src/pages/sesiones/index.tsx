@@ -1112,7 +1112,7 @@ const SesionesPageContent: React.FC = () => {
                   />
                 </Typography>
                 <Typography variant="body2" color="secondary">
-                  Completadas
+                  Finalizadas
                 </Typography>
               </div>
               <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 ml-4">

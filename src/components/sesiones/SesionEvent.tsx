@@ -64,6 +64,44 @@ const SesionEvent: React.FC<SesionEventProps> = ({
     }
   };
 
+  // Obtener texto del tipo de sesión/participante
+  const getTipoSesionText = () => {
+    // Si es sesión de apoyo
+    if (sesion.tipo === 'apoyo') {
+      return 'Sesión de Apoyo';
+    }
+    
+    // Si tiene tipo de participante
+    if (sesion.tipo_participante) {
+      switch (sesion.tipo_participante) {
+        case 'externo':
+          return 'Externo';
+        case 'interno':
+          return 'Interno';
+        case 'friend_family':
+          return 'Friend & Family';
+        default:
+          return sesion.tipo_participante;
+      }
+    }
+    
+    // Si tiene participante con tipo
+    if (sesion.participante?.tipo) {
+      switch (sesion.participante.tipo) {
+        case 'externo':
+          return 'Externo';
+        case 'interno':
+          return 'Interno';
+        case 'friend_family':
+          return 'Friend & Family';
+        default:
+          return sesion.participante.tipo;
+      }
+    }
+    
+    return 'Reclutamiento';
+  };
+
   // Obtener color del chip según estado
   const getEstadoColor = () => {
     switch (sesion.estado) {
@@ -129,6 +167,15 @@ const SesionEvent: React.FC<SesionEventProps> = ({
               <span>{sesion.participantes.length} participante{sesion.participantes.length !== 1 ? 's' : ''}</span>
             </div>
           )}
+          
+          <div className="flex items-center gap-2 text-xs text-gray-200">
+            <ClockIcon className="w-3 h-3" />
+            <span>Duración: {formatDuration(sesion.duracion_minutos)}</span>
+          </div>
+          
+          <div className="flex items-center gap-2 text-xs text-gray-200">
+            <span>Tipo: {getTipoSesionText()}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -164,6 +211,20 @@ const SesionEvent: React.FC<SesionEventProps> = ({
                   className={`text-${sesion.color}-600`}
                 >
                   {formatTime(sesion.start)}
+                </Typography>
+                <Typography 
+                  variant="caption" 
+                  className={`text-${sesion.color}-500 ml-1`}
+                >
+                  • {formatDuration(sesion.duracion_minutos)}
+                </Typography>
+              </div>
+              <div className="flex items-center gap-1 mt-0.5">
+                <Typography 
+                  variant="caption" 
+                  className={`text-${sesion.color}-500`}
+                >
+                  {getTipoSesionText()}
                 </Typography>
               </div>
             </div>
