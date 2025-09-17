@@ -69,6 +69,8 @@ export const useAIAnalysis = () => {
         idempotency_key: `analyze-${sessionId}-${Date.now()}`
       });
 
+      console.log('📡 [AI Hook] Enviando request a /api/ai/run...');
+      
       const response = await fetch('/api/ai/run', {
         method: 'POST',
         headers: {
@@ -97,8 +99,21 @@ export const useAIAnalysis = () => {
           idempotency_key: `analyze-${sessionId}-${Date.now()}`
         })
       });
+      
+      console.log('📡 [AI Hook] Response recibida:', {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText
+      });
 
       const data = await response.json();
+      
+      console.log('🔍 [AI Hook] Response completa:', {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        data: data
+      });
 
       if (!response.ok) {
         console.error('❌ [AI Hook] Error response:', {
