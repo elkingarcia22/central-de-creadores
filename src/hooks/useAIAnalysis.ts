@@ -34,6 +34,7 @@ interface AIAnalysisMeta {
 
 export const useAIAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AIAnalysisResult | null>(null);
   const [meta, setMeta] = useState<AIAnalysisMeta | null>(null);
   const { showError, showSuccess, showWarning } = useToast();
@@ -113,15 +114,64 @@ export const useAIAnalysis = () => {
     }
   };
 
+  const loadExistingAnalysis = async (sessionId: string) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    setResult(null);
+    setMeta(null);
+
+    try {
+      console.log('🔍 [AI Hook] Cargando análisis existente para sesión:', sessionId);
+
+      const response = await fetch(`/api/ai/insights/${sessionId}`);
+
+      if (response.status === 404) {
+        console.log('ℹ️ [AI Hook] No se encontró análisis existente para sesión:', sessionId);
+        return null;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error cargando análisis existente');
+      }
+
+      const data = await response.json();
+
+      console.log('✅ [AI Hook] Análisis existente cargado:', data);
+
+      setResult(data.result);
+      setMeta(data.meta);
+
+      return data;
+
+    } catch (error) {
+      console.error('❌ [AI Hook] Error cargando análisis existente:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      
+      if (!errorMessage.includes('No se encontró análisis')) {
+        showError(`Error cargando análisis: ${errorMessage}`);
+      }
+
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const reset = () => {
     setResult(null);
     setMeta(null);
     setIsAnalyzing(false);
+    setIsLoading(false);
   };
 
   return {
     analyzeSession,
+    loadExistingAnalysis,
     isAnalyzing,
+    isLoading,
     result,
     meta,
     reset

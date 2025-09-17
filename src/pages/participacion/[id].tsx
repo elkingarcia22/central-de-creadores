@@ -169,7 +169,7 @@ export default function VistaParticipacion() {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   
   // Estado para análisis de IA
-  const { analyzeSession, isAnalyzing, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
+  const { analyzeSession, loadExistingAnalysis, isAnalyzing, isLoading: isLoadingAI, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
@@ -2086,6 +2086,14 @@ export default function VistaParticipacion() {
     }
   }, [id]);
 
+  // useEffect para cargar análisis de IA existente
+  useEffect(() => {
+    if (reclutamiento_id && typeof reclutamiento_id === 'string') {
+      console.log('🔍 Cargando análisis de IA existente para sesión:', reclutamiento_id);
+      loadExistingAnalysis(reclutamiento_id);
+    }
+  }, [reclutamiento_id, loadExistingAnalysis]);
+
   // Estados de loading
   if (loading) {
     return (
@@ -2682,7 +2690,14 @@ export default function VistaParticipacion() {
              {
                id: 'ai-analysis',
                label: 'Análisis IA',
-               content: aiResult && aiMeta ? (
+               content: isLoadingAI ? (
+                 <div className="text-center py-8">
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                   <Typography variant="body1" color="secondary">
+                     Cargando análisis de IA...
+                   </Typography>
+                 </div>
+               ) : aiResult && aiMeta ? (
                  <AnalyzeResultPanelV2
                    result={aiResult}
                    meta={aiMeta}
