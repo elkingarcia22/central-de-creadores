@@ -7,6 +7,7 @@ import { DolorSideModal } from '../../components/ui/DolorSideModal';
 import SeguimientoSideModal from '../../components/ui/SeguimientoSideModal';
 import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
 import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
+import type { CategoriaPerfilamiento } from '../../types/perfilamientos';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -163,6 +164,12 @@ export default function SesionActivaPage() {
   
   // Estados para crear dolor
   const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  
+  // Estados para conversión de notas
+  const [contenidoNotaParaDolor, setContenidoNotaParaDolor] = useState<string>('');
+  const [contenidoNotaParaPerfilamiento, setContenidoNotaParaPerfilamiento] = useState<string>('');
+  const [notasManuales, setNotasManuales] = useState<any[]>([]);
+  const [notaPreSeleccionada, setNotaPreSeleccionada] = useState<any>(null);
   
   // Estado para menú de 3 puntos
   const [showActionsMenu, setShowActionsMenu] = useState(false);
@@ -1688,6 +1695,29 @@ export default function SesionActivaPage() {
       content: <NotasManualesContent 
         participanteId={participante!.id}
         sesionId={reclutamiento!.id}
+        onConvertirADolor={(contenido) => {
+          // Pre-llenar el modal de dolor con el contenido de la nota
+          setShowCrearDolorModal(true);
+          // Guardar el contenido para pre-llenar el modal
+          setContenidoNotaParaDolor(contenido);
+        }}
+        onConvertirAPerfilamiento={(contenido) => {
+          // Abrir modal de selección de categoría con todas las notas disponibles
+          console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
+          
+          // Encontrar la nota que se está convirtiendo
+          const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
+          console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
+          
+          // Guardar la nota pre-seleccionada
+          setNotaPreSeleccionada(notaSeleccionada);
+          
+          setShowPerfilamientoModal(true);
+          console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
+        }}
+        onNotasChange={(notas) => {
+          setNotasManuales(notas);
+        }}
       />
     },
     {
@@ -2244,14 +2274,36 @@ export default function SesionActivaPage() {
       {showPerfilamientoModal && participante && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
-          onClose={() => setShowPerfilamientoModal(false)}
-          onCategoriaSeleccionada={(categoria) => {
+          onClose={() => {
+            setShowPerfilamientoModal(false);
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+          }}
+          onCategoriaSeleccionada={(categoria, notaSeleccionada) => {
+            console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
+            console.log('🔄 [CONVERSION] Nota seleccionada:', notaSeleccionada);
+            
+            // Guardar la nota seleccionada para el modal de crear perfilamiento
+            if (notaSeleccionada) {
+              setContenidoNotaParaPerfilamiento(notaSeleccionada.contenido);
+              console.log('🔄 [CONVERSION] Contenido de nota guardado:', notaSeleccionada.contenido);
+            }
+            
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
+          notasParaConvertir={notasManuales.map(nota => ({
+            id: nota.id,
+            contenido: nota.contenido,
+            fecha_creacion: nota.fecha_creacion
+          }))}
+          notaPreSeleccionada={notaPreSeleccionada ? {
+            id: notaPreSeleccionada.id,
+            contenido: notaPreSeleccionada.contenido,
+            fecha_creacion: notaPreSeleccionada.fecha_creacion
+          } : undefined}
         />
       )}
 
@@ -2262,13 +2314,18 @@ export default function SesionActivaPage() {
           onClose={() => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
+          descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
           onSuccess={() => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
             showSuccess('Perfilamiento creado exitosamente');
           }}
         />
@@ -2278,10 +2335,14 @@ export default function SesionActivaPage() {
       {showCrearDolorModal && participante && (
         <DolorSideModal
           isOpen={showCrearDolorModal}
-          onClose={() => setShowCrearDolorModal(false)}
+          onClose={() => {
+            setShowCrearDolorModal(false);
+            setContenidoNotaParaDolor(''); // Limpiar contenido al cerrar
+          }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           onSave={handleCrearDolor}
+          descripcionPrecargada={contenidoNotaParaDolor} // Pasar contenido de la nota
         />
       )}
     </Layout>
