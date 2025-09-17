@@ -219,10 +219,16 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             {onReanalyze && (
               <button
                 onClick={onReanalyze}
-                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 bg-white text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-600 hover:via-cyan-500 hover:to-blue-600 hover:text-white dark:hover:from-cyan-600 dark:hover:via-blue-500 dark:hover:to-cyan-600 dark:hover:text-white"
+                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 text-blue-600 dark:text-blue-400 hover:text-white dark:hover:text-white"
                 style={{
                   background: 'linear-gradient(white, white) padding-box, linear-gradient(to right, #2563eb, #06b6d4, #2563eb) border-box',
                   border: '2px solid transparent'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to right, #2563eb, #06b6d4, #2563eb)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(white, white) padding-box, linear-gradient(to right, #2563eb, #06b6d4, #2563eb) border-box';
                 }}
               >
                 {/* Efecto de brillo animado - solo en hover */}
