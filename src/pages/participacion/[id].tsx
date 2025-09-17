@@ -2779,9 +2779,9 @@ export default function VistaParticipacion() {
                     />
                   </div>
                 ) : isAnalyzing ? (
-                  <div className="text-center py-12">
+                  <div className="flex flex-col items-center justify-center py-16 px-4">
                     {/* Animación futurista de IA */}
-                    <div className="relative mx-auto mb-8 w-24 h-24">
+                    <div className="relative mb-8 w-24 h-24 flex items-center justify-center">
                       {/* Círculo exterior con gradiente animado */}
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 animate-spin" style={{ animationDuration: '3s' }}>
                         <div className="absolute inset-1 rounded-full bg-white dark:bg-gray-900"></div>
@@ -2792,7 +2792,7 @@ export default function VistaParticipacion() {
                       
                       {/* Partículas flotantes */}
                       <div className="absolute inset-0">
-                        <div className="absolute top-2 left-1/2 w-1 h-1 bg-cyan-300 rounded-full animate-bounce" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
+                        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-cyan-300 rounded-full animate-bounce" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
                         <div className="absolute top-4 right-2 w-0.5 h-0.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '2.5s' }}></div>
                         <div className="absolute bottom-4 left-2 w-0.5 h-0.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '1s', animationDuration: '2.2s' }}></div>
                         <div className="absolute bottom-2 right-4 w-1 h-1 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '2.8s' }}></div>
@@ -2809,24 +2809,27 @@ export default function VistaParticipacion() {
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 to-cyan-400/20 blur-xl animate-pulse"></div>
                     </div>
                     
-                    <Typography variant="h5" weight="semibold" className="mb-3 bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                      🤖 Analizando sesión con IA
-                    </Typography>
-                    
-                    <Typography variant="body1" color="secondary" className="mb-4">
-                      Procesando datos y generando insights inteligentes...
-                    </Typography>
-                    
-                    {/* Barra de progreso animada */}
-                    <div className="w-full max-w-md mx-auto">
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 rounded-full animate-pulse" style={{ width: '100%', animation: 'progress 2s ease-in-out infinite' }}></div>
+                    {/* Contenido de texto centrado */}
+                    <div className="text-center max-w-md mx-auto">
+                      <Typography variant="h5" weight="semibold" className="mb-3 bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                        🤖 Analizando sesión con IA
+                      </Typography>
+                      
+                      <Typography variant="body1" color="secondary" className="mb-6">
+                        Procesando datos y generando insights inteligentes...
+                      </Typography>
+                      
+                      {/* Barra de progreso animada */}
+                      <div className="w-full mb-4">
+                        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 rounded-full animate-pulse" style={{ width: '100%', animation: 'progress 2s ease-in-out infinite' }}></div>
+                        </div>
                       </div>
+                      
+                      <Typography variant="body2" color="muted">
+                        Esto puede tomar unos momentos. Por favor espera.
+                      </Typography>
                     </div>
-                    
-                    <Typography variant="body2" color="muted" className="mt-3">
-                      Esto puede tomar unos momentos. Por favor espera.
-                    </Typography>
                   </div>
                 ) : (
                   <div className="text-center py-8">
