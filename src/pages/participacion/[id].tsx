@@ -155,7 +155,6 @@ export default function VistaParticipacion() {
   const [showModalEditar, setShowModalEditar] = useState(false);
   const [showModalEliminar, setShowModalEliminar] = useState(false);
   const [showModalCrearDolor, setShowModalCrearDolor] = useState(false);
-  const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
   
   // Estados para conversión de notas (igual que en sesiones/index.tsx)
@@ -2550,7 +2549,7 @@ export default function VistaParticipacion() {
                      // Guardar la nota pre-seleccionada
                      setNotaPreSeleccionada(notaSeleccionada);
                      
-                     setShowModalPerfilamiento(true);
+                     setShowPerfilamientoModal(true);
                      console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
                    }}
                    onNotasChange={(notas) => {
@@ -2749,10 +2748,10 @@ export default function VistaParticipacion() {
       )}
 
       {/* Modal de selección de categoría de perfilamiento */}
-      {showModalPerfilamiento && notaPreSeleccionada && (
+      {showPerfilamientoModal && notaPreSeleccionada && (
         <SeleccionarCategoriaPerfilamientoModal
-          isOpen={showModalPerfilamiento}
-          onClose={() => setShowModalPerfilamiento(false)}
+          isOpen={showPerfilamientoModal}
+          onClose={() => setShowPerfilamientoModal(false)}
           participanteId={id as string}
           participanteNombre={participante?.nombre || ''}
           notasParaConvertir={[notaPreSeleccionada]}
@@ -2761,7 +2760,7 @@ export default function VistaParticipacion() {
             console.log('🔍 [DEBUG] Categoría seleccionada:', categoria, 'Nota:', nota);
             setCategoriaSeleccionada(categoria);
             setNotaPreSeleccionada(nota);
-            setShowModalPerfilamiento(false);
+            setShowPerfilamientoModal(false);
             setShowModalCrearPerfilamiento(true);
           }}
         />
