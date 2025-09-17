@@ -2320,11 +2320,7 @@ export default function SesionActivaPage() {
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
-          notasParaConvertir={notasManuales.map(nota => ({
-            id: nota.id,
-            contenido: nota.contenido,
-            fecha_creacion: nota.fecha_creacion
-          }))}
+          notasParaConvertir={[notaPreSeleccionada]}
           notaPreSeleccionada={notaPreSeleccionada ? {
             id: notaPreSeleccionada.id,
             contenido: notaPreSeleccionada.contenido,
