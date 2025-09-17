@@ -2759,54 +2759,14 @@ export default function VistaParticipacion() {
                         if (!reclutamiento_id) return;
                         await handleAnalyzeSession(reclutamiento_id);
                       }}
+                      onSave={async () => {
+                        if (!reclutamiento_id || !participante?.id) return;
+                        await saveAnalysis(reclutamiento_id, participante.id);
+                      }}
+                      onDelete={handleDeleteAnalysis}
                       onCreateDolor={handleCreateDolorFromAI}
                       onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
                     />
-                    
-                    {/* Botones de acción del análisis */}
-                    <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
-                      <div className="flex flex-wrap gap-3 justify-between items-center">
-                        <div className="flex flex-wrap gap-3">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={async () => {
-                              if (!reclutamiento_id) return;
-                              await handleAnalyzeSession(reclutamiento_id);
-                            }}
-                            loading={isAnalyzing}
-                            disabled={isAnalyzing}
-                            className="flex items-center gap-2"
-                          >
-                            <RefreshIcon className="w-4 h-4" />
-                            {isAnalyzing ? 'Re-analizando...' : 'Re-analizar'}
-                          </Button>
-                          
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            onClick={async () => {
-                              if (!reclutamiento_id || !participante?.id) return;
-                              await saveAnalysis(reclutamiento_id, participante.id);
-                            }}
-                            className="flex items-center gap-2"
-                          >
-                            <CheckIcon className="w-4 h-4" />
-                            Guardar Análisis
-                          </Button>
-                        </div>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleDeleteAnalysis}
-                          className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                          Eliminar Análisis
-                        </Button>
-                      </div>
-                    </div>
                   </div>
                 ) : isAnalyzing ? (
                   <div className="text-center py-8">

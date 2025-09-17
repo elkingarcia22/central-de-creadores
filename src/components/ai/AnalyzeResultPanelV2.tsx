@@ -59,6 +59,8 @@ interface AnalyzeResultPanelV2Props {
   onEditDolor?: (dolor: any) => void;
   onEditPerfil?: (perfil: any) => void;
   onReanalyze?: () => void;
+  onSave?: () => void;
+  onDelete?: () => void;
   onCreateDolor?: (dolor: any) => void;
   onCreatePerfilamiento?: (perfil: any) => void;
   sessionId?: string;
@@ -71,6 +73,8 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
   onEditDolor,
   onEditPerfil,
   onReanalyze,
+  onSave,
+  onDelete,
   onCreateDolor,
   onCreatePerfilamiento,
   sessionId
@@ -209,6 +213,39 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {onReanalyze && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onReanalyze}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"
+              >
+                <RefreshIcon className="w-4 h-4" />
+                Re-analizar
+              </Button>
+            )}
+            {onSave && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onSave}
+                className="flex items-center gap-2"
+              >
+                <CheckCircleIcon className="w-4 h-4" />
+                Guardar
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onDelete}
+                className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
+              >
+                <XIcon className="w-4 h-4" />
+                Eliminar
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
