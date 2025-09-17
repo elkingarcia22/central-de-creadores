@@ -15,18 +15,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('🔍 [Debug] Verificando reclutamiento:', id);
 
-    // Verificar si existe el reclutamiento
+    // Verificar si existe el reclutamiento (sin JOIN)
     const { data: reclutamiento, error: reclutamientoError } = await supabaseServer
       .from('reclutamientos')
-      .select(`
-        *,
-        investigaciones (
-          *,
-          libretos_investigacion (*)
-        )
-      `)
+      .select('*')
       .eq('id', id)
       .single();
+
+    // Si existe el reclutamiento, cargar la investigación por separado
+    let investigacion = null;
+    if (reclutamiento && !reclutamientoError) {
+      const { data: invData, error: invError } = await supabaseServer
+        .from('investigaciones')
+        .select(`
+          *,
+          libretos_investigacion (*)
+        `)
+        .eq('id', reclutamiento.investigacion_id)
+        .single();
+      
+      if (!invError && invData) {
+        investigacion = invData;
+      }
+    }
 
     if (reclutamientoError) {
       console.log('❌ [Debug] Error buscando reclutamiento:', reclutamientoError);
@@ -65,8 +76,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: reclutamiento.id,
         investigacion_id: reclutamiento.investigacion_id,
         participantes_id: reclutamiento.participantes_id,
-        investigacion: reclutamiento.investigaciones?.nombre,
-        libreto: reclutamiento.investigaciones?.libretos_investigacion
+        investigacion: investigacion?.nombre,
+        libreto: investigacion?.libretos_investigacion
       },
       transcripciones: {
         cantidad: transcripciones?.length || 0,

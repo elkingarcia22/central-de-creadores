@@ -304,7 +304,12 @@ CONTEXTO DE LA INVESTIGACIÓN:
   try {
     const aiResult = await runLLM({
       tool: 'analyze_session',
-      input: { transcriptId, notesId, language },
+      input: { 
+        sessionId,
+        language,
+        transcriptCount: transcripciones?.length || 0,
+        notesCount: notasManuales?.length || 0
+      },
       context,
       policy,
       prompt,
