@@ -535,11 +535,20 @@ export default function VistaParticipacion() {
         
         // Marcar la nota como convertida a dolor si hay contenido pre-cargado
         if (contenidoNotaParaDolor && (window as any).marcarNotaConvertidaADolor) {
+          console.log('🔍 [DEBUG] Marcando nota como convertida a dolor:', { contenidoNotaParaDolor, dolorCreadoId: dolorCreado.id });
           // Encontrar la nota que se convirtió
           const notaConvertida = notasManuales.find(nota => nota.contenido === contenidoNotaParaDolor);
           if (notaConvertida) {
+            console.log('🔍 [DEBUG] Nota encontrada para marcar como convertida:', notaConvertida);
             (window as any).marcarNotaConvertidaADolor(notaConvertida.id, dolorCreado.id);
+          } else {
+            console.log('🔍 [DEBUG] No se encontró la nota para marcar como convertida');
           }
+        } else {
+          console.log('🔍 [DEBUG] No se puede marcar la nota como convertida a dolor:', {
+            contenidoNotaParaDolor: !!contenidoNotaParaDolor,
+            marcarNotaConvertidaADolor: !!(window as any).marcarNotaConvertidaADolor
+          });
         }
         
         // Limpiar el contenido pre-cargado
@@ -2712,12 +2721,25 @@ export default function VistaParticipacion() {
             setShowModalPerfilamiento(true);
           }}
           onSuccess={(perfilamientoCreado) => {
+            console.log('🔍 [DEBUG] onSuccess llamado con perfilamientoCreado:', perfilamientoCreado);
+            console.log('🔍 [DEBUG] notaPreSeleccionada:', notaPreSeleccionada);
+            console.log('🔍 [DEBUG] window.marcarNotaConvertidaAPerfilamiento existe:', !!(window as any).marcarNotaConvertidaAPerfilamiento);
+            
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
             
             // Marcar la nota como convertida a perfilamiento
             if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              console.log('🔍 [DEBUG] Llamando marcarNotaConvertidaAPerfilamiento con:', {
+                notaId: notaPreSeleccionada.id,
+                perfilamientoId: perfilamientoCreado?.id
+              });
               (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            } else {
+              console.log('🔍 [DEBUG] No se puede marcar la nota como convertida:', {
+                notaPreSeleccionada: !!notaPreSeleccionada,
+                marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
+              });
             }
             
             setNotaPreSeleccionada(null);
