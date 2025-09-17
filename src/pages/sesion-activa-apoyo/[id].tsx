@@ -2219,7 +2219,7 @@ export default function SesionActivaApoyoPage() {
           isOpen={showPerfilamientoModal}
           onClose={() => {
             setShowPerfilamientoModal(false);
-            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+            // NO limpiar notaPreSeleccionada aquí, se limpiará en onSuccess del modal de crear perfilamiento
           }}
           onCategoriaSeleccionada={(categoria, notaSeleccionada) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
