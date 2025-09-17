@@ -35,6 +35,7 @@ interface SeleccionarCategoriaPerfilamientoModalProps {
   participanteId: string;
   participanteNombre: string;
   notasParaConvertir?: NotaParaConvertir[];
+  notaPreSeleccionada?: NotaParaConvertir; // Nota que se está convirtiendo
   onCategoriaSeleccionada: (categoria: CategoriaPerfilamiento, notaSeleccionada?: NotaParaConvertir) => void;
 }
 
@@ -88,6 +89,7 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
   participanteId,
   participanteNombre,
   notasParaConvertir = [],
+  notaPreSeleccionada,
   onCategoriaSeleccionada
 }) => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = React.useState<CategoriaPerfilamiento | null>(null);
@@ -97,7 +99,16 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
   React.useEffect(() => {
     console.log('🔄 [MODAL CATEGORIA] Modal abierto con notas:', notasParaConvertir);
     console.log('🔄 [MODAL CATEGORIA] Cantidad de notas:', notasParaConvertir.length);
-  }, [isOpen, notasParaConvertir]);
+    console.log('🔄 [MODAL CATEGORIA] Nota pre-seleccionada:', notaPreSeleccionada);
+  }, [isOpen, notasParaConvertir, notaPreSeleccionada]);
+
+  // Pre-seleccionar la nota automáticamente
+  React.useEffect(() => {
+    if (isOpen && notaPreSeleccionada) {
+      console.log('🔄 [MODAL CATEGORIA] Pre-seleccionando nota:', notaPreSeleccionada);
+      setNotaSeleccionada(notaPreSeleccionada);
+    }
+  }, [isOpen, notaPreSeleccionada]);
   const handleCategoriaSeleccionada = (categoria: CategoriaPerfilamiento) => {
     setCategoriaSeleccionada(categoria);
   };
@@ -111,9 +122,12 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
     console.log('🔄 [MODAL CATEGORIA] Continuar - Categoría:', categoriaSeleccionada);
     console.log('🔄 [MODAL CATEGORIA] Continuar - Nota:', notaSeleccionada);
     
-    if (categoriaSeleccionada && notaSeleccionada) {
-      console.log('🔄 [MODAL CATEGORIA] Llamando onCategoriaSeleccionada con:', categoriaSeleccionada, notaSeleccionada);
-      onCategoriaSeleccionada(categoriaSeleccionada, notaSeleccionada);
+    // Si hay una nota pre-seleccionada, solo necesitamos la categoría
+    const notaFinal = notaSeleccionada || notaPreSeleccionada;
+    
+    if (categoriaSeleccionada && notaFinal) {
+      console.log('🔄 [MODAL CATEGORIA] Llamando onCategoriaSeleccionada con:', categoriaSeleccionada, notaFinal);
+      onCategoriaSeleccionada(categoriaSeleccionada, notaFinal);
       onClose();
     } else {
       console.log('🔄 [MODAL CATEGORIA] No se puede continuar - faltan datos');
@@ -249,7 +263,7 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
           </Button>
           <Button
             onClick={handleContinuar}
-            disabled={!categoriaSeleccionada || !notaSeleccionada}
+            disabled={!categoriaSeleccionada || (!notaSeleccionada && !notaPreSeleccionada)}
             className="flex-1"
           >
             Continuar

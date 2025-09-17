@@ -164,6 +164,9 @@ export default function SesionActivaApoyoPage() {
   // Estado para las notas manuales
   const [notasManuales, setNotasManuales] = useState<any[]>([]);
   
+  // Estado para la nota pre-seleccionada
+  const [notaPreSeleccionada, setNotaPreSeleccionada] = useState<any>(null);
+  
   // Memoizar el contenido final para evitar pérdidas
   const contenidoFinalParaPerfilamiento = useMemo(() => {
     const final = contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente;
@@ -1522,6 +1525,14 @@ export default function SesionActivaApoyoPage() {
         onConvertirAPerfilamiento={(contenido) => {
           // Abrir modal de selección de categoría con todas las notas disponibles
           console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
+          
+          // Encontrar la nota que se está convirtiendo
+          const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
+          console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
+          
+          // Guardar la nota pre-seleccionada
+          setNotaPreSeleccionada(notaSeleccionada);
+          
           setShowPerfilamientoModal(true);
           console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
         }}
@@ -2148,6 +2159,7 @@ export default function SesionActivaApoyoPage() {
           isOpen={showPerfilamientoModal}
           onClose={() => {
             setShowPerfilamientoModal(false);
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
           }}
           onCategoriaSeleccionada={(categoria, notaSeleccionada) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
@@ -2172,6 +2184,11 @@ export default function SesionActivaApoyoPage() {
             contenido: nota.contenido,
             fecha_creacion: nota.fecha_creacion
           }))}
+          notaPreSeleccionada={notaPreSeleccionada ? {
+            id: notaPreSeleccionada.id,
+            contenido: notaPreSeleccionada.contenido,
+            fecha_creacion: notaPreSeleccionada.fecha_creacion
+          } : undefined}
         />
       )}
 
@@ -2187,25 +2204,27 @@ export default function SesionActivaApoyoPage() {
           })()}
           <CrearPerfilamientoModal
             isOpen={showCrearPerfilamientoModal}
-            onClose={() => {
-              setShowCrearPerfilamientoModal(false);
-              setCategoriaSeleccionada(null);
-              setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-              contenidoNotaRef.current = ''; // Limpiar ref también
-              setContenidoNotaPersistente(''); // Limpiar variable persistente
-            }}
+          onClose={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            contenidoNotaRef.current = ''; // Limpiar ref también
+            setContenidoNotaPersistente(''); // Limpiar variable persistente
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+          }}
             participanteId={participante.id}
             participanteNombre={participante.nombre}
             categoria={categoriaSeleccionada}
             descripcionPrecargada={contenidoFinalParaPerfilamiento} // Pasar contenido de la nota
-            onSuccess={() => {
-              setShowCrearPerfilamientoModal(false);
-              setCategoriaSeleccionada(null);
-              setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-              contenidoNotaRef.current = ''; // Limpiar ref también
-              setContenidoNotaPersistente(''); // Limpiar variable persistente
-              showSuccess('Perfilamiento creado exitosamente');
-            }}
+          onSuccess={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
+            contenidoNotaRef.current = ''; // Limpiar ref también
+            setContenidoNotaPersistente(''); // Limpiar variable persistente
+            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+            showSuccess('Perfilamiento creado exitosamente');
+          }}
           />
         </>
       )}
