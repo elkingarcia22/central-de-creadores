@@ -2101,6 +2101,24 @@ export default function VistaParticipacion() {
     }
   };
 
+  // Función para eliminar el análisis de IA
+  const handleDeleteAnalysis = async () => {
+    if (!reclutamiento_id) return;
+    
+    try {
+      // Aquí podrías implementar la lógica para eliminar el análisis de la base de datos
+      // Por ahora, solo ocultamos el tab y reseteamos el estado
+      setShowAITab(false);
+      resetAI();
+      setActiveTab('informacion'); // Volver al tab de información
+      
+      showSuccess('Análisis eliminado', 'El análisis de IA ha sido eliminado correctamente');
+    } catch (error) {
+      console.error('Error eliminando análisis:', error);
+      showError('Error al eliminar', 'No se pudo eliminar el análisis de IA');
+    }
+  };
+
   // useEffect para cargar análisis de IA existente
   useEffect(() => {
     if (reclutamiento_id && typeof reclutamiento_id === 'string') {
@@ -2199,17 +2217,20 @@ export default function VistaParticipacion() {
 
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
-            <AIButton 
-              onClick={async () => {
-                if (!reclutamientoActual?.id) return;
-                await handleAnalyzeSession(reclutamientoActual.id);
-              }}
-              loading={isAnalyzing}
-              disabled={isAnalyzing}
-              size="md"
-            >
-              {isAnalyzing ? 'Analizando...' : 'Analizar con IA'}
-            </AIButton>
+            {/* Solo mostrar botón de análisis si no hay análisis existente y no se está analizando */}
+            {!showAITab && !isAnalyzing && (
+              <AIButton 
+                onClick={async () => {
+                  if (!reclutamientoActual?.id) return;
+                  await handleAnalyzeSession(reclutamientoActual.id);
+                }}
+                loading={isAnalyzing}
+                disabled={isAnalyzing}
+                size="md"
+              >
+                {isAnalyzing ? 'Analizando...' : 'Analizar con IA'}
+              </AIButton>
+            )}
             {/* Menú de acciones con 3 puntos (igual que sesión activa) */}
             <div className="relative">
               <button
@@ -2724,8 +2745,7 @@ export default function VistaParticipacion() {
                       meta={aiMeta}
                       sessionId={reclutamiento_id}
                       onClose={() => {
-                        // No cerrar el panel, solo mostrar mensaje
-                        console.log('Panel de análisis cerrado');
+                        // No hacer nada - removemos la funcionalidad de cerrar
                       }}
                       onEditDolor={(dolor) => {
                         console.log('Editar dolor:', dolor);
@@ -2742,26 +2762,48 @@ export default function VistaParticipacion() {
                       onCreateDolor={handleCreateDolorFromAI}
                       onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
                     />
-                    <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Typography variant="h6" weight="medium" className="mb-1">
-                            💾 Guardar Análisis
-                          </Typography>
-                          <Typography variant="body2" color="secondary">
-                            Guarda este análisis en la base de datos para acceder a él más tarde
-                          </Typography>
+                    
+                    {/* Botones de acción del análisis */}
+                    <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+                      <div className="flex flex-wrap gap-3 justify-between items-center">
+                        <div className="flex flex-wrap gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              if (!reclutamiento_id) return;
+                              await handleAnalyzeSession(reclutamiento_id);
+                            }}
+                            loading={isAnalyzing}
+                            disabled={isAnalyzing}
+                            className="flex items-center gap-2"
+                          >
+                            <RefreshIcon className="w-4 h-4" />
+                            {isAnalyzing ? 'Re-analizando...' : 'Re-analizar'}
+                          </Button>
+                          
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={async () => {
+                              if (!reclutamiento_id || !participante?.id) return;
+                              await saveAnalysis(reclutamiento_id, participante.id);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <CheckIcon className="w-4 h-4" />
+                            Guardar Análisis
+                          </Button>
                         </div>
+                        
                         <Button
-                          variant="primary"
+                          variant="outline"
                           size="sm"
-                          onClick={async () => {
-                            if (!reclutamiento_id || !participante?.id) return;
-                            await saveAnalysis(reclutamiento_id, participante.id);
-                          }}
-                          className="ml-4"
+                          onClick={handleDeleteAnalysis}
+                          className="flex items-center gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
                         >
-                          Guardar Análisis
+                          <TrashIcon className="w-4 h-4" />
+                          Eliminar Análisis
                         </Button>
                       </div>
                     </div>

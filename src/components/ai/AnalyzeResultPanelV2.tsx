@@ -209,17 +209,6 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {onReanalyze && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onReanalyze}
-                className="flex items-center gap-2"
-              >
-                <RefreshIcon className="w-4 h-4" />
-                Re-analizar
-              </Button>
-            )}
             <Button
               variant="outline"
               size="sm"
@@ -228,14 +217,6 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             >
               <DownloadIcon className="w-4 h-4" />
               Exportar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <XIcon className="w-4 h-4" />
             </Button>
           </div>
         </div>
