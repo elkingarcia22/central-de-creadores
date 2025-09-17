@@ -322,6 +322,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
           transcripcionCompleta: !!transcripcionCompleta,
           segmentosTranscripcion: segmentosTranscripcion.length,
           isProcessing,
+          isRecording,
           shouldShow
         });
         return shouldShow;
@@ -332,9 +333,15 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
               <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
                 Transcripción Actual
               </Typography>
-              <Badge variant="success" size="sm">
-                Completada
-              </Badge>
+              {!isRecording ? (
+                <Badge variant="success" size="sm">
+                  Completada
+                </Badge>
+              ) : (
+                <Badge variant="warning" size="sm">
+                  En Progreso
+                </Badge>
+              )}
             </div>
 
             {transcripcionCompleta && (

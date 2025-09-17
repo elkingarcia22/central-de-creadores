@@ -31,6 +31,7 @@ export function useWebSpeechTranscription() {
   const startTimeRef = useRef<number>(0);
   const segmentsRef = useRef<Array<any>>([]);
   const currentSegmentRef = useRef<any>(null);
+  const stoppedManuallyRef = useRef<boolean>(false);
 
   // Verificar si el navegador soporta Web Speech API
   const isSupported = useCallback(() => {
@@ -57,6 +58,7 @@ export function useWebSpeechTranscription() {
     startTimeRef.current = Date.now();
     segmentsRef.current = [];
     currentSegmentRef.current = null;
+    stoppedManuallyRef.current = false;
 
     // Eventos del reconocimiento
     recognition.onstart = () => {
@@ -145,23 +147,37 @@ export function useWebSpeechTranscription() {
         duration: (Date.now() - startTimeRef.current) / 1000
       }));
 
-      // Disparar evento de transcripción completada
-      const finalTranscription = state.transcription;
-      const finalSegments = state.segments;
-      
-      if (finalTranscription) {
-        console.log('📡 [Web Speech] Disparando evento transcriptionCompleted');
-        window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
-          detail: {
-            transcription: finalTranscription,
-            segments: finalSegments,
-            language: 'es-ES',
-            confidence: 0.9,
-            duration: (Date.now() - startTimeRef.current) / 1000,
-            wordCount: finalTranscription.split(' ').length,
-            speakerCount: 1
+      // Solo disparar evento de transcripción completada si se detuvo manualmente
+      if (stoppedManuallyRef.current) {
+        const finalTranscription = state.transcription;
+        const finalSegments = state.segments;
+        
+        if (finalTranscription) {
+          console.log('📡 [Web Speech] Disparando evento transcriptionCompleted (detenido manualmente)');
+          window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
+            detail: {
+              transcription: finalTranscription,
+              segments: finalSegments,
+              language: 'es-ES',
+              confidence: 0.9,
+              duration: (Date.now() - startTimeRef.current) / 1000,
+              wordCount: finalTranscription.split(' ').length,
+              speakerCount: 1
+            }
+          }));
+        }
+      } else {
+        console.log('🔄 [Web Speech] Reconocimiento terminado automáticamente, reiniciando...');
+        // Reiniciar el reconocimiento si no se detuvo manualmente
+        setTimeout(() => {
+          if (recognitionRef.current && !stoppedManuallyRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (error) {
+              console.log('⚠️ [Web Speech] No se pudo reiniciar automáticamente:', error);
+            }
           }
-        }));
+        }, 100);
       }
     };
 
@@ -180,7 +196,8 @@ export function useWebSpeechTranscription() {
 
   const stopRecording = useCallback(() => {
     if (recognitionRef.current) {
-      console.log('🛑 [Web Speech] Deteniendo reconocimiento...');
+      console.log('🛑 [Web Speech] Deteniendo reconocimiento manualmente...');
+      stoppedManuallyRef.current = true;
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
@@ -188,6 +205,7 @@ export function useWebSpeechTranscription() {
 
   const clearRecording = useCallback(() => {
     if (recognitionRef.current) {
+      stoppedManuallyRef.current = true;
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
