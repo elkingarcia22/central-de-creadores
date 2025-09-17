@@ -478,40 +478,53 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
     return actions;
   };
 
-  // Acciones estáticas para la tabla (se aplicarán a todas las filas)
-  const tableActions = [
-    {
-      label: 'Ver',
-      icon: <EyeIcon className="w-4 h-4" />,
-      onClick: (row: SeguimientoParticipante) => abrirVerModal(row),
-      title: 'Ver detalles del seguimiento'
-    },
-    {
-      label: 'Ver Investigación',
-      icon: <EyeIcon className="w-4 h-4" />,
-      onClick: (row: SeguimientoParticipante) => handleVerInvestigacion(row),
-      title: 'Ver detalles de la investigación'
-    },
-    {
-      label: 'Editar',
-      icon: <EditIcon className="w-4 h-4" />,
-      onClick: (row: SeguimientoParticipante) => abrirEditarModal(row),
-      title: 'Editar seguimiento'
-    },
-    {
-      label: 'Convertir',
-      icon: <CopyIcon className="w-4 h-4" />,
-      onClick: (row: SeguimientoParticipante) => handleConvertirSeguimiento(row),
-      title: 'Convertir seguimiento a investigación'
-    },
-    {
-      label: 'Eliminar',
-      icon: <TrashIcon className="w-4 h-4" />,
-      onClick: (row: SeguimientoParticipante) => handleEliminarSeguimiento(row),
-      className: 'text-red-600 hover:text-red-700',
-      title: 'Eliminar seguimiento'
+  // Función para obtener acciones dinámicas basadas en el tipo de seguimiento
+  const getTableActions = (row: SeguimientoParticipante) => {
+    const isSesionApoyo = row.investigacion_nombre === 'Sesión de Apoyo';
+    
+    const actions = [
+      {
+        label: 'Ver',
+        icon: <EyeIcon className="w-4 h-4" />,
+        onClick: () => abrirVerModal(row),
+        title: 'Ver detalles del seguimiento'
+      }
+    ];
+
+    // Solo agregar "Ver Investigación" si NO es sesión de apoyo
+    if (!isSesionApoyo) {
+      actions.push({
+        label: 'Ver Investigación',
+        icon: <EyeIcon className="w-4 h-4" />,
+        onClick: () => handleVerInvestigacion(row),
+        title: 'Ver detalles de la investigación'
+      });
     }
-  ];
+
+    actions.push(
+      {
+        label: 'Editar',
+        icon: <EditIcon className="w-4 h-4" />,
+        onClick: () => abrirEditarModal(row),
+        title: 'Editar seguimiento'
+      },
+      {
+        label: 'Convertir',
+        icon: <CopyIcon className="w-4 h-4" />,
+        onClick: () => handleConvertirSeguimiento(row),
+        title: 'Convertir seguimiento a investigación'
+      },
+      {
+        label: 'Eliminar',
+        icon: <TrashIcon className="w-4 h-4" />,
+        onClick: () => handleEliminarSeguimiento(row),
+        className: 'text-red-600 hover:text-red-700',
+        title: 'Eliminar seguimiento'
+      }
+    );
+
+    return actions;
+  };
 
   if (loading) {
     return (
@@ -598,7 +611,7 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
             selectable={false}
             emptyMessage="No se encontraron seguimientos que coincidan con los criterios de búsqueda"
             rowKey="id"
-            actions={tableActions}
+            getRowActions={getTableActions}
             onRowClick={(seguimiento) => abrirVerModal(seguimiento)}
           />
         ) : (
