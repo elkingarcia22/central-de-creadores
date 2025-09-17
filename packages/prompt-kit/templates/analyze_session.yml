@@ -1,11 +1,11 @@
 objective: |
-  Analizar una sesión de investigación de usuario para extraer:
-  - Resumen ejecutivo de la sesión
-  - Insights clave sobre comportamiento y necesidades
-  - Dolores identificados (mapeados a categorías existentes)
-  - Perfil sugerido del participante (mapeado a categorías existentes)
+  Analizar una sesión de investigación de usuario para extraer información estructurada y accionable:
+  - Resumen ejecutivo claro y conciso de la sesión
+  - Insights clave sobre comportamiento, necesidades y actitudes del usuario
+  - Dolores específicos identificados (mapeados a categorías existentes)
+  - Perfil de usuario sugerido basado en evidencia (mapeado a categorías existentes)
   
-  Todo con evidencia específica por segmento de transcripción.
+  Todo con evidencia específica por segmento de transcripción y recomendaciones accionables.
 
 system: |
   Eres un analista UX senior especializado en investigación de usuarios.
@@ -49,29 +49,32 @@ sections:
       ${segmentos_formateados}
 
 instructions: |
-  Analiza la transcripción y extrae:
+  Analiza la transcripción y extrae información estructurada y accionable:
   
   1. RESUMEN (2-3 párrafos):
-     - Contexto general de la sesión
-     - Temas principales discutidos
-     - Impresión general del participante
+     - Contexto general de la sesión y objetivos
+     - Temas principales discutidos y hallazgos clave
+     - Impresión general del participante y su experiencia
+     - Recomendaciones principales para el equipo de producto
   
-  2. INSIGHTS (máximo 5):
-     - Hallazgos clave sobre comportamiento, necesidades o actitudes
+  2. INSIGHTS (máximo 5, prioriza los más impactantes):
+     - Hallazgos clave sobre comportamiento, necesidades, actitudes o preferencias
      - Cada insight debe tener evidencia específica (SEG.id)
-     - Enfócate en patrones o declaraciones significativas
+     - Enfócate en patrones, declaraciones significativas o comportamientos inesperados
+     - Incluye el "por qué" detrás de cada insight cuando sea posible
   
-  3. DOLORES (máximo 3):
-     - Problemas o frustraciones mencionados
+  3. DOLORES (máximo 3, prioriza los más críticos):
+     - Problemas, frustraciones o puntos de fricción mencionados
      - Mapea a categorías_dolores usando solo los IDs permitidos
-     - Incluye ejemplo específico del participante
-     - Evidencia con SEG.id
+     - Incluye ejemplo específico del participante y contexto
+     - Evidencia con SEG.id y sugerencias de mejora cuando sea posible
   
-  4. PERFIL SUGERIDO (opcional):
-     - Solo si hay evidencia suficiente para categorizar al participante
+  4. PERFIL SUGERIDO (opcional, solo si hay evidencia suficiente):
+     - Categoriza al participante basado en comportamiento observado
      - Usa solo las categorías de perfilamientos permitidas
      - Incluye razones específicas basadas en evidencia
-     - Confidence entre 0.1 y 1.0
+     - Confidence entre 0.1 y 1.0 (sé conservador si hay poca evidencia)
+     - Sugiere cómo este perfil podría influir en decisiones de producto
 
 fewshots:
   - input: |
@@ -79,37 +82,45 @@ fewshots:
       PERFIL={comunicacion, comportamiento, decisiones}
       
       [SEG id=42 start=120000 end=132000]
-      "No encuentro el botón de pagar en el móvil, es muy confuso"
+      "No encuentro el botón de pagar en el móvil, es muy confuso. He intentado varias veces y siempre me pierdo"
       [/SEG]
       
       [SEG id=43 start=135000 end=140000]
-      "Prefiero que me hablen directo, sin tanto protocolo"
+      "Prefiero que me hablen directo, sin tanto protocolo. Solo quiero que me digan qué necesito hacer"
+      [/SEG]
+      
+      [SEG id=44 start=145000 end=150000]
+      "La aplicación funciona bien en general, pero este tema del pago me frustra mucho"
       [/SEG]
       
     output: |
       {
-        "summary": "Participante expresa frustración con la usabilidad móvil y prefiere comunicación directa. Muestra preferencia por interfaces simples y comunicación sin formalidades.",
+        "summary": "Participante experimenta frustración significativa con la funcionalidad de pago móvil, mostrando dificultades de navegación y preferencia por comunicación directa. A pesar de valorar la aplicación en general, el problema de usabilidad móvil representa un punto crítico de fricción que podría afectar la conversión. Se recomienda priorizar la mejora de la experiencia de pago móvil y simplificar la comunicación con usuarios que prefieren instrucciones directas.",
         "insights": [
           {
-            "text": "Frustración con navegación móvil, específicamente con elementos de pago",
+            "text": "Frustración persistente con navegación móvil, específicamente en el flujo de pago, que genera abandono de tareas",
             "evidence": {"seg_id": "42"}
           },
           {
-            "text": "Preferencia por comunicación directa y sin protocolos formales",
+            "text": "Preferencia clara por comunicación directa y sin formalidades, sugiriendo necesidad de simplificar mensajes",
             "evidence": {"seg_id": "43"}
+          },
+          {
+            "text": "Contraste entre satisfacción general con la app y frustración específica con pagos móviles",
+            "evidence": {"seg_id": "44"}
           }
         ],
         "dolores": [
           {
             "categoria_id": "678fbae1-010d-45fc-a97a-58d039a107ad",
-            "ejemplo": "No encuentro el botón de pagar en el móvil, es muy confuso",
+            "ejemplo": "No encuentro el botón de pagar en el móvil, es muy confuso. He intentado varias veces y siempre me pierdo",
             "evidence": {"seg_id": "42"}
           }
         ],
         "perfil_sugerido": {
           "categoria_perfilamiento": "comunicacion",
-          "valor_principal": "directo",
-          "razones": ["Prefiere comunicación directa sin protocolos"],
+          "valor_principal": "eficiencia",
+          "razones": ["Prefiere comunicación directa sin protocolos", "Valora la claridad en las instrucciones", "Busca soluciones rápidas y efectivas"],
           "confidence": 0.8
         }
       }
@@ -119,37 +130,45 @@ fewshots:
       PERFIL={proveedores, cultura}
       
       [SEG id=15 start=45000 end=52000]
-      "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados"
+      "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados. Es frustrante porque pierdo tiempo y trabajo"
       [/SEG]
       
       [SEG id=16 start=53000 end=58000]
-      "Siempre trabajo con los mismos proveedores, son de confianza"
+      "Siempre trabajo con los mismos proveedores, son de confianza. Prefiero pagar un poco más por la tranquilidad"
+      [/SEG]
+      
+      [SEG id=17 start=59000 end=62000]
+      "Me gusta que las cosas funcionen bien, sin sorpresas. La estabilidad es lo más importante para mi negocio"
       [/SEG]
       
     output: |
       {
-        "summary": "Participante reporta problemas técnicos de rendimiento y muestra lealtad hacia proveedores establecidos. Indica preferencia por estabilidad y relaciones comerciales duraderas.",
+        "summary": "Participante experimenta problemas críticos de rendimiento que afectan su productividad, mostrando una clara preferencia por estabilidad y relaciones comerciales confiables. Su enfoque en la confiabilidad sugiere que los problemas técnicos tienen un impacto significativo en su satisfacción. Se recomienda priorizar la estabilidad del sistema y comunicar mejoras de rendimiento, ya que este perfil de usuario valora la predictibilidad por encima de características nuevas.",
         "insights": [
           {
-            "text": "Experiencia problemas de rendimiento en la aplicación",
+            "text": "Problemas de rendimiento afectan directamente la productividad y generan pérdida de tiempo de trabajo",
             "evidence": {"seg_id": "15"}
           },
           {
-            "text": "Mantiene relaciones comerciales estables con proveedores de confianza",
+            "text": "Prioriza la confianza y estabilidad sobre el costo, dispuesto a pagar más por servicios confiables",
             "evidence": {"seg_id": "16"}
+          },
+          {
+            "text": "Valora la predictibilidad y estabilidad como factores críticos para su negocio",
+            "evidence": {"seg_id": "17"}
           }
         ],
         "dolores": [
           {
             "categoria_id": "390a0fe2-fcc2-41eb-8b92-ed21451371dc",
-            "ejemplo": "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados",
+            "ejemplo": "La aplicación se cuelga mucho, especialmente cuando hay muchos usuarios conectados. Es frustrante porque pierdo tiempo y trabajo",
             "evidence": {"seg_id": "15"}
           }
         ],
         "perfil_sugerido": {
           "categoria_perfilamiento": "proveedores",
-          "valor_principal": "leal",
-          "razones": ["Siempre trabaja con los mismos proveedores", "Valora la confianza en las relaciones comerciales"],
+          "valor_principal": "confiabilidad",
+          "razones": ["Prioriza proveedores de confianza sobre costo", "Valora la estabilidad y predictibilidad", "Dispuesto a pagar más por servicios confiables"],
           "confidence": 0.9
         }
       }

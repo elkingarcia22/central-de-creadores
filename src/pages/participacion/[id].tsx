@@ -2601,11 +2601,15 @@ export default function VistaParticipacion() {
              {
                id: 'ai-analysis',
                label: 'Análisis IA',
-               content: showAIPanel && aiResult && aiMeta ? (
+               content: aiResult && aiMeta ? (
                  <AnalyzeResultPanel
                    result={aiResult}
                    meta={aiMeta}
-                   onClose={() => setShowAIPanel(false)}
+                   sessionId={reclutamiento_id}
+                   onClose={() => {
+                     // No cerrar el panel, solo mostrar mensaje
+                     console.log('Panel de análisis cerrado');
+                   }}
                    onEditDolor={(dolor) => {
                      console.log('Editar dolor:', dolor);
                      // TODO: Implementar edición de dolor
@@ -2613,6 +2617,14 @@ export default function VistaParticipacion() {
                    onEditPerfil={(perfil) => {
                      console.log('Editar perfil:', perfil);
                      // TODO: Implementar edición de perfil
+                   }}
+                   onReanalyze={async () => {
+                     if (!reclutamiento_id) return;
+                     try {
+                       await analyzeSession(reclutamiento_id);
+                     } catch (error) {
+                       console.error('Error en re-análisis:', error);
+                     }
                    }}
                  />
                ) : (

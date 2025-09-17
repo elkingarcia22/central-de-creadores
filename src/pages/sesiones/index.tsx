@@ -1547,11 +1547,15 @@ const SesionesPageContent: React.FC = () => {
           {
             id: 'ai-analysis',
             label: 'Análisis IA',
-            content: showAIPanel && aiResult && aiMeta ? (
+            content: aiResult && aiMeta ? (
               <AnalyzeResultPanel
                 result={aiResult}
                 meta={aiMeta}
-                onClose={() => setShowAIPanel(false)}
+                sessionId={sesionSeleccionada?.id}
+                onClose={() => {
+                  // No cerrar el panel, solo mostrar mensaje
+                  console.log('Panel de análisis cerrado');
+                }}
                 onEditDolor={(dolor) => {
                   console.log('Editar dolor:', dolor);
                   // TODO: Implementar edición de dolor
@@ -1559,6 +1563,14 @@ const SesionesPageContent: React.FC = () => {
                 onEditPerfil={(perfil) => {
                   console.log('Editar perfil:', perfil);
                   // TODO: Implementar edición de perfil
+                }}
+                onReanalyze={async () => {
+                  if (!sesionSeleccionada?.id) return;
+                  try {
+                    await analyzeSession(sesionSeleccionada.id);
+                  } catch (error) {
+                    console.error('Error en re-análisis:', error);
+                  }
                 }}
               />
             ) : (

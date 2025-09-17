@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Typography, Chip, Badge, Button } from '../ui';
-import { CheckCircleIcon, AlertCircleIcon, ClockIcon, UserIcon } from '../icons';
+import { CheckCircleIcon, AlertCircleIcon, ClockIcon, UserIcon, DownloadIcon, RefreshIcon } from '../icons';
 
 interface AnalyzeResultPanelProps {
   result: {
@@ -35,6 +35,8 @@ interface AnalyzeResultPanelProps {
   onClose: () => void;
   onEditDolor?: (dolor: any) => void;
   onEditPerfil?: (perfil: any) => void;
+  onReanalyze?: () => void;
+  sessionId?: string;
 }
 
 export const AnalyzeResultPanel: React.FC<AnalyzeResultPanelProps> = ({
@@ -42,7 +44,9 @@ export const AnalyzeResultPanel: React.FC<AnalyzeResultPanelProps> = ({
   meta,
   onClose,
   onEditDolor,
-  onEditPerfil
+  onEditPerfil,
+  onReanalyze,
+  sessionId
 }) => {
   const formatLatency = (ms: number) => {
     if (ms < 1000) return `${ms}ms`;
@@ -61,6 +65,28 @@ export const AnalyzeResultPanel: React.FC<AnalyzeResultPanelProps> = ({
     return 'Baja';
   };
 
+  const exportAnalysis = () => {
+    const analysisData = {
+      sessionId,
+      timestamp: new Date().toISOString(),
+      meta,
+      result
+    };
+    
+    const blob = new Blob([JSON.stringify(analysisData, null, 2)], {
+      type: 'application/json'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `analisis-ia-sesion-${sessionId || 'unknown'}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header con metadatos */}
@@ -72,14 +98,36 @@ export const AnalyzeResultPanel: React.FC<AnalyzeResultPanelProps> = ({
               Análisis Completado
             </Typography>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </Button>
+          <div className="flex items-center gap-2">
+            {onReanalyze && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onReanalyze}
+                className="flex items-center gap-1"
+              >
+                <RefreshIcon className="w-4 h-4" />
+                Re-analizar
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportAnalysis}
+              className="flex items-center gap-1"
+            >
+              <DownloadIcon className="w-4 h-4" />
+              Exportar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </Button>
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-2 text-sm text-gray-600">
