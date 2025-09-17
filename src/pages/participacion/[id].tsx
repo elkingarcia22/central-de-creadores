@@ -158,6 +158,12 @@ export default function VistaParticipacion() {
   const [showModalPerfilamiento, setShowModalPerfilamiento] = useState(false);
   const [showModalCrearPerfilamiento, setShowModalCrearPerfilamiento] = useState(false);
   
+  // Estados para conversión de notas (igual que en sesiones/index.tsx)
+  const [contenidoNotaParaDolor, setContenidoNotaParaDolor] = useState<string>('');
+  const [contenidoNotaParaPerfilamiento, setContenidoNotaParaPerfilamiento] = useState<string>('');
+  const [notasManuales, setNotasManuales] = useState<any[]>([]);
+  const [notaPreSeleccionada, setNotaPreSeleccionada] = useState<any>(null);
+  
   // Estados para menú de acciones (igual que sesión activa)
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
@@ -2507,17 +2513,24 @@ export default function VistaParticipacion() {
                    sesionId={reclutamiento_id as string}
                    onConvertirADolor={(contenido) => {
                      console.log('🔍 [DEBUG] onConvertirADolor llamado desde participacion/[id].tsx, contenido:', contenido);
+                     setContenidoNotaParaDolor(contenido);
                      setShowModalCrearDolor(true);
-                     // Aquí podrías pre-llenar el modal con el contenido de la nota
                    }}
                    onConvertirAPerfilamiento={(contenido) => {
                      console.log('🔍 [DEBUG] onConvertirAPerfilamiento llamado desde participacion/[id].tsx, contenido:', contenido);
+                     // Encontrar la nota que se está convirtiendo
+                     const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
+                     console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
+                     
+                     // Guardar la nota pre-seleccionada
+                     setNotaPreSeleccionada(notaSeleccionada);
+                     
                      setShowModalPerfilamiento(true);
-                     // Aquí podrías pre-llenar el modal con el contenido de la nota
+                     console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
                    }}
                    onNotasChange={(notas) => {
                      console.log('🔍 [DEBUG] onNotasChange llamado desde participacion/[id].tsx, notas:', notas);
-                     // Aquí podrías actualizar el estado de las notas si es necesario
+                     setNotasManuales(notas);
                    }}
                  />
                )
@@ -2676,10 +2689,12 @@ export default function VistaParticipacion() {
           onClose={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
+            setNotaPreSeleccionada(null);
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
+          descripcionPrecargada={notaPreSeleccionada?.contenido || ''}
           onBack={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
@@ -2688,6 +2703,7 @@ export default function VistaParticipacion() {
           onSuccess={() => {
             setShowModalCrearPerfilamiento(false);
             setCategoriaSeleccionada(null);
+            setNotaPreSeleccionada(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}
         />
@@ -2715,14 +2731,19 @@ export default function VistaParticipacion() {
         />
       )}
 
-      {/* Modal de crear perfilamiento (igual que sesión activa) */}
-      {showPerfilamientoModal && (
+      {/* Modal de selección de categoría de perfilamiento */}
+      {showModalPerfilamiento && (
         <SeleccionarCategoriaPerfilamientoModal
-          isOpen={showPerfilamientoModal}
-          onClose={() => setShowPerfilamientoModal(false)}
-          onCategoriaSeleccionada={(categoria) => {
+          isOpen={showModalPerfilamiento}
+          onClose={() => setShowModalPerfilamiento(false)}
+          participanteId={id as string}
+          participanteNombre={participante?.nombre || ''}
+          notasParaConvertir={notasManuales}
+          notaPreSeleccionada={notaPreSeleccionada}
+          onCategoriaSeleccionada={(categoria, nota) => {
             setCategoriaSeleccionada(categoria);
-            setShowPerfilamientoModal(false);
+            setNotaPreSeleccionada(nota);
+            setShowModalPerfilamiento(false);
             setShowModalCrearPerfilamiento(true);
           }}
         />
