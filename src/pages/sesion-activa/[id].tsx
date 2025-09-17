@@ -2307,19 +2307,14 @@ export default function SesionActivaPage() {
           isOpen={showPerfilamientoModal}
           onClose={() => {
             setShowPerfilamientoModal(false);
-            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+            // NO limpiar notaPreSeleccionada aquí, se limpiará en onSuccess del modal de crear perfilamiento
           }}
-          onCategoriaSeleccionada={(categoria, notaSeleccionada) => {
+          onCategoriaSeleccionada={(categoria, nota) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
-            console.log('🔄 [CONVERSION] Nota seleccionada:', notaSeleccionada);
-            
-            // Guardar la nota seleccionada para el modal de crear perfilamiento
-            if (notaSeleccionada) {
-              setContenidoNotaParaPerfilamiento(notaSeleccionada.contenido);
-              console.log('🔄 [CONVERSION] Contenido de nota guardado:', notaSeleccionada.contenido);
-            }
+            console.log('🔄 [CONVERSION] Nota seleccionada:', nota);
             
             setCategoriaSeleccionada(categoria);
+            setNotaPreSeleccionada(nota);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
           }}
@@ -2345,13 +2340,12 @@ export default function SesionActivaPage() {
           onClose={() => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
-            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+            setNotaPreSeleccionada(null);
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
           categoria={categoriaSeleccionada}
-          descripcionPrecargada={contenidoNotaParaPerfilamiento} // Pasar contenido de la nota
+          descripcionPrecargada={notaPreSeleccionada?.contenido || ''} // Pasar contenido de la nota
           onSuccess={(perfilamientoCreado) => {
             console.log('🔍 [DEBUG] onSuccess llamado con perfilamientoCreado:', perfilamientoCreado);
             console.log('🔍 [DEBUG] notaPreSeleccionada:', notaPreSeleccionada);
@@ -2374,8 +2368,7 @@ export default function SesionActivaPage() {
               });
             }
             
-            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-            setNotaPreSeleccionada(null); // Limpiar nota pre-seleccionada
+            setNotaPreSeleccionada(null);
             showSuccess('Perfilamiento creado exitosamente');
           }}
         />
