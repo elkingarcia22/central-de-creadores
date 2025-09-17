@@ -169,7 +169,7 @@ export default function VistaParticipacion() {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   
   // Estado para análisis de IA
-  const { analyzeSession, loadExistingAnalysis, isAnalyzing, isLoading: isLoadingAI, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
+  const { analyzeSession, loadExistingAnalysis, saveAnalysis, isAnalyzing, isLoading: isLoadingAI, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
@@ -2698,33 +2698,58 @@ export default function VistaParticipacion() {
                    </Typography>
                  </div>
                ) : aiResult && aiMeta ? (
-                 <AnalyzeResultPanelV2
-                   result={aiResult}
-                   meta={aiMeta}
-                   sessionId={reclutamiento_id}
-                   onClose={() => {
-                     // No cerrar el panel, solo mostrar mensaje
-                     console.log('Panel de análisis cerrado');
-                   }}
-                   onEditDolor={(dolor) => {
-                     console.log('Editar dolor:', dolor);
-                     // TODO: Implementar edición de dolor
-                   }}
-                   onEditPerfil={(perfil) => {
-                     console.log('Editar perfil:', perfil);
-                     // TODO: Implementar edición de perfil
-                   }}
-                   onReanalyze={async () => {
-                     if (!reclutamiento_id) return;
-                     try {
-                       await analyzeSession(reclutamiento_id);
-                     } catch (error) {
-                       console.error('Error en re-análisis:', error);
-                     }
-                   }}
-                   onCreateDolor={handleCreateDolorFromAI}
-                   onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
-                 />
+                 <div>
+                   <AnalyzeResultPanelV2
+                     result={aiResult}
+                     meta={aiMeta}
+                     sessionId={reclutamiento_id}
+                     onClose={() => {
+                       // No cerrar el panel, solo mostrar mensaje
+                       console.log('Panel de análisis cerrado');
+                     }}
+                     onEditDolor={(dolor) => {
+                       console.log('Editar dolor:', dolor);
+                       // TODO: Implementar edición de dolor
+                     }}
+                     onEditPerfil={(perfil) => {
+                       console.log('Editar perfil:', perfil);
+                       // TODO: Implementar edición de perfil
+                     }}
+                     onReanalyze={async () => {
+                       if (!reclutamiento_id) return;
+                       try {
+                         await analyzeSession(reclutamiento_id);
+                       } catch (error) {
+                         console.error('Error en re-análisis:', error);
+                       }
+                     }}
+                     onCreateDolor={handleCreateDolorFromAI}
+                     onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
+                   />
+                   <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <Typography variant="h6" weight="medium" className="mb-1">
+                           💾 Guardar Análisis
+                         </Typography>
+                         <Typography variant="body2" color="secondary">
+                           Guarda este análisis en la base de datos para acceder a él más tarde
+                         </Typography>
+                       </div>
+                       <Button
+                         variant="primary"
+                         size="sm"
+                         onClick={async () => {
+                           if (!reclutamiento_id || !participante?.id) return;
+                           await saveAnalysis(reclutamiento_id, participante.id);
+                         }}
+                         className="ml-4"
+                       >
+                         Guardar Análisis
+                       </Button>
+                     </div>
+                   </div>
+                 </div>
                ) : (
                  <div className="text-center py-8">
                    <Typography variant="h4" weight="semibold" className="mb-2">

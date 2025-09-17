@@ -160,6 +160,50 @@ export const useAIAnalysis = () => {
     }
   };
 
+  const saveAnalysis = async (sessionId: string, participanteId: string) => {
+    if (!result || !meta) {
+      showError('No hay análisis para guardar');
+      return false;
+    }
+
+    try {
+      console.log('💾 [AI Hook] Guardando análisis manualmente...');
+
+      const response = await fetch('/api/ai/insights/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sesion_id: sessionId,
+          participante_id: participanteId,
+          resumen: result.summary,
+          insights: result.insights,
+          dolores_identificados: result.dolores,
+          perfil_sugerido: result.perfil_sugerido,
+          confidence_score: meta.confidence_score,
+          modelo_usado: meta.model,
+          tiempo_analisis_ms: meta.latencyMs
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error guardando análisis');
+      }
+
+      const data = await response.json();
+      console.log('✅ [AI Hook] Análisis guardado exitosamente:', data);
+      showSuccess('Análisis guardado exitosamente');
+      return true;
+
+    } catch (error) {
+      console.error('❌ [AI Hook] Error guardando análisis:', error);
+      showError(error instanceof Error ? error.message : 'Error guardando análisis');
+      return false;
+    }
+  };
+
   const reset = () => {
     setResult(null);
     setMeta(null);
@@ -170,6 +214,7 @@ export const useAIAnalysis = () => {
   return {
     analyzeSession,
     loadExistingAnalysis,
+    saveAnalysis,
     isAnalyzing,
     isLoading,
     result,
