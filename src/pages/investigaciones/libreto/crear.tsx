@@ -273,14 +273,6 @@ const CrearLibretoPage: NextPage = () => {
             ]}
           />
         </div>
-        
-        {/* Debug info */}
-        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-          <Typography variant="caption" className="text-yellow-800">
-            🔍 Debug: Ancho ventana: {typeof window !== 'undefined' ? window.innerWidth : 'N/A'}px | 
-            Breakpoint md: {typeof window !== 'undefined' ? (window.innerWidth >= 768 ? 'SÍ' : 'NO') : 'N/A'}
-          </Typography>
-        </div>
 
         {/* Contenido */}
         <div className="space-y-8">
