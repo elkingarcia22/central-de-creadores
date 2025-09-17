@@ -134,11 +134,11 @@ async function handleAnalyzeSession(
     return res.status(400).json({ error: 'sessionId es requerido' });
   }
 
-  // 1. Cargar información de la sesión con investigación y libreto
-  console.log('📊 [AI] Cargando datos de la sesión...');
+  // 1. Cargar información del reclutamiento con investigación y libreto
+  console.log('📊 [AI] Cargando datos del reclutamiento...');
   
-  const { data: sesion, error: sesionError } = await supabaseServer
-    .from('sesiones')
+  const { data: reclutamiento, error: reclutamientoError } = await supabaseServer
+    .from('reclutamientos')
     .select(`
       *,
       investigaciones (
@@ -149,11 +149,19 @@ async function handleAnalyzeSession(
     .eq('id', sessionId)
     .single();
 
-  if (sesionError || !sesion) {
-    console.log('⚠️ [AI] Sesión no encontrada, usando datos de prueba:', sessionId);
+  if (reclutamientoError || !reclutamiento) {
+    console.log('⚠️ [AI] Reclutamiento no encontrado, usando datos de prueba:', sessionId);
+    console.log('🔍 [AI] Error:', reclutamientoError);
     // Usar datos de prueba para desarrollo
     return await handleAnalyzeSessionWithMockData(res, sessionId, language, policy, idempotency_key);
   }
+
+  console.log('✅ [AI] Reclutamiento encontrado:', {
+    id: reclutamiento.id,
+    investigacion_id: reclutamiento.investigacion_id,
+    participantes_id: reclutamiento.participantes_id,
+    investigacion: reclutamiento.investigaciones?.nombre
+  });
 
   // 2. Cargar transcripciones de la sesión
   const { data: transcripciones, error: transcripcionesError } = await supabaseServer
@@ -167,17 +175,36 @@ async function handleAnalyzeSession(
     return res.status(500).json({ error: 'Error cargando transcripciones' });
   }
 
-  // 3. Cargar notas manuales de la sesión
+  console.log('📝 [AI] Transcripciones cargadas:', {
+    cantidad: transcripciones?.length || 0,
+    transcripciones: transcripciones?.map(t => ({
+      id: t.id,
+      estado: t.estado,
+      tiene_transcripcion: !!t.transcripcion_completa,
+      longitud_transcripcion: t.transcripcion_completa?.length || 0
+    }))
+  });
+
+  // 3. Cargar notas manuales del reclutamiento
   const { data: notasManuales, error: notasError } = await supabaseServer
     .from('notas_manuales')
     .select('*')
-    .eq('sesion_id', sessionId)
+    .eq('sesion_id', sessionId) // Las notas manuales usan sesion_id que puede ser reclutamiento_id
     .order('fecha_creacion', { ascending: true });
 
   if (notasError) {
     console.error('❌ [AI] Error cargando notas manuales:', notasError);
     return res.status(500).json({ error: 'Error cargando notas manuales' });
   }
+
+  console.log('📋 [AI] Notas manuales cargadas:', {
+    cantidad: notasManuales?.length || 0,
+    notas: notasManuales?.map(n => ({
+      id: n.id,
+      contenido: n.contenido?.substring(0, 100) + '...',
+      fecha_creacion: n.fecha_creacion
+    }))
+  });
 
   // 4. Cargar categorías de dolores
   const { data: categoriasDolores, error: categoriasError } = await supabaseServer
@@ -221,7 +248,7 @@ async function handleAnalyzeSession(
   ).join('\n') || '';
 
   // 8. Procesar contexto del libreto
-  const libreto = sesion.investigaciones?.libretos_investigacion;
+  const libreto = reclutamiento.investigaciones?.libretos_investigacion;
   const contextoLibreto = libreto ? `
 CONTEXTO DE LA INVESTIGACIÓN:
 - Problema/Situación: ${libreto.problema_situacion || 'No especificado'}
