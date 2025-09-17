@@ -461,20 +461,22 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                         <Button
                           onClick={() => onConvertirADolor(nota.contenido)}
                           size="sm"
-                          variant="ghost"
-                          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-200 dark:hover:bg-gray-800"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
                         >
-                          <WarningIcon className="w-4 h-4" />
+                          <WarningIcon className="w-4 h-4 mr-1" />
+                          Dolor
                         </Button>
                       )}
                       {onConvertirAPerfilamiento && (
                         <Button
                           onClick={() => onConvertirAPerfilamiento(nota.contenido)}
                           size="sm"
-                          variant="ghost"
-                          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-gray-200 dark:hover:bg-gray-800"
+                          variant="outline"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800"
                         >
-                          <UserIcon className="w-4 h-4" />
+                          <UserIcon className="w-4 h-4 mr-1" />
+                          Perfil
                         </Button>
                       )}
                       <Button
