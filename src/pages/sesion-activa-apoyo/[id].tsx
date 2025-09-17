@@ -2239,11 +2239,11 @@ export default function SesionActivaApoyoPage() {
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
-          notasParaConvertir={notasManuales.map(nota => ({
-            id: nota.id,
-            contenido: nota.contenido,
-            fecha_creacion: nota.fecha_creacion
-          }))}
+          notasParaConvertir={notaPreSeleccionada ? [{
+            id: notaPreSeleccionada.id,
+            contenido: notaPreSeleccionada.contenido,
+            fecha_creacion: notaPreSeleccionada.fecha_creacion
+          }] : []}
           notaPreSeleccionada={notaPreSeleccionada ? {
             id: notaPreSeleccionada.id,
             contenido: notaPreSeleccionada.contenido,
@@ -2276,9 +2276,15 @@ export default function SesionActivaApoyoPage() {
             participanteNombre={participante.nombre}
             categoria={categoriaSeleccionada}
             descripcionPrecargada={contenidoFinalParaPerfilamiento} // Pasar contenido de la nota
-          onSuccess={() => {
+          onSuccess={(perfilamientoCreado) => {
             setShowCrearPerfilamientoModal(false);
             setCategoriaSeleccionada(null);
+            
+            // Marcar la nota como convertida a perfilamiento
+            if (notaPreSeleccionada && (window as any).marcarNotaConvertidaAPerfilamiento) {
+              (window as any).marcarNotaConvertidaAPerfilamiento(notaPreSeleccionada.id, perfilamientoCreado.id);
+            }
+            
             setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
             contenidoNotaRef.current = ''; // Limpiar ref también
             setContenidoNotaPersistente(''); // Limpiar variable persistente
