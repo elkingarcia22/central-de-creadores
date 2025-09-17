@@ -65,6 +65,7 @@ async function crearDolor(req: NextApiRequest, res: NextApiResponse, participant
     }
 
     console.log('🔍 Creando dolor para participante:', participanteId);
+    console.log('🔍 Datos recibidos:', { categoria_id, titulo, descripcion, severidad, investigacion_relacionada_id, sesion_relacionada_id });
 
     const { data: nuevoDolor, error } = await supabaseServer
       .from('dolores_participantes')
@@ -74,8 +75,8 @@ async function crearDolor(req: NextApiRequest, res: NextApiResponse, participant
         titulo,
         descripcion,
         severidad: severidad || 'media',
-        investigacion_relacionada_id,
-        sesion_relacionada_id,
+        investigacion_relacionada_id: investigacion_relacionada_id || null,
+        sesion_relacionada_id: sesion_relacionada_id || null,
         creado_por: req.headers['user-id'] as string // Asumiendo que se pasa en headers
       })
       .select()
