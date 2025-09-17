@@ -151,7 +151,18 @@ async function handleAnalyzeSession(
 
   if (reclutamientoError || !reclutamiento) {
     console.log('⚠️ [AI] Reclutamiento no encontrado, usando datos de prueba:', sessionId);
-    console.log('🔍 [AI] Error:', reclutamientoError);
+    console.log('🔍 [AI] Error completo:', JSON.stringify(reclutamientoError, null, 2));
+    console.log('🔍 [AI] Reclutamiento encontrado:', reclutamiento);
+    
+    // Verificar si existe en la tabla reclutamientos
+    const { data: allReclutamientos, error: allError } = await supabaseServer
+      .from('reclutamientos')
+      .select('id, investigacion_id, participantes_id')
+      .limit(5);
+    
+    console.log('🔍 [AI] Primeros 5 reclutamientos en BD:', allReclutamientos);
+    console.log('🔍 [AI] Error al listar reclutamientos:', allError);
+    
     // Usar datos de prueba para desarrollo
     return await handleAnalyzeSessionWithMockData(res, sessionId, language, policy, idempotency_key);
   }
