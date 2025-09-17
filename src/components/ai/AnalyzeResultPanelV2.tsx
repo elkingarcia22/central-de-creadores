@@ -219,16 +219,16 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
             {onReanalyze && (
               <button
                 onClick={onReanalyze}
-                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 bg-transparent text-blue-600 dark:text-blue-400 hover:text-white dark:hover:text-white border-2 border-transparent bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 bg-clip-border hover:from-blue-500 hover:via-cyan-400 hover:to-blue-500 dark:from-cyan-600 dark:via-blue-500 dark:to-cyan-600 dark:hover:from-cyan-500/90 dark:hover:via-blue-400/90 dark:hover:to-cyan-500/90"
+                className="group relative flex items-center font-medium transition-all duration-300 rounded-full shadow-sm hover:shadow-sm transform hover:scale-[1.02] active:scale-[0.98] overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 px-3 py-1.5 text-sm gap-1.5 bg-transparent text-blue-600 dark:text-blue-400 hover:bg-gradient-to-r hover:from-blue-600 hover:via-cyan-500 hover:to-blue-600 hover:text-white dark:hover:from-cyan-600 dark:hover:via-blue-500 dark:hover:to-cyan-600 dark:hover:text-white"
                 style={{
                   background: 'linear-gradient(white, white) padding-box, linear-gradient(to right, #2563eb, #06b6d4, #2563eb) border-box',
                   border: '2px solid transparent'
                 }}
               >
-                {/* Efecto de brillo animado */}
+                {/* Efecto de brillo animado - solo en hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out rounded-full"></div>
                 
-                {/* Efecto de partículas */}
+                {/* Efecto de partículas - solo en hover */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
                   <div className="absolute top-1 left-2 w-1 h-1 bg-white/50 rounded-full animate-pulse"></div>
                   <div className="absolute top-2 right-3 w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-100"></div>
@@ -244,7 +244,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
                 
                 <span className="relative z-10">Re-analizar</span>
                 
-                {/* Efecto de borde brillante */}
+                {/* Efecto de borde brillante - solo en hover */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-l from-cyan-300/30 via-blue-500/25 to-cyan-300/30 opacity-0 group-hover:opacity-60 transition-opacity duration-300 blur-sm"></div>
               </button>
             )}
