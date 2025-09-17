@@ -3,7 +3,8 @@ import { Input, Button, Card, EmptyState, ConfirmModal } from '../../components/
 import Typography from '../../components/ui/Typography';
 import { PlusIcon, MessageIcon, ClockIcon, TrashIcon, EditIcon, CheckIcon, XIcon, WarningIcon, UserIcon } from '../../components/icons';
 import { formatearFecha } from '../../utils/fechas';
-import { SemaforoRiesgoSelector, SemaforoRiesgoIndicator, SemaforoRiesgo } from './SemaforoRiesgoSelector';
+import { SemaforoRiesgoSelector, SemaforoRiesgoIndicator, SemaforoRiesgoQuickChange, SemaforoRiesgo } from './SemaforoRiesgoSelector';
+import { Chip } from '../ui';
 
 interface Nota {
   id: string;
@@ -243,6 +244,32 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     ? notas 
     : notas.filter(nota => nota.semaforo_riesgo === filtroSemaforo);
 
+  // Función para cambiar el color de una nota rápidamente
+  const cambiarColorNota = async (notaId: string, nuevoColor: SemaforoRiesgo) => {
+    try {
+      const response = await fetch(`/api/notas-manuales/${notaId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          semaforo_riesgo: nuevoColor
+        }),
+      });
+
+      if (response.ok) {
+        const notaActualizada = await response.json();
+        setNotas(prev => prev.map(nota => 
+          nota.id === notaId ? notaActualizada : nota
+        ));
+      } else {
+        console.error('Error cambiando color de nota:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error cambiando color de nota:', error);
+    }
+  };
+
 
 
   return (
@@ -269,46 +296,38 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
           Filtrar por riesgo:
         </span>
         <div className="flex items-center space-x-2">
-          <button
+          <Chip
+            variant={filtroSemaforo === 'todos' ? 'primary' : 'default'}
+            size="sm"
             onClick={() => setFiltroSemaforo('todos')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              filtroSemaforo === 'todos'
-                ? 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-            }`}
+            className="cursor-pointer"
           >
             Todas
-          </button>
-          <button
+          </Chip>
+          <Chip
+            variant={filtroSemaforo === 'verde' ? 'success' : 'default'}
+            size="sm"
             onClick={() => setFiltroSemaforo('verde')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              filtroSemaforo === 'verde'
-                ? 'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200'
-                : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
-            }`}
+            className="cursor-pointer"
           >
             Verde
-          </button>
-          <button
+          </Chip>
+          <Chip
+            variant={filtroSemaforo === 'amarillo' ? 'warning' : 'default'}
+            size="sm"
             onClick={() => setFiltroSemaforo('amarillo')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              filtroSemaforo === 'amarillo'
-                ? 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-400 dark:hover:bg-yellow-700'
-            }`}
+            className="cursor-pointer"
           >
             Amarillo
-          </button>
-          <button
+          </Chip>
+          <Chip
+            variant={filtroSemaforo === 'rojo' ? 'danger' : 'default'}
+            size="sm"
             onClick={() => setFiltroSemaforo('rojo')}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              filtroSemaforo === 'rojo'
-                ? 'bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200'
-                : 'bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-800 dark:text-red-400 dark:hover:bg-red-700'
-            }`}
+            className="cursor-pointer"
           >
             Rojo
-          </button>
+          </Chip>
         </div>
       </div>
 
@@ -423,9 +442,10 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       </Typography>
                     </div>
                     <div className="flex items-center space-x-2 ml-4">
-                      {/* Indicador de semáforo de riesgo */}
-                      <SemaforoRiesgoIndicator
+                      {/* Cambio rápido de semáforo de riesgo */}
+                      <SemaforoRiesgoQuickChange
                         valor={nota.semaforo_riesgo}
+                        onChange={(nuevoColor) => cambiarColorNota(nota.id, nuevoColor)}
                         size="sm"
                       />
                       {/* Botones de conversión */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../ui';
+import { Button, Chip } from '../ui';
 
 export type SemaforoRiesgo = 'verde' | 'amarillo' | 'rojo';
 
@@ -13,29 +13,20 @@ interface SemaforoRiesgoSelectorProps {
 
 const semaforoConfig = {
   verde: {
+    variant: 'success' as const,
     color: '#10B981',
-    bgColor: 'bg-green-100',
-    borderColor: 'border-green-300',
-    hoverColor: 'hover:bg-green-200',
-    textColor: 'text-green-800',
     label: 'Bajo Riesgo',
     description: 'Sin problemas identificados'
   },
   amarillo: {
+    variant: 'warning' as const,
     color: '#F59E0B',
-    bgColor: 'bg-yellow-100',
-    borderColor: 'border-yellow-300',
-    hoverColor: 'hover:bg-yellow-200',
-    textColor: 'text-yellow-800',
     label: 'Riesgo Medio',
     description: 'Requiere atención'
   },
   rojo: {
+    variant: 'danger' as const,
     color: '#EF4444',
-    bgColor: 'bg-red-100',
-    borderColor: 'border-red-300',
-    hoverColor: 'hover:bg-red-200',
-    textColor: 'text-red-800',
     label: 'Alto Riesgo',
     description: 'Acción inmediata requerida'
   }
@@ -48,70 +39,49 @@ export const SemaforoRiesgoSelector: React.FC<SemaforoRiesgoSelectorProps> = ({
   disabled = false,
   showLabels = false
 }) => {
-  const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10'
-  };
-
-  const textSizeClasses = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-base'
-  };
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-2">
         {Object.entries(semaforoConfig).map(([key, config]) => {
           const isSelected = valor === key;
-          const sizeClass = sizeClasses[size];
           
           return (
-            <button
+            <Chip
               key={key}
+              variant={config.variant}
+              size={size}
               onClick={() => !disabled && onChange(key as SemaforoRiesgo)}
               disabled={disabled}
               className={`
-                ${sizeClass}
-                rounded-full
-                border-2
-                transition-all
-                duration-200
-                flex
-                items-center
-                justify-center
-                relative
-                group
+                cursor-pointer transition-all duration-200
                 ${isSelected 
-                  ? `${config.borderColor} ${config.bgColor} shadow-md` 
-                  : 'border-gray-300 bg-white hover:border-gray-400'
+                  ? 'ring-2 ring-offset-1 ring-current shadow-md' 
+                  : 'hover:shadow-sm'
                 }
-                ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                ${!disabled && !isSelected ? 'hover:shadow-sm' : ''}
+                ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
               `}
               title={`${config.label}: ${config.description}`}
             >
-              {/* Círculo de color */}
-              <div 
-                className="w-3/4 h-3/4 rounded-full"
-                style={{ backgroundColor: config.color }}
-              />
-              
-              {/* Indicador de selección */}
-              {isSelected && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-white border border-gray-300 rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
-                </div>
-              )}
-            </button>
+              <div className="flex items-center gap-1.5">
+                {/* Círculo de color */}
+                <div 
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: config.color }}
+                />
+                {showLabels && (
+                  <span className="font-medium">
+                    {config.label}
+                  </span>
+                )}
+              </div>
+            </Chip>
           );
         })}
       </div>
       
       {showLabels && (
         <div className="text-center">
-          <span className={`${textSizeClasses[size]} font-medium ${semaforoConfig[valor].textColor}`}>
+          <span className="text-sm font-medium text-muted-foreground">
             {semaforoConfig[valor].label}
           </span>
         </div>
@@ -134,36 +104,123 @@ export const SemaforoRiesgoIndicator: React.FC<SemaforoRiesgoIndicatorProps> = (
   showLabel = false,
   className = ''
 }) => {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6'
-  };
-
-  const textSizeClasses = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-base'
-  };
-
   const config = semaforoConfig[valor];
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <div 
-        className={`${sizeClasses[size]} rounded-full border border-gray-200 flex items-center justify-center`}
+      <Chip
+        variant={config.variant}
+        size={size}
+        className="cursor-default"
         title={`${config.label}: ${config.description}`}
       >
+        <div className="flex items-center gap-1.5">
+          {/* Círculo de color */}
+          <div 
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{ backgroundColor: config.color }}
+          />
+          {showLabel && (
+            <span className="font-medium">
+              {config.label}
+            </span>
+          )}
+        </div>
+      </Chip>
+    </div>
+  );
+};
+
+// Componente para cambio rápido de color (clickeable)
+interface SemaforoRiesgoQuickChangeProps {
+  valor: SemaforoRiesgo;
+  onChange: (valor: SemaforoRiesgo) => void;
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  className?: string;
+}
+
+export const SemaforoRiesgoQuickChange: React.FC<SemaforoRiesgoQuickChangeProps> = ({
+  valor,
+  onChange,
+  size = 'sm',
+  disabled = false,
+  className = ''
+}) => {
+  const [showMenu, setShowMenu] = React.useState(false);
+  const config = semaforoConfig[valor];
+
+  const handleColorChange = (nuevoColor: SemaforoRiesgo) => {
+    onChange(nuevoColor);
+    setShowMenu(false);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      <Chip
+        variant={config.variant}
+        size={size}
+        onClick={() => !disabled && setShowMenu(!showMenu)}
+        disabled={disabled}
+        className={`
+          cursor-pointer transition-all duration-200 hover:shadow-sm
+          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          ${showMenu ? 'ring-2 ring-offset-1 ring-current' : ''}
+        `}
+        title={`${config.label}: ${config.description} - Click para cambiar`}
+      >
+        <div className="flex items-center gap-1.5">
+          {/* Círculo de color */}
+          <div 
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{ backgroundColor: config.color }}
+          />
+          <span className="font-medium text-xs">
+            {config.label}
+          </span>
+        </div>
+      </Chip>
+
+      {/* Menú desplegable */}
+      {showMenu && (
+        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 p-1">
+          {Object.entries(semaforoConfig).map(([key, config]) => {
+            const isSelected = valor === key;
+            
+            return (
+              <button
+                key={key}
+                onClick={() => handleColorChange(key as SemaforoRiesgo)}
+                className={`
+                  w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors
+                  ${isSelected 
+                    ? 'bg-gray-100 dark:bg-gray-700' 
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }
+                `}
+              >
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: config.color }}
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  {config.label}
+                </span>
+                {isSelected && (
+                  <div className="ml-auto w-2 h-2 bg-current rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Overlay para cerrar el menú */}
+      {showMenu && (
         <div 
-          className="w-3/4 h-3/4 rounded-full"
-          style={{ backgroundColor: config.color }}
+          className="fixed inset-0 z-0" 
+          onClick={() => setShowMenu(false)}
         />
-      </div>
-      
-      {showLabel && (
-        <span className={`${textSizeClasses[size]} ${config.textColor} font-medium`}>
-          {config.label}
-        </span>
       )}
     </div>
   );
