@@ -334,6 +334,13 @@ CONTEXTO DE LA INVESTIGACIÓN:
 
     if (!aiResult.ok) {
       console.error('❌ [AI] Error en ejecución de IA:', aiResult.error);
+      
+      // Si es error de conexión a Ollama, usar datos mock
+      if (aiResult.error.includes('fetch failed') || aiResult.error.includes('ECONNREFUSED')) {
+        console.log('🔄 [AI] Ollama no disponible, usando datos mock...');
+        return await handleAnalyzeSessionWithMockData(res, sessionId, language, policy, idempotency_key);
+      }
+      
       return res.status(500).json({ 
         error: 'Error en análisis de IA',
         details: aiResult.error
