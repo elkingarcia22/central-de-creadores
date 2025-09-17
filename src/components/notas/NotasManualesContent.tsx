@@ -247,12 +247,20 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   // Función para cambiar el color de una nota rápidamente
   const cambiarColorNota = async (notaId: string, nuevoColor: SemaforoRiesgo) => {
     try {
+      // Encontrar la nota actual para obtener su contenido
+      const notaActual = notas.find(nota => nota.id === notaId);
+      if (!notaActual) {
+        console.error('No se encontró la nota para actualizar');
+        return;
+      }
+
       const response = await fetch(`/api/notas-manuales/${notaId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          contenido: notaActual.contenido,
           semaforo_riesgo: nuevoColor
         }),
       });
@@ -297,7 +305,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         </span>
         <div className="flex items-center space-x-2">
           <Chip
-            variant={filtroSemaforo === 'todos' ? 'secondary' : 'default'}
+            variant="default"
             size="sm"
             onClick={() => setFiltroSemaforo('todos')}
             className="cursor-pointer"
@@ -310,7 +318,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             onClick={() => setFiltroSemaforo('verde')}
             className="cursor-pointer"
           >
-            Verde
+            Bueno
           </Chip>
           <Chip
             variant={filtroSemaforo === 'amarillo' ? 'warning' : 'default'}
@@ -318,7 +326,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             onClick={() => setFiltroSemaforo('amarillo')}
             className="cursor-pointer"
           >
-            Amarillo
+            Alerta
           </Chip>
           <Chip
             variant={filtroSemaforo === 'rojo' ? 'danger' : 'default'}
@@ -326,7 +334,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
             onClick={() => setFiltroSemaforo('rojo')}
             className="cursor-pointer"
           >
-            Rojo
+            Crítico
           </Chip>
         </div>
       </div>

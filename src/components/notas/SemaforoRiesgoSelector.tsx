@@ -15,19 +15,19 @@ const semaforoConfig = {
   verde: {
     variant: 'success' as const,
     color: '#10B981',
-    label: 'Bajo Riesgo',
+    label: 'Bueno',
     description: 'Sin problemas identificados'
   },
   amarillo: {
     variant: 'warning' as const,
     color: '#F59E0B',
-    label: 'Riesgo Medio',
+    label: 'Alerta',
     description: 'Requiere atención'
   },
   rojo: {
     variant: 'danger' as const,
     color: '#EF4444',
-    label: 'Alto Riesgo',
+    label: 'Crítico',
     description: 'Acción inmediata requerida'
   }
 };
