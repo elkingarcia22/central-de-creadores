@@ -6,7 +6,7 @@ import { CheckCircleIcon, ClockIcon, UserIcon, VideoIcon, HelpIcon, ArrowLeftIco
 import { getTipoParticipanteVariant } from '../../utils/tipoParticipanteUtils';
 import { getEstadoParticipanteVariant, getEstadoEmpresaVariant } from '../../utils/estadoUtils';
 import { getChipText, getChipVariant, getEstadoDolorVariant, getSeveridadVariant, getEstadoDolorText } from '../../utils/chipUtils';
-import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
+import { useWebSpeechTranscription } from '../../hooks/useWebSpeechTranscription';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { PerfilamientosTab } from '../../components/participantes/PerfilamientosTab';
@@ -212,7 +212,7 @@ export default function SesionActivaApoyoPage() {
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
   
   // Hook para transcripción de audio
-  const audioTranscription = useWebSpeechTranscriptionSimple();
+  const audioTranscription = useWebSpeechTranscription();
 
   useEffect(() => {
     if (id) {

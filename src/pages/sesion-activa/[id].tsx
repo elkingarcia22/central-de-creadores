@@ -27,7 +27,7 @@ import { PerfilamientosTab } from '../../components/participantes/Perfilamientos
 import FilterDrawer from '../../components/ui/FilterDrawer';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
-import { useWebSpeechTranscriptionSimple } from '../../hooks/useWebSpeechTranscriptionSimple';
+import { useWebSpeechTranscription } from '../../hooks/useWebSpeechTranscription';
 import type { FilterValuesDolores } from '../../components/ui/FilterDrawer';
 
 interface Participante {
@@ -178,7 +178,7 @@ export default function SesionActivaPage() {
   const [investigacionActual, setInvestigacionActual] = useState<any>(null);
   
   // Hook para transcripción de audio con Web Speech API
-  const audioTranscription = useWebSpeechTranscriptionSimple();
+  const audioTranscription = useWebSpeechTranscription();
   
 
   // Cargar datos del participante y reclutamiento
