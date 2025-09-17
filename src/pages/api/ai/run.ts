@@ -127,22 +127,37 @@ async function handleAnalyzeSession(
   idempotency_key?: string
 ) {
   console.log('🔍 [AI] Procesando analyze_session');
+  console.log('🔍 [AI] Input recibido:', input);
+  console.log('🔍 [AI] Context recibido:', context);
   
   const { sessionId, language = 'es' } = input;
   
   if (!sessionId) {
     return res.status(400).json({ error: 'sessionId es requerido' });
   }
+  
+  console.log('🔍 [AI] SessionId a procesar:', sessionId);
 
   // 1. Cargar información del reclutamiento con investigación y libreto
   console.log('📊 [AI] Cargando datos del reclutamiento...');
   
   // Primero verificar si existe el reclutamiento sin JOIN
+  console.log('🔍 [AI] Buscando reclutamiento con ID:', sessionId);
   const { data: reclutamiento, error: reclutamientoError } = await supabaseServer
     .from('reclutamientos')
     .select('*')
     .eq('id', sessionId)
     .single();
+    
+  console.log('🔍 [AI] Resultado de búsqueda de reclutamiento:', {
+    encontrado: !!reclutamiento,
+    error: reclutamientoError,
+    reclutamiento: reclutamiento ? {
+      id: reclutamiento.id,
+      investigacion_id: reclutamiento.investigacion_id,
+      participantes_id: reclutamiento.participantes_id
+    } : null
+  });
 
   // Si existe el reclutamiento, cargar la investigación por separado
   let investigacion = null;
