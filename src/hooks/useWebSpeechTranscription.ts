@@ -35,6 +35,11 @@ export function useWebSpeechTranscription() {
 
   // Verificar si el navegador soporta Web Speech API
   const isSupported = useCallback(() => {
+    // Verificar que estamos en el cliente (no en SSR)
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     return !!SpeechRecognition;
   }, []);
@@ -42,6 +47,12 @@ export function useWebSpeechTranscription() {
   const startRecording = useCallback(() => {
     if (!isSupported()) {
       setState(prev => ({ ...prev, error: 'Web Speech API no soportada en este navegador' }));
+      return;
+    }
+
+    // Verificar que estamos en el cliente
+    if (typeof window === 'undefined') {
+      setState(prev => ({ ...prev, error: 'Web Speech API no disponible en el servidor' }));
       return;
     }
 
@@ -234,6 +245,10 @@ export function useWebSpeechTranscription() {
   }, [isSupported, state.transcription, state.segments]);
 
   const stopRecording = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     if (recognitionRef.current) {
       console.log('🛑 [Web Speech] Deteniendo reconocimiento manualmente...');
       stoppedManuallyRef.current = true;
@@ -243,6 +258,10 @@ export function useWebSpeechTranscription() {
   }, []);
 
   const clearRecording = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    
     if (recognitionRef.current) {
       stoppedManuallyRef.current = true;
       recognitionRef.current.stop();
@@ -262,7 +281,7 @@ export function useWebSpeechTranscription() {
   // Limpiar al desmontar
   useEffect(() => {
     return () => {
-      if (recognitionRef.current) {
+      if (typeof window !== 'undefined' && recognitionRef.current) {
         recognitionRef.current.stop();
       }
     };

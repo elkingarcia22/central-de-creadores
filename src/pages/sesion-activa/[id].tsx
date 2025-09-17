@@ -155,6 +155,7 @@ export default function SesionActivaPage() {
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
   const [segmentosTranscripcion, setSegmentosTranscripcion] = useState<any[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   // Estados para modales de seguimiento y perfilamiento
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
@@ -251,6 +252,9 @@ export default function SesionActivaPage() {
         
         console.log('✅ Transcripción guardada en BD, recargando lista...');
         await loadTranscripciones();
+        
+        // Incrementar refreshTrigger para forzar recarga en NotasAutomaticasContent
+        setRefreshTrigger(prev => prev + 1);
       }
     };
 
@@ -2100,6 +2104,7 @@ export default function SesionActivaPage() {
           segmentosTranscripcion={audioTranscription.state.segments}
           isProcessing={audioTranscription.state.isProcessing}
           error={audioTranscription.state.error}
+          refreshTrigger={refreshTrigger}
         />
       )
     }

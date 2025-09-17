@@ -14,6 +14,7 @@ interface NotasAutomaticasContentProps {
   segmentosTranscripcion: any[];
   isProcessing?: boolean;
   error?: string | null;
+  refreshTrigger?: number; // Para forzar recarga cuando cambie
 }
 
 interface TranscripcionSesion {
@@ -40,7 +41,8 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   transcripcionCompleta,
   segmentosTranscripcion,
   isProcessing = false,
-  error = null
+  error = null,
+  refreshTrigger
 }) => {
   console.log('🔍 NotasAutomaticasContent - Props recibidos:', {
     transcripcionCompleta: transcripcionCompleta ? transcripcionCompleta.substring(0, 50) + '...' : 'VACÍO',
@@ -65,6 +67,14 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
       loadTranscripciones();
     }
   }, [reclutamientoId, sesionApoyoId]);
+
+  // Recargar transcripciones cuando cambie el refreshTrigger
+  useEffect(() => {
+    if (refreshTrigger && (reclutamientoId || sesionApoyoId)) {
+      console.log('🔄 [NotasAutomaticasContent] RefreshTrigger cambió, recargando transcripciones...');
+      loadTranscripciones();
+    }
+  }, [refreshTrigger]);
 
   const loadTranscripciones = async () => {
     try {

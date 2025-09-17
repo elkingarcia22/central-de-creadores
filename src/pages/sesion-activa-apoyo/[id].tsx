@@ -210,6 +210,7 @@ export default function SesionActivaApoyoPage() {
   const [transcripcionId, setTranscripcionId] = useState<string | null>(null);
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
   const [transcripcionCompleta, setTranscripcionCompleta] = useState<string>('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
   // Hook para transcripción de audio
   const audioTranscription = useWebSpeechTranscription();
@@ -291,6 +292,9 @@ export default function SesionActivaApoyoPage() {
         fecha_fin: new Date().toISOString(),
         duracion_total: Math.floor(audioTranscription.state.duration / 1000) // convertir de ms a segundos
       });
+      
+      // Incrementar refreshTrigger para forzar recarga en NotasAutomaticasContent
+      setRefreshTrigger(prev => prev + 1);
     }
   }, [audioTranscription.state.transcription, audioTranscription.state.isProcessing, audioTranscription.state.isRecording, transcripcionId]);
 
@@ -1992,6 +1996,7 @@ export default function SesionActivaApoyoPage() {
           segmentosTranscripcion={audioTranscription.state.segments}
           isProcessing={audioTranscription.state.isProcessing}
           error={audioTranscription.state.error}
+          refreshTrigger={refreshTrigger}
         />
       )
     }
