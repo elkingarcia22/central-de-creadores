@@ -135,6 +135,7 @@ export default function VistaParticipacion() {
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('informacion');
+  const [showAITab, setShowAITab] = useState(false);
 
   // Estados para datos
   const [investigaciones, setInvestigaciones] = useState<InvestigacionParticipante[]>([]);
@@ -2086,11 +2087,30 @@ export default function VistaParticipacion() {
     }
   }, [id]);
 
+  // Función para manejar el análisis de IA con UX mejorada
+  const handleAnalyzeSession = async (sessionId: string) => {
+    try {
+      // Mostrar el tab de IA y activarlo
+      setShowAITab(true);
+      setActiveTab('ai-analysis');
+      
+      // Iniciar el análisis
+      await analyzeSession(sessionId);
+    } catch (error) {
+      console.error('Error en análisis de IA:', error);
+    }
+  };
+
   // useEffect para cargar análisis de IA existente
   useEffect(() => {
     if (reclutamiento_id && typeof reclutamiento_id === 'string') {
       console.log('🔍 Cargando análisis de IA existente para sesión:', reclutamiento_id);
-      loadExistingAnalysis(reclutamiento_id);
+      loadExistingAnalysis(reclutamiento_id).then((result) => {
+        // Si hay análisis existente, mostrar el tab
+        if (result && result.found) {
+          setShowAITab(true);
+        }
+      });
     }
   }, [reclutamiento_id]); // Removemos loadExistingAnalysis de las dependencias
 
@@ -2182,13 +2202,7 @@ export default function VistaParticipacion() {
             <AIButton 
               onClick={async () => {
                 if (!reclutamientoActual?.id) return;
-                
-                try {
-                  await analyzeSession(reclutamientoActual.id);
-                  setShowAIPanel(true);
-                } catch (error) {
-                  console.error('Error en análisis de IA:', error);
-                }
+                await handleAnalyzeSession(reclutamientoActual.id);
               }}
               loading={isAnalyzing}
               disabled={isAnalyzing}
@@ -2269,7 +2283,8 @@ export default function VistaParticipacion() {
 
         {/* Tabs */}
         <Tabs
-          tabs={[
+          tabs={(() => {
+            const baseTabs = [
 
             {
               id: 'informacion',
@@ -2686,99 +2701,107 @@ export default function VistaParticipacion() {
                    error={null}
                  />
                )
-             },
-             {
-               id: 'ai-analysis',
-               label: 'Análisis IA',
-               content: isLoadingAI ? (
-                 <div className="text-center py-8">
-                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                   <Typography variant="body1" color="secondary">
-                     Cargando análisis de IA...
-                   </Typography>
-                 </div>
-               ) : aiResult && aiMeta ? (
-                 <div>
-                   <AnalyzeResultPanelV2
-                     result={aiResult}
-                     meta={aiMeta}
-                     sessionId={reclutamiento_id}
-                     onClose={() => {
-                       // No cerrar el panel, solo mostrar mensaje
-                       console.log('Panel de análisis cerrado');
-                     }}
-                     onEditDolor={(dolor) => {
-                       console.log('Editar dolor:', dolor);
-                       // TODO: Implementar edición de dolor
-                     }}
-                     onEditPerfil={(perfil) => {
-                       console.log('Editar perfil:', perfil);
-                       // TODO: Implementar edición de perfil
-                     }}
-                     onReanalyze={async () => {
-                       if (!reclutamiento_id) return;
-                       try {
-                         await analyzeSession(reclutamiento_id);
-                       } catch (error) {
-                         console.error('Error en re-análisis:', error);
-                       }
-                     }}
-                     onCreateDolor={handleCreateDolorFromAI}
-                     onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
-                   />
-                   <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
-                     <div className="flex items-center justify-between">
-                       <div>
-                         <Typography variant="h6" weight="medium" className="mb-1">
-                           💾 Guardar Análisis
-                         </Typography>
-                         <Typography variant="body2" color="secondary">
-                           Guarda este análisis en la base de datos para acceder a él más tarde
-                         </Typography>
-                       </div>
-                       <Button
-                         variant="primary"
-                         size="sm"
-                         onClick={async () => {
-                           if (!reclutamiento_id || !participante?.id) return;
-                           await saveAnalysis(reclutamiento_id, participante.id);
-                         }}
-                         className="ml-4"
-                       >
-                         Guardar Análisis
-                       </Button>
-                     </div>
-                   </div>
-                 </div>
-               ) : (
-                 <div className="text-center py-8">
-                   <Typography variant="h4" weight="semibold" className="mb-2">
-                     Análisis de IA
-                   </Typography>
-                   <Typography variant="body1" color="secondary" className="mb-4">
-                     Haz clic en "Analizar con IA" para obtener insights automáticos de esta sesión.
-                   </Typography>
-                   <Button
-                     variant="outline"
-                     onClick={async () => {
-                       if (!reclutamiento_id) return;
-                       try {
-                         await analyzeSession(reclutamiento_id as string);
-                         setShowAIPanel(true);
-                       } catch (error) {
-                         console.error('Error en análisis de IA:', error);
-                       }
-                     }}
-                     loading={isAnalyzing}
-                     disabled={isAnalyzing}
-                   >
-                     {isAnalyzing ? 'Analizando...' : 'Iniciar Análisis'}
-                   </Button>
-                 </div>
-               )
              }
 
-          ]}
+            ];
+
+            // Agregar tab de IA solo si debe mostrarse
+            if (showAITab) {
+              baseTabs.push({
+                id: 'ai-analysis',
+                label: 'Análisis IA',
+                content: isLoadingAI ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <Typography variant="body1" color="secondary">
+                      Cargando análisis de IA...
+                    </Typography>
+                  </div>
+                ) : aiResult && aiMeta ? (
+                  <div>
+                    <AnalyzeResultPanelV2
+                      result={aiResult}
+                      meta={aiMeta}
+                      sessionId={reclutamiento_id}
+                      onClose={() => {
+                        // No cerrar el panel, solo mostrar mensaje
+                        console.log('Panel de análisis cerrado');
+                      }}
+                      onEditDolor={(dolor) => {
+                        console.log('Editar dolor:', dolor);
+                        // TODO: Implementar edición de dolor
+                      }}
+                      onEditPerfil={(perfil) => {
+                        console.log('Editar perfil:', perfil);
+                        // TODO: Implementar edición de perfil
+                      }}
+                      onReanalyze={async () => {
+                        if (!reclutamiento_id) return;
+                        await handleAnalyzeSession(reclutamiento_id);
+                      }}
+                      onCreateDolor={handleCreateDolorFromAI}
+                      onCreatePerfilamiento={handleCreatePerfilamientoFromAI}
+                    />
+                    <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Typography variant="h6" weight="medium" className="mb-1">
+                            💾 Guardar Análisis
+                          </Typography>
+                          <Typography variant="body2" color="secondary">
+                            Guarda este análisis en la base de datos para acceder a él más tarde
+                          </Typography>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={async () => {
+                            if (!reclutamiento_id || !participante?.id) return;
+                            await saveAnalysis(reclutamiento_id, participante.id);
+                          }}
+                          className="ml-4"
+                        >
+                          Guardar Análisis
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : isAnalyzing ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <Typography variant="h6" weight="medium" className="mb-2">
+                      🤖 Analizando sesión con IA...
+                    </Typography>
+                    <Typography variant="body1" color="secondary">
+                      Esto puede tomar unos momentos. Por favor espera.
+                    </Typography>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Typography variant="h6" weight="medium" className="mb-2">
+                      🤖 Análisis de IA
+                    </Typography>
+                    <Typography variant="body1" color="secondary" className="mb-4">
+                      Haz clic en "Analizar con IA" para obtener insights automáticos de esta sesión.
+                    </Typography>
+                    <Button
+                      variant="outline"
+                      onClick={async () => {
+                        if (!reclutamiento_id) return;
+                        await handleAnalyzeSession(reclutamiento_id as string);
+                      }}
+                      loading={isAnalyzing}
+                      disabled={isAnalyzing}
+                    >
+                      {isAnalyzing ? 'Analizando...' : 'Iniciar Análisis'}
+                    </Button>
+                  </div>
+                )
+              });
+            }
+
+            return baseTabs;
+          })()}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           variant="default"
