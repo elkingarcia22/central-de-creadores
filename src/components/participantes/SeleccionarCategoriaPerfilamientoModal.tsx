@@ -92,18 +92,31 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
 }) => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = React.useState<CategoriaPerfilamiento | null>(null);
   const [notaSeleccionada, setNotaSeleccionada] = React.useState<NotaParaConvertir | null>(null);
+
+  // Debug logs
+  React.useEffect(() => {
+    console.log('🔄 [MODAL CATEGORIA] Modal abierto con notas:', notasParaConvertir);
+    console.log('🔄 [MODAL CATEGORIA] Cantidad de notas:', notasParaConvertir.length);
+  }, [isOpen, notasParaConvertir]);
   const handleCategoriaSeleccionada = (categoria: CategoriaPerfilamiento) => {
     setCategoriaSeleccionada(categoria);
   };
 
   const handleNotaSeleccionada = (nota: NotaParaConvertir) => {
+    console.log('🔄 [MODAL CATEGORIA] Nota seleccionada:', nota);
     setNotaSeleccionada(nota);
   };
 
   const handleContinuar = () => {
-    if (categoriaSeleccionada) {
-      onCategoriaSeleccionada(categoriaSeleccionada, notaSeleccionada || undefined);
+    console.log('🔄 [MODAL CATEGORIA] Continuar - Categoría:', categoriaSeleccionada);
+    console.log('🔄 [MODAL CATEGORIA] Continuar - Nota:', notaSeleccionada);
+    
+    if (categoriaSeleccionada && notaSeleccionada) {
+      console.log('🔄 [MODAL CATEGORIA] Llamando onCategoriaSeleccionada con:', categoriaSeleccionada, notaSeleccionada);
+      onCategoriaSeleccionada(categoriaSeleccionada, notaSeleccionada);
       onClose();
+    } else {
+      console.log('🔄 [MODAL CATEGORIA] No se puede continuar - faltan datos');
     }
   };
 
@@ -145,6 +158,13 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
             <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
               Elige la nota que quieres usar como base para el perfilamiento
             </Typography>
+            {notaSeleccionada && (
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                <Typography variant="body2" className="text-green-800 dark:text-green-200 font-medium">
+                  ✓ Nota seleccionada: {notaSeleccionada.contenido.substring(0, 50)}...
+                </Typography>
+              </div>
+            )}
             <div className="space-y-2">
               {notasParaConvertir.map((nota) => (
                 <div
@@ -229,7 +249,7 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
           </Button>
           <Button
             onClick={handleContinuar}
-            disabled={!categoriaSeleccionada}
+            disabled={!categoriaSeleccionada || !notaSeleccionada}
             className="flex-1"
           >
             Continuar
