@@ -200,7 +200,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
           <div className="flex items-center gap-3">
             <CheckCircleIcon className="w-5 h-5 text-green-500" />
             <div>
-              <Typography variant="h3" weight="semibold" className="text-gray-700 dark:text-gray-200">
+              <Typography variant="h3" weight="semibold" color="title">
                 Análisis Completado
               </Typography>
               <Typography variant="body2" color="muted-foreground">
@@ -260,7 +260,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
       <Card className="p-4">
         <div className="flex items-center gap-2 mb-3">
           <CheckCircleIcon className="w-4 h-4 text-green-500" />
-          <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
+          <Typography variant="h4" weight="semibold" color="title">
             Resumen Ejecutivo
           </Typography>
         </div>
@@ -274,7 +274,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircleIcon className="w-4 h-4 text-green-500" />
-            <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
+            <Typography variant="h4" weight="semibold" color="title">
               Insights Identificados
             </Typography>
             <Badge variant="secondary">
@@ -301,7 +301,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircleIcon className="w-4 h-4 text-red-500" />
-            <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
+            <Typography variant="h4" weight="semibold" color="title">
               Dolores Identificados
             </Typography>
             <Badge variant="secondary">
@@ -411,7 +411,7 @@ export const AnalyzeResultPanelV2: React.FC<AnalyzeResultPanelV2Props> = ({
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <UserIcon className="w-4 h-4 text-blue-500" />
-            <Typography variant="h4" weight="semibold" className="text-gray-700 dark:text-gray-200">
+            <Typography variant="h4" weight="semibold" color="title">
               Perfilamiento Sugerido
             </Typography>
             <Badge variant={getConfidenceColor(result.perfil_sugerido.confidence)}>
