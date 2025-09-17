@@ -161,6 +161,9 @@ export default function SesionActivaApoyoPage() {
   // Variable para almacenar el contenido de manera más persistente
   const [contenidoNotaPersistente, setContenidoNotaPersistente] = useState<string>('');
   
+  // Estado para las notas manuales
+  const [notasManuales, setNotasManuales] = useState<any[]>([]);
+  
   // Memoizar el contenido final para evitar pérdidas
   const contenidoFinalParaPerfilamiento = useMemo(() => {
     const final = contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente;
@@ -1517,14 +1520,13 @@ export default function SesionActivaApoyoPage() {
           setContenidoNotaParaDolor(contenido);
         }}
         onConvertirAPerfilamiento={(contenido) => {
-          // Pre-llenar el modal de perfilamiento con el contenido de la nota
+          // Abrir modal de selección de categoría con todas las notas disponibles
           console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
           setShowPerfilamientoModal(true);
-          // Guardar el contenido para pre-llenar el modal
-          setContenidoNotaParaPerfilamiento(contenido);
-          contenidoNotaRef.current = contenido; // También guardar en ref
-          setContenidoNotaPersistente(contenido); // Y en la variable persistente
-          console.log('🔄 [CONVERSION] Contenido guardado para perfilamiento:', contenido);
+          console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
+        }}
+        onNotasChange={(notas) => {
+          setNotasManuales(notas);
         }}
       />
     },
@@ -2146,33 +2148,30 @@ export default function SesionActivaApoyoPage() {
           isOpen={showPerfilamientoModal}
           onClose={() => {
             setShowPerfilamientoModal(false);
-            setContenidoNotaParaPerfilamiento(''); // Limpiar contenido al cerrar
-            contenidoNotaRef.current = ''; // Limpiar ref también
-            setContenidoNotaPersistente(''); // Limpiar variable persistente
           }}
-          onCategoriaSeleccionada={(categoria) => {
+          onCategoriaSeleccionada={(categoria, notaSeleccionada) => {
             console.log('🔄 [CONVERSION] Categoría seleccionada:', categoria);
-            console.log('🔄 [CONVERSION] Contenido actual para perfilamiento:', contenidoNotaParaPerfilamiento);
-            console.log('🔄 [CONVERSION] Contenido del ref:', contenidoNotaRef.current);
-            console.log('🔄 [CONVERSION] Contenido persistente:', contenidoNotaPersistente);
+            console.log('🔄 [CONVERSION] Nota seleccionada:', notaSeleccionada);
             
-            // Asegurar que el contenido se mantenga al cambiar de modal
-            const contenidoActual = contenidoNotaParaPerfilamiento || contenidoNotaRef.current || contenidoNotaPersistente;
-            console.log('🔄 [CONVERSION] Contenido que se mantendrá:', contenidoActual);
+            // Guardar la nota seleccionada para el modal de crear perfilamiento
+            if (notaSeleccionada) {
+              setContenidoNotaParaPerfilamiento(notaSeleccionada.contenido);
+              contenidoNotaRef.current = notaSeleccionada.contenido;
+              setContenidoNotaPersistente(notaSeleccionada.contenido);
+              console.log('🔄 [CONVERSION] Contenido de nota guardado:', notaSeleccionada.contenido);
+            }
             
             setCategoriaSeleccionada(categoria);
             setShowPerfilamientoModal(false);
             setShowCrearPerfilamientoModal(true);
-            
-            // Forzar que el contenido se mantenga en todas las variables
-            if (contenidoActual) {
-              setContenidoNotaParaPerfilamiento(contenidoActual);
-              contenidoNotaRef.current = contenidoActual;
-              setContenidoNotaPersistente(contenidoActual);
-            }
           }}
           participanteId={participante.id}
           participanteNombre={participante.nombre}
+          notasParaConvertir={notasManuales.map(nota => ({
+            id: nota.id,
+            contenido: nota.contenido,
+            fecha_creacion: nota.fecha_creacion
+          }))}
         />
       )}
 

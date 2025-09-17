@@ -16,13 +16,15 @@ interface NotasManualesContentProps {
   sesionId: string;
   onConvertirADolor?: (contenido: string) => void;
   onConvertirAPerfilamiento?: (contenido: string) => void;
+  onNotasChange?: (notas: Nota[]) => void;
 }
 
 export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   participanteId,
   sesionId,
   onConvertirADolor,
-  onConvertirAPerfilamiento
+  onConvertirAPerfilamiento,
+  onNotasChange
 }) => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [nuevaNota, setNuevaNota] = useState('');
@@ -34,6 +36,13 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
   const [notaAEliminar, setNotaAEliminar] = useState<Nota | null>(null);
   const [eliminando, setEliminando] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Notificar al componente padre cuando las notas cambien
+  useEffect(() => {
+    if (onNotasChange) {
+      onNotasChange(notas);
+    }
+  }, [notas, onNotasChange]);
 
   // Cargar notas al montar el componente
   useEffect(() => {

@@ -23,12 +23,19 @@ import {
   obtenerIconoCategoria
 } from '../../types/perfilamientos';
 
+interface NotaParaConvertir {
+  id: string;
+  contenido: string;
+  fecha_creacion: string;
+}
+
 interface SeleccionarCategoriaPerfilamientoModalProps {
   isOpen: boolean;
   onClose: () => void;
   participanteId: string;
   participanteNombre: string;
-  onCategoriaSeleccionada: (categoria: CategoriaPerfilamiento) => void;
+  notasParaConvertir?: NotaParaConvertir[];
+  onCategoriaSeleccionada: (categoria: CategoriaPerfilamiento, notaSeleccionada?: NotaParaConvertir) => void;
 }
 
 const CATEGORIAS: Array<{
@@ -80,10 +87,29 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
   onClose,
   participanteId,
   participanteNombre,
+  notasParaConvertir = [],
   onCategoriaSeleccionada
 }) => {
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = React.useState<CategoriaPerfilamiento | null>(null);
+  const [notaSeleccionada, setNotaSeleccionada] = React.useState<NotaParaConvertir | null>(null);
   const handleCategoriaSeleccionada = (categoria: CategoriaPerfilamiento) => {
-    onCategoriaSeleccionada(categoria);
+    setCategoriaSeleccionada(categoria);
+  };
+
+  const handleNotaSeleccionada = (nota: NotaParaConvertir) => {
+    setNotaSeleccionada(nota);
+  };
+
+  const handleContinuar = () => {
+    if (categoriaSeleccionada) {
+      onCategoriaSeleccionada(categoriaSeleccionada, notaSeleccionada || undefined);
+      onClose();
+    }
+  };
+
+  const handleCancelar = () => {
+    setCategoriaSeleccionada(null);
+    setNotaSeleccionada(null);
     onClose();
   };
 
@@ -111,6 +137,36 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
             {participanteNombre}
           </Typography>
         </div>
+
+        {/* Notas para convertir */}
+        {notasParaConvertir.length > 0 && (
+          <div className="space-y-3">
+            <ContainerTitle title="Selecciona una nota para convertir" />
+            <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
+              Elige la nota que quieres usar como base para el perfilamiento
+            </Typography>
+            <div className="space-y-2">
+              {notasParaConvertir.map((nota) => (
+                <div
+                  key={nota.id}
+                  className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                    notaSeleccionada?.id === nota.id
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                  }`}
+                  onClick={() => handleNotaSeleccionada(nota)}
+                >
+                  <Typography variant="body2" className="text-gray-700 dark:text-gray-200">
+                    {nota.contenido}
+                  </Typography>
+                  <Typography variant="caption" className="text-gray-500 dark:text-gray-400 mt-1">
+                    {new Date(nota.fecha_creacion).toLocaleString()}
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Descripción */}
         <div className="text-center space-y-3">
@@ -160,6 +216,24 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
             💡 <strong>Tip:</strong> Cada perfilamiento se enfoca en un aspecto específico del participante. 
             Esto nos permite construir un perfil completo y detallado a lo largo del tiempo.
           </Typography>
+        </div>
+
+        {/* Botones de acción */}
+        <div className="flex gap-3 pt-4 border-t border-border">
+          <Button
+            variant="outline"
+            onClick={handleCancelar}
+            className="flex-1"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleContinuar}
+            disabled={!categoriaSeleccionada}
+            className="flex-1"
+          >
+            Continuar
+          </Button>
         </div>
       </div>
     </SideModal>
