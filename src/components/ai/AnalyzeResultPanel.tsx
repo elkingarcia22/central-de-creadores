@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Typography, Chip, Badge, Button } from '../ui';
-import { CheckCircleIcon, AlertCircleIcon, ClockIcon, UserIcon, LightBulbIcon } from '../icons';
+import { CheckCircleIcon, AlertCircleIcon, ClockIcon, UserIcon } from '../icons';
 
 interface AnalyzeResultPanelProps {
   result: {
@@ -112,7 +112,7 @@ export const AnalyzeResultPanel: React.FC<AnalyzeResultPanelProps> = ({
       {result.insights && result.insights.length > 0 && (
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <LightBulbIcon className="w-5 h-5 text-yellow-500" />
+            <CheckCircleIcon className="w-5 h-5 text-yellow-500" />
             <Typography variant="h4" weight="semibold">
               Insights Identificados
             </Typography>
