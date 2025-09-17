@@ -162,7 +162,7 @@ export const useAIAnalysis = () => {
 
   const saveAnalysis = async (sessionId: string, participanteId: string) => {
     if (!result || !meta) {
-      showError('No hay análisis para guardar');
+      showError('Sin análisis', 'No hay análisis de IA generado para guardar');
       return false;
     }
 
@@ -194,12 +194,12 @@ export const useAIAnalysis = () => {
 
       const data = await response.json();
       console.log('✅ [AI Hook] Análisis guardado exitosamente:', data);
-      showSuccess('Análisis guardado exitosamente');
+      showSuccess('Análisis guardado', 'El análisis de IA se ha guardado correctamente en la base de datos');
       return true;
 
     } catch (error) {
       console.error('❌ [AI Hook] Error guardando análisis:', error);
-      showError(error instanceof Error ? error.message : 'Error guardando análisis');
+      showError('Error al guardar', error instanceof Error ? error.message : 'No se pudo guardar el análisis de IA');
       return false;
     }
   };
