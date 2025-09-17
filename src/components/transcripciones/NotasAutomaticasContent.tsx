@@ -3,6 +3,7 @@ import { Card, Typography, Button, EmptyState, Badge, ConfirmModal, Chip, Input 
 import { MicIcon, PlayIcon, PauseIcon, StopIcon, FileTextIcon, ClockIcon, UserIcon, TrashIcon, EditIcon, CheckIcon, XIcon } from '../icons';
 import { formatearFecha } from '../../utils/fechas';
 import { SemaforoRiesgoSelector, SemaforoRiesgoQuickChange, SemaforoRiesgo } from '../notas/SemaforoRiesgoSelector';
+import { safeFetch } from '../../utils/safeFetch';
 
 interface NotasAutomaticasContentProps {
   reclutamientoId?: string;
@@ -67,6 +68,17 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
 
   const loadTranscripciones = async () => {
     try {
+      console.log('🔍 [NotasAutomaticasContent] loadTranscripciones iniciado:', {
+        reclutamientoId,
+        sesionApoyoId
+      });
+      
+      // Verificar que tenemos al menos un ID
+      if (!reclutamientoId && !sesionApoyoId) {
+        console.log('⚠️ [NotasAutomaticasContent] No hay IDs para cargar transcripciones');
+        return;
+      }
+      
       setLoading(true);
       let url = '/api/transcripciones?';
       if (reclutamientoId) {
@@ -75,19 +87,18 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
         url += `sesion_apoyo_id=${sesionApoyoId}`;
       }
       
-      const response = await fetch(url);
+      console.log('📡 [NotasAutomaticasContent] Haciendo fetch a:', url);
       
-      if (response.ok) {
-        const data = await response.json();
-        setTranscripciones(data);
-        
-        // Si hay transcripciones, seleccionar la más reciente
-        if (data.length > 0) {
-          setSelectedTranscripcion(data[0]);
-        }
+      const data = await safeFetch(url);
+      console.log('📊 [NotasAutomaticasContent] Datos recibidos:', data);
+      setTranscripciones(data);
+      
+      // Si hay transcripciones, seleccionar la más reciente
+      if (data.length > 0) {
+        setSelectedTranscripcion(data[0]);
       }
     } catch (error) {
-      console.error('Error cargando transcripciones:', error);
+      console.error('❌ [NotasAutomaticasContent] Error cargando transcripciones:', error);
     } finally {
       setLoading(false);
     }
