@@ -6,14 +6,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   if (req.method === 'POST') {
     try {
-      const { reclutamiento_id, meet_link, estado, fecha_inicio, semaforo_riesgo = 'verde' } = req.body;
+      const { reclutamiento_id, sesion_apoyo_id, meet_link, estado, fecha_inicio, semaforo_riesgo = 'verde' } = req.body;
       
-      console.log('📝 Datos recibidos:', { reclutamiento_id, meet_link, estado, fecha_inicio, semaforo_riesgo });
+      console.log('📝 Datos recibidos:', { reclutamiento_id, sesion_apoyo_id, meet_link, estado, fecha_inicio, semaforo_riesgo });
 
-      // Validar datos requeridos
-      if (!reclutamiento_id) {
-        console.log('❌ Error: reclutamiento_id es requerido');
-        return res.status(400).json({ error: 'reclutamiento_id es requerido' });
+      // Validar datos requeridos - debe tener al menos uno de los dos IDs
+      if (!reclutamiento_id && !sesion_apoyo_id) {
+        console.log('❌ Error: reclutamiento_id o sesion_apoyo_id es requerido');
+        return res.status(400).json({ error: 'reclutamiento_id o sesion_apoyo_id es requerido' });
       }
 
       // Validar semaforo_riesgo
@@ -22,19 +22,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Crear nueva transcripción
+      const insertData: any = {
+        meet_link: meet_link || '',
+        estado: estado || 'procesando',
+        fecha_inicio: fecha_inicio || new Date().toISOString(),
+        idioma_detectado: 'es',
+        transcripcion_por_segmentos: [],
+        semaforo_riesgo
+      };
+
+      // Agregar el ID correspondiente según el tipo de sesión
+      if (reclutamiento_id) {
+        insertData.reclutamiento_id = reclutamiento_id;
+      } else if (sesion_apoyo_id) {
+        // Para sesiones de apoyo, usamos un ID temporal como en las notas manuales
+        insertData.reclutamiento_id = '00000000-0000-0000-0000-000000000001';
+        insertData.sesion_apoyo_id = sesion_apoyo_id;
+      }
+
       const { data, error } = await supabase
         .from('transcripciones_sesiones')
-        .insert([
-          {
-            reclutamiento_id,
-            meet_link: meet_link || '',
-            estado: estado || 'procesando',
-            fecha_inicio: fecha_inicio || new Date().toISOString(),
-            idioma_detectado: 'es',
-            transcripcion_por_segmentos: [],
-            semaforo_riesgo
-          }
-        ])
+        .insert([insertData])
         .select()
         .single();
 
@@ -54,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const { reclutamiento_id } = req.query;
+      const { reclutamiento_id, sesion_apoyo_id } = req.query;
 
       let query = supabase
         .from('transcripciones_sesiones')
@@ -63,6 +71,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (reclutamiento_id) {
         query = query.eq('reclutamiento_id', reclutamiento_id);
+      } else if (sesion_apoyo_id) {
+        // Para sesiones de apoyo, buscar por el ID temporal
+        query = query.eq('reclutamiento_id', '00000000-0000-0000-0000-000000000001');
       }
 
       const { data, error } = await query;

@@ -6,6 +6,7 @@ import { SemaforoRiesgoSelector, SemaforoRiesgoQuickChange, SemaforoRiesgo } fro
 
 interface NotasAutomaticasContentProps {
   reclutamientoId?: string;
+  sesionApoyoId?: string;
   isRecording: boolean;
   duracionGrabacion: number;
   transcripcionCompleta: string;
@@ -27,11 +28,12 @@ interface TranscripcionSesion {
   fecha_fin?: string;
   created_at?: string;
   updated_at?: string;
-  semaforo_riesgo: 'verde' | 'amarillo' | 'rojo';
+  semaforo_riesgo?: 'verde' | 'amarillo' | 'rojo';
 }
 
 export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = ({
   reclutamientoId,
+  sesionApoyoId,
   isRecording,
   duracionGrabacion,
   transcripcionCompleta,
@@ -58,15 +60,22 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
 
   // Cargar transcripciones existentes
   useEffect(() => {
-    if (reclutamientoId) {
+    if (reclutamientoId || sesionApoyoId) {
       loadTranscripciones();
     }
-  }, [reclutamientoId]);
+  }, [reclutamientoId, sesionApoyoId]);
 
   const loadTranscripciones = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/transcripciones?reclutamiento_id=${reclutamientoId}`);
+      let url = '/api/transcripciones?';
+      if (reclutamientoId) {
+        url += `reclutamiento_id=${reclutamientoId}`;
+      } else if (sesionApoyoId) {
+        url += `sesion_apoyo_id=${sesionApoyoId}`;
+      }
+      
+      const response = await fetch(url);
       
       if (response.ok) {
         const data = await response.json();
@@ -154,7 +163,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   const iniciarEdicion = (transcripcion: TranscripcionSesion) => {
     setEditandoTranscripcion(transcripcion.id);
     setTranscripcionEditando(transcripcion.transcripcion_completa || '');
-    setSemaforoEditando(transcripcion.semaforo_riesgo);
+    setSemaforoEditando(transcripcion.semaforo_riesgo || 'verde');
   };
 
   // Función para cancelar edición
@@ -199,7 +208,7 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
   // Filtrar transcripciones por semáforo de riesgo
   const transcripcionesFiltradas = filtroSemaforo === 'todos' 
     ? transcripciones 
-    : transcripciones.filter(transcripcion => transcripcion.semaforo_riesgo === filtroSemaforo);
+    : transcripciones.filter(transcripcion => (transcripcion.semaforo_riesgo || 'verde') === filtroSemaforo);
 
   const formatDuracion = (segundos: number) => {
     const horas = Math.floor(segundos / 3600);
@@ -518,12 +527,12 @@ export const NotasAutomaticasContent: React.FC<NotasAutomaticasContentProps> = (
                       <Badge variant={getEstadoVariant(transcripcion.estado)} size="sm">
                         {getEstadoText(transcripcion.estado)}
                       </Badge>
-                      {/* Cambio rápido de semáforo de riesgo */}
-                      <SemaforoRiesgoQuickChange
-                        valor={transcripcion.semaforo_riesgo}
-                        onChange={(nuevoColor) => cambiarColorTranscripcion(transcripcion.id, nuevoColor)}
-                        size="sm"
-                      />
+                    {/* Cambio rápido de semáforo de riesgo */}
+                    <SemaforoRiesgoQuickChange
+                      valor={transcripcion.semaforo_riesgo || 'verde'}
+                      onChange={(nuevoColor) => cambiarColorTranscripcion(transcripcion.id, nuevoColor)}
+                      size="sm"
+                    />
                       <Button
                         onClick={(e) => {
                           e.stopPropagation();

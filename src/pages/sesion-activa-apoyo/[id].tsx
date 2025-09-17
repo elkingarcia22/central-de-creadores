@@ -1925,7 +1925,7 @@ export default function SesionActivaApoyoPage() {
       label: 'Notas Automáticas',
       content: (
         <NotasAutomaticasContent
-          reclutamientoId={sesionApoyo?.id}
+          sesionApoyoId={sesionApoyo?.id}
           isRecording={audioTranscription.state.isRecording}
           duracionGrabacion={audioTranscription.state.duration}
           transcripcionCompleta={audioTranscription.state.transcription}
