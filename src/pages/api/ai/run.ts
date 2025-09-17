@@ -599,46 +599,139 @@ async function handleAnalyzeSessionWithMockData(
 ) {
   console.log('🧪 [AI] Usando datos de prueba para análisis');
   
-  // Crear resultado de prueba
-  const mockResult = {
-    summary: "Esta sesión de usabilidad reveló problemas significativos de discoverabilidad en el producto objetivo, pero también mostró que una vez encontrado, la funcionalidad es bien recibida por los usuarios. El participante experimentó frustración inicial al no poder localizar fácilmente la funcionalidad, sugiriendo mejoras en la navegación principal.",
-    insights: [
-      {
-        text: "Problema de discoverabilidad: el producto objetivo no es fácilmente encontrable desde la página principal",
-        evidence: { seg_id: "4" }
-      },
-      {
-        text: "Frustración del usuario al no encontrar la funcionalidad esperada",
-        evidence: { seg_id: "10" }
-      },
-      {
-        text: "Valoración positiva de la guía paso a paso una vez encontrada la funcionalidad",
-        evidence: { seg_id: "14" }
-      }
-    ],
-    dolores: [
-      {
-        categoria_id: "NAVIGATION_ISSUES",
-        ejemplo: "No encuentra el producto objetivo en la navegación principal",
-        evidence: { seg_id: "4" }
-      },
-      {
-        categoria_id: "USER_EXPERIENCE",
-        ejemplo: "Frustración al no poder localizar funcionalidad esperada",
-        evidence: { seg_id: "10" }
-      }
-    ],
-    perfil_sugerido: {
-      categoria_perfilamiento: "TECH_SAVVY",
-      valor_principal: "Eficiencia",
-      razones: [
-        "Busca funcionalidades específicas de manera directa",
-        "Valora la claridad en la navegación",
-        "Tiene experiencia previa con plataformas similares"
+  // Cargar datos reales de la sesión para generar análisis mock basado en datos reales
+  console.log('🔍 [AI] Cargando datos reales para análisis mock...');
+  
+  // 1. Cargar transcripciones reales
+  const { data: transcripciones, error: transcripcionesError } = await supabaseServer
+    .from('transcripciones_sesiones')
+    .select('*')
+    .eq('reclutamiento_id', sessionId)
+    .or(`sesion_apoyo_id.eq.${sessionId}`);
+
+  // 2. Cargar notas manuales reales
+  const { data: notasManuales, error: notasError } = await supabaseServer
+    .from('notas_manuales')
+    .select('*')
+    .eq('sesion_id', sessionId)
+    .order('fecha_creacion', { ascending: true });
+
+  console.log('📊 [AI] Datos reales cargados para mock:', {
+    transcripciones: transcripciones?.length || 0,
+    notas: notasManuales?.length || 0,
+    transcripcionesError: !!transcripcionesError,
+    notasError: !!notasError
+  });
+
+  // Generar análisis mock basado en datos reales
+  const hasTranscripciones = transcripciones && transcripciones.length > 0;
+  const hasNotas = notasManuales && notasManuales.length > 0;
+  
+  let mockResult;
+  
+  if (hasNotas) {
+    // Si hay notas manuales, generar análisis basado en ellas
+    const notasText = notasManuales.map(n => n.contenido).join(' ');
+    console.log('📝 [AI] Generando análisis mock basado en notas reales:', notasText.substring(0, 200) + '...');
+    
+    mockResult = {
+      summary: `Análisis basado en ${notasManuales.length} notas manuales de la sesión. Las notas revelan insights importantes sobre la experiencia del participante: ${notasText.substring(0, 150)}...`,
+      insights: notasManuales.slice(0, 3).map((nota, index) => ({
+        text: `Insight ${index + 1}: ${nota.contenido.substring(0, 100)}...`,
+        evidence: { seg_id: `nota_${nota.id}` }
+      })),
+      dolores: [
+        {
+          categoria_id: "USER_FEEDBACK",
+          ejemplo: `Dolor identificado en nota: ${notasManuales[0]?.contenido.substring(0, 80)}...`,
+          evidence: { seg_id: `nota_${notasManuales[0]?.id}` }
+        }
       ],
-      confidence: 0.8
-    }
-  };
+      perfil_sugerido: {
+        categoria_perfilamiento: "ACTIVE_USER",
+        valor_principal: "Participación",
+        razones: [
+          "Proporciona feedback detallado en las notas",
+          "Participa activamente en la sesión",
+          "Expresa sus experiencias de manera clara"
+        ],
+        confidence: 0.7
+      }
+    };
+  } else if (hasTranscripciones) {
+    // Si hay transcripciones, generar análisis basado en ellas
+    const transcripcionText = transcripciones[0]?.transcripcion_completa || '';
+    console.log('📝 [AI] Generando análisis mock basado en transcripción real:', transcripcionText.substring(0, 200) + '...');
+    
+    mockResult = {
+      summary: `Análisis basado en transcripción de ${transcripciones.length} sesión(es). La transcripción revela patrones importantes en la comunicación del participante: ${transcripcionText.substring(0, 150)}...`,
+      insights: [
+        {
+          text: `Patrón de comunicación identificado: ${transcripcionText.substring(0, 100)}...`,
+          evidence: { seg_id: `trans_${transcripciones[0]?.id}` }
+        }
+      ],
+      dolores: [
+        {
+          categoria_id: "COMMUNICATION",
+          ejemplo: `Aspecto de comunicación identificado: ${transcripcionText.substring(0, 80)}...`,
+          evidence: { seg_id: `trans_${transcripciones[0]?.id}` }
+        }
+      ],
+      perfil_sugerido: {
+        categoria_perfilamiento: "COMMUNICATIVE",
+        valor_principal: "Expresión",
+        razones: [
+          "Participa activamente en la conversación",
+          "Expresa sus ideas de manera clara",
+          "Mantiene un diálogo fluido durante la sesión"
+        ],
+        confidence: 0.6
+      }
+    };
+  } else {
+    // Si no hay datos reales, usar análisis genérico
+    console.log('📝 [AI] No hay datos reales, usando análisis genérico');
+    mockResult = {
+      summary: "Esta sesión de usabilidad reveló problemas significativos de discoverabilidad en el producto objetivo, pero también mostró que una vez encontrado, la funcionalidad es bien recibida por los usuarios. El participante experimentó frustración inicial al no poder localizar fácilmente la funcionalidad, sugiriendo mejoras en la navegación principal.",
+      insights: [
+        {
+          text: "Problema de discoverabilidad: el producto objetivo no es fácilmente encontrable desde la página principal",
+          evidence: { seg_id: "4" }
+        },
+        {
+          text: "Frustración del usuario al no encontrar la funcionalidad esperada",
+          evidence: { seg_id: "10" }
+        },
+        {
+          text: "Valoración positiva de la guía paso a paso una vez encontrada la funcionalidad",
+          evidence: { seg_id: "14" }
+        }
+      ],
+      dolores: [
+        {
+          categoria_id: "NAVIGATION_ISSUES",
+          ejemplo: "No encuentra el producto objetivo en la navegación principal",
+          evidence: { seg_id: "4" }
+        },
+        {
+          categoria_id: "USER_EXPERIENCE",
+          ejemplo: "Frustración al no poder localizar funcionalidad esperada",
+          evidence: { seg_id: "10" }
+        }
+      ],
+      perfil_sugerido: {
+        categoria_perfilamiento: "TECH_SAVVY",
+        valor_principal: "Eficiencia",
+        razones: [
+          "Busca funcionalidades específicas de manera directa",
+          "Valora la claridad en la navegación",
+          "Tiene experiencia previa con plataformas similares"
+        ],
+        confidence: 0.8
+      }
+    };
+  }
 
   const mockMeta = {
     provider: "ollama",
