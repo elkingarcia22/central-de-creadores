@@ -5,6 +5,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useToast } from '../../contexts/ToastContext';
 import { supabase } from '../../api/supabase';
 import { Layout, PageHeader, InfoContainer, InfoItem, AIButton } from '../../components/ui';
+import { useAIAnalysis } from '../../hooks/useAIAnalysis';
+import { AnalyzeResultPanel } from '../../components/ai/AnalyzeResultPanel';
 import Typography from '../../components/ui/Typography';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -165,6 +167,10 @@ export default function VistaParticipacion() {
   
   // Estados para menú de acciones (igual que sesión activa)
   const [showActionsMenu, setShowActionsMenu] = useState(false);
+  
+  // Estado para análisis de IA
+  const { analyzeSession, isAnalyzing, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
+  const [showAIPanel, setShowAIPanel] = useState(false);
   const [showSeguimientoModal, setShowSeguimientoModal] = useState(false);
   const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
   
@@ -2085,13 +2091,21 @@ export default function VistaParticipacion() {
           {/* Acciones principales */}
           <div className="flex flex-wrap gap-3">
             <AIButton 
-              onClick={() => {
-                // Aquí puedes agregar la lógica para analizar con IA
-                console.log('Analizar sesión con IA:', reclutamientoActual?.id);
+              onClick={async () => {
+                if (!reclutamientoActual?.id) return;
+                
+                try {
+                  await analyzeSession(reclutamientoActual.id);
+                  setShowAIPanel(true);
+                } catch (error) {
+                  console.error('Error en análisis de IA:', error);
+                }
               }}
+              loading={isAnalyzing}
+              disabled={isAnalyzing}
               size="md"
             >
-              Analizar con IA
+              {isAnalyzing ? 'Analizando...' : 'Analizar con IA'}
             </AIButton>
             {/* Menú de acciones con 3 puntos (igual que sesión activa) */}
             <div className="relative">
@@ -2582,6 +2596,50 @@ export default function VistaParticipacion() {
                    isProcessing={false}
                    error={null}
                  />
+               )
+             },
+             {
+               id: 'ai-analysis',
+               label: 'Análisis IA',
+               content: showAIPanel && aiResult && aiMeta ? (
+                 <AnalyzeResultPanel
+                   result={aiResult}
+                   meta={aiMeta}
+                   onClose={() => setShowAIPanel(false)}
+                   onEditDolor={(dolor) => {
+                     console.log('Editar dolor:', dolor);
+                     // TODO: Implementar edición de dolor
+                   }}
+                   onEditPerfil={(perfil) => {
+                     console.log('Editar perfil:', perfil);
+                     // TODO: Implementar edición de perfil
+                   }}
+                 />
+               ) : (
+                 <div className="text-center py-8">
+                   <Typography variant="h4" weight="semibold" className="mb-2">
+                     Análisis de IA
+                   </Typography>
+                   <Typography variant="body1" color="secondary" className="mb-4">
+                     Haz clic en "Analizar con IA" para obtener insights automáticos de esta sesión.
+                   </Typography>
+                   <Button
+                     variant="outline"
+                     onClick={async () => {
+                       if (!reclutamiento_id) return;
+                       try {
+                         await analyzeSession(reclutamiento_id as string);
+                         setShowAIPanel(true);
+                       } catch (error) {
+                         console.error('Error en análisis de IA:', error);
+                       }
+                     }}
+                     loading={isAnalyzing}
+                     disabled={isAnalyzing}
+                   >
+                     {isAnalyzing ? 'Analizando...' : 'Iniciar Análisis'}
+                   </Button>
+                 </div>
                )
              }
 

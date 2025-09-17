@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { Layout, PageHeader, Tabs, Subtitle, Typography, Badge, Card, Chip, Button, ActionsMenu, ConfirmModal, EditarReclutamientoModal, EditarSesionApoyoModal, AgregarParticipanteModal, FilterDrawer, AIButton } from '../../components/ui';
+import { useAIAnalysis } from '../../hooks/useAIAnalysis';
+import { AnalyzeResultPanel } from '../../components/ai/AnalyzeResultPanel';
 import { FilterValuesSesiones } from '../../components/ui/FilterDrawer';
 import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
@@ -36,6 +38,10 @@ const SesionesPageContent: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSesion, setSelectedSesion] = useState<Sesion | null>(null);
   const [modalActiveTab, setModalActiveTab] = useState('detalles');
+  
+  // Estado para análisis de IA
+  const { analyzeSession, isAnalyzing, result: aiResult, meta: aiMeta, reset: resetAI } = useAIAnalysis();
+  const [showAIPanel, setShowAIPanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [sesionToDelete, setSesionToDelete] = useState<Sesion | null>(null);
   const [deletingSesion, setDeletingSesion] = useState(false);
@@ -1537,6 +1543,50 @@ const SesionesPageContent: React.FC = () => {
                 error={null}
               />
             )
+          },
+          {
+            id: 'ai-analysis',
+            label: 'Análisis IA',
+            content: showAIPanel && aiResult && aiMeta ? (
+              <AnalyzeResultPanel
+                result={aiResult}
+                meta={aiMeta}
+                onClose={() => setShowAIPanel(false)}
+                onEditDolor={(dolor) => {
+                  console.log('Editar dolor:', dolor);
+                  // TODO: Implementar edición de dolor
+                }}
+                onEditPerfil={(perfil) => {
+                  console.log('Editar perfil:', perfil);
+                  // TODO: Implementar edición de perfil
+                }}
+              />
+            ) : (
+              <div className="text-center py-8">
+                <Typography variant="h4" weight="semibold" className="mb-2">
+                  Análisis de IA
+                </Typography>
+                <Typography variant="body1" color="secondary" className="mb-4">
+                  Haz clic en "Analizar con IA" para obtener insights automáticos de esta sesión.
+                </Typography>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    if (!selectedSesion) return;
+                    try {
+                      await analyzeSession(selectedSesion.id);
+                      setShowAIPanel(true);
+                    } catch (error) {
+                      console.error('Error en análisis de IA:', error);
+                    }
+                  }}
+                  loading={isAnalyzing}
+                  disabled={isAnalyzing}
+                >
+                  {isAnalyzing ? 'Analizando...' : 'Iniciar Análisis'}
+                </Button>
+              </div>
+            )
           }
         ];
 
@@ -1550,13 +1600,21 @@ const SesionesPageContent: React.FC = () => {
                 </h2>
                 <div className="flex items-center gap-3">
                   <AIButton 
-                    onClick={() => {
-                      // Aquí puedes agregar la lógica para analizar con IA
-                      console.log('Analizar sesión con IA:', selectedSesion.id);
+                    onClick={async () => {
+                      if (!selectedSesion) return;
+                      
+                      try {
+                        await analyzeSession(selectedSesion.id);
+                        setShowAIPanel(true);
+                      } catch (error) {
+                        console.error('Error en análisis de IA:', error);
+                      }
                     }}
+                    loading={isAnalyzing}
+                    disabled={isAnalyzing}
                     size="sm"
                   >
-                    Analizar con IA
+                    {isAnalyzing ? 'Analizando...' : 'Analizar con IA'}
                   </AIButton>
                   <button
                     onClick={() => {
