@@ -32,6 +32,7 @@ export function useWebSpeechTranscription() {
   const segmentsRef = useRef<Array<any>>([]);
   const currentSegmentRef = useRef<any>(null);
   const stoppedManuallyRef = useRef<boolean>(false);
+  const transcriptionRef = useRef<string>(''); // Para mantener la transcripción más reciente
 
   // Verificar si el navegador soporta Web Speech API
   const isSupported = useCallback(() => {
@@ -70,6 +71,7 @@ export function useWebSpeechTranscription() {
     segmentsRef.current = [];
     currentSegmentRef.current = null;
     stoppedManuallyRef.current = false;
+    transcriptionRef.current = ''; // Reset transcription ref
 
     // Eventos del reconocimiento
     recognition.onstart = () => {
@@ -136,10 +138,15 @@ export function useWebSpeechTranscription() {
       setState(prev => {
         const updatedSegments = [...prev.segments, ...newSegments];
         const fullTranscript = updatedSegments.map(s => s.texto).join(' ');
+        const finalTranscription = fullTranscript + (interimTranscript ? ` ${interimTranscript}` : '');
+        
+        // Actualizar los refs con los valores más recientes
+        transcriptionRef.current = finalTranscription;
+        segmentsRef.current = updatedSegments;
         
         return {
           ...prev,
-          transcription: fullTranscript + (interimTranscript ? ` ${interimTranscript}` : ''),
+          transcription: finalTranscription,
           segments: updatedSegments
         };
       });
@@ -176,11 +183,21 @@ export function useWebSpeechTranscription() {
 
       // Solo disparar evento de transcripción completada si se detuvo manualmente
       if (stoppedManuallyRef.current) {
-        const finalTranscription = state.transcription;
-        const finalSegments = state.segments;
+        const finalTranscription = transcriptionRef.current;
+        const finalSegments = segmentsRef.current;
         
-        if (finalTranscription) {
+        console.log('🔍 [Web Speech] Verificando transcripción para evento:', {
+          hasTranscription: !!finalTranscription,
+          transcriptionLength: finalTranscription?.length || 0,
+          segmentsCount: finalSegments.length,
+          stoppedManually: stoppedManuallyRef.current
+        });
+        
+        if (finalTranscription && finalTranscription.trim()) {
           console.log('📡 [Web Speech] Disparando evento transcriptionCompleted (detenido manualmente)');
+          console.log('📡 [Web Speech] Transcripción final:', finalTranscription);
+          console.log('📡 [Web Speech] Segmentos finales:', finalSegments);
+          
           window.dispatchEvent(new CustomEvent('transcriptionCompleted', {
             detail: {
               transcription: finalTranscription,
@@ -192,6 +209,8 @@ export function useWebSpeechTranscription() {
               speakerCount: 1
             }
           }));
+        } else {
+          console.log('⚠️ [Web Speech] No se dispara evento - transcripción vacía o sin contenido');
         }
       } else {
         console.log('🔄 [Web Speech] Reconocimiento terminado automáticamente, reiniciando...');
@@ -267,6 +286,12 @@ export function useWebSpeechTranscription() {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
+    
+    // Resetear todos los refs
+    transcriptionRef.current = '';
+    segmentsRef.current = [];
+    currentSegmentRef.current = null;
+    stoppedManuallyRef.current = false;
     
     setState({
       isRecording: false,
