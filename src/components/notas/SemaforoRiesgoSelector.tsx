@@ -157,6 +157,11 @@ export const SemaforoRiesgoQuickChange: React.FC<SemaforoRiesgoQuickChangeProps>
   const config = semaforoConfig[valor];
 
   const handleColorChange = (nuevoColor: SemaforoRiesgo) => {
+    console.log('🎨 [DEBUG] SemaforoRiesgoQuickChange - Cambiando color:', { 
+      colorActual: valor, 
+      nuevoColor,
+      config: semaforoConfig[nuevoColor]
+    });
     onChange(nuevoColor);
     setShowMenu(false);
   };
@@ -166,7 +171,16 @@ export const SemaforoRiesgoQuickChange: React.FC<SemaforoRiesgoQuickChangeProps>
       <Chip
         variant={config.variant}
         size={size}
-        onClick={() => !disabled && setShowMenu(!showMenu)}
+        onClick={() => {
+          if (!disabled) {
+            console.log('🖱️ [DEBUG] SemaforoRiesgoQuickChange - Click en chip:', { 
+              valor, 
+              showMenu, 
+              nuevoEstado: !showMenu 
+            });
+            setShowMenu(!showMenu);
+          }
+        }}
         disabled={disabled}
         className={`
           cursor-pointer transition-all duration-200 hover:shadow-sm

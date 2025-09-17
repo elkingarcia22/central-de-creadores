@@ -264,13 +264,16 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
 
   // Función para cambiar el color de una nota rápidamente
   const cambiarColorNota = async (notaId: string, nuevoColor: SemaforoRiesgo) => {
+    console.log('🔄 [DEBUG] Cambiando color de nota:', { notaId, nuevoColor });
     try {
       // Encontrar la nota actual para obtener su contenido
       const notaActual = notas.find(nota => nota.id === notaId);
       if (!notaActual) {
-        console.error('No se encontró la nota para actualizar');
+        console.error('❌ No se encontró la nota para actualizar');
         return;
       }
+
+      console.log('📝 [DEBUG] Nota actual encontrada:', notaActual);
 
       const response = await fetch(`/api/notas-manuales/${notaId}`, {
         method: 'PUT',
@@ -283,16 +286,20 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         }),
       });
 
+      console.log('🌐 [DEBUG] Respuesta del servidor:', response.status, response.statusText);
+
       if (response.ok) {
         const notaActualizada = await response.json();
+        console.log('✅ [DEBUG] Nota actualizada exitosamente:', notaActualizada);
         setNotas(prev => prev.map(nota => 
           nota.id === notaId ? notaActualizada : nota
         ));
       } else {
-        console.error('Error cambiando color de nota:', response.statusText);
+        const errorText = await response.text();
+        console.error('❌ Error cambiando color de nota:', response.status, errorText);
       }
     } catch (error) {
-      console.error('Error cambiando color de nota:', error);
+      console.error('❌ Error cambiando color de nota:', error);
     }
   };
 
