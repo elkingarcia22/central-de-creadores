@@ -261,7 +261,7 @@ export const CrearPerfilamientoModal: React.FC<CrearPerfilamientoModalProps> = (
       footer={footer}
       showCloseButton={false}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         {/* Header */}
         <PageHeader
           title={`${perfilamientoExistente ? 'Editar' : 'Crear'} Perfilamiento - ${nombreCategoria}`}
