@@ -570,7 +570,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                         <div className="flex items-center space-x-2 mt-2">
                           {nota.convertida_a_dolor && (
                             <Chip
-                              variant="danger"
+                              variant="primary"
                               size="sm"
                               className="text-xs"
                             >
