@@ -551,9 +551,6 @@ export default function ReclutamientoPage() {
           >
             {row.investigacion_nombre || 'Sin nombre'}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            {row.libreto_titulo || 'Sin libreto'}
-          </div>
           {row.investigacion_fecha_inicio && (
             <div className="text-xs text-gray-400 dark:text-gray-500">
               Inicio: {new Date(row.investigacion_fecha_inicio).toLocaleDateString('es-ES', {
