@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sesion } from '../types/sesiones';
+import { safeFetch } from '../utils/safeFetch';
 
 export const useSesionesSimple = () => {
   const [sesiones, setSesiones] = useState<Sesion[]>([]);
@@ -14,13 +15,7 @@ export const useSesionesSimple = () => {
       try {
         console.log('🔄 Cargando sesiones...');
         
-        const response = await fetch('/api/sesiones-reclutamiento');
-        
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
+        const data = await safeFetch('/api/sesiones-reclutamiento');
         console.log('📊 Datos recibidos:', data);
         
         if (data.sesiones && Array.isArray(data.sesiones)) {
