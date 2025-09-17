@@ -212,36 +212,65 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
 
         {/* Categorías */}
         <div className="space-y-3">
-          {CATEGORIAS.map((categoria) => (
-            <div
-              key={categoria.id}
-              className="border border-border rounded-lg p-4 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
-              onClick={() => handleCategoriaSeleccionada(categoria.id)}
-            >
-              <div className="flex items-center gap-4">
-                <div className="text-gray-600 group-hover:text-gray-700 transition-colors flex-shrink-0">
-                  {categoria.icono}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <Typography variant="h6" weight="semibold" className="text-gray-700 dark:text-gray-200">
-                    {categoria.nombre}
-                  </Typography>
-                  <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                    {categoria.descripcion}
-                  </Typography>
-                </div>
-                <div className="flex-shrink-0">
-                  <Chip 
-                    variant="outline" 
-                    size="sm"
-                    className="border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
-                  >
-                    Seleccionar
-                  </Chip>
+          {CATEGORIAS.map((categoria) => {
+            const isSelected = categoriaSeleccionada === categoria.id;
+            return (
+              <div
+                key={categoria.id}
+                className={`border rounded-lg p-4 transition-all cursor-pointer group ${
+                  isSelected
+                    ? 'border-primary bg-primary/10 shadow-sm'
+                    : 'border-border hover:border-primary/50 hover:bg-primary/5'
+                }`}
+                onClick={() => handleCategoriaSeleccionada(categoria.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`transition-colors flex-shrink-0 ${
+                    isSelected
+                      ? 'text-primary'
+                      : 'text-gray-600 group-hover:text-gray-700'
+                  }`}>
+                    {categoria.icono}
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <Typography 
+                      variant="h6" 
+                      weight="semibold" 
+                      className={`transition-colors ${
+                        isSelected
+                          ? 'text-primary'
+                          : 'text-gray-700 dark:text-gray-200'
+                      }`}
+                    >
+                      {categoria.nombre}
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
+                      {categoria.descripcion}
+                    </Typography>
+                  </div>
+                  <div className="flex-shrink-0">
+                    {isSelected ? (
+                      <Chip 
+                        variant="default" 
+                        size="sm"
+                        className="bg-primary text-white"
+                      >
+                        ✓ Seleccionada
+                      </Chip>
+                    ) : (
+                      <Chip 
+                        variant="outline" 
+                        size="sm"
+                        className="border-gray-300 text-gray-700 hover:border-primary hover:text-primary"
+                      >
+                        Seleccionar
+                      </Chip>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Información adicional */}
