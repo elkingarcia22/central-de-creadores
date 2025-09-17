@@ -18,17 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Obtener el análisis más reciente para esta sesión
     const { data: insights, error: insightsError } = await supabaseServer
       .from('ai_insights_sesiones')
-      .select(`
-        *,
-        ai_runs (
-          id,
-          provider,
-          model,
-          latency_ms,
-          cost_cents,
-          created_at
-        )
-      `)
+      .select('*')
       .eq('sesion_id', sessionId)
       .eq('estado', 'completado')
       .order('created_at', { ascending: false })
@@ -69,10 +59,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     const meta = {
-      provider: insights.ai_runs?.provider || 'unknown',
-      model: insights.modelo_usado || insights.ai_runs?.model || 'unknown',
-      latencyMs: insights.tiempo_analisis_ms || insights.ai_runs?.latency_ms || 0,
-      costCents: insights.ai_runs?.cost_cents || 0,
+      provider: 'unknown', // No tenemos esta info sin el JOIN
+      model: insights.modelo_usado || 'unknown',
+      latencyMs: insights.tiempo_analisis_ms || 0,
+      costCents: 0, // No tenemos esta info sin el JOIN
       fromCache: true, // Siempre es desde cache ya que viene de la BD
       createdAt: insights.created_at,
       aiRunId: insights.ai_run_id
