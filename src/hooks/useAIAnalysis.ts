@@ -36,7 +36,7 @@ export const useAIAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AIAnalysisResult | null>(null);
   const [meta, setMeta] = useState<AIAnalysisMeta | null>(null);
-  const { showError, showSuccess, showWarning } = useToast;
+  const { showError, showSuccess, showWarning } = useToast();
 
   const analyzeSession = async (sessionId: string, participantId?: string) => {
     if (isAnalyzing) return;
