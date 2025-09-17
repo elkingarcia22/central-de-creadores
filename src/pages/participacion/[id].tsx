@@ -2098,8 +2098,8 @@ export default function VistaParticipacion() {
       // Resetear estado de guardado al re-analizar
       setIsAnalysisSaved(false);
       
-      // Iniciar el análisis
-      await analyzeSession(sessionId);
+      // Iniciar el análisis con participantId
+      await analyzeSession(sessionId, participante?.id);
     } catch (error) {
       console.error('Error en análisis de IA:', error);
     }
