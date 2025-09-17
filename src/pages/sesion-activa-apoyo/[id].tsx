@@ -274,6 +274,26 @@ export default function SesionActivaApoyoPage() {
     }
   }, [empresa, participante?.tipo]);
 
+  // Efecto para guardar la transcripción cuando se completa
+  useEffect(() => {
+    const transcription = audioTranscription.state.transcription;
+    const isProcessing = audioTranscription.state.isProcessing;
+    const isRecording = audioTranscription.state.isRecording;
+    
+    // Solo guardar si hay transcripción, no está procesando, no está grabando y hay un ID de transcripción
+    if (transcription && transcription.trim() && !isProcessing && !isRecording && transcripcionId) {
+      console.log('💾 Guardando transcripción completada:', transcription.substring(0, 50) + '...');
+      
+      // Actualizar la transcripción en la base de datos
+      updateTranscripcion(transcripcionId, {
+        transcripcion_completa: transcription,
+        estado: 'completada',
+        fecha_fin: new Date().toISOString(),
+        duracion_total: Math.floor(audioTranscription.state.duration / 1000) // convertir de ms a segundos
+      });
+    }
+  }, [audioTranscription.state.transcription, audioTranscription.state.isProcessing, audioTranscription.state.isRecording, transcripcionId]);
+
   const loadParticipantData = async (participanteId: string) => {
     try {
       console.log('🔍 Iniciando carga de datos del participante para ID:', participanteId);
@@ -631,6 +651,32 @@ export default function SesionActivaApoyoPage() {
         }
     } catch (error) {
       console.error('❌ Error en createTranscripcion:', error);
+      return null;
+    }
+  };
+
+  const updateTranscripcion = async (transcripcionId: string, data: any) => {
+    try {
+      console.log('📝 Actualizando transcripción:', transcripcionId, data);
+
+      const response = await fetch(`/api/transcripciones/${transcripcionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Transcripción actualizada:', result);
+        return result;
+      } else {
+        console.error('❌ Error actualizando transcripción:', response.status);
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error en updateTranscripcion:', error);
       return null;
     }
   };

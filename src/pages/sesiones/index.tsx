@@ -6,6 +6,9 @@ import { FilterValuesSesiones } from '../../components/ui/FilterDrawer';
 import AgregarSesionApoyoModal from '../../components/ui/AgregarSesionApoyoModal';
 import { NotasManualesContent } from '../../components/notas/NotasManualesContent';
 import { NotasAutomaticasContent } from '../../components/transcripciones/NotasAutomaticasContent';
+import { DolorSideModalApoyo } from '../../components/ui/DolorSideModalApoyo';
+import { CrearPerfilamientoModal } from '../../components/participantes/CrearPerfilamientoModal';
+import { SeleccionarCategoriaPerfilamientoModal } from '../../components/participantes/SeleccionarCategoriaPerfilamientoModal';
 import { getChipVariant } from '../../utils/chipUtils';
 import { CalendarIcon, PlusIcon, ClipboardListIcon, ClockIcon, UserIcon, MapPinIcon, TrashIcon, MoreVerticalIcon, FilterIcon, SearchIcon, BarChartIcon, CheckCircleIcon, AlertCircleIcon, ClockIcon as ClockIconSolid, PlayIcon, HelpIcon } from '../../components/icons';
 import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
@@ -65,6 +68,16 @@ const SesionesPageContent: React.FC = () => {
   // Estado para Google Calendar
   const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false);
   const [checkingConnection, setCheckingConnection] = useState(false);
+
+  // Estados para conversión de notas
+  const [showCrearDolorModal, setShowCrearDolorModal] = useState(false);
+  const [showPerfilamientoModal, setShowPerfilamientoModal] = useState(false);
+  const [showCrearPerfilamientoModal, setShowCrearPerfilamientoModal] = useState(false);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<any>(null);
+  const [contenidoNotaParaDolor, setContenidoNotaParaDolor] = useState<string>('');
+  const [contenidoNotaParaPerfilamiento, setContenidoNotaParaPerfilamiento] = useState<string>('');
+  const [notasManuales, setNotasManuales] = useState<any[]>([]);
+  const [notaPreSeleccionada, setNotaPreSeleccionada] = useState<any>(null);
 
   // Función para verificar conexión de Google Calendar
   const checkGoogleCalendarConnection = async () => {
@@ -1473,6 +1486,29 @@ const SesionesPageContent: React.FC = () => {
               <NotasManualesContent 
                 participanteId={participanteId || 'temp-id'}
                 sesionId={selectedSesion.id}
+                onConvertirADolor={(contenido) => {
+                  // Pre-llenar el modal de dolor con el contenido de la nota
+                  setShowCrearDolorModal(true);
+                  // Guardar el contenido para pre-llenar el modal
+                  setContenidoNotaParaDolor(contenido);
+                }}
+                onConvertirAPerfilamiento={(contenido) => {
+                  // Abrir modal de selección de categoría con todas las notas disponibles
+                  console.log('🔄 [CONVERSION] Convirtiendo nota a perfilamiento:', contenido);
+                  
+                  // Encontrar la nota que se está convirtiendo
+                  const notaSeleccionada = notasManuales.find(nota => nota.contenido === contenido);
+                  console.log('🔄 [CONVERSION] Nota encontrada:', notaSeleccionada);
+                  
+                  // Guardar la nota pre-seleccionada
+                  setNotaPreSeleccionada(notaSeleccionada);
+                  
+                  setShowPerfilamientoModal(true);
+                  console.log('🔄 [CONVERSION] Modal de selección de categoría abierto');
+                }}
+                onNotasChange={(notas) => {
+                  setNotasManuales(notas);
+                }}
               />
             )
           },
@@ -1640,6 +1676,74 @@ const SesionesPageContent: React.FC = () => {
           onClose={handleCloseAgregarSesionApoyoModal}
           onSuccess={handleAgregarSesionApoyoSuccess}
           fechaPredefinida={fechaSeleccionada || undefined}
+        />
+      )}
+
+      {/* Modal de Crear Dolor */}
+      {showCrearDolorModal && (
+        <DolorSideModalApoyo
+          isOpen={showCrearDolorModal}
+          onClose={() => setShowCrearDolorModal(false)}
+          onSave={async (dolor) => {
+            try {
+              const response = await fetch('/api/dolores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dolor)
+              });
+              
+              if (response.ok) {
+                setShowCrearDolorModal(false);
+                showSuccess('Dolor creado exitosamente');
+              } else {
+                showError('Error al crear dolor');
+              }
+            } catch (error) {
+              showError('Error al crear dolor');
+            }
+          }}
+          participanteId={selectedSesion?.participantes_id || ''}
+          descripcionPrecargada={contenidoNotaParaDolor}
+        />
+      )}
+
+      {/* Modal de Selección de Categoría de Perfilamiento */}
+      {showPerfilamientoModal && (
+        <SeleccionarCategoriaPerfilamientoModal
+          isOpen={showPerfilamientoModal}
+          onClose={() => setShowPerfilamientoModal(false)}
+          participanteId={selectedSesion?.participantes_id || ''}
+          participanteNombre={selectedSesion?.participante?.nombre || ''}
+          notasParaConvertir={notasManuales}
+          notaPreSeleccionada={notaPreSeleccionada}
+          onCategoriaSeleccionada={(categoria, nota) => {
+            setCategoriaSeleccionada(categoria);
+            setNotaPreSeleccionada(nota);
+            setShowPerfilamientoModal(false);
+            setShowCrearPerfilamientoModal(true);
+          }}
+        />
+      )}
+
+      {/* Modal de Crear Perfilamiento */}
+      {showCrearPerfilamientoModal && categoriaSeleccionada && (
+        <CrearPerfilamientoModal
+          isOpen={showCrearPerfilamientoModal}
+          onClose={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            setNotaPreSeleccionada(null);
+          }}
+          onSuccess={() => {
+            setShowCrearPerfilamientoModal(false);
+            setCategoriaSeleccionada(null);
+            setNotaPreSeleccionada(null);
+            showSuccess('Perfilamiento creado exitosamente');
+          }}
+          participanteId={selectedSesion?.participantes_id || ''}
+          participanteNombre={selectedSesion?.participante?.nombre || ''}
+          categoria={categoriaSeleccionada}
+          descripcionPrecargada={notaPreSeleccionada?.contenido || ''}
         />
       )}
 

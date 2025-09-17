@@ -35,8 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (reclutamiento_id) {
         insertData.reclutamiento_id = reclutamiento_id;
       } else if (sesion_apoyo_id) {
-        // Para sesiones de apoyo, usamos un ID temporal como en las notas manuales
-        insertData.reclutamiento_id = '00000000-0000-0000-0000-000000000001';
+        // Para sesiones de apoyo, no usamos reclutamiento_id (NULL)
+        insertData.reclutamiento_id = null;
         insertData.sesion_apoyo_id = sesion_apoyo_id;
       }
 
@@ -72,8 +72,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (reclutamiento_id) {
         query = query.eq('reclutamiento_id', reclutamiento_id);
       } else if (sesion_apoyo_id) {
-        // Para sesiones de apoyo, buscar por el ID temporal
-        query = query.eq('reclutamiento_id', '00000000-0000-0000-0000-000000000001');
+        // Para sesiones de apoyo, buscar por sesion_apoyo_id
+        query = query.eq('sesion_apoyo_id', sesion_apoyo_id);
       }
 
       const { data, error } = await query;
