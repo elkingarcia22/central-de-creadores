@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { runLLM, validatePolicy, selectProvider } from '@packages/ai-router';
+import { runLLM, validatePolicy, selectProvider, sanitizePII } from '@packages/ai-router';
 import { supabaseServer } from '../../../api/supabase-server';
-import { sanitizePII } from '@packages/ai-router/src/utils/sanitize-pii';
 
 // Schema de validación para el request
 const AIRunRequestSchema = z.object({
