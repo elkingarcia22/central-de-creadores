@@ -297,7 +297,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
         </span>
         <div className="flex items-center space-x-2">
           <Chip
-            variant={filtroSemaforo === 'todos' ? 'primary' : 'default'}
+            variant={filtroSemaforo === 'todos' ? 'secondary' : 'default'}
             size="sm"
             onClick={() => setFiltroSemaforo('todos')}
             className="cursor-pointer"
@@ -332,7 +332,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       </div>
 
       {/* Input para nueva nota */}
-      <Card className="p-4">
+      <Card variant="default" className="p-4 bg-card dark:bg-gray-800/50">
         <div className="space-y-3">
           <div className="flex items-center space-x-3">
             <div className="flex-1">
@@ -394,7 +394,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
       ) : (
         <div className="space-y-3">
           {notasFiltradas.map((nota) => (
-            <Card key={nota.id} className="p-4 hover:shadow-md transition-shadow">
+            <Card key={nota.id} variant="default" className="p-4 hover:shadow-md transition-shadow bg-card dark:bg-gray-800/50">
               {editandoNota === nota.id ? (
                 <div className="space-y-3">
                   <Input
