@@ -480,7 +480,21 @@ export const SeguimientosParticipanteTab: React.FC<SeguimientosParticipanteTabPr
 
   // Función para obtener acciones dinámicas basadas en el tipo de seguimiento
   const getTableActions = (row: SeguimientoParticipante) => {
-    const isSesionApoyo = row.investigacion_nombre === 'Sesión de Apoyo';
+    // Detectar si es un seguimiento de sesión de apoyo
+    const isSesionApoyo = 
+      row.investigacion_nombre === 'Sesión de Apoyo' ||
+      !row.investigacion_id ||
+      row.investigacion_id === '00000000-0000-0000-0000-000000000001' ||
+      (row.notas && row.notas.startsWith('[SEGUIMIENTO DE APOYO]'));
+    
+    // Debug log para verificar la detección
+    console.log('🔍 [SEGUIMIENTOS] Verificando seguimiento:', {
+      id: row.id,
+      investigacion_nombre: row.investigacion_nombre,
+      investigacion_id: row.investigacion_id,
+      notas_prefijo: row.notas?.substring(0, 20),
+      isSesionApoyo
+    });
     
     const actions = [
       {
