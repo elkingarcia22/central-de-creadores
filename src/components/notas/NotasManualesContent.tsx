@@ -239,6 +239,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               ref={inputRef}
               value={nuevaNota}
               onChange={(e) => setNuevaNota(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Escribe tu nota aquí... (Enter para guardar y continuar)"
               className="border-0 focus:ring-0 text-base placeholder-gray-400 dark:placeholder-gray-500"
               disabled={cargando}
