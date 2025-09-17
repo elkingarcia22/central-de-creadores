@@ -67,23 +67,6 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   }, [notas, onNotasChange]);
 
-  // Exponer las funciones de marcado de conversión al componente padre
-  useEffect(() => {
-    // Agregar las funciones al objeto window para que los componentes padre puedan acceder
-    (window as any).marcarNotaConvertidaADolor = marcarNotaConvertidaADolor;
-    (window as any).marcarNotaConvertidaAPerfilamiento = marcarNotaConvertidaAPerfilamiento;
-    
-    console.log('🔍 [DEBUG] Funciones expuestas en window:', {
-      marcarNotaConvertidaADolor: !!(window as any).marcarNotaConvertidaADolor,
-      marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
-    });
-    
-    return () => {
-      // Limpiar las funciones cuando el componente se desmonte
-      delete (window as any).marcarNotaConvertidaADolor;
-      delete (window as any).marcarNotaConvertidaAPerfilamiento;
-    };
-  }, [marcarNotaConvertidaADolor, marcarNotaConvertidaAPerfilamiento]);
 
   // Manejar eventos de teclado en el input
   useEffect(() => {
@@ -351,7 +334,23 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
     }
   };
 
-
+  // Exponer las funciones de marcado de conversión al componente padre
+  useEffect(() => {
+    // Agregar las funciones al objeto window para que los componentes padre puedan acceder
+    (window as any).marcarNotaConvertidaADolor = marcarNotaConvertidaADolor;
+    (window as any).marcarNotaConvertidaAPerfilamiento = marcarNotaConvertidaAPerfilamiento;
+    
+    console.log('🔍 [DEBUG] Funciones expuestas en window:', {
+      marcarNotaConvertidaADolor: !!(window as any).marcarNotaConvertidaADolor,
+      marcarNotaConvertidaAPerfilamiento: !!(window as any).marcarNotaConvertidaAPerfilamiento
+    });
+    
+    return () => {
+      // Limpiar las funciones cuando el componente se desmonte
+      delete (window as any).marcarNotaConvertidaADolor;
+      delete (window as any).marcarNotaConvertidaAPerfilamiento;
+    };
+  }, [marcarNotaConvertidaADolor, marcarNotaConvertidaAPerfilamiento]);
 
   return (
     <div className="space-y-6">
