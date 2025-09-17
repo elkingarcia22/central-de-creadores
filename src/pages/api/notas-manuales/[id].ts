@@ -12,16 +12,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { contenido, semaforo_riesgo } = req.body;
 
+      console.log('🔍 [DEBUG] API PUT - Request body:', { contenido, semaforo_riesgo });
+      console.log('🔍 [DEBUG] API PUT - ID:', id);
+
       if (!contenido) {
+        console.log('❌ [DEBUG] API PUT - Error: contenido es requerido');
         return res.status(400).json({ error: 'contenido es requerido' });
       }
 
       // Validar semaforo_riesgo si se proporciona
       if (semaforo_riesgo && !['neutral', 'verde', 'amarillo', 'rojo'].includes(semaforo_riesgo)) {
+        console.log('❌ [DEBUG] API PUT - Error: semaforo_riesgo inválido:', semaforo_riesgo);
         return res.status(400).json({ error: 'semaforo_riesgo debe ser neutral, verde, amarillo o rojo' });
       }
 
-      console.log('📝 Actualizando nota manual:', { id, contenido, semaforo_riesgo });
+      console.log('📝 [DEBUG] API PUT - Actualizando nota manual:', { id, contenido, semaforo_riesgo });
 
       const updateData: any = {
         contenido: contenido.trim(),
@@ -33,6 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         updateData.semaforo_riesgo = semaforo_riesgo;
       }
 
+      console.log('🔍 [DEBUG] API PUT - updateData:', updateData);
+
       const { data, error } = await supabaseServer
         .from('notas_manuales')
         .update(updateData)
@@ -40,12 +47,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .select()
         .single();
 
+      console.log('🔍 [DEBUG] API PUT - Supabase response:', { data, error });
+
       if (error) {
-        console.error('❌ Error actualizando nota:', error);
+        console.error('❌ [DEBUG] API PUT - Error actualizando nota:', error);
         return res.status(500).json({ error: 'Error al actualizar nota' });
       }
 
-      console.log('✅ Nota actualizada exitosamente:', data.id);
+      console.log('✅ [DEBUG] API PUT - Nota actualizada exitosamente:', data.id);
       return res.status(200).json(data);
 
     } catch (error) {
