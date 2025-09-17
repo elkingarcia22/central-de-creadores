@@ -461,8 +461,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                         <Button
                           onClick={() => onConvertirADolor(nota.contenido)}
                           size="sm"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
+                          variant="secondary"
                         >
                           <WarningIcon className="w-4 h-4 mr-1" />
                           Dolor
@@ -472,11 +471,10 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                         <Button
                           onClick={() => onConvertirAPerfilamiento(nota.contenido)}
                           size="sm"
-                          variant="outline"
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                          variant="secondary"
                         >
                           <UserIcon className="w-4 h-4 mr-1" />
-                          Perfil
+                          Perfilamiento
                         </Button>
                       )}
                       <Button
