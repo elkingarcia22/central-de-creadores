@@ -2749,13 +2749,13 @@ export default function VistaParticipacion() {
       )}
 
       {/* Modal de selección de categoría de perfilamiento */}
-      {showModalPerfilamiento && (
+      {showModalPerfilamiento && notaPreSeleccionada && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showModalPerfilamiento}
           onClose={() => setShowModalPerfilamiento(false)}
           participanteId={id as string}
           participanteNombre={participante?.nombre || ''}
-          notasParaConvertir={notasManuales}
+          notasParaConvertir={[notaPreSeleccionada]}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
             console.log('🔍 [DEBUG] Categoría seleccionada:', categoria, 'Nota:', nota);

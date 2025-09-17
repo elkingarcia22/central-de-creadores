@@ -176,10 +176,10 @@ export const SeleccionarCategoriaPerfilamientoModal: React.FC<SeleccionarCategor
         {/* Notas para convertir */}
         {notasParaConvertir.length > 0 && (
           <div className="space-y-3">
-            <ContainerTitle title="Elige la nota que quieres usar como base para el perfilamiento" />
-            <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-              Elige la nota que quieres usar como base para el perfilamiento
-            </Typography>
+        <ContainerTitle title="Elige la nota que quieres usar como base para el perfilamiento" />
+        <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
+          Elige la nota que quieres usar como base para el perfilamiento por nota a convertir
+        </Typography>
             {notaSeleccionada && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
                 <Typography variant="body2" className="text-green-800 dark:text-green-200 font-medium">

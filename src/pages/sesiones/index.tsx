@@ -1733,13 +1733,13 @@ const SesionesPageContent: React.FC = () => {
       )}
 
       {/* Modal de Selección de Categoría de Perfilamiento */}
-      {showPerfilamientoModal && (
+      {showPerfilamientoModal && notaPreSeleccionada && (
         <SeleccionarCategoriaPerfilamientoModal
           isOpen={showPerfilamientoModal}
           onClose={() => setShowPerfilamientoModal(false)}
           participanteId={selectedSesion?.participantes_id || ''}
           participanteNombre={selectedSesion?.participante?.nombre || ''}
-          notasParaConvertir={notasManuales}
+          notasParaConvertir={[notaPreSeleccionada]}
           notaPreSeleccionada={notaPreSeleccionada}
           onCategoriaSeleccionada={(categoria, nota) => {
             setCategoriaSeleccionada(categoria);
