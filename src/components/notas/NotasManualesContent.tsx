@@ -508,6 +508,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
               onChange={setSemaforoNuevaNota}
               size="sm"
               disabled={cargando}
+              showLabels={true}
             />
           </div>
         </div>
@@ -551,6 +552,7 @@ export const NotasManualesContent: React.FC<NotasManualesContentProps> = ({
                       valor={semaforoEditando}
                       onChange={setSemaforoEditando}
                       size="sm"
+                      showLabels={true}
                     />
                   </div>
                   

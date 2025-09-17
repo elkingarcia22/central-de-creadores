@@ -14,7 +14,7 @@ interface SemaforoRiesgoSelectorProps {
 const semaforoConfig = {
   neutral: {
     variant: 'secondary' as const,
-    color: '#9CA3AF',
+    color: '#6B7280',
     label: 'Neutral',
     description: 'Sin evaluación específica'
   },
@@ -74,11 +74,9 @@ export const SemaforoRiesgoSelector: React.FC<SemaforoRiesgoSelectorProps> = ({
                   className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: config.color }}
                 />
-                {showLabels && (
-                  <span className="font-medium">
-                    {config.label}
-                  </span>
-                )}
+                <span className="font-medium">
+                  {config.label}
+                </span>
               </div>
             </Chip>
           );
